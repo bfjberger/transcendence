@@ -9,6 +9,8 @@
             margin-bottom: 5px;
         }
     </style>
+    <!-- import startTournament -->
+    <script src="tournament.js" type="module"></script>
 </head>
 <body>
     <div id="players">
@@ -23,7 +25,12 @@
         <div class="player"><input type="text" id="player8" placeholder="Joueur 8"></div>
         <button onclick="startTournament()">Démarrer le tournoi</button>
     </div>
+    <canvas id="board"></canvas>
     <div id="tournament"></div>
-    <script src="tournament.js"></script>
+    <!-- <script> src="pong2players.js"</script> -->
+    <!-- <script src="tournament.js" type="module"></script> -->
+    <script type="module">
+        import { PongGame2Players } from './pong2players.js';
+    </script>
 </body>
 </html>
