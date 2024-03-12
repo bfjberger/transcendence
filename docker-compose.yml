@@ -4,6 +4,7 @@ services:
   nginx:
     container_name: nginx
     build:
+      context: .
       dockerfile: Dockerfile.nginx
     restart: unless-stopped
     ports:
@@ -16,6 +17,7 @@ services:
   bck_django:
     container_name: bck_django
     build:
+      context: .
       dockerfile: Dockerfile.django
     restart: on-failure
     ports:
