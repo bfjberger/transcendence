@@ -24,6 +24,17 @@ function generatePairings(players) {
     return pairings;
 }
 
+/**
+ * Randomizes the order of players array.
+ */
+function randomizePlayers() {
+    for (let i = players.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [players[i], players[j]] = [players[j], players[i]];
+    }
+    console.log('Players randomized:', players);
+}
+
 
 /**
  * Starts the tournament by collecting player names and organizing matches.
@@ -42,6 +53,7 @@ export function startTournament() {
     }
     document.getElementById('players').style.display = 'none';
     console.log('Players:', players);
+    randomizePlayers();
     organizeMatches();
 }
 
