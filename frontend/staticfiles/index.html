@@ -1,18 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>ft_transcendance</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
-  </head>
-  <body>
-    <h1>Wait for a single page application !</h1>
-    <a href="pong/index.html">Pong</a>
-    <h2>Schema du projet :</h2>
-    <img src="img/ft_trans_containers_white.png"></img>
-    <h2>Schema du projet dark mode :</h2>
-    <img src="img/ft_transcendance_containers_dev.png"></img>
-    <p>dglskjsdfklhgkldfjh</p>
-  </body>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Main Page</title>
+	<link rel="stylesheet" href="./css/main.css">
+	<script type="module" scr="./js/index.js" defer></script>
+	<link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
+	<script src="bootstrap-5.3.3-dist/js/bootstrap.min.js" defer></script>
+</head>
+<body>
+	<div class="container-fluid" id="navbar-custom">
+		<header class="navbar sticky-top">
+			<div class="container d-flex justify-content-between align-items-center">
+				<p class="m-0">LOREM</p>
+				<button class="btn btn-primary btn-right" type="button">Login</button>
+			</div>
+		</header>
+	</div>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-auto col-md-2 col-xl-1 px-sm-2 px-0" id="sidebar-custom">
+				<div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100 custom-padding-bottom">
+					<ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+						<li class="nav-item">
+							<a href="#" class="nav-link align-middle px-0 text-white">
+								<img src="./img/house-solid.svg" alt="home" width="20" height="20">
+								<span class="ms-1 d-none d-sm-inline">Home</span>
+							</a>
+							<li class="w-100">
+								<a href="./html/twoplayers.html" class="nav-link px-0 text-white">
+									<img src="./img/table-tennis-paddle-ball-solid.svg" alt="home" width="20" height="20">
+									<span class="d-none d-sm-inline">2 Players Mode</span></a>
+							</li>
+							<li>
+								<a href="./html/fourplayers.html" class="nav-link px-0 text-white">
+									<img src="./img/table-tennis-paddle-ball-solid.svg" alt="home" width="20" height="20">
+									<span class="d-none d-sm-inline">4 Players Mode</span></a>
+							</li>
+						</li>
+					</ul>
+					<div class="pb-4">
+						<a href="https://www.youtube.com/" class="d-flex align-items-center text-white text-decoration-none" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+							<!--DARK <img src="../staticfiles/img/user-solid.svg" alt="user" width="30" height="30" class="rounded-circle"> -->
+							<img src="./img/user-regular.svg" alt="user" width="30" height="30" class="rounded-circle user-avatar">
+							<span class="d-none d-sm-inline mx-1">user</span>
+						</a>
+						<!-- <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+							<li><a class="dropdown-item" href="#">Sign out</a></li>
+						</ul> -->
+					</div>
+				</div>
+			</div>
+			<div class="col py-3">
+				Content area...
+			</div>
+		</div>
+	</div>
+</body>
 </html>

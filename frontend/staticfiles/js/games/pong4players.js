@@ -1,27 +1,42 @@
-class PongGame {
+/*
+    POOR ATTEMPT TO SPA
+    NOT WORKING
+*/
+
+// import AbstractView from '../views/AbstractView.js';
+
+// export default class extends AbstractView {
+// 	constructor() {
+// 		this.setTitle("Pong 4 Players");
+// 	}
+
+// 	async getHtml() {
+// 		return "";
+// 	}
+// }
+
+class PongGame4Players {
 	constructor() {
 		// board
 		[this.boardWidth, this.boardHeight] = [700, 500];
 		[this.board, this.context] = [null, null];
-		this.ratio = 0.8;
+		this.ratio = 0.625;
 		this.start = false;
 
 		// players
 		[this.playerWidth, this.playerHeight] = [10, 70];
 		[this.playerVelocityY, this.playerSpeed] = [0, 3];
 		[this.player1Score, this.player2Score, this.player3Score, this.player4Score] = [0, 0, 0, 0];
-		[this.player1, this.player2, this.player3, this.player4] = [{}, {}, {}, {}];	
-		this.playerSizeMultiplier = 1.1;
+		[this.player1, this.player2, this.player3, this.player4] = [{}, {}, {}, {}];
+		// this.playerSizeMultiplier = 1.1; why ??
 		this.keysPressed = {};
 
 		// ball
-		[this.ballSpeedMultiplierX, this.ballSpeedMultiplierY, this.ballSizeMultiplier] = [1.1, 1.05, 1.1];
+		[this.ballSpeedMultiplierX, this.ballSpeedMultiplierY] = [1.1, 1.05];
 		this.ballRadius = 10;
 		this.ballSpeed = 2;
 		this.lastPlayerTouched = null;
 		this.ball = {};
-
-		window.onload = this.init.bind(this);
 	}
 
 	init() {
@@ -33,8 +48,6 @@ class PongGame {
 		this.board.width / 2 - 130,
 		this.board.height / 2 + 15);
 
-		this.ballStartVelocity();
-
 		document.addEventListener("keydown", this.pressKey.bind(this));
 		document.addEventListener("keydown", this.handleKeyPress.bind(this));
 		document.addEventListener("keyup", this.handleKeyPress.bind(this));
@@ -43,9 +56,8 @@ class PongGame {
 	setBoard() {
 		this.board = document.getElementById("board");
 		this.context = this.board.getContext("2d"); //used for drawing on the board
-		this.board.height = window.innerHeight * this.ratio;
-		// this.board.width = window.innerWidth * this.ratio;
-		this.board.width = this.board.height;
+        this.board.height = window.innerHeight * this.ratio;
+        this.board.width = window.innerWidth * this.ratio;
 		this.boardHeight = this.board.height;
 		this.boardWidth = this.board.width;
 
@@ -58,10 +70,7 @@ class PongGame {
 		this.playerSizeMultiplier = this.boardHeight / 500;
 
 		// set players colors
-		this.player1.color = "blue";
-		this.player2.color = "red";
-		this.player3.color = "green";
-		this.player4.color = "yellow";
+		[this.player1.color, this.player2.color, this.player3.color, this.player4.color] = ["orange", "blue", "violet", "darkblue"];
 
 		// increase player size based on playerSizeMultiplier
 		this.playerWidth *= this.playerSizeMultiplier;
@@ -80,59 +89,28 @@ class PongGame {
 		this.player2.height = this.playerHeight;
 
 		// set players position
-		this.player1.x = 0;
-		this.player2.x = this.boardWidth - this.player2.width;
+		this.player1.x = 10;
+		this.player2.x = this.boardWidth - this.player2.width - 10;
 		this.player3.x = this.boardWidth / 2 - this.player3.width / 2;
 		this.player4.x = this.boardWidth / 2 - this.player4.width / 2;
-		this.player1.y = this.boardHeight / 2;
-		this.player2.y = this.boardHeight / 2;
-		this.player3.y = 0;
-		this.player4.y = this.boardHeight - this.player4.height;
+		this.player1.y = this.boardHeight / 2 - this.player1.height / 2;
+		this.player2.y = this.boardHeight / 2 - this.player2.height / 2;
+		this.player3.y = 10;
+		this.player4.y = this.boardHeight - this.player4.height - 10;
 
 		// set players velocity
 		this.playerSpeed = this.boardHeight / 100;
-		this.player1.velocityY = 0;
-		this.player2.velocityY = 0;
-		this.player3.velocityX = 0;
-		this.player4.velocityX = 0;
+		this.player1.velocityY = this.player2.velocityY = this.player3.velocityX = this.player4.velocityX = 0;
 	}
 
 	setBall() {
-		this.ballSizeMultiplier = this.boardHeight / 500;
-		this.ballRadius *= this.ballSizeMultiplier;
 		this.ball.x = this.boardWidth / 2;
-		this.ball.y = this.boardHeight / 2;
+		this.ball.y = 250 + Math.random() * (this.boardHeight - 500); //range of 250px to not have the ball spawn near a wall
 		this.ball.radius = this.ballRadius;
-		this.ball.velocityX = 0;
-		this.ball.velocityY = 0;
+		this.ball.velocityX = (Math.random() < 0.5 ? 1 : -1) * (0.75 + Math.random() * 0.25);
+		this.ball.velocityY = (Math.random() < 0.5 ? 1 : -1) * (0.75 + Math.random() * 0.25);
 		this.ballSpeed = this.boardWidth / 350;
 		this.ball.color = "white";
-	}
-
-	ballStartVelocity() {
-		let random = this.randomNumber();
-		switch (random) {
-			case 0:
-				this.ball.velocityX = 1;
-				this.ball.velocityY = 1;
-				break;
-			case 1:
-				this.ball.velocityX = -1;
-				this.ball.velocityY = 1;
-				break;
-			case 2:
-				this.ball.velocityX = 1;
-				this.ball.velocityY = -1;
-				break;
-			case 3:
-				this.ball.velocityX = -1;
-				this.ball.velocityY = -1;
-				break;
-		}
-	}
-
-	randomNumber() {
-		return Math.floor(Math.random() * 4);
 	}
 
 	pressKey(e) {
@@ -144,11 +122,14 @@ class PongGame {
 			location.reload();
 		}
 	}
-	
+
+	reloadPage() {
+		location.reload();
+	}
+
 	handleKeyPress(e) {
 		this.keysPressed[e.key] = e.type === "keydown";
 	}
-
 
 	movePlayer() {
 		// Player 1 and 2 movement
@@ -199,7 +180,7 @@ class PongGame {
 		// Player 3 and 4 next movement
 		if (!this.outOfBoundsX(this.player3.x + this.player3.velocityX)) {
 			this.player3.x += this.player3.velocityX;
-		}   
+		}
 		if (!this.outOfBoundsX(this.player4.x + this.player4.velocityX)) {
 			this.player4.x += this.player4.velocityX;
 		}
@@ -227,8 +208,8 @@ class PongGame {
 			} else if (this.lastPlayerTouched === 'player4') {
 				this.player4Score++;
 			}
-			// reset the game with the direction opposite to the last player who touched the ball
-			this.resetGame(-this.ball.velocityX, -this.ball.velocityY);
+			// reset the game with the random values
+			this.resetGame();
 		}
 	}
 
@@ -303,7 +284,7 @@ class PongGame {
 		this.context.fill();
 		this.context.stroke(); // Draw the stroke around the ball
 	}
-	
+
 	drawScoreAndLine() {
 		this.context.beginPath();
 		this.context.setLineDash([5, 15]); // set the line to be a dashed line
@@ -312,48 +293,71 @@ class PongGame {
 		this.context.strokeStyle = "white";
 		this.context.stroke();
 		this.context.setLineDash([]); // reset the line to be solid for other drawings
+
+		this.context.beginPath();
+		this.context.setLineDash([5, 15]); // set the line to be a dashed line
+		this.context.moveTo(0, this.boardHeight / 2);
+		this.context.lineTo(this.boardWidth, this.boardHeight / 2);
+		this.context.strokeStyle = "white";
+		this.context.stroke();
+		this.context.setLineDash([]); // reset the line to be solid for other drawings
 		this.context.font = "20px sans-serif";
 
 		this.context.fillStyle = this.player1.color;
-		this.context.fillText(this.player1Score, this.boardWidth / 2 - 50, 30);
+		this.context.fillText(this.player1Score, 50, this.boardHeight / 2);
 
 		this.context.fillStyle = this.player2.color;
-		this.context.fillText(this.player2Score, this.boardWidth / 2 + 25, 30);
+		this.context.fillText(this.player2Score, this.boardWidth - 50, this.boardHeight / 2);
 
 		this.context.fillStyle = this.player3.color;
-		this.context.fillText(this.player3Score, this.boardWidth / 2 - 50, this.boardHeight - 30);
+		this.context.fillText(this.player3Score, this.boardWidth / 2, 50);
 
 		this.context.fillStyle = this.player4.color;
-		this.context.fillText(this.player4Score, this.boardWidth / 2 + 25, this.boardHeight - 30);
+		this.context.fillText(this.player4Score, this.boardWidth / 2, this.boardHeight - 50);
 	}
 
 	gameOver() {
-		if (this.player1Score === 3 || this.player2Score === 3 || this.player3Score === 3 || this.player4Score === 3) {
+		if (
+			this.player1Score === 3 ||
+			this.player2Score === 3 ||
+			this.player3Score === 3 ||
+			this.player4Score === 3
+		) {
 			this.ball.velocityX = 0;
 			this.ball.velocityY = 0;
-			this.context.fillStyle = "white";
+			let winnerText = "";
+			let winnerColor = "";
+
 			if (this.player1Score === 3) {
-				this.context.fillText('Player 1 won!!', this.boardWidth / 2 - 30, this.boardHeight / 2 + 15);
+				winnerText = "Player 1 won!!";
+				winnerColor = this.player1.color;
+			} else if (this.player2Score === 3) {
+				winnerText = "Player 2 won!!";
+				winnerColor = this.player2.color;
+			} else if (this.player3Score === 3) {
+				winnerText = "Player 3 won!!";
+				winnerColor = this.player3.color;
+			} else if (this.player4Score === 3) {
+				winnerText = "Player 4 won!!";
+				winnerColor = this.player4.color;
 			}
-			else if (this.player2Score === 3) {
-				this.context.fillText('Player 2 won!!', this.boardWidth / 2 - 30, this.boardHeight / 2 + 15);
-			}
-			else if (this.player3Score === 3) {
-				this.context.fillText('Player 3 won!!', this.boardWidth / 2 - 30, this.boardHeight / 2 + 15);
-			}
-			else if (this.player4Score === 3) {
-				this.context.fillText('Player 4 won!!', this.boardWidth / 2 - 30, this.boardHeight / 2 + 15);
-			}
+
+			this.context.fillStyle = winnerColor;
+			this.context.font = "50px sans-serif";
+			const textWidth = this.context.measureText(winnerText).width;
+			const textX = this.boardWidth / 2 - textWidth / 2;
+			const textY = this.boardHeight / 2 + 15;
+			this.context.fillText(winnerText, textX, textY);
 		}
 	}
 
-	resetGame(directionx, directiony) {
+	resetGame() {
 		this.ball = {
 			x: this.boardWidth / 2,
-			y: this.boardHeight / 2,
+			y: 100 + Math.random() * (this.boardHeight - 200),
 			radius: this.ballRadius,
-			velocityX: directionx,
-			velocityY: directiony,
+			velocityX: (Math.random() < 0.5 ? 1 : -1) * (0.75 + Math.random() * 0.25),
+			velocityY: (Math.random() < 0.5 ? 1 : -1) * (0.75 + Math.random() * 0.25),
 			color: "white"
 		};
 		// reset the last player who touched the ball
@@ -371,4 +375,25 @@ class PongGame {
 
 }
 
-const game = new PongGame();
+// const game = new PongGame4Players();
+
+var game;
+
+function start4PlayerGame() {
+    if (!game) {
+        game = new PongGame4Players();
+        game.init();
+        document.getElementById("controls").textContent = "Left Player: Q/A || Right Player: 9/6 || Bottom Player: LeftArrow/RightArrow || Top Player: N/M";
+    }
+}
+
+function reload4PlayerGame() {
+	if (game) {
+		game.reloadPage();
+	}
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const game = new PongGame4Players();
+    game.init();
+});

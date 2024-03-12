@@ -1,44 +1,52 @@
-class PongGame {
-    constructor() {
-        // board
-        this.start = false;
-        this.board = null;
-        this.boardWidth = 700;
-        this.boardHeight = 500;
-        this.context = null;
-        this.ratio = 0.5;
+/*
+    POOR ATTEMPT TO SPA
+    NOT WORKING
+*/
 
-        // players
-        this.playerWidth = 10;
-        this.playerHeight = 70;
-        this.playerVelocityY = 0;
-        this.player1Score = 0;
-        this.player2Score = 0;
-		this.playerSpeed = 3;
-        this.player1 = {};
-        this.player2 = {};
-        this.keysPressed = {};
+// import AbstractView from '../views/AbstractView.js';
 
-        // ball
-        this.ballRadius = 10;
-        this.ballSpeed = 2;
-        this.ball = {};
+// export default class extends AbstractView {
+// 	constructor() {
+// 		this.setTitle("Pong 2 Players");
+// 	}
+
+// 	async getHtml() {
+// 		return "";
+// 	}
+// }
+
+class PongGame2Players {
+	constructor() {
+		// board
+		[this.boardWidth, this.boardHeight] = [700, 500];
+		[this.board, this.context] = [null, null];
+		this.ratio = 0.625;
+		this.start = false;
+
+		// players
+		[this.playerWidth, this.playerHeight] = [10, 70];
+		[this.playerVelocityY, this.playerSpeed] = [0, 3];
+    	[this.player1Score, this.player2Score] = [0, 0];
+		[this.player1, this.player2] = [{}, {}];
+		this.keysPressed = {};
+
+		// ball
+		[this.ballSpeedMultiplierX, this.ballSpeedMultiplierY] = [1.1, 1.05];
+		this.ballRadius = 10;
+		this.ballSpeed = 2;
 		this.ballSpeedMultiplierX = 1.1;
 		this.ballSpeedMultiplierY = 1.05;
+		this.ball = {};
+	}
 
-        window.onload = this.init.bind(this);
-    }
-
-    init() {
-        this.setBoard();
+	init() {
+		this.setBoard();
 
         // ask to press a key
         this.context.font = "15px sans-serif";
         this.context.fillText('Press space to start / Press escape to reload',
         this.board.width / 2 - 130,
         this.board.height / 2 + 15);
-
-        this.ballStartVelocity();
 
         document.addEventListener("keydown", this.pressKey.bind(this));
         document.addEventListener("keydown", this.handleKeyPress.bind(this));
@@ -58,48 +66,27 @@ class PongGame {
     }
 
 	setPlayer() {
-		this.player1.x = 0;
-		this.player2.x = this.boardWidth - this.playerWidth;
-		this.player1.y = this.boardHeight / 2;
-		this.player2.y = this.boardHeight / 2;
+		// set players colors
+		[this.player1.color, this.player2.color] = ["orange", "blue"];
+
+		// set players position
+		this.player1.x = 10;
+		this.player2.x = this.boardWidth - this.playerWidth - 10;
+		this.player1.y = this.boardHeight / 2 - this.playerHeight / 2;
+		this.player2.y = this.boardHeight / 2 - this.playerHeight / 2;
+
+		// set players velocity
 		this.playerSpeed = this.boardHeight / 100;
-		this.player1.velocityY = 0;
-		this.player2.velocityY = 0;
+		this.player1.velocityY = this.player2.velocityY = 0;
 	}
 
 	setBall() {
 		this.ball.x = this.boardWidth / 2;
-		this.ball.y = this.boardHeight / 2;
+		this.ball.y = 100 + Math.random() * (this.boardHeight - 200); //range of 100px to not have the ball spawn near a wall
 		this.ball.radius = this.ballRadius;
-		this.ball.velocityX = 0;
-		this.ball.velocityY = 0;
+		this.ball.velocityX = (Math.random() < 0.5 ? 1 : -1) * (0.75 + Math.random() * 0.25);
+		this.ball.velocityY = (Math.random() < 0.5 ? 1 : -1) * (0.75 + Math.random() * 0.25);
 		this.ballSpeed = this.boardWidth / 350;
-	}
-
-	ballStartVelocity() {
-		let random = this.randomNumber();
-		switch (random) {
-			case 0:
-				this.ball.velocityX = 1;
-				this.ball.velocityY = 1;
-				break;
-			case 1:
-				this.ball.velocityX = -1;
-				this.ball.velocityY = 1;
-				break;
-			case 2:
-				this.ball.velocityX = 1;
-				this.ball.velocityY = -1;
-				break;
-			case 3:
-				this.ball.velocityX = -1;
-				this.ball.velocityY = -1;
-				break;
-		}
-	}
-
-	randomNumber() {
-		return Math.floor(Math.random() * 4);
 	}
 
 	pressKey(e) {
@@ -111,11 +98,14 @@ class PongGame {
 			location.reload();
 		}
 	}
-	
+
+	reloadPage() {
+		location.reload();
+	}
+
 	handleKeyPress(e) {
 		this.keysPressed[e.key] = e.type === "keydown";
 	}
-
 
 	movePlayer() {
 		if (this.keysPressed["w"]) {
@@ -179,8 +169,8 @@ class PongGame {
 	}
 
 	draw() {
-		this.drawPlayer(this.player1.x, this.player1.y, "blue");
-		this.drawPlayer(this.player2.x, this.player2.y, "red");
+		this.drawPlayer(this.player1.x, this.player1.y, this.player1.color);
+		this.drawPlayer(this.player2.x, this.player2.y, this.player2.color);
 		this.drawBall("white");
 		this.drawScoreAndLine();
 	}
@@ -212,7 +202,7 @@ class PongGame {
 	gameOver() {
 		if (this.player1Score === 3 || this.player2Score === 3) {
 			if (this.player1Score === 3) {
-				this.context.fillStyle = "blue";
+				this.context.fillStyle = this.player1.color;
 				this.context.fillText('Player 1 won!!',
 					this.boardWidth / 2 - 130,
 					this.boardHeight / 2 + 15);
@@ -220,7 +210,7 @@ class PongGame {
 				this.ball.velocityY = 0;
 			}
 			else {
-				this.context.fillStyle = "red";
+				this.context.fillStyle = this.player2.color;
 				this.context.fillText('Player 2 won!!',
 					this.boardWidth / 2 - 130,
 					this.boardHeight / 2 + 15);
@@ -239,8 +229,8 @@ class PongGame {
 			x: this.boardWidth / 2,
 			y: this.boardHeight / 2,
 			radius: this.ballRadius,
-			velocityX: direction,
-			velocityY: 2
+			velocityX: Math.random() * 2 - 1,
+			velocityY: Math.random() * 2 - 1
 		};
 	}
 
@@ -255,4 +245,23 @@ class PongGame {
 
 }
 
-const game = new PongGame();
+var game;
+
+function start2PlayerGame() {
+	if (!game) {
+		game = new PongGame2Players();
+		game.init();
+		document.getElementById("controls").textContent = "Left Player: W/S || Right Player: UpArrow/DownArrow";
+	}
+}
+
+function reload2PlayerGame() {
+	if (game) {
+		game.reloadPage();
+	}
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+	const game = new PongGame2Players();
+	game.init();
+});
