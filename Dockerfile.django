@@ -1,0 +1,23 @@
+FROM python:3.11.4-slim-buster as builder
+
+WORKDIR /usr/backend
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gcc
+
+RUN pip install --upgrade pip
+
+RUN pip install django
+RUN pip install gunicorn
+RUN pip install psycopg2-binary
+
+COPY backend/. .
+
+RUN addgroup --system bck_django && adduser --system --group bck_django
+RUN chown -R bck_django:bck_django /usr/backend
+
+USER bck_django
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:8000", "bck_django.wsgi"]

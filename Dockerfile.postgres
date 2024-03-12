@@ -1,0 +1,6 @@
+FROM postgres:latest
+
+ENV POSTGRES_USER bck_django
+ENV POSTGRES_PASSWORD bck_django
+ENV POSTGRES_DB db_bck_django
+

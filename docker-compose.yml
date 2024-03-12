@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  nginx:
+    container_name: nginx
+    build:
+      dockerfile: Dockerfile.nginx
+    restart: unless-stopped
+    ports:
+      - 7890:80
+    networks:
+      - ft_transcendance
+    volumes:
+      - ./frontend/staticfiles/:/var/frontend/staticfiles/
+
+  bck_django:
+    container_name: bck_django
+    build:
+      dockerfile: Dockerfile.django
+    restart: on-failure
+    ports:
+      - 8000
+    environment:
+      - SECRET_KEY=s'django-insecure-sm@b^=144g8k*vt7gc&&h7q3z7(yf4q=08mdikb=^lrr-18vz2'  
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+    networks:
+      - ft_transcendance
+    volumes:
+      - ./backend/:/usr/backend/
+
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=bck_django
+      - POSTGRES_PASSWORD=bck_django
+      - POSTGRES_DB=db_bck_django
+    ports:
+      - 5432
+    networks:
+      - ft_transcendance
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+networks:
+    ft_transcendance:
+        driver: bridge
+
+volumes:
+  postgres_data:
