@@ -34,8 +34,6 @@ class PongGame2Players {
 		[this.ballSpeedMultiplierX, this.ballSpeedMultiplierY] = [1.1, 1.05];
 		this.ballRadius = 10;
 		this.ballSpeed = 2;
-		this.ballSpeedMultiplierX = 1.1;
-		this.ballSpeedMultiplierY = 1.05;
 		this.ball = {};
 	}
 
@@ -54,8 +52,8 @@ class PongGame2Players {
     }
 
     setBoard() {
-        this.board = document.getElementById("board");
-        this.context = this.board.getContext("2d"); //used for drawing on the board
+		this.board = document.getElementsByName("board");
+		this.context = this.board.getContext("2d"); //used for drawing on the board
         this.board.height = window.innerHeight * this.ratio;
         this.board.width = window.innerWidth * this.ratio;
         this.boardHeight = this.board.height;

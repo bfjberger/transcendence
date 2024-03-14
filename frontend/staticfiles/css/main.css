@@ -1,41 +1,10 @@
-/*
-	Main CSS file with styles applied currently at least in all pages
-*/
-
 /* NO TO SCROLLING (ง'̀-'́)ง */
 body, html {
 	height: 100%;
-	overflow: hidden; /* Prevent scrolling */
-}
-
-body {
-	background-color:rgb(255, 255, 255);
-	color: #333;
-}
-
-/* Style for the side bar on the left */
-#sidebar-custom {
-	background-color: gray;
-	height: calc(100vh - var(--header-height));
-	overflow-y: auto; /* Add scrollbar if content exceeds height */
-}
-
-/* Style for the nav bar at the top */
-#navbar-custom {
-	--header-height: 3rem;
-	height: var(--header-height);
-	font-weight: 600;
-	font-size: larger;
-	background: #e6d4aa;
-	color: #f80792;
-}
-
-/* Style so that the user icon is visible */
-.custom-padding-bottom {
-	padding-bottom: 3rem;
+	overflow: hidden;
 }
 
 /* Style when hovering over links from the side bar */
 .nav-link:hover {
-	background-color: #f80792;
+	background-color: rgba(43, 47, 50, 0.5);
 }

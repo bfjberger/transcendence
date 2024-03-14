@@ -4,7 +4,6 @@
 		<meta charset="UTF-8">
 		<meta name="viewport", content="width=device-width, initial-scale=1">
 		<title>Pong Game</title>
-		<link rel="stylesheet" href="../css/pong.css">
 		<link rel="stylesheet" href="../css/main.css">
 		<script type="module" scr="../js/index.js" defer></script>
 		<script type="module" src="../js/games/pong4players.js" defer></script>
@@ -12,40 +11,44 @@
 		<script src="../bootstrap-5.3.3-dist/js/bootstrap.min.js" defer></script>
 	</head>
 	<body class="four_players">
-		<div class="container-fluid" id="navbar-custom">
-			<header class="navbar sticky-top">
-				<div class="container d-flex justify-content-between align-items-center">
-					<p class="m-0">LOREM</p>
-					<button class="btn btn-primary btn-right" type="button">Login</button>
-				</div>
-			</header>
+		<div class="container-fluid text-bg-secondary text-danger text-center">
+			<div class="row">
+				<header class="navbar sticky-top">
+					<div class="col-md-1">
+						<img src="../img/42_logo.svg" alt="logo 42" class="user-avatar" width="42" height="30">
+					</div>
+					<div class="col-md-10"></div>
+					<div class="col-md-1 text-end pe-3">
+						<button class="btn btn-primary" type="button">Login</button>
+					</div>
+				</header>
+			</div>
 		</div>
 		<div class="container-fluid">
 			<div class="row">
-				<div class="col-auto col-md-2 col-xl-1 px-sm-2 px-0" id="sidebar-custom">
-					<div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100 custom-padding-bottom">
-						<ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+				<div class="col-auto px-sm-2 px-0 text-bg-secondary">
+					<div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 pb-5 min-vh-100">
+						<ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start">
 							<li class="nav-item">
 								<a href="../index.html" class="nav-link align-middle px-0 text-white">
-									<img src="../img/house-solid.svg" alt="home" width="20" height="20">
+									<img src="../img/house-fill-Bootstrap.svg" alt="home" width="20" height="20">
 									<span class="ms-1 d-none d-sm-inline">Home</span>
 								</a>
-								<li class="w-100">
-									<a href="twoplayers.html" class="nav-link px-0 text-white">
-										<img src="../img/table-tennis-paddle-ball-solid.svg" alt="home" width="20" height="20">
-										<span class="d-none d-sm-inline">2 Players Mode</span></a>
-								</li>
-								<li>
-									<a href="fourplayers.html" class="nav-link px-0 text-white">
-										<img src="../img/table-tennis-paddle-ball-solid.svg" alt="home" width="20" height="20">
-										<span class="d-none d-sm-inline">4 Players Mode</span></a>
-								</li>
+							</li>
+							<li>
+								<a href="./twoplayers.html" class="nav-link px-0 text-white">
+									<img src="../img/table-tennis-paddle-ball-solid.svg" alt="home" width="20" height="20">
+									<span class="d-none d-sm-inline">2 Players Mode</span></a>
+							</li>
+							<li>
+								<a href="./fourplayers.html" class="nav-link px-0 text-white">
+									<img src="../img/table-tennis-paddle-ball-solid.svg" alt="home" width="20" height="20">
+									<span class="d-none d-sm-inline">4 Players Mode</span></a>
 							</li>
 						</ul>
 						<div class="pb-4">
-							<a href="https://www.youtube.com/" class="d-flex align-items-center text-white text-decoration-none" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-								<!--DARK <img src="../staticfiles/img/user-solid.svg" alt="user" width="30" height="30" class="rounded-circle"> -->
-								<img src="../img/user-regular.svg" alt="user" width="30" height="30" class="rounded-circle user-avatar">
+							<a href="" class="d-flex align-items-center text-white text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">
+								<img src="../img/person-circle-Bootstrap.svg" alt="user" width="30" height="30" class="rounded-circle user-avatar">
 								<span class="d-none d-sm-inline mx-1">user</span>
 							</a>
 							<!-- <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
@@ -54,22 +57,32 @@
 						</div>
 					</div>
 				</div>
-				<div class="col py-3 container">
-					<h1>Four Players Pong Game</h1>
-					<div>
-						<p id="top-player-text">Top Player: N/M</p>
+				<div class="col container">
+					<div class="row">
+						<div class="col text-center fw-bold pt-3">
+							<p>Four Players Pong Game</p>
+						</div>
 					</div>
-					<div>
-						<p id="left-player-text">Left Player: Q/A</p>
+					<div class="row">
+						<div class="col-md-5"></div>
+						<div class="col-md-2 text-center text-warning">Top Player: N/M</div>
+						<div class="col-md-5"></div>
 					</div>
-					<div class="canvas-container">
-						<canvas id="board"></canvas>
+					<div class="row">
+						<div class="col text-end text-warning align-self-center">
+							<p>Left Player: Q/A</p>
+						</div>
+						<div class="col mt-2 text-bg-success border border-black border-5">
+							<canvas id="board"></canvas>
+						</div>
+						<div class="col text-start text-primary align-self-center">
+							<p>Right Player: 9/6</p>
+						</div>
 					</div>
-					<div>
-						<p id="right-player-text">Right Player: 9/6</p>
-					</div>
-					<div>
-						<p id="bottom-player-text">Bottom Player: LeftArrow/RightArrow</p>
+					<div class="row">
+						<div class="col-md-5"></div>
+						<div class="col-md-2 text-center text-warning">Bottom Player: LeftArrow/RightArrow</div>
+						<div class="col-md-5"></div>
 					</div>
 				</div>
 		</div>
