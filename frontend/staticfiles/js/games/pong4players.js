@@ -54,7 +54,7 @@ class PongGame4Players {
 	}
 
 	setBoard() {
-		this.board = document.getElementsByName("board");
+		this.board = document.getElementById("board");
 		this.context = this.board.getContext("2d"); //used for drawing on the board
         this.board.height = window.innerHeight * this.ratio;
         this.board.width = window.innerWidth * this.ratio;
