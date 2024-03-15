@@ -1,138 +1,212 @@
 // tournament.js
-import { PongGame2Players } from './pong2players.js';
 
-let players = [];
-let matches = [];
+import Player from './Player.js'; // Import the Player class from Player
+import pongGame from './pong2players.js'; // Import the PongGame2Players class from pong2players
+import bracketGraph from './bracket.js';
 
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-/**
- * Generates pairings for a tournament based on the given players.
- * @param {Array} players - The array of players participating in the tournament.
- * @returns {Array} - The array of pairings, where each pairing is represented as an array of two players.
- */
-function generatePairings(players) {
-    const numPlayers = players.length;
-    const pairings = [];
-
-    for (let i = 0; i < numPlayers; i += 2) {
-        pairings.push([players[i], players[i + 1]]);
+class Tournament {
+    constructor() {
+        this.players = [];
+        this.matches = [];
+        this.rounds = [];
     }
 
-    return pairings;
-}
-
-/**
- * Randomizes the order of players array.
- */
-function randomizePlayers() {
-    for (let i = players.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [players[i], players[j]] = [players[j], players[i]];
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
-    console.log('Players randomized:', players);
-}
 
+    generatePairings(players) {
+        const numPlayers = players.length;
+        const pairings = [];
 
-/**
- * Starts the tournament by collecting player names and organizing matches.
- */
-export function startTournament() {
-    for (let i = 1; i <= 8; i++) {
-        let player = document.getElementById('player' + i).value;
-        if (player) {
-            players.push(player);
+        for (let i = 0; i < numPlayers; i += 2) {
+            pairings.push([players[i], players[i + 1]]);
         }
-    }
-    if (players.length !== 8) {
-        alert('Veuillez entrer les noms de 8 joueurs.');
-        players = [];
-        return;
-    }
-    document.getElementById('players').style.display = 'none';
-    console.log('Players:', players);
-    randomizePlayers();
-    organizeMatches();
-}
 
-/**
- * Organizes matches by pairing up players.
- * @function organizeMatches
- * @returns {void}
- */
-function organizeMatches() {
-    console.log('Organizing matches. Players left:', players.length);
-    while (players.length >= 2) {
-        let matchPlayers = players.splice(0, 2);
-        matches.push(matchPlayers);
+        return pairings;
     }
-    displayNextMatch();
-}
 
-/**
- * Plays a game of Pong between two players.
- * @param {string} player1 - The name of the first player.
- * @param {string} player2 - The name of the second player.
- * @returns {Promise<string>} - The name of the winner.
- */
-async function playPong(player1, player2) {
-    let winner = null;
-    while (!winner) {
-        winner = await playSingleMatch(player1, player2);
-        if (!winner) {
-            await new Promise((resolve) => setTimeout(resolve, 3000)); // Wait for 3 seconds before starting the next match
+    generatePairingsForRound(players) {
+        const numPlayers = players.length;
+        const roundPairings = [];
+
+        // Top team bottom team, top score, bottom score, top winner, bottom winner
+        for (let i = 0; i < numPlayers; i += 2) {
+            if (players[i] instanceof Player && players[i + 1] instanceof Player)
+                roundPairings.push({ topTeam: players[i].getName(), bottomTeam: players[i + 1].getName(), topScore: '', bottomScore: '', topWinner: false, bottomWinner: false });
+            else
+                roundPairings.push({ topTeam: players[i], bottomTeam: players[i + 1], topScore: '', bottomScore: '', topWinner: false, bottomWinner: false });
         }
-    }
-    return winner;
-}
-
-/**
- * Plays a single match between two players.
- * 
- * @param {string} player1 - The name of player 1.
- * @param {string} player2 - The name of player 2.
- * @returns {Promise<string>} The name of the winner.
- */
-async function playSingleMatch(player1, player2) {
-    // Get the old canvas and create a new one
-    let oldCanvas = document.getElementById('board');
-    let newCanvas = oldCanvas.cloneNode(false);
-    newCanvas.id = 'board';
-
-    // Replace the old canvas with the new one
-    oldCanvas.parentNode.replaceChild(newCanvas, oldCanvas);
-
-    // Create a new game instance tied to the new canvas
-    let game = new PongGame2Players(player1, player2, newCanvas);
-    game.init();
-    let winner = await game.gameOver();
-    console.log('Match finished. Winner:', winner);
-    return winner;
-}
-
-
-/**
- * Displays the next match in the tournament.
- * @returns {Promise<void>} A promise that resolves when the next match is displayed.
- */
-async function displayNextMatch() {
-    console.log('Displaying next match. Matches left:', matches.length);
-    if (matches.length === 0) {
-        document.getElementById('tournament').innerHTML = '<h2>Le gagnant est ' + players[0] + '!</h2>';
-        return;
+        return roundPairings;
     }
 
-    let match = matches.shift();
-    document.getElementById('tournament').innerHTML = '<h2>Prochain match: ' + match[0] + ' vs ' + match[1] + '</h2>';
-    await delay(2000); // Wait for 2 seconds before starting the next match
-    let winner = await playPong(match[0], match[1]);
-    players.push(winner);
+    randomizePlayers() {
+        for (let i = this.players.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [this.players[i], this.players[j]] = [this.players[j], this.players[i]];
+        }
+        console.log('Players randomized:', this.players);
+    }
 
-    // Organize the next match after a delay
-    await delay(2000);  // 2000 ms = 2 seconds
-    organizeMatches();
+    generateFirstRound(Players) {
+        let rounds = [];
+
+        // for the first round just assign each player to a match
+        rounds.push(this.generatePairingsForRound(Players));
+        // for the next rounds let undefined
+        rounds.push(this.generatePairingsForRound(new Array(Players.length / 2)));
+        // populate the previous rounds with undefined
+        rounds.push(this.generatePairingsForRound(new Array(Players.length / 4)));
+        return rounds;
+    }
+
+    populateRoundsWithUndefined(roundsIndex) {
+        // Aim is to populate the rounds[roundsIndex] with undefined
+        let rounds = this.rounds;
+        let numMatches = rounds[roundsIndex].length;
+        let undefinedMatches = [];
+        for (let i = 0; i < numMatches; i++) {
+            undefinedMatches.push({ topTeam: '', bottomTeam: '', topScore: '', bottomScore: '', topWinner: false, bottomWinner: false });
+        }
+        rounds[roundsIndex] = undefinedMatches;
+        this.rounds = rounds;
+    }
+
+    updateRounds(winner) {
+        // Assuming rounds is an array of round objects
+        // console.log('Updating rounds. Winner:', winner);
+        for (let i = this.rounds.length - 1; i >= 0; i--) {
+            let round = this.rounds[i];
+            // if the players in the round have no name, skip it
+            if (round[0].topTeam === '' && round[0].bottomTeam === '') {
+
+                continue;
+            }
+            for (let j = round.length - 1; j >= 0; j--) {
+                let match = round[j];
+                if (match.topTeam === winner.getName() || match.bottomTeam === winner.getName()) {
+                    // console.log('Match:', match);
+                    // match.winner = winner.getName();
+                    if (match.topTeam === winner.getName()) {
+                        match.topWinner = true;
+                        // if the next match is undefined, then the winner of this match will be the top team
+                        if (i < this.rounds.length - 1) {
+                            let nextMatchIndex = Math.floor(j / 2);
+                            if (this.rounds[i + 1][nextMatchIndex].topTeam === '') {
+                                console.log('Setting top team at rounds[', i + 1, '][', nextMatchIndex, '] to', winner.getName());
+                                this.rounds[i + 1][nextMatchIndex].topTeam = winner.getName();
+                            } else {
+                                console.log('Setting bottom team at rounds[', i + 1, '][', nextMatchIndex, '] to', winner.getName());
+                                this.rounds[i + 1][nextMatchIndex].bottomTeam = winner.getName();
+                            }
+                        }
+
+                    } else {
+                        match.bottomWinner = true;
+                        if (i < this.rounds.length - 1) {
+                            let nextMatchIndex = Math.floor(j / 2);
+                            if (this.rounds[i + 1][nextMatchIndex].topTeam === '') {
+                                this.rounds[i + 1][nextMatchIndex].topTeam = winner.getName();
+                                console.log('Setting top team at rounds[', i + 1, '][', nextMatchIndex, '] to', winner.getName());
+                            } else {
+                                console.log('Setting bottom team at rounds[', i + 1, '][', nextMatchIndex, '] to', winner.getName());
+                                this.rounds[i + 1][nextMatchIndex].bottomTeam = winner.getName();
+                            }
+                        }
+                    }
+                    // console.log("rounds[", i, "]:", rounds[i] );
+                    return;
+                }
+            }
+        }
+        // console.log('Rounds:', this.rounds);
+    }
+
+    startTournament() {
+        for (let i = 1; i <= 8; i++) {
+            let playerName = document.getElementById('player' + i).value;
+            if (playerName) {
+                let player = new Player(playerName);
+                this.players.push(player);
+            }
+        }
+        if (this.players.length !== 8) {
+            alert('Veuillez entrer les noms de 8 joueurs.');
+            this.players = [];
+            return;
+        }
+        document.getElementById('players').style.display = 'none';
+        this.rounds = this.generateFirstRound(this.players);
+        this.populateRoundsWithUndefined(1);
+        this.populateRoundsWithUndefined(2);
+        document.getElementById('bracketContainer').innerHTML = bracketGraph.generateBracket(this.rounds);
+        console.log('Players:', this.players);
+        // this.randomizePlayers();
+        this.organizeMatches();
+    }
+
+    organizeMatches() {
+        console.log('Organizing matches. Players left:', this.players.length);
+        while (this.players.length >= 2) {
+            let matchPlayers = this.players.splice(0, 2);
+            this.matches.push(matchPlayers);
+        }
+        this.displayNextMatch();
+    }
+
+    async playPong(player1, player2) {
+        let winner = null;
+        while (!winner) {
+            winner = await this.playSingleMatch(player1, player2);
+            this.updateRounds(winner);
+            let bracketContainer = document.getElementById('bracketContainer');
+            bracketContainer.innerHTML = ''; // Clear the current bracket
+            bracketContainer.innerHTML = bracketGraph.generateBracket(this.rounds);
+            if (!winner) {
+                await new Promise((resolve) => setTimeout(resolve, 3000)); // Wait for 3 seconds before starting the next match
+            }
+        }
+        return winner.getName();
+    }
+
+    async playSingleMatch(player1, player2) {
+        let oldCanvas = document.getElementById('board');
+        let newCanvas = oldCanvas.cloneNode(false);
+        newCanvas.id = 'board';
+        oldCanvas.parentNode.replaceChild(newCanvas, oldCanvas);
+        let game;
+        if (player1 instanceof Player && player2 instanceof Player)
+            game = new pongGame.PongGame2Players(player1.getName(), player2.getName(), newCanvas);
+        else
+            game = new pongGame.PongGame2Players(player1, player2, newCanvas);
+        game.init();
+        let winner = await game.gameOver();
+        console.log('Match finished. Winner:', winner);
+        return winner;
+    }
+
+    async displayNextMatch() {
+        console.log('Displaying next match. Matches left:', this.matches.length);
+        if (this.matches.length === 0) {
+            document.getElementById('tournament').innerHTML = '<h2>Le gagnant est ' + this.players[0] + '!</h2>';
+            return;
+        }
+
+        let match = this.matches.shift();
+        if (match[0] instanceof Player && match[1] instanceof Player)
+            document.getElementById('tournament').innerHTML = '<h2>Prochain match: ' + match[0].getName() + ' vs ' + match[1].getName() + '</h2>';
+        await this.delay(2000); // Wait for 2 seconds before starting the next match
+        let winner = await this.playPong(match[0], match[1]);
+        this.players.push(winner);
+        await this.delay(2000);  // 2000 ms = 2 seconds
+        this.organizeMatches();
+    }
+
 }
 
-window.startTournament = startTournament;
+window.startTournament = function () {
+    let tournament = new Tournament();
+    tournament.startTournament();
+}
+
+export default Tournament;
