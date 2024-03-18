@@ -7,28 +7,21 @@ import Player from "./Player.js"; // Import the Player class from Player
 class PongGame2Players {
     constructor(player1Name, player2Name, canvas) {
         // board
+        [this.boardwidth, this.boardHeight] = [700, 500]; // overriden by setBoard
         this.start = false;
-        this.board = canvas;
-        this.boardWidth = 700; // overriden by setBoard
-        this.boardHeight = 500; // overriden by setBoard
-        this.context = null;
-        this.ratio = 0.5;
+        [this.board, this.context] = [canvas, null]; // overriden by setBoard
+        this.ratio = 0.625;
 
         // players
-        this.paddleWidth = 10;
-        this.paddleHeight = 70;
-        this.playerVelocityY = 0;  // overriden by movePlayer
-        this.paddleSpeed = 3; // overriden by movePlayer
-        this.player1 = new Player(player1Name);
-        this.player2 = new Player(player2Name);
+        [this.paddleWidth, this.paddleHeight] = [10, 70]; // overriden by setPlayer
+        [this.playerVelocityY, this.paddleSpeed] = [0, 3]; // overriden by movePlayer
+        [this.player1, this.player2] = [new Player(player1Name), new Player(player2Name)]
         this.keysPressed = {};
 
         // ball
-        this.ballRadius = 10;
-        this.ballSpeed = 2;
+        [this.ballRadius, this.ballSpeed] = [10, 2]; // overriden by setBall
+        [this.ballSpeedMultiplierX, this.ballSpeedMultiplierY] = [1.1, 1.05]; // overriden by checkCollisions
         this.ball = {};
-        this.ballSpeedMultiplierX = 1.1;
-        this.ballSpeedMultiplierY = 1.05;
     }
 
     init() {
@@ -38,7 +31,7 @@ class PongGame2Players {
         this.context.font = "15px sans-serif";
         this.context.fillText("Press space to start / Press escape to reload", this.board.width / 2 - 130, this.board.height / 2 + 15);
 
-        this.ballStartVelocity();
+        // this.ballStartVelocity();
 
         document.addEventListener("keydown", this.pressKey.bind(this));
         document.addEventListener("keydown", this.handleKeyPress.bind(this));
@@ -74,8 +67,8 @@ class PongGame2Players {
     }
 
     setPlayer() {
-		this.player1.setCoords(0, this.boardHeight / 2);
-		this.player2.setCoords(this.boardWidth - this.player2.width, this.boardHeight / 2);
+		this.player1.setCoords(10, this.boardHeight / 2);
+		this.player2.setCoords(this.boardWidth - this.player2.width - 10, this.boardHeight / 2);
         this.paddleSpeed = this.boardHeight / 100;
 		this.player1.speed = this.paddleSpeed;
 		this.player2.speed = this.paddleSpeed;
@@ -87,10 +80,11 @@ class PongGame2Players {
 
     setBall() {
         this.ball.x = this.boardWidth / 2;
-        this.ball.y = this.boardHeight / 2;
+        // this.ball.y = this.boardHeight / 2;
+        this.ball.y = 100 + Math.random() * (this.boardHeight - 200);
         this.ball.radius = this.ballRadius;
-        this.ball.velocityX = 0;
-        this.ball.velocityY = 0;
+        this.ball.velocityX = (Math.random() < 0.5 ? 1 : -1) * (0.75 + Math.random() * 0.25) * this.ballSpeed;
+        this.ball.velocityY = (Math.random() < 0.5 ? 1 : -1) * (0.75 + Math.random() * 0.25) * (this.ballSpeed/2);  
         this.ballSpeed = this.boardWidth / 350;
     }
 

@@ -7,7 +7,10 @@
 		<link rel="stylesheet" href="../css/main.css">
 		<!-- <script type="module" scr="../js/index.js" defer></script> -->
 		<link rel="stylesheet" href="../bootstrap-5.3.3-dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="../test/pong.css" />
+		<link rel="stylesheet" href="../test/bracket.css" />
 		<script src="../bootstrap-5.3.3-dist/js/bootstrap.min.js" defer></script>
+		<script src="../js/games/tournament.js" type="module"></script>
 	</head>
 	<body class="two_players">
 		<div class="container-fluid text-bg-secondary text-danger text-center">
@@ -62,8 +65,39 @@
 					</div>
 				</div>
 				<div class="col container">
-					Welcome to the Tournament Page <br>
-					PH it's your time to shine
+					<!-- Welcome to the Tournament Page <br>
+					PH it's your time to shine -->
+					<div id="players">
+						<h2>Entrez les noms des joueurs</h2>
+						<div class="player">
+							<input type="text" id="player1" placeholder="Joueur 1" />
+						</div>
+						<div class="player">
+							<input type="text" id="player2" placeholder="Joueur 2" />
+						</div>
+						<div class="player">
+							<input type="text" id="player3" placeholder="Joueur 3" />
+						</div>
+						<div class="player">
+							<input type="text" id="player4" placeholder="Joueur 4" />
+						</div>
+						<div class="player">
+							<input type="text" id="player5" placeholder="Joueur 5" />
+						</div>
+						<div class="player">
+							<input type="text" id="player6" placeholder="Joueur 6" />
+						</div>
+						<div class="player">
+							<input type="text" id="player7" placeholder="Joueur 7" />
+						</div>
+						<div class="player">
+							<input type="text" id="player8" placeholder="Joueur 8" />
+						</div>
+						<button onclick="startTournament()">Démarrer le tournoi</button>
+					</div>
+					<div id="tournament"></div>
+					<canvas id="board"></canvas>
+					<div id="bracketContainer"></div>
 				</div>
 			</div>
 		</div>

@@ -136,12 +136,12 @@ class Tournament {
             return;
         }
         document.getElementById('players').style.display = 'none';
+        this.randomizePlayers();
         this.rounds = this.generateFirstRound(this.players);
         this.populateRoundsWithUndefined(1);
         this.populateRoundsWithUndefined(2);
         document.getElementById('bracketContainer').innerHTML = bracketGraph.generateBracket(this.rounds);
         console.log('Players:', this.players);
-        // this.randomizePlayers();
         this.organizeMatches();
     }
 
@@ -195,10 +195,12 @@ class Tournament {
         let match = this.matches.shift();
         if (match[0] instanceof Player && match[1] instanceof Player)
             document.getElementById('tournament').innerHTML = '<h2>Prochain match: ' + match[0].getName() + ' vs ' + match[1].getName() + '</h2>';
-        await this.delay(2000); // Wait for 2 seconds before starting the next match
+        else
+            document.getElementById('tournament').innerHTML = '<h2>Prochain match: ' + match[0] + ' vs ' + match[1] + '</h2>';
+        // await this.delay(500); // Wait for 2 seconds before starting the next match
         let winner = await this.playPong(match[0], match[1]);
         this.players.push(winner);
-        await this.delay(2000);  // 2000 ms = 2 seconds
+        // await this.delay(2000);  // 2000 ms = 2 seconds
         this.organizeMatches();
     }
 
