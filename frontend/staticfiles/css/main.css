@@ -8,3 +8,8 @@ body, html {
 .nav-link:hover {
 	background-color: rgba(43, 47, 50, 0.5);
 }
+
+#board {
+	max-width: 650px;
+	max-height: 480px;
+}

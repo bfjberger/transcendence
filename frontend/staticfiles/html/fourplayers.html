@@ -9,6 +9,7 @@
 		<script type="module" src="../js/games/pong4players.js" defer></script>
 		<link rel="stylesheet" href="../bootstrap-5.3.3-dist/css/bootstrap.min.css">
 		<script src="../bootstrap-5.3.3-dist/js/bootstrap.min.js" defer></script>
+		<link rel="shortcut icon" href="../img/table-tennis-paddle-ball-solid.svg">
 	</head>
 	<body class="four_players">
 		<div class="container-fluid text-bg-secondary text-danger text-center">
@@ -38,17 +39,20 @@
 							<li>
 								<a href="./twoplayers.html" class="nav-link px-0 text-white">
 									<img src="../img/table-tennis-paddle-ball-solid.svg" alt="home" width="20" height="20">
-									<span class="d-none d-sm-inline">2 Players Mode</span></a>
+									<span class="d-none d-sm-inline">2 Players Mode</span>
+								</a>
 							</li>
 							<li>
 								<a href="./fourplayers.html" class="nav-link px-0 text-white">
 									<img src="../img/table-tennis-paddle-ball-solid.svg" alt="home" width="20" height="20">
-									<span class="d-none d-sm-inline">4 Players Mode</span></a>
+									<span class="d-none d-sm-inline">4 Players Mode</span>
+								</a>
 							</li>
 							<li>
 								<a href="./tournament.html" class="nav-link px-0 text-white">
 									<img src="../img/tournament-icon.png" alt="tournament" width="20" height="20">
-									<span class="d-none d-sm-inline">Tournament</span></a>
+									<span class="d-none d-sm-inline">Tournament</span>
+								</a>
 							</li>
 						</ul>
 						<div class="pb-4">
@@ -69,31 +73,34 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-md-5"></div>
-						<div class="col-md-2 text-center" style="color: violet">
+						<div class="col-5"></div>
+						<div class="col-2 text-center" style="color: violet">
 							<p>Top Player: N/M</p>
 						</div>
-						<div class="col-md-5"></div>
+						<div class="col-5"></div>
 					</div>
 					<div class="row">
 						<div class="col text-end text-warning align-self-center">
 							<p>Left Player: Q/A</p>
 						</div>
-						<div class="col mt-2 text-bg-success border border-black border-5">
-							<canvas id="board"></canvas>
+						<div class="col d-flex justify-content-center align-items-center">
+							<div class="text-bg-success border border-black border-5">
+								<canvas id="board" width="650" height="480"></canvas>
+							</div>
 						</div>
 						<div class="col text-start text-primary align-self-center">
 							<p>Right Player: 9/6</p>
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-md-5"></div>
-						<div class="col-md-2 text-center" style="color: darkblue">
+						<div class="col-5"></div>
+						<div class="col-2 text-center mt-3" style="color: red">
 							<p>Bottom Player: LeftArrow/RightArrow</p>
 						</div>
-						<div class="col-md-5"></div>
+						<div class="col-5"></div>
 					</div>
 				</div>
+			</div>
 		</div>
 	</body>
 </html>

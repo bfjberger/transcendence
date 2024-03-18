@@ -22,7 +22,7 @@ import Player from "./Player.js"; // Import the Player class from Player
 class PongGame2Players {
     constructor(player1Name, player2Name, canvas) {
         // board
-        [this.boardwidth, this.boardHeight] = [700, 500]; // overriden by setBoard
+        [this.boardwidth, this.boardHeight] = [650, 480]; // overriden by setBoard
         this.start = false;
         [this.board, this.context] = [canvas, null]; // overriden by setBoard
         this.ratio = 0.625;
@@ -72,10 +72,10 @@ class PongGame2Players {
     setBoard() {
         // this.board = document.getElementById("board");
         this.context = this.board.getContext("2d"); //used for drawing on the board
-        this.board.height = window.innerHeight * this.ratio;
-        this.board.width = window.innerWidth * this.ratio;
-        this.boardHeight = this.board.height;
-        this.boardWidth = this.board.width;
+        // this.board.height = window.innerHeight * this.ratio;
+        // this.board.width = window.innerWidth * this.ratio;
+        // this.boardHeight = this.board.height;
+        // this.boardWidth = this.board.width;
 
         this.setPlayer();
         this.setBall();
@@ -99,7 +99,7 @@ class PongGame2Players {
         this.ball.y = 100 + Math.random() * (this.boardHeight - 200);
         this.ball.radius = this.ballRadius;
         this.ball.velocityX = (Math.random() < 0.5 ? 1 : -1) * (0.75 + Math.random() * 0.25) * this.ballSpeed;
-        this.ball.velocityY = (Math.random() < 0.5 ? 1 : -1) * (0.75 + Math.random() * 0.25) * (this.ballSpeed/2);  
+        this.ball.velocityY = (Math.random() < 0.5 ? 1 : -1) * (0.75 + Math.random() * 0.25) * (this.ballSpeed/2);
         this.ballSpeed = this.boardWidth / 350;
     }
 
@@ -234,7 +234,7 @@ drawScoreAndLine() {
 	this.context.strokeStyle = "white";
 	this.context.stroke();
 	this.context.setLineDash([]); // reset the line to be solid for other drawings
-	
+
 	this.context.font = "50px sans-serif";
 	this.context.fillStyle = "white";
 	this.context.fillText(this.player1.getScore(), this.boardWidth / 2 - 50, 50);

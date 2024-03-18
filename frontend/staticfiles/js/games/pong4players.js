@@ -18,7 +18,7 @@
 class PongGame4Players {
 	constructor() {
 		// board
-		[this.boardWidth, this.boardHeight] = [700, 500];
+		[this.boardWidth, this.boardHeight] = [650, 480];
 		[this.board, this.context] = [null, null];
 		this.ratio = 0.625;
 		this.start = false;
@@ -56,10 +56,10 @@ class PongGame4Players {
 	setBoard() {
 		this.board = document.getElementById("board");
 		this.context = this.board.getContext("2d"); //used for drawing on the board
-        this.board.height = window.innerHeight * this.ratio;
-        this.board.width = window.innerWidth * this.ratio;
-		this.boardHeight = this.board.height;
-		this.boardWidth = this.board.width;
+        // this.board.height = window.innerHeight * this.ratio;
+        // this.board.width = window.innerWidth * this.ratio;
+		// this.boardHeight = this.board.height;
+		// this.boardWidth = this.board.width;
 
 		this.setPlayer();
 		this.setBall();
@@ -70,7 +70,7 @@ class PongGame4Players {
 		this.playerSizeMultiplier = this.boardHeight / 500;
 
 		// set players colors
-		[this.player1.color, this.player2.color, this.player3.color, this.player4.color] = ["orange", "blue", "violet", "darkblue"];
+		[this.player1.color, this.player2.color, this.player3.color, this.player4.color] = ["orange", "blue", "violet", "red"];
 
 		// increase player size based on playerSizeMultiplier
 		this.playerWidth *= this.playerSizeMultiplier;
@@ -303,17 +303,17 @@ class PongGame4Players {
 		this.context.setLineDash([]); // reset the line to be solid for other drawings
 		this.context.font = "20px sans-serif";
 
-		this.context.fillStyle = this.player1.color;
-		this.context.fillText(this.player1Score, 50, this.boardHeight / 2);
+		this.context.fillStyle = "black";
+		this.context.fillText(this.player1Score, 10, this.boardHeight / 2);
 
-		this.context.fillStyle = this.player2.color;
-		this.context.fillText(this.player2Score, this.boardWidth - 50, this.boardHeight / 2);
+		this.context.fillStyle = "black";
+		this.context.fillText(this.player2Score, this.boardWidth - 20, this.boardHeight / 2);
 
-		this.context.fillStyle = this.player3.color;
-		this.context.fillText(this.player3Score, this.boardWidth / 2, 50);
+		this.context.fillStyle = "black";
+		this.context.fillText(this.player3Score, this.boardWidth / 2, 20);
 
-		this.context.fillStyle = this.player4.color;
-		this.context.fillText(this.player4Score, this.boardWidth / 2, this.boardHeight - 50);
+		this.context.fillStyle = "black";
+		this.context.fillText(this.player4Score, this.boardWidth / 2, this.boardHeight - 20);
 	}
 
 	gameOver() {
