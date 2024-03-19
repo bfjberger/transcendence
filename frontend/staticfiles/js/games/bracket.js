@@ -1,69 +1,71 @@
-// bracket.js  
+// bracket.js
 
 function generateBracket(rounds) {
-	let main = document.createElement('main'); // Create main element
-	main.id = "tournament"; // Set id to "tournament"
-	rounds.forEach((round, roundIndex) => {
-		let ul = document.createElement('ul'); // Create ul element
-		ul.className = 'round round-$(roundIndex + 1)'; // Set class to "round round-1"
-	
+  let main = document.createElement("main"); // Create main element
+  main.id = "tournament"; // Set id to "tournament"
+  rounds.forEach((round, roundIndex) => {
+    let ul = document.createElement("ul"); // Create ul element
+    ul.className = "round round-$(roundIndex + 1)"; // Set class to "round round-1"
 
-		round.forEach(game => {
-			ul.appendChild(createSpacerElement()); // Append createGameSpacerElement to ul	
-			ul.appendChild(createGameElement(game)); // Append createGameElement to ul
-			ul.appendChild(createSpacerElement()); // Append createGameSpacerElement to ul	
-		});
+    round.forEach((game) => {
+      ul.appendChild(createSpacerElement()); // Append createGameSpacerElement to ul
+      ul.appendChild(createGameElement(game)); // Append createGameElement to ul
+      ul.appendChild(createSpacerElement()); // Append createGameSpacerElement to ul
+    });
 
-		main.appendChild(ul); // Append ul to main
-	})
+    main.appendChild(ul); // Append ul to main
+  });
 
-	return main.outerHTML; // Return main.outerHTML
+  return main.outerHTML; // Return main.outerHTML
 }
 
 function createSpacerElement() {
-	let spacer = document.createElement('li'); // Create li element
-	spacer.className = 'spacer'; // Set class to "spacer"
-	spacer.innerHTML = '&nbsp'; // Set innerHTML to "0"
-	return spacer; // Return li
+  let spacer = document.createElement("li"); // Create li element
+  spacer.className = "spacer"; // Set class to "spacer"
+  spacer.innerHTML = "&nbsp"; // Set innerHTML to "0"
+  return spacer; // Return li
 }
 
 function createGameSpacerElement() {
-	let spacer = document.createElement('li'); // Create li element
-	spacer.className = 'game game-spacer'; // Set class to "spacer"
-	spacer.innerHTML = '&nbsp'; // Set innerHTML to "0"
-	return spacer; // Return li
+  let spacer = document.createElement("li"); // Create li element
+  spacer.className = "game game-spacer"; // Set class to "spacer"
+  spacer.innerHTML = "&nbsp"; // Set innerHTML to "0"
+  return spacer; // Return li
 }
 
 function createGameElement(game) {
-	let gameElement = document.createElement('li'); // Create li element
-	gameElement.className = `game game-top ${game.topWinner ? 'winner' : 'loser'}`; // Set class to "game"
-	gameElement.innerHTML = `${game.topTeam} <span>${game.topScore}</span>`; // Set innerHTML to "team1 <span>score1</span>"
+  let gameElement = document.createElement("li"); // Create li element
+  gameElement.className = `game game-top ${
+    game.topWinner ? "winner" : "loser"
+  }`; // Set class to "game"
+  gameElement.innerHTML = `${game.topTeam} <span>${game.topScore}</span>`; // Set innerHTML to "team1 <span>score1</span>"
 
-	let gameBottomElement = document.createElement('li'); // Create li element
-	gameBottomElement.className = `game game-bottom ${game.bottomWinner ? 'winner' : 'loser'}`; // Set class to "game"
-	gameBottomElement.innerHTML = `${game.bottomTeam} <span>${game.bottomScore}</span>`; // Set innerHTML to "team2 <span>score2</span>"
+  let gameBottomElement = document.createElement("li"); // Create li element
+  gameBottomElement.className = `game game-bottom ${
+    game.bottomWinner ? "winner" : "loser"
+  }`; // Set class to "game"
+  gameBottomElement.innerHTML = `${game.bottomTeam} <span>${game.bottomScore}</span>`; // Set innerHTML to "team2 <span>score2</span>"
 
-	let fragment = document.createDocumentFragment(); // Create document fragment
-	fragment.appendChild(gameElement); // Append gameElement to fragment
-	fragment.appendChild(createGameSpacerElement()); // Append createGameSpacerElement to fragment
-	fragment.appendChild(gameBottomElement); // Append gameBottomElement to fragment
+  let fragment = document.createDocumentFragment(); // Create document fragment
+  fragment.appendChild(gameElement); // Append gameElement to fragment
+  fragment.appendChild(createGameSpacerElement()); // Append createGameSpacerElement to fragment
+  fragment.appendChild(gameBottomElement); // Append gameBottomElement to fragment
 
-	return fragment; // Return fragment
+  return fragment; // Return fragment
 }
 
 function showBracket(rounds) {
-	let bracket = generateBracket(rounds);
-	document.getElementById('bracket').innerHTML = bracket;
+  let bracket = generateBracket(rounds);
+  document.getElementById("bracket").innerHTML = bracket;
 }
 
 export default {
-	generateBracket,
-	createSpacerElement,
-	createGameSpacerElement,
-	createGameElement,
-	showBracket
+  generateBracket,
+  createSpacerElement,
+  createGameSpacerElement,
+  createGameElement,
+  showBracket,
 };
-
 
 // let rounds = [
 //     [
@@ -92,5 +94,3 @@ export default {
 
 // look for the element with the id of 'bracket' and set its innerHTML to the bracket
 // document.getElementById('bracketContainer').innerHTML = bracket;
-
-

@@ -1,87 +1,105 @@
 // Class for player object
 
-let default_paddle_width = 10;
-let default_paddle_height = 70;
+export let default_paddle_width = 10;
+export let default_paddle_height = 70;
 let default_paddle_speed = 3;
 
 class Player {
-    constructor(name) {
-        this.name = name;
-        this.score = 0;
-        this.pos = ""; // 'left' or 'right'
-        this.hasWon = false;
-        this.wins = 0;
-		this.width = default_paddle_width;
-		this.height = default_paddle_height;
-		this.speed = default_paddle_speed;
-		this.coords = {x: 0, y: 0};
+  constructor(name, color, pos) {
+    this.name = name;
+    this.score = 0;
+    this.pos = ""; // 'left' or 'right'
+    this.hasWon = false;
+    this.wins = 0;
+    if (!pos) {
+      this.width = default_paddle_width;
+      this.height = default_paddle_height;
+    } else {
+      this.width = default_paddle_height;
+      this.height = default_paddle_width;
     }
+    this.speed = default_paddle_speed;
+    this.coords = { x: 0, y: 0 };
+    this.color = color;
+  }
 
-    getScore() {
-        return this.score;
-    }
+  getScore() {
+    return this.score;
+  }
 
-    getName() {
-        return this.name;
-    }
+  getName() {
+    return this.name;
+  }
 
-    getPos() {
-        return this.pos;
-    }
+  getPos() {
+    return this.pos;
+  }
 
-    getHasWon() {
-        return this.hasWon;
-    }
+  getHasWon() {
+    return this.hasWon;
+  }
 
-    getWins() {
-        return this.wins;
-    }
+  getWins() {
+    return this.wins;
+  }
 
-	getSpeed() {
-		return this.speed;
-	}
+  getWidth() {
+    return this.width;
+  }
 
-	getCoords() {
-		return this.coords;
-	}
+  getHeight() {
+    return this.height;
+  }
 
-    setName(name) {
-        this.name = name;
-    }
+  getSpeed() {
+    return this.speed;
+  }
 
-    setScore(score) {
-        this.score = score;
-    }
+  getCoords() {
+    return this.coords;
+  }
 
-	updateScore(pts) {
-		this.score += pts;
-	}
+  getColor() {
+    return this.color;
+  }
 
-    setPos(pos) {
-        this.pos = pos;
-    }
+  setName(name) {
+    this.name = name;
+  }
 
-    setHasWon(hasWon) {
-        this.hasWon = hasWon;
-    }
+  setScore(score) {
+    this.score = score;
+  }
 
-    setWins(wins) {
-        this.wins = wins;
-    }
+  // updateScore(pts) {
+  // 	this.score += pts;
+  // }
 
-	setPaddle(width, height) {
-		this.width = width;
-		this.height = height;
-	}
+  setPos(pos) {
+    this.pos = pos;
+  }
 
-	setCoords(x, y) {
-		this.coords.x = x;
-		this.coords.y = y;
-	}
+  setHasWon(hasWon) {
+    this.hasWon = hasWon;
+  }
 
-	setSpeed(speed) {
-		this.speed = speed;
-	}
+  setWins(wins) {
+    this.wins = wins;
+  }
+
+  setPaddle(width, height) {
+    this.width = width;
+    this.height = height;
+  }
+
+  setCoords(x, y) {
+    this.coords.x = x;
+    this.coords.y = y;
+  }
+
+  setSpeed(speed) {
+    this.speed = speed;
+  }
 }
 
 export default Player;

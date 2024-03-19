@@ -1,99 +1,102 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport", content="width=device-width, initial-scale=1">
-		<title>Pong Game</title>
-		<link rel="stylesheet" href="../css/main.css">
-		<!-- <script type="module" scr="../js/index.js" defer></script> -->
-		<script type="module" src="../js/games/pong2players.js" defer></script>
-		<link rel="stylesheet" href="../bootstrap-5.3.3-dist/css/bootstrap.min.css">
-		<script src="../bootstrap-5.3.3-dist/js/bootstrap.min.js" defer></script>
-		<link rel="shortcut icon" href="../img/table-tennis-paddle-ball-solid.svg">
-	</head>
-	<body class="two_players">
-		<div class="container-fluid text-bg-secondary text-danger text-center">
-			<div class="row">
-				<header class="navbar sticky-top">
-					<div class="col-md-1">
-						<img src="../img/42_logo.svg" alt="logo 42" class="user-avatar" width="42" height="30">
-					</div>
-					<div class="col-md-10"></div>
-					<div class="col-md-1 text-end pe-3">
-						<button class="btn btn-primary" type="button">Login</button>
-					</div>
-				</header>
-			</div>
-		</div>
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-auto px-sm-2 px-0 text-bg-secondary">
-					<div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 pb-5 min-vh-100">
-						<ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start">
-							<li class="nav-item">
-								<a href="../index.html" class="nav-link align-middle px-0 text-white">
-									<img src="../img/house-fill-Bootstrap.svg" alt="home" width="20" height="20">
-									<span class="ms-1 d-none d-sm-inline">Home</span>
-								</a>
-							</li>
-							<li>
-								<a href="./twoplayers.html" class="nav-link px-0 text-white">
-									<img src="../img/table-tennis-paddle-ball-solid.svg" alt="home" width="20" height="20">
-									<span class="d-none d-sm-inline">2 Players Mode</span>
-								</a>
-							</li>
-							<li>
-								<a href="./fourplayers.html" class="nav-link px-0 text-white">
-									<img src="../img/table-tennis-paddle-ball-solid.svg" alt="home" width="20" height="20">
-									<span class="d-none d-sm-inline">4 Players Mode</span>
-								</a>
-							</li>
-							<li>
-								<a href="./tournament.html" class="nav-link px-0 text-white">
-									<img src="../img/tournament-icon.png" alt="tournament" width="20" height="20">
-									<span class="d-none d-sm-inline">Tournament</span>
-								</a>
-							</li>
-						</ul>
-						<div class="pb-4">
-							<a href="" class="d-flex align-items-center text-white text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">
-								<img src="../img/person-circle-Bootstrap.svg" alt="user" width="30" height="30" class="rounded-circle user-avatar">
-								<span class="d-none d-sm-inline mx-1">user</span>
-							</a>
-							<!-- <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-								<li><a class="dropdown-item" href="#">Sign out</a></li>
-							</ul> -->
-						</div>
-					</div>
-				</div>
-				<div class="col container">
-					<div class="row">
-						<div class="col text-center fw-bold pt-3">
-							<p>Two Players Pong Game</p>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-5"></div>
-						<div class="col-2 text-white" style="visibility: hidden;">
-							<p>Top Player: N/M</p>
-						</div>
-						<div class="col-5"></div>
-					</div>
-					<div class="row">
-						<div class="col text-end text-warning align-self-center">
-							<p>Left Player: W/S</p>
-						</div>
-						<div class="col d-flex justify-content-center align-items-center">
-							<div class="text-bg-success border border-black border-5">
-								<canvas id="board" width="650" height="480"></canvas>
-							</div>
-						</div>
-						<div class="col text-start align-self-center text-primary">
-							<p>Right Player: UpArrow/DownArrow</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</body>
+<html lang="en">
+  <head>
+    <title>Pong Game</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" , content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="../img/table-tennis-paddle-ball-solid.svg" />
+
+    <link rel="stylesheet" href="../css/main.css" />
+    <script type="module" src="../js/games/pong2players.js" defer></script>
+
+    <link rel="stylesheet" href="../bootstrap-5.3.3-dist/css/bootstrap.min.css" />
+    <script src="../bootstrap-5.3.3-dist/js/bootstrap.min.js" defer></script>
+    <!-- <script type="module" scr="../js/index.js" defer></script> -->
+  </head>
+
+  <body>
+    <div class="container-fluid text-bg-secondary text-danger text-center">
+      <div class="row">
+        <header class="navbar sticky-top">
+          <div class="col-md-1">
+            <img src="../img/42_logo.svg" alt="logo 42" class="user-avatar" width="42" height="30" />
+          </div>
+          <div class="col-md-10"></div>
+          <div class="col-md-1 text-end pe-3">
+            <button class="btn btn-primary" type="button">Login</button>
+          </div>
+        </header>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-auto px-sm-2 px-0 text-bg-secondary">
+          <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 pb-5 min-vh-100" >
+            <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" >
+              <li class="nav-item">
+                <a href="../index.html" class="nav-link align-middle px-0 text-white" >
+                  <img src="../img/house-fill-Bootstrap.svg" alt="home" width="20" height="20" />
+                  <span class="ms-1 d-none d-sm-inline">Home</span>
+                </a>
+              </li>
+              <li>
+                <a href="./twoplayers.html" class="nav-link px-0 text-white">
+                  <img src="../img/table-tennis-paddle-ball-solid.svg" alt="home" width="20" height="20" />
+                  <span class="d-none d-sm-inline">2 Players Mode</span>
+                </a>
+              </li>
+              <li>
+                <a href="./fourplayers.html" class="nav-link px-0 text-white">
+                  <img src="../img/table-tennis-paddle-ball-solid.svg" alt="home" width="20" height="20" />
+                  <span class="d-none d-sm-inline">4 Players Mode</span>
+                </a>
+              </li>
+              <li>
+                <a href="./tournament.html" class="nav-link px-0 text-white">
+                  <img src="../img/tournament-icon.png" alt="tournament" width="20" height="20" />
+                  <span class="d-none d-sm-inline">Tournament</span>
+                </a>
+              </li>
+            </ul>
+            <div class="pb-4">
+              <a href="" class="d-flex align-items-center text-white text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false" >
+                <img src="../img/person-circle-Bootstrap.svg" alt="user" width="30" height="30" class="rounded-circle user-avatar" />
+                <span class="d-none d-sm-inline mx-1">user</span>
+              </a>
+              <!-- <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                <li><a class="dropdown-item" href="#">Sign out</a></li>
+              </ul> -->
+            </div>
+          </div>
+        </div>
+        <div class="col container">
+          <div class="row">
+            <div class="col text-center fw-bold pt-3">
+              <h1>Two Players Pong Game</h1>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-5"></div>
+            <div class="col-2 text-white" style="visibility: hidden">
+              <p>Top Player: N/M</p>
+            </div>
+            <div class="col-5"></div>
+          </div>
+          <div class="row">
+            <div class="col text-end text-warning align-self-center">
+              <p>Left Player: W/S</p>
+            </div>
+            <div class="col d-flex justify-content-center align-items-center">
+              <div class="text-bg-success border border-black border-5">
+                <canvas id="board" width="650" height="480"></canvas>
+              </div>
+            </div>
+            <div class="col text-start align-self-center text-primary">
+              <p>Right Player: UpArrow/DownArrow</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>

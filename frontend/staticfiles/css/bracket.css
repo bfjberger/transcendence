@@ -1,0 +1,74 @@
+/*
+ *  Flex Layout Specifics
+*/
+main {
+  display: flex;
+  flex-direction: row;
+}
+
+.round {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 200px;
+  list-style: none;
+  padding: 0;
+}
+
+.round .spacer {
+  flex-grow: 0.5;
+}
+
+.round .spacer:first-child,
+.round .spacer:last-child {
+  flex-grow: 0.5;
+}
+
+.round .game-spacer {
+  flex-grow: 1.25;
+}
+
+/*
+ *  General Styles
+*/
+/* body {
+	font-family: sans-serif;
+	font-size: small;
+	// padding: 10px;
+	line-height: 1.4em;
+} */
+
+li.game {
+  padding-left: 20px;
+}
+
+li.game.winner {
+  font-weight: bold;
+  /* add background color light gray */
+  background-color: rgba(144, 238, 144, 0.498);
+  color: black;
+}
+
+li.game.loser {
+  /* add background color light gray */
+  background-color: rgba(162, 33, 33, 0.672);
+  color: white;
+}
+
+li.game span {
+  float: right;
+  margin-right: 5px;
+}
+
+li.game-top {
+  border-bottom: 1px solid #aaa;
+}
+
+li.game-spacer {
+  border-right: 1px solid #aaa;
+  min-height: 40px;
+}
+
+li.game-bottom {
+  border-top: 1px solid #aaa;
+}

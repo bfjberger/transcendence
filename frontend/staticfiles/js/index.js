@@ -1,6 +1,5 @@
 /*
-    POOR ATTEMPT TO SPA
-    NOT WORKING
+    ATTEMPT TO SPA NOT WORKING
 */
 
 // import { Main } from './views/Main.js';
