@@ -33,23 +33,9 @@ class Tournament {
     // Top team bottom team, top score, bottom score, top winner, bottom winner
     for (let i = 0; i < numPlayers; i += 2) {
       if (players[i] instanceof Player && players[i + 1] instanceof Player)
-        roundPairings.push({
-          topTeam: players[i].getName(),
-          bottomTeam: players[i + 1].getName(),
-          topScore: "",
-          bottomScore: "",
-          topWinner: false,
-          bottomWinner: false,
-        });
+        roundPairings.push({topTeam: players[i].getName(), bottomTeam: players[i + 1].getName(), topScore: "", bottomScore: "",topWinner: false, bottomWinner: false,});
       else
-        roundPairings.push({
-          topTeam: players[i],
-          bottomTeam: players[i + 1],
-          topScore: "",
-          bottomScore: "",
-          topWinner: false,
-          bottomWinner: false,
-        });
+        roundPairings.push({topTeam: players[i], bottomTeam: players[i + 1], topScore: "", bottomScore: "", topWinner: false,bottomWinner: false,});
     }
     return roundPairings;
   }
@@ -80,14 +66,7 @@ class Tournament {
     let numMatches = rounds[roundsIndex].length;
     let undefinedMatches = [];
     for (let i = 0; i < numMatches; i++) {
-      undefinedMatches.push({
-        topTeam: "",
-        bottomTeam: "",
-        topScore: "",
-        bottomScore: "",
-        topWinner: false,
-        bottomWinner: false,
-      });
+      undefinedMatches.push({topTeam: "", bottomTeam: "", topScore: "", bottomScore: "", topWinner: false, bottomWinner: false,});
     }
     rounds[roundsIndex] = undefinedMatches;
     this.rounds = rounds;
@@ -104,10 +83,7 @@ class Tournament {
       }
       for (let j = round.length - 1; j >= 0; j--) {
         let match = round[j];
-        if (
-          match.topTeam === winner.getName() ||
-          match.bottomTeam === winner.getName()
-        ) {
+        if (match.topTeam === winner.getName() || match.bottomTeam === winner.getName()) {
           // console.log('Match:', match);
           // match.winner = winner.getName();
           if (match.topTeam === winner.getName()) {
@@ -116,51 +92,26 @@ class Tournament {
             if (i < this.rounds.length - 1) {
               let nextMatchIndex = Math.floor(j / 2);
               if (this.rounds[i + 1][nextMatchIndex].topTeam === "") {
-                console.log(
-                  "Setting top team at rounds[",
-                  i + 1,
-                  "][",
-                  nextMatchIndex,
-                  "] to",
-                  winner.getName()
-                );
+                console.log("Setting top team at rounds[", i + 1, "][", nextMatchIndex, "] to", winner.getName());
                 this.rounds[i + 1][nextMatchIndex].topTeam = winner.getName();
-              } else {
-                console.log(
-                  "Setting bottom team at rounds[",
-                  i + 1,
-                  "][",
-                  nextMatchIndex,
-                  "] to",
-                  winner.getName()
-                );
+              }
+              else {
+                console.log("Setting bottom team at rounds[", i + 1, "][", nextMatchIndex, "] to", winner.getName());
                 this.rounds[i + 1][nextMatchIndex].bottomTeam =
                   winner.getName();
               }
             }
-          } else {
+          }
+          else {
             match.bottomWinner = true;
             if (i < this.rounds.length - 1) {
               let nextMatchIndex = Math.floor(j / 2);
               if (this.rounds[i + 1][nextMatchIndex].topTeam === "") {
                 this.rounds[i + 1][nextMatchIndex].topTeam = winner.getName();
-                console.log(
-                  "Setting top team at rounds[",
-                  i + 1,
-                  "][",
-                  nextMatchIndex,
-                  "] to",
-                  winner.getName()
-                );
-              } else {
-                console.log(
-                  "Setting bottom team at rounds[",
-                  i + 1,
-                  "][",
-                  nextMatchIndex,
-                  "] to",
-                  winner.getName()
-                );
+                console.log("Setting top team at rounds[", i + 1, "][", nextMatchIndex, "] to", winner.getName());
+              }
+              else {
+                console.log("Setting bottom team at rounds[", i + 1, "][", nextMatchIndex, "] to", winner.getName());
                 this.rounds[i + 1][nextMatchIndex].bottomTeam =
                   winner.getName();
               }
@@ -174,11 +125,25 @@ class Tournament {
     // console.log('Rounds:', this.rounds);
   }
 
+  duplicateNickname() {
+    for (let i = 0; i < this.players.length; i++) {
+      let tmp = this.players[i].getName();
+      for (let j = 0; j < this.players.length; j++) {
+        if (j === i)
+          continue;
+        if (tmp === this.players[j].getName()) {
+          return 0;
+        }
+      }
+    }
+    return 1;
+  }
+
   startTournament() {
     for (let i = 1; i <= 8; i++) {
       let playerName = document.getElementById("player" + i).value;
       if (playerName) {
-        let player = new Player(playerName);
+        let player = new Player(playerName, "white", 1);
         this.players.push(player);
       }
     }
@@ -187,13 +152,17 @@ class Tournament {
       this.players = [];
       return;
     }
+    if (!this.duplicateNickname()) {
+      alert("Des nicknames de joueurs sont similaires.");
+      this.players = [];
+      return;
+    }
     document.getElementById("players").style.display = "none";
     this.randomizePlayers();
     this.rounds = this.generateFirstRound(this.players);
     this.populateRoundsWithUndefined(1);
     this.populateRoundsWithUndefined(2);
-    document.getElementById("bracketContainer").innerHTML =
-      bracketGraph.generateBracket(this.rounds);
+    document.getElementById("bracketContainer").innerHTML = bracketGraph.generateBracket(this.rounds);
     console.log("Players:", this.players);
     this.organizeMatches();
   }
@@ -224,16 +193,14 @@ class Tournament {
 
   async playSingleMatch(player1, player2) {
     let oldCanvas = document.getElementById("board");
+    oldCanvas.style = "visibility: visible;";
+    oldCanvas.className = "text-bg-success border border-black border-5";
     let newCanvas = oldCanvas.cloneNode(false);
     newCanvas.id = "board";
     oldCanvas.parentNode.replaceChild(newCanvas, oldCanvas);
     let game;
     if (player1 instanceof Player && player2 instanceof Player)
-      game = new pongGame.PongGame2Players(
-        player1.getName(),
-        player2.getName(),
-        newCanvas
-      );
+      game = new pongGame.PongGame2Players(player1.getName(), player2.getName(), newCanvas);
     else game = new pongGame.PongGame2Players(player1, player2, newCanvas);
     game.init();
     let winner = await game.gameOver();
@@ -244,16 +211,19 @@ class Tournament {
   async displayNextMatch() {
     console.log("Displaying next match. Matches left:", this.matches.length);
     if (this.matches.length === 0) {
-      document.getElementById("tournament").innerHTML =
-        "<h2>Le gagnant est " + this.players[0] + "!</h2>";
+      document.getElementById("tournament").innerHTML = "<h2>Le gagnant est " + this.players[0] + "!</h2>";
       return;
     }
 
     let match = this.matches.shift();
-    if (match[0] instanceof Player && match[1] instanceof Player)
-      document.getElementById("tournament").innerHTML = "<h2>Prochain match: " + match[0].getName() + " vs " + match[1].getName() + "</h2>";
-    else
-      document.getElementById("tournament").innerHTML = "<h2>Prochain match: " + match[0] + " vs " + match[1] + "</h2>";
+    if (match[0] instanceof Player && match[1] instanceof Player){
+      // document.getElementById("next_match").innerHTML = "<h3>Prochain match: " + " vs " + "</h3>";
+      document.getElementById("current_match").innerHTML = "<h3>Match actuel: " + match[0].getName() + " vs " + match[1].getName() + "</h3>";
+    }
+    else {
+      // document.getElementById("next_match").innerHTML = "<h3>Prochain match: " + " vs " + "</h3>";
+      document.getElementById("current_match").innerHTML = "<h3>Match actuel: " + match[0] + " vs " + match[1] + "</h3>";
+    }
     // await this.delay(500); // Wait for 2 seconds before starting the next match
     let winner = await this.playPong(match[0], match[1]);
     this.players.push(winner);
