@@ -12,6 +12,8 @@ then
     echo "PostgreSQL started"
 fi
 
+pip install djangorestframework
+
 cd /usr/backend/
 
 python manage.py runserver 0.0.0.0:8000

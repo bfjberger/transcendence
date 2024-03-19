@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class MembersTestFxConfig(AppConfig):
+class PlayersManagerConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'members_test_fx'
+    name = 'players_manager'
