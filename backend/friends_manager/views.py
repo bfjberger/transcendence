@@ -10,8 +10,13 @@ class FriendViewSet(ModelViewSet):
 		queryset = Friend.objects.all()
 
 		player = self.request.GET.get('player')
+		accept = self.request.GET.get('accept')
+
 		if player is not None:
-			queryset = queryset.filter(player_1=player) |  queryset.filter(player_2=player)
+			queryset = queryset.filter(player_1=player) | queryset.filter(player_2=player)
+
+		if accept is not None:
+			queryset = queryset.filter(accept=accept)
 
 		# queryset = queryset.filter(player_1=player)
 		#player_1 = self.request.query_params.get('player_1', None)
