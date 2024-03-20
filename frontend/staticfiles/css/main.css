@@ -9,7 +9,12 @@ body, html {
 	background-color: rgba(43, 47, 50, 0.5);
 }
 
-#board {
+#board_two {
 	max-width: 650px;
 	max-height: 480px;
+}
+
+#board_four {
+	max-width: 650px;
+	max-height: 650px;
 }

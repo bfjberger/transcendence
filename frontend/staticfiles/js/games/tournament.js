@@ -192,11 +192,11 @@ class Tournament {
   }
 
   async playSingleMatch(player1, player2) {
-    let oldCanvas = document.getElementById("board");
+    let oldCanvas = document.getElementById("board_two");
     oldCanvas.style = "visibility: visible;";
     oldCanvas.className = "text-bg-success border border-black border-5";
     let newCanvas = oldCanvas.cloneNode(false);
-    newCanvas.id = "board";
+    newCanvas.id = "board_two";
     oldCanvas.parentNode.replaceChild(newCanvas, oldCanvas);
     let game;
     if (player1 instanceof Player && player2 instanceof Player)
