@@ -17,5 +17,4 @@ class Player (models.Model):
 	nb_games_4p_lost = models.IntegerField(default=0)
 	score = models.IntegerField(default=0)
 	status = models.CharField(max_length=200, choices=status.choices, default=status.OFFLINE)
-
 	avatar = models.ImageField(max_length=200, null=True, blank=True, upload_to='avatars/')
