@@ -16,16 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+
 from rest_framework import routers
-
-# from players_manager.views import PlayerAPIViews
-
 from players_manager.views import PlayerViewSet
+from friends_manager.views import FriendViewSet
 
 router = routers.SimpleRouter()
-
 router.register('players', PlayerViewSet, basename='players')
-
+router.register('friends', FriendViewSet, basename='friends')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
