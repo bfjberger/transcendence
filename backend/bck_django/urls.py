@@ -20,10 +20,12 @@ from django.urls import path, include
 from rest_framework import routers
 from players_manager.views import PlayerViewSet
 from friends_manager.views import FriendViewSet
+from two_players_games_manager.views import Two_PlayersViewSet
 
 router = routers.SimpleRouter()
 router.register('players', PlayerViewSet, basename='players')
 router.register('friends', FriendViewSet, basename='friends')
+router.register('two_players', Two_PlayersViewSet, basename='two_players')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
