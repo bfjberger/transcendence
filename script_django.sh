@@ -12,6 +12,8 @@ then
     echo "PostgreSQL started"
 fi
 
+pip install Pillow
+
 pip install djangorestframework
 
 cd /usr/backend/
