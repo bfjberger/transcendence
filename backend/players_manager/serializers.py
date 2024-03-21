@@ -5,5 +5,10 @@ from players_manager.models import Player
 class PlayerSerializer(ModelSerializer):
     class Meta:
         model = Player
-        fields = '__all__'
+        fields = ['id', 'login']
 
+
+class PlayerDetailsSerializer(ModelSerializer):
+    class Meta:
+       model = Player
+       fields = '__all__'
