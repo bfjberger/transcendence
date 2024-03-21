@@ -95,10 +95,16 @@ class PongGame4Players {
   }
 
   setBall() {
+    this.ball.color = "white";
+    this.ball.radius = this.ballRadius;
+    this.ballSpeed = this.boardWidth / 350;
+
+    // Position of the ball
     // range of 250px on the sides to not have the ball spawn too close to a camp
     // means that the ball can spawn in a square of 150px
     // ball is either on the horizontal or vertical bar, if on one then his other position is random in the square of 150px
-    if (Math.random() == 0) {
+    const randomNum = Math.round(Math.random());
+    if (randomNum === 0) {
       this.ball.x = 250 + Math.random() * (this.boardWidth - 500);
       this.ball.y = this.boardHeight / 2;
     }
@@ -106,17 +112,16 @@ class PongGame4Players {
       this.ball.x = this.boardWidth / 2;
       this.ball.y = 250 + Math.random() * (this.boardHeight - 500);
     }
-    this.ball.radius = this.ballRadius;
-    this.ballSpeed = this.boardWidth / 350;
+
+    // Velocity of the ball
     let randomAngle = Math.random() * Math.PI * 2;
     this.ball.velocityX = Math.cos(randomAngle) * this.ballSpeed;
     this.ball.velocityY = Math.sin(randomAngle) * this.ballSpeed;
-    this.ball.color = "white";
   }
 
   pressKey(e) {
+    // ' ' is the key for space
     if (e.key === " " && !this.start) {
-      // ' ' is the key for space
       this.start = true;
       requestAnimationFrame(this.update.bind(this));
     }
@@ -352,14 +357,8 @@ class PongGame4Players {
   }
 
   resetGame() {
-    let randomAngle = Math.random() * Math.PI * 2;
-    this.ball = {
-      ...(Math.random() == 1 ? {x: 250 + Math.random() * (this.boardWidth - 500), y: this.boardHeight / 2} : {x: this.boardWidth / 2, y: 250 + Math.random() * (this.boardHeight - 500)}),
-      radius: this.ballRadius,
-      velocityX: Math.cos(randomAngle) * this.ballSpeed,
-      velocityY: Math.sin(randomAngle) * this.ballSpeed,
-      color: "white",
-    };
+    // reset the position, velocity and color of the ball
+    this.setBall();
     // reset the last player who touched the ball
     this.lastPlayerTouched = null;
   }
@@ -396,7 +395,6 @@ function start4PlayerGame() {
   if (!game) {
     game = new PongGame4Players("Player 1", "Player 2", "Player 3", "Player 4");
     game.init();
-    document.getElementById("controls").textContent = "Left Player: Q/A || Right Player: 9/6 || Bottom Player: LeftArrow/RightArrow || Top Player: N/M";
   }
 }
 
