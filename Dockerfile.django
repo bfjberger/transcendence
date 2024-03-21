@@ -19,6 +19,7 @@ COPY ./script_django.sh .
 RUN sed -i 's/\r$//g' ./script_django.sh
 RUN chmod +x ./script_django.sh
 
+
 RUN addgroup --system bck_django && adduser --system --group bck_django
 RUN chown -R bck_django:bck_django /usr/backend
 
