@@ -20,14 +20,13 @@ from django.urls import path, include
 from rest_framework import routers
 from players_manager.views import PlayerViewSet
 from friends_manager.views import FriendViewSet
-from two_players_games_manager.views import Two_PlayersViewSet
+from two_players_games_manager.views import Two_PlayerViewSet
 from tournaments_manager.views import TournamentViewSet
 from two_players_games_manager.views import Two_PlayerViewSet
 
 router = routers.SimpleRouter()
 router.register('players', PlayerViewSet, basename='players')
 router.register('friends', FriendViewSet, basename='friends')
-router.register('two_players', Two_PlayersViewSet, basename='two_players')
 router.register('two_player', Two_PlayerViewSet, basename='two_player')
 router.register('tournaments', TournamentViewSet, basename='tournaments')
 
