@@ -10,8 +10,8 @@ class Two_PlayerViewSet(ModelViewSet):
         queryset = Two_Player.objects.all()
 
         player = self.request.GET.get('player')
-        player_1 = self.request.GET.get('player1')
-        player_2 = self.request.GET.get('player2')
+        player1 = self.request.GET.get('player1')
+        player2 = self.request.GET.get('player2')
         score_player1 = self.request.GET.get('score_player1')
         score_player2 = self.request.GET.get('score_player2')
         score_max = self.request.GET.get('score_max')
@@ -22,12 +22,15 @@ class Two_PlayerViewSet(ModelViewSet):
        
         if player is not None:
             queryset = queryset.filter(player1 = player) | queryset.filter(player2= player)
+            print("player", queryset)
 
-        if player_1 is not None:
-            queryset = queryset.filter(player_1 = player_1)
+        if player1 is not None:
+            queryset = queryset.filter(player1 = player1)
 
-        if player_2 is not None:
-            queryset = queryset.filter(player_2 = player_2)
+        if player2 is not None:
+            print("player_2", queryset)
+            queryset = queryset.filter(player2 = player2)
+            print("player_2", queryset)
 
         if score_player1 is not None:
             queryset = queryset.filter(score_player1 = score_player1)

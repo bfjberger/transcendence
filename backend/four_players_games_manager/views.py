@@ -11,10 +11,10 @@ class Four_PlayerViewSet(ModelViewSet):
         queryset = Four_Player.objects.all()
 
         player = self.request.GET.get('player')
-        player_1 = self.request.GET.get('player1')
-        player_2 = self.request.GET.get('player2')
-        player_3 = self.request.GET.get('player3')
-        player_4 = self.request.GET.get('player4')
+        player1 = self.request.GET.get('player1')
+        player2 = self.request.GET.get('player2')
+        player3 = self.request.GET.get('player3')
+        player4 = self.request.GET.get('player4')
         score_player1 = self.request.GET.get('score_player1')
         score_player2 = self.request.GET.get('score_player2')
         score_player3 = self.request.GET.get('score_player3')
@@ -26,17 +26,17 @@ class Four_PlayerViewSet(ModelViewSet):
         if player is not None:
             queryset = queryset.filter(player1 = player) | queryset.filter(player2= player) | queryset.filter(player3 = player) | queryset.filter(player4 = player)
 
-        if player_1 is not None:
-            queryset = queryset.filter(player_1 = player_1)
+        if player1 is not None:
+            queryset = queryset.filter(player1 = player1)
 
-        if player_2 is not None:
-            queryset = queryset.filter(player_2 = player_2)
+        if player2 is not None:
+            queryset = queryset.filter(player2 = player2)
 
-        if player_3 is not None:
-            queryset = queryset.filter(player_3 = player_3)
+        if player3 is not None:
+            queryset = queryset.filter(player3 = player3)
 
-        if player_4 is not None:
-            queryset = queryset.filter(player_4 = player_4)
+        if player4 is not None:
+            queryset = queryset.filter(player4 = player4)
 
 
         if score_player1 is not None:
