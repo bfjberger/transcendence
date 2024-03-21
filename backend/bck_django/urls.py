@@ -21,11 +21,13 @@ from rest_framework import routers
 from players_manager.views import PlayerViewSet
 from friends_manager.views import FriendViewSet
 from two_players_games_manager.views import Two_PlayersViewSet
+from tournaments_manager.views import TournamentViewSet
 
 router = routers.SimpleRouter()
 router.register('players', PlayerViewSet, basename='players')
 router.register('friends', FriendViewSet, basename='friends')
 router.register('two_players', Two_PlayersViewSet, basename='two_players')
+router.register('tournaments', TournamentViewSet, basename='tournaments')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
