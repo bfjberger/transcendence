@@ -1,12 +1,14 @@
 from django.db import models
+from players_manager.models import Player
+from django.utils import timezone
 
-
-class Two_Players (models.Model):	
-	player1 = models.CharField(max_length=200)
-	player2 = models.CharField(max_length=200)
+class Two_Player (models.Model):	
+	player1 = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True, related_name='Two_player_1')
+	player2 = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True, related_name='Two_player_2')
 	score_player1 = models.IntegerField(default=0)
 	score_player2 = models.IntegerField(default=0)
 	score_max = models.IntegerField(default=5)
-	win_player = models.CharField(max_length=200)
+	win_player = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True, related_name='win_player')
 	id_tournament = models.IntegerField(default=0)
 	level = models.IntegerField(default=0)
+	date =  models.DateTimeField(default=timezone.now)

@@ -6,7 +6,6 @@ django.setup()
 
 from players_manager.models import Player
 from friends_manager.models import Friend
-from two_players_games_manager.models import Two_Players
 
 def main():
 	player1 = Player.objects.create(login='bberger', nickname='Benoit', score=100, status='offline', avatar=None)
@@ -30,9 +29,6 @@ def main():
 	friend2.save()
 	friend3.save()
 	friend4.save()
-
-	twoplayersgame1 = Two_Players.objects.create(player1="foreingKey", player2="foreingKey", score_player1=3, score_player2=2, score_max=5, win_player="foreingKey", id_tournament=12, level=1)
-	twoplayersgame1.save()
 
 if __name__ == '__main__':
 	main()
