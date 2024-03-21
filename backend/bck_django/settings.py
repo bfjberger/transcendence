@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'friends_manager',
     'two_players_games_manager',
     'tournaments_manager',
+    'four_players_games_manager',
 ]
 
 MIDDLEWARE = [

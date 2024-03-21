@@ -22,13 +22,14 @@ from players_manager.views import PlayerViewSet
 from friends_manager.views import FriendViewSet
 from two_players_games_manager.views import Two_PlayerViewSet
 from tournaments_manager.views import TournamentViewSet
-from two_players_games_manager.views import Two_PlayerViewSet
+from four_players_games_manager.views import Four_PlayerViewSet
 
 router = routers.SimpleRouter()
 router.register('players', PlayerViewSet, basename='players')
 router.register('friends', FriendViewSet, basename='friends')
 router.register('two_player', Two_PlayerViewSet, basename='two_player')
 router.register('tournaments', TournamentViewSet, basename='tournaments')
+router.register('four_player', Four_PlayerViewSet, basename='four_player')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
