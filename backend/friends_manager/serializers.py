@@ -5,4 +5,4 @@ from friends_manager.models import Friend
 class FriendSerializer(ModelSerializer):
     class Meta:
         model = Friend
-        fields = '__all__'
+        fields = ['id', 'player_1', 'player_2', 'accept']
