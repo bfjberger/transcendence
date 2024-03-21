@@ -13,8 +13,16 @@ function generateBracket(rounds) {
       ul.appendChild(createSpacerElement()); // Append createGameSpacerElement to ul
     });
 
+
     main.appendChild(ul); // Append ul to main
   });
+
+  let ulWinner = document.createElement("ul");
+  ulWinner.className = "round round-4";
+  ulWinner.appendChild(createSpacerElement());
+  ulWinner.appendChild(createGameWinner());
+  ulWinner.appendChild(createSpacerElement());
+  main.appendChild(ulWinner);
 
   return main.outerHTML; // Return main.outerHTML
 }
@@ -35,15 +43,11 @@ function createGameSpacerElement() {
 
 function createGameElement(game) {
   let gameElement = document.createElement("li"); // Create li element
-  gameElement.className = `game game-top ${
-    game.topWinner ? "winner" : "loser"
-  }`; // Set class to "game"
+  gameElement.className = `game game-top ${game.topWinner ? "winner" : "loser"}`; // Set class to "game"
   gameElement.innerHTML = `${game.topTeam} <span>${game.topScore}</span>`; // Set innerHTML to "team1 <span>score1</span>"
 
   let gameBottomElement = document.createElement("li"); // Create li element
-  gameBottomElement.className = `game game-bottom ${
-    game.bottomWinner ? "winner" : "loser"
-  }`; // Set class to "game"
+  gameBottomElement.className = `game game-bottom ${game.bottomWinner ? "winner" : "loser"}`; // Set class to "game"
   gameBottomElement.innerHTML = `${game.bottomTeam} <span>${game.bottomScore}</span>`; // Set innerHTML to "team2 <span>score2</span>"
 
   let fragment = document.createDocumentFragment(); // Create document fragment
@@ -54,9 +58,19 @@ function createGameElement(game) {
   return fragment; // Return fragment
 }
 
+function createGameWinner() {
+  let gameElement = document.createElement("li");
+  gameElement.className = `game game-top winner`;
+  gameElement.id = `winner_name`
+
+  let fragment = document.createDocumentFragment();
+  fragment.appendChild(gameElement);
+  return fragment;
+}
+
 function showBracket(rounds) {
   let bracket = generateBracket(rounds);
-  document.getElementById("bracket").innerHTML = bracket;
+  document.getElementById("bracketContainer").innerHTML = bracket;
 }
 
 export default {

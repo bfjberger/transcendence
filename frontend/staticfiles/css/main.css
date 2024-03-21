@@ -18,3 +18,16 @@ body, html {
 	max-width: 650px;
 	max-height: 650px;
 }
+
+.user-avatar {
+	margin-right: 5px;
+}
+
+/*
+if you want to animate the opening of the dropdown button of the user
+*/
+#dropdown-custom {
+	height: 0;
+	max-height: 100px;
+	transition: height 4s ease;
+}

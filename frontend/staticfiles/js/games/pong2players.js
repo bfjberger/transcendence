@@ -87,13 +87,31 @@ class PongGame2Players {
   }
 
   setBall() {
-    this.ball.x = this.boardWidth / 2;
-    this.ball.y = 100 + Math.random() * (this.boardHeight - 200); //range of 100px to have a margin to the wall
     this.ball.radius = this.ballRadius;
     this.ballSpeed = this.boardWidth / 350;
-    let randomAngle = Math.random() * Math.PI * 2;
-    this.ball.velocityX = Math.cos(randomAngle) * this.ballSpeed;
+
+    // Position of the ball
+    this.ball.x = this.boardWidth / 2;
+    this.ball.y = 100 + Math.random() * (this.boardHeight - 200); //range of 100px to have a margin to the wall
+
+    // Calculate a random angle within the range 160° to 200° in radians
+    const minAngle = Math.PI - (Math.PI / 9);
+    const maxAngle = Math.PI + (Math.PI / 9);
+    let randomAngle = Math.random() * (maxAngle - minAngle) + minAngle;
+
+    let direction = Math.random() < 0.5 ? -1 : 1;
+    // Velocity of the ball
+    this.ball.velocityX = (Math.cos(randomAngle) * this.ballSpeed) * direction;
     this.ball.velocityY = Math.sin(randomAngle) * this.ballSpeed;
+
+    // DEBUG
+    if (this.player1.getName() === "test" && this.player2.getName() === "test") {
+      this.player1.setCoords(10, 10);
+      this.player2.setCoords(this.boardWidth - this.player2.width - 10, 10);
+      this.ball.y = this.boardHeight / 2;
+      this.ball.velocityX = 180 * this.ballSpeed * -1; // player 1 gagne (gauche)
+      // this.ball.velocityX = 180 * this.ballSpeed; // player 2 gagne (droite)
+    }
   }
 
   pressKey(e) {
@@ -152,11 +170,11 @@ class PongGame2Players {
     this.checkCollisions();
     if (this.ball.x - this.ball.radius < 0) {
       this.player2.score++;
-      this.resetGame(1);
+      this.resetGame();
     }
     if (this.ball.x + this.ball.radius > this.boardWidth) {
       this.player1.score++;
-      this.resetGame(-1);
+      this.resetGame();
     }
   }
 
@@ -240,15 +258,9 @@ class PongGame2Players {
     });
   }
 
-  resetGame(direction) {
-    let randomAngle = Math.random() * Math.PI * 2;
-    this.ball = {
-      x: this.boardWidth / 2,
-      y: 100 + Math.random() * (this.boardHeight - 200),
-      radius: this.ballRadius,
-      velocityX: Math.cos(randomAngle) * this.ballSpeed * direction,
-      velocityY: Math.sin(randomAngle) * this.ballSpeed,
-    };
+  resetGame() {
+    // reset the position and velocity of the ball
+    this.setBall();
   }
 
   update() {
@@ -283,7 +295,6 @@ function start2PlayerGame() {
   if (!game) {
     game = new PongGame2Players("Player 1", "Player 2");
     game.init();
-    document.getElementById("controls").textContent = "Left Player: W/S || Right Player: UpArrow/DownArrow";
   }
 }
 

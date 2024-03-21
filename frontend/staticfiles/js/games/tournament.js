@@ -131,6 +131,8 @@ class Tournament {
       for (let j = 0; j < this.players.length; j++) {
         if (j === i)
           continue;
+        if (tmp == "test") // DEBUG
+          continue;
         if (tmp === this.players[j].getName()) {
           return 0;
         }
@@ -211,7 +213,8 @@ class Tournament {
   async displayNextMatch() {
     console.log("Displaying next match. Matches left:", this.matches.length);
     if (this.matches.length === 0) {
-      document.getElementById("tournament").innerHTML = "<h2>Le gagnant est " + this.players[0] + "!</h2>";
+      document.getElementById("current_match").innerHTML = "<h2>Le gagnant est " + this.players[0] + "!</h2>";
+      document.getElementById("winner_name").innerHTML = this.players[0];
       return;
     }
 
@@ -230,6 +233,18 @@ class Tournament {
     // await this.delay(2000);  // 2000 ms = 2 seconds
     this.organizeMatches();
   }
+}
+
+// DEBUG
+function rempliTestDebug() {
+  for (let i = 1; i <= 8; i++) {
+    document.getElementById("player" + i).value = "test";
+  }
+}
+
+// DEBUG
+window.rempliTestDebug = function () {
+  rempliTestDebug();
 }
 
 window.startTournament = function () {
