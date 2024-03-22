@@ -16,6 +16,8 @@ pip install Pillow
 
 pip install djangorestframework
 
+pip install requests
+
 cd /usr/backend/
 
 python manage.py makemigrations

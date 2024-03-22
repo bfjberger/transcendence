@@ -19,6 +19,4 @@ class FriendViewSet(ModelViewSet):
 		if accept is not None:
 			queryset = queryset.filter(accept=accept)
 
-
 		return queryset
-
