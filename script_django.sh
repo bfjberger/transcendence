@@ -16,6 +16,8 @@ pip install Pillow
 
 pip install djangorestframework
 
+pip install djangorestframework-simplejwt
+
 pip install requests
 
 cd /usr/backend/

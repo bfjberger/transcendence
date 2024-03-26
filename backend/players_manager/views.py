@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
-
+from rest_framework.permissions import IsAuthenticated
 
 from players_manager.models import Player
 from players_manager.serializers import PlayerSerializer, PlayerDetailsSerializer, AdminPlayerSerializer
@@ -10,6 +10,9 @@ class PlayerViewSet(ModelViewSet):
 
 	serializer_class = PlayerSerializer
 	detail_serializer_class = PlayerDetailsSerializer
+
+	permission_classes = [IsAuthenticated]
+
 
 	def get_queryset(self):
 			return Player.objects.all()
@@ -37,5 +40,14 @@ class PlayerViewSet(ModelViewSet):
 
 class AdminPlayerViewSet(ModelViewSet) :
 	serializer_class = AdminPlayerSerializer
+	def get_queryset(self):
+			return Player.objects.all()
+
+class AdminPlayerViewSet(ModelViewSet) :
+	serializer_class = PlayerSerializer
+	detail_serializer_class = PlayerDetailsSerializer
+
+	permissions_classes = [IsAuthenticated]
+
 	def get_queryset(self):
 			return Player.objects.all()
