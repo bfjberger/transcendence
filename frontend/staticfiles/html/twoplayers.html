@@ -7,6 +7,7 @@
     <link rel="shortcut icon" href="../img/table-tennis-paddle-ball-solid.svg" />
 
     <link rel="stylesheet" href="../css/main.css" />
+    <script src="../js/login.js" defer></script>
     <script type="module" src="../js/games/pong2players.js" defer></script>
 
     <link rel="stylesheet" href="../bootstrap-5.3.3-dist/css/bootstrap.min.css" />
@@ -21,11 +22,13 @@
       <div class="row">
         <header class="navbar sticky-top">
           <div class="col-md-1">
-            <img src="../img/42_logo.svg" alt="logo 42" class="user-avatar" width="42" height="30" />
+            <a href="../index.html">
+              <img src="../img/42_logo.svg" alt="logo 42" width="42" height="30" />
+            </a>
           </div>
           <div class="col-md-10"></div>
           <div class="col-md-1 text-end pe-3">
-            <button class="btn btn-primary" type="button">Login</button>
+            <button class="btn btn-primary d-none" type="button" data-bs-toggle="modal" data-bs-target="#loginModal" id="login-btn">Login</button>
           </div>
         </header>
       </div>
@@ -36,45 +39,36 @@
           <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 pb-5 min-vh-100" >
             <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" >
               <li class="nav-item">
-                <a href="../index.html" class="nav-link align-middle px-0 text-white" >
-                  <img src="../img/house-fill-Bootstrap.svg" alt="home" width="20" height="20" />
-                  <span class="ms-1 d-none d-sm-inline">Home</span>
-                </a>
+                <button class="btn btn-secondary nav-link text-white px-0" type="button" onclick="location.href='./twoplayers.html'">
+                  <img src="../img/table-tennis-paddle-ball-solid.svg" alt="table tennis paddle" width="20" height="20" />
+                  2 Players Mode
+                </button>
               </li>
-              <li>
-                <a href="./twoplayers.html" class="nav-link px-0 text-white">
-                  <img src="../img/table-tennis-paddle-ball-solid.svg" alt="home" width="20" height="20" />
-                  <span class="d-none d-sm-inline">2 Players Mode</span>
-                </a>
+              <li class="nav-item">
+                <button class="btn btn-secondary nav-link text-white px-0" type="button" onclick="location.href='./fourplayers.html'">
+                  <img src="../img/table-tennis-paddle-ball-solid.svg" alt="table tennis paddle" width="20" height="20" />
+                  4 Players Mode
+                </button>
               </li>
-              <li>
-                <a href="./fourplayers.html" class="nav-link px-0 text-white">
-                  <img src="../img/table-tennis-paddle-ball-solid.svg" alt="home" width="20" height="20" />
-                  <span class="d-none d-sm-inline">4 Players Mode</span>
-                </a>
-              </li>
-              <li>
-                <a href="./tournament.html" class="nav-link px-0 text-white">
+              <li class="nav-item">
+                <button class="btn btn-secondary nav-link text-white px-0" type="button" onclick="location.href='./tournament.html'">
                   <img src="../img/tournament-icon.png" alt="tournament" width="20" height="20" />
-                  <span class="d-none d-sm-inline">Tournament</span>
-                </a>
+                  Tournament
+                </button>
               </li>
             </ul>
             <div class="pb-4">
               <div class="dropup">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <img src="../img/person-circle-Bootstrap.svg" alt="user" width="30" height="30" class="rounded-circle user-avatar" />
+                  <img src="../img/person-circle-Bootstrap.svg" alt="user" width="30" height="30" class="rounded-circle" />
                   user
                 </button>
                 <ul class="dropdown-menu">
                   <li>
-                    <a href="./profile.html" class="dropdown-item text-danger">Your Profile</a>
+                    <a href="./profile.html" class="dropdown-item text-primary">Your Profile</a>
                   </li>
                   <li>
-                    <a href="./friends.html" class="dropdown-item text-danger">Friends</a>
-                  </li>
-                  <li>
-                    <a href="#" class="dropdown-item text-danger">Sign out</a>
+                    <a href="./friends.html" class="dropdown-item text-primary">Friends</a>
                   </li>
                 </ul>
               </div>
@@ -105,6 +99,68 @@
             </div>
             <div class="col text-start align-self-center text-primary">
               <p>Right Player: UpArrow/DownArrow</p>
+            </div>
+          </div>
+          <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true"> <!-- LOGIN MODAL POPUP -->
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header py-2">
+                  <p class="col-12 modal-title text-center text-success fw-bold fs-2" id="loginTitle">Login</p>
+                  <p class="col-12 modal-title text-center text-success fw-bold fs-2 d-none" id="createAccountTitle">Create Account</p>
+                  <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+                </div>
+                <div class="modal-body text-center">
+                  <form id="login">
+                    <div class="mb-1 text-danger login_error_message"></div>
+                    <div class="mb-2">
+                        <div class="text-primary-emphasis">Username or email</div>
+                        <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
+                        <div class="form_input_error_message text-danger"></div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="text-primary-emphasis">Password</div>
+                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
+                        <div class="form_input_error_message text-danger"></div>
+                    </div>
+                    <button class="btn btn-success mt-1" type="submit">Continue</button>
+                    <p class="mt-2 mb-2">
+                        <a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Forgot your password?</a>
+                    </p>
+                    <p class="mb-0">
+                        <a id="linkCreateAccount" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Don't have an account? Create account</a>
+                    </p>
+                  </form>
+                  <form class="d-none" id="createAccount">
+                    <div class="mb-2">
+                        <div class="text-primary-emphasis">Username</div>
+                        <input type="text" id="signupUsername" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
+                        <div class="form_input_error_message text-danger"></div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="text-primary-emphasis">Email Address</div>
+                        <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
+                        <div class="form_input_error_message text-danger"></div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="text-primary-emphasis">Password</div>
+                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
+                        <div class="form_input_error_message text-danger"></div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="text-primary-emphasis">Confirm password</div>
+                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
+                        <div class="form_input_error_message text-danger"></div>
+                    </div>
+                    <button class="btn btn-success mt-1" type="submit">Continue</button>
+                    <p class="mt-2 mb-0">
+                        <a id="linkLogin" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Already have an account? Sign in</a>
+                    </p>
+                  </form>
+                </div>
+                <div class="modal-footer py-2">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

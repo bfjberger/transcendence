@@ -21,8 +21,6 @@ def main():
 	player7 = Player.objects.create(login='ckarl', nickname='Christina', score=202, status='offline', avatar=None)
 	player8 = Player.objects.create(login='jdefayes', nickname='Julie', score=178, status='offline', avatar=None)
 
-
-
 	player1.save()
 	player2.save()
 	player3.save()
@@ -44,10 +42,15 @@ def main():
 	friend3.save()
 	friend4.save()
 
-	game_2p1 = Two_Player.objects.create(player1=player1, player2=player2, score_player1=2, score_player2=3, score_max=5, win_player=player2, id_tournament=None, level=0, date='2024-03-05T19:31:00Z')
-	game_2p2 = Two_Player.objects.create(player1=player1, player2=player3, score_player1=2, score_player2=3, score_max=5, win_player=player3, id_tournament=None, level=0, date='2024-03-05T19:31:00Z')
-	game_2p3 = Two_Player.objects.create(player1=player1, player2=player4, score_player1=2, score_player2=3, score_max=5, win_player=player4, id_tournament=None, level=0, date='2024-03-05T19:31:00Z')
-	game_2p4 = Two_Player.objects.create(player1=player2, player2=player3, score_player1=2, score_player2=3, score_max=5, win_player=player3, id_tournament=None, level=0, date='2024-03-05T19:31:00Z')
+	tournament1 = Tournament.objects.create(title='tournament1', player_1=player1, player_2=player2, player_3=player3, player_4=player4, player_5=player5, player_6=player6, player_7=player7, player_8=player8, nbr_players=8)
+	tournament2 = Tournament.objects.create(title='tournament2', player_1=player1, player_2=player2, player_3=player3, player_4=player4, player_5=player5, player_6=player6, player_7=player7, player_8=player8, nbr_players=8)
+	tournament1.save()
+	tournament2.save()
+
+	game_2p1 = Two_Player.objects.create(player1=player1, player2=player2, score_player1=2, score_player2=3, score_max=5, win_player=player2, id_tournament=tournament1, level=1, date='2024-03-05T19:31:00Z')
+	game_2p2 = Two_Player.objects.create(player1=player1, player2=player3, score_player1=2, score_player2=3, score_max=5, win_player=player3, id_tournament=tournament1, level=2, date='2024-03-05T19:31:00Z')
+	game_2p3 = Two_Player.objects.create(player1=player1, player2=player4, score_player1=2, score_player2=3, score_max=5, win_player=player4, id_tournament=tournament1, level=3, date='2024-03-05T19:31:00Z')
+	game_2p4 = Two_Player.objects.create(player1=player2, player2=player3, score_player1=2, score_player2=3, score_max=5, win_player=player3, id_tournament=tournament2, level=2, date='2021-03-05T19:31:00Z')
 
 	game_2p1.save()
 	game_2p2.save()

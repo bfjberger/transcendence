@@ -1,33 +1,33 @@
 /* NO TO SCROLLING (ง'̀-'́)ง */
 body, html {
-	height: 100%;
-	overflow: hidden;
+  height: 100%;
+  overflow: hidden;
+}
+
+.navbar {
+  min-height: 55px;
 }
 
 /* Style when hovering over links from the side bar */
 .nav-link:hover {
-	background-color: rgba(43, 47, 50, 0.5);
+  background-color: rgba(43, 47, 50, 0.5);
 }
 
 #board_two {
-	max-width: 650px;
-	max-height: 480px;
+  max-width: 650px;
+  max-height: 480px;
 }
 
 #board_four {
-	max-width: 650px;
-	max-height: 650px;
-}
-
-.user-avatar {
-	margin-right: 5px;
+  max-width: 650px;
+  max-height: 650px;
 }
 
 /*
 if you want to animate the opening of the dropdown button of the user
 */
 #dropdown-custom {
-	height: 0;
-	max-height: 100px;
-	transition: height 4s ease;
+  height: 0;
+  max-height: 100px;
+  transition: height 4s ease;
 }
