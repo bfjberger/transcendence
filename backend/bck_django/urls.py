@@ -30,6 +30,7 @@ router.register('friends', FriendViewSet, basename='friends')
 router.register('two_player', Two_PlayerViewSet, basename='two_player')
 router.register('tournaments', TournamentViewSet, basename='tournaments')
 router.register('four_player', Four_PlayerViewSet, basename='four_player')
+router.register('login', PlayerViewSet, basename='login')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

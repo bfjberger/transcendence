@@ -7,6 +7,7 @@ django.setup()
 from players_manager.models import Player
 from friends_manager.models import Friend
 from two_players_games_manager.models import Two_Player
+from four_players_games_manager.models import Four_Player
 from tournaments_manager.models import Tournament
 
 def main():
@@ -52,6 +53,9 @@ def main():
 	game_2p2.save()
 	game_2p3.save()
 	game_2p4.save()
+
+
+
 
 	tournament1 = Tournament.objects.create(title='tournament1', player_1=player1, player_2=player2, player_3=player3, player_4=player4, player_5=player5, player_6=player6, player_7=player7, player_8=player8, nbr_players=8)
 	tournament1.save()
