@@ -53,16 +53,47 @@
               <td>Modifier les informations d'un joueur</td>
             </tr>
           </table>
-        </ul>
-        <ul>
-          <li></li>
+          
 
+          <p>TEST : Pour modifier un nickname : "http://localhost:7890/api/players/ID_PLAYER/modify_nickname/?new_nickname=NEW_NICKNAME" : <a href="http://localhost:7890/api/players/1/modify_nickname/?new_nickname=Tintin">exemple</a></p>
 
-
-        </ul>
-        <a href
-
-
+          <p>Table friends</p>
+          <ul>
+            <li>URL de liste  : "http://localhost:7890/api/friends/"   <a href="http://localhost:7890/api/friends/">liste</a></li>
+            <li>URL de détail : "http://localhost:7890/api/friends/ID_PLAYER/" <a href="http://localhost:7890/api/friends/1/">detail</a></li>
+            <table>
+              <tr>
+                <th>Action</th>
+                <th>URL</th>
+                <th>Equivalent CRUD</th>
+                <th>Resultat</th>
+              </tr>
+              <tr>
+                <td>GET</td>
+                <td>URL de liste</td>
+                <td>READ</td>
+                <td>Renvoie la liste de tous les liens d'amitié (list)</td>
+              </tr>
+              <tr>
+                <td>POST</td>
+                <td>URL de liste</td>
+                <td>CREATE</td>
+                <td>Créer un lien d'amitié (create)</td>
+              </tr>
+              <tr>
+                <td>GET</td>
+                <td>URL de détail</td>
+                <td>READ</td>
+                <td>Information sur le lien d'amitié (retrieve)</td>
+              </tr>
+              <tr>
+                <td>PUT</td>
+                <td>URL de détail</td>
+                <td>UPDATE</td>
+                <td>Modifier les informations d'un lien d'amitié</td>
+              </tr>
+            </table>
+          <p>Pour les requêtes GET sur la liste avec des paramètres : http://localhost:7890/api/friends/?accept=(True || False)&player=ID_PLAYER <a href = "http://localhost:7890/api/friends/?accept=True">exemple</a></p>
 
     </div>
     <div class="container-fluid text-bg-secondary text-danger text-center">
