@@ -30,7 +30,7 @@ class PlayerViewSet(ModelViewSet):
 					current_player.save()
 					return Response(status=200)
 			return Response(status=404)
-	
+
 	def call_extarnal_api(self, method, url):
 		return resquests.request(method, url)	
 

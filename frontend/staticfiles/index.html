@@ -8,63 +8,15 @@
 
     <link rel="stylesheet" href="./css/main.css" />
     <script src="./js/login.js" defer></script>
+    <script src="./js/fetch.js" defer></script>
 
-    <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.css" />
     <script src="bootstrap-5.3.3-dist/js/bootstrap.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
     integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <!-- <script type="module" scr="./js/index.js" defer></script> -->
   </head>
   <body>
-    <div>
-        <p>Table Players</p>
-        <ul>
-          <li>URL de liste  : "http://localhost:7890/api/players/"   <a href="http://localhost:7890/api/players/">liste</a></li>
-          <li>URL de détail : "http://localhost:7890/api/players/ID_PLAYER/" <a href="http://localhost:7890/api/players/1/">detail</a></li>
-          <table>
-            <tr>
-              <th>Action</th>
-              <th>URL</th>
-              <th>Equivalent CRUD</th>
-              <th>Resultat</th>
-            </tr>
-            <tr>
-              <td>GET</td>
-              <td>URL de liste</td>
-              <td>READ</td>
-              <td>Renvoie la liste de tous les joueurs (list)</td>
-            </tr>
-            <tr>
-              <td>POST</td>
-              <td>URL de liste</td>
-              <td>CREATE</td>
-              <td>Créer un joueur (create)</td>
-            </tr>
-            <tr>
-              <td>GET</td>
-              <td>URL de détail</td>
-              <td>READ</td>
-              <td>Information sur le joueur (retrieve)</td>
-            </tr>
-            <tr>
-              <td>PUT</td>
-              <td>URL de détail</td>
-              <td>UPDATE</td>
-              <td>Modifier les informations d'un joueur</td>
-            </tr>
-          </table>
-        </ul>
-        <ul>
-          <li></li>
-
-
-
-        </ul>
-        <a href
-
-
-
-    </div>
     <div class="container-fluid text-bg-secondary text-danger text-center">
       <div class="row">
         <header class="navbar sticky-top">
@@ -112,36 +64,43 @@
                 </button>
                 <ul class="dropdown-menu">
                   <li>
-                    <a href="./html/profile.html" class="dropdown-item text-primary">Your Profile</a>
+                    <a href="./html/profile.html" class="text-primary dropdown-item">Your Profile</a>
                   </li>
                   <li>
-                    <a href="./html/friends.html" class="dropdown-item text-primary">Friends</a>
+                    <a href="./html/friends.html" class="text-primary dropdown-item">Friends</a>
                   </li>
                 </ul>
               </div>
             </div>
           </div>
         </div>
-        <div class="col container">Welcome \ (•◡•) /
+        <div class="col container">
+          <p id="login"></p>
+          <p id="nickname"></p>
+
+          <div class="mb-3">
+            <input type="text" class="form-control" aria-label="Username" aria-describedby="basic-addon1" id="uploadTest">
+            <button class="btn btn-success mt-1" type="submit" id="uploadBtn">submit</button>
+          </div>
+
           <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true"> <!-- LOGIN MODAL POPUP -->
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content">
                 <div class="modal-header py-2">
-                  <p class="col-12 modal-title text-center text-success fw-bold fs-2" id="loginTitle">Login</p>
-                  <p class="col-12 modal-title text-center text-success fw-bold fs-2 d-none" id="createAccountTitle">Create Account</p>
-                  <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+                  <p class="col-12 modal-title text-center text-success fw-bold fs-2" id="popupLoginTitle">Login</p>
+                  <p class="col-12 modal-title text-center text-success fw-bold fs-2 d-none" id="popupCreateAccountTitle">Create Account</p>
                 </div>
                 <div class="modal-body text-center">
-                  <form id="login">
-                    <div class="mb-1 text-danger login_error_message"></div>
+                  <form id="popupLogin" class="">
+                    <div class="mb-1 text-danger" id="login_error_message_login"></div>
                     <div class="mb-2">
-                        <div class="text-primary-emphasis">Username or email</div>
-                        <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
+                        <div class="text-primary-emphasis">Username</div>
+                        <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="username">
                         <div class="form_input_error_message text-danger"></div>
                     </div>
                     <div class="mb-2">
                         <div class="text-primary-emphasis">Password</div>
-                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
+                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="password">
                         <div class="form_input_error_message text-danger"></div>
                     </div>
                     <button class="btn btn-success mt-1" type="submit">Continue</button>
@@ -152,25 +111,21 @@
                         <a id="linkCreateAccount" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Don't have an account? Create account</a>
                     </p>
                   </form>
-                  <form class="d-none" id="createAccount">
+                  <form class="d-none" id="popupCreateAccount">
+                    <div class="mb-1 text-danger" id="login_error_message_create"></div>
                     <div class="mb-2">
                         <div class="text-primary-emphasis">Username</div>
-                        <input type="text" id="signupUsername" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
-                        <div class="form_input_error_message text-danger"></div>
-                    </div>
-                    <div class="mb-2">
-                        <div class="text-primary-emphasis">Email Address</div>
-                        <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
+                        <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="username">
                         <div class="form_input_error_message text-danger"></div>
                     </div>
                     <div class="mb-2">
                         <div class="text-primary-emphasis">Password</div>
-                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
+                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="password_one">
                         <div class="form_input_error_message text-danger"></div>
                     </div>
                     <div class="mb-2">
                         <div class="text-primary-emphasis">Confirm password</div>
-                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
+                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="password_two">
                         <div class="form_input_error_message text-danger"></div>
                     </div>
                     <button class="btn btn-success mt-1" type="submit">Continue</button>
