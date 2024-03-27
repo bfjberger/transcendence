@@ -4,10 +4,11 @@
     <title>Friends</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="shortcut icon" href="../img/table-tennis-paddle-ball-solid.svg" />
+    <link rel="shortcut icon" href="#" />
 
     <link rel="stylesheet" href="../css/main.css" />
     <script src="../js/login.js" defer></script>
+    <script src="../js/spa.js" defer></script>
 
     <link rel="stylesheet" href="../bootstrap-5.3.3-dist/css/bootstrap.css" />
     <script src="../bootstrap-5.3.3-dist/js/bootstrap.min.js" defer></script>
@@ -73,70 +74,76 @@
             </div>
           </div>
         </div>
-        <div class="col container">Friends Page
-          <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true"> <!-- LOGIN MODAL POPUP -->
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header py-2">
-                  <p class="col-12 modal-title text-center text-success fw-bold fs-2" id="loginTitle">Login</p>
-                  <p class="col-12 modal-title text-center text-success fw-bold fs-2 d-none" id="createAccountTitle">Create Account</p>
-                </div>
-                <div class="modal-body text-center">
-                  <form id="popupLogin" class="">
-                    <div class="mb-1 text-danger" id="login_error_message_login"></div>
-                    <div class="mb-2">
-                        <div class="text-primary-emphasis">Username</div>
-                        <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
-                        <div class="form_input_error_message text-danger"></div>
-                    </div>
-                    <div class="mb-2">
-                        <div class="text-primary-emphasis">Password</div>
-                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
-                        <div class="form_input_error_message text-danger"></div>
-                    </div>
-                    <button class="btn btn-success mt-1" type="submit">Continue</button>
-                    <p class="mt-2 mb-2">
-                        <a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Forgot your password?</a>
-                    </p>
-                    <p class="mb-0">
-                        <a id="linkCreateAccount" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Don't have an account? Create account</a>
-                    </p>
-                  </form>
-                  <form class="d-none" id="popupCreateAccount">
-                    <div class="mb-1 text-danger" id="login_error_message_create"></div>
-                    <div class="mb-2">
-                        <div class="text-primary-emphasis">Username</div>
-                        <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="username">
-                        <div class="form_input_error_message text-danger"></div>
-                    </div>
-                    <div class="mb-2">
-                      <div class="text-primary-emphasis">Email Address</div>
-                      <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="email">
+        <!-- LOGIN MODAL POPUP -->
+        <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header py-2">
+                <p class="col-12 modal-title text-center text-success fw-bold fs-2" id="popupLoginTitle">Login</p>
+                <p class="col-12 modal-title text-center text-success fw-bold fs-2 d-none" id="popupCreateAccountTitle">Create Account</p>
+              </div>
+              <div class="modal-body text-center">
+                <form id="popupLogin" class="">
+                  <div class="mb-1 text-danger" id="login_error_message_login"></div>
+                  <div class="mb-2">
+                      <div class="text-primary-emphasis">Username</div>
+                      <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
                       <div class="form_input_error_message text-danger"></div>
-                    </div>
-                    <div class="mb-2">
-                        <div class="text-primary-emphasis">Password</div>
-                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="password_one">
-                        <div class="form_input_error_message text-danger"></div>
-                    </div>
-                    <div class="mb-2">
-                        <div class="text-primary-emphasis">Confirm password</div>
-                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="password_two">
-                        <div class="form_input_error_message text-danger"></div>
-                    </div>
-                    <button class="btn btn-success mt-1" type="submit">Continue</button>
-                    <p class="mt-2 mb-0">
-                        <a id="linkLogin" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Already have an account? Sign in</a>
-                    </p>
-                  </form>
-                </div>
-                <div class="modal-footer py-2">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
+                  </div>
+                  <div class="mb-2">
+                      <div class="text-primary-emphasis">Password</div>
+                      <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
+                      <div class="form_input_error_message text-danger"></div>
+                  </div>
+                  <button class="btn btn-success mt-1" type="submit">Continue</button>
+                  <p class="mt-2 mb-2">
+                      <a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Forgot your password?</a>
+                  </p>
+                  <p class="mb-0">
+                      <a id="linkCreateAccount" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Don't have an account? Create account</a>
+                  </p>
+                </form>
+                <form class="d-none" id="popupCreateAccount">
+                  <div class="mb-1 text-danger" id="login_error_message_create"></div>
+                  <div class="mb-2">
+                      <div class="text-primary-emphasis">Username</div>
+                      <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="username">
+                      <div class="form_input_error_message text-danger"></div>
+                  </div>
+                  <div class="mb-2">
+                    <div class="text-primary-emphasis">Email Address</div>
+                    <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="email">
+                    <div class="form_input_error_message text-danger"></div>
+                  </div>
+                  <div class="mb-2">
+                      <div class="text-primary-emphasis">Password</div>
+                      <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="password_one">
+                      <div class="form_input_error_message text-danger"></div>
+                  </div>
+                  <div class="mb-2">
+                      <div class="text-primary-emphasis">Confirm password</div>
+                      <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="password_two">
+                      <div class="form_input_error_message text-danger"></div>
+                  </div>
+                  <button class="btn btn-success mt-1" type="submit">Continue</button>
+                  <p class="mt-2 mb-0">
+                      <a id="linkLogin" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Already have an account? Sign in</a>
+                  </p>
+                </form>
+              </div>
+              <div class="modal-footer py-2">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
               </div>
             </div>
           </div>
         </div>
+        <!-- <div class="col container">Friends Page
+        </div> -->
+
+        <main>
+          <section id="container__global"></section>
+        </main>
+
       </div>
     </div>
   </body>
