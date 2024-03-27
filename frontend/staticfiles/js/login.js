@@ -4,31 +4,29 @@ async function connectUser(loginForm) {
 
   const input = loginForm.elements;
 
+  const inputValues = {
+    login: input.username.value,
+    password: input.password.value,
+  };
+
   const init = {
     method: 'GET',
     headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(inputValues)
   };
 
-  fetch('http://localhost:7890/api/players/', init) // will use another URL
-    .then((response) => {
+    try {
+      const response = await fetch('http://localhost:7890/api/players/', init); // will use another URL
       if (!response.ok) {
         throw new Error(`HTTP error, status = ${response.status}`);
       }
-      return response.json();
-    })
-    .then((data) => {
-      data.forEach(user => {
-        if (user.login === input.username.value && user.password === input.password.value) {
-            window.alert("You are logged " + data.message);
-            return;
-        }
-      });
-      throw new Error(`This user does not exist, status = ${response.status}`);
-    })
-    .catch((e) => {
+      const data = await response.json();
+      // depending on the result of the request treat accordingly
+      console.log(data);
+    } catch (e) {
       console.error("Error connect: ", e);
       window.alert("Error connect: " + e.message);
-    })
+    }
 }
 
 // Add a new user to the DB | using POST
@@ -36,58 +34,36 @@ async function connectUser(loginForm) {
 async function createUser(createAccountForm) {
 
   const input = createAccountForm.elements;
-  console.log(input["password_one"].value);
-  console.log(input["password_two"].value);
 
   if (input["password_one"].value !== input["password_two"].value) {
     document.querySelector("#login_error_message_create").textContent = "The passwords are not the same";
     return;
   }
 
+  const inputValues = {
+    login: input["username"].value,
+    password: input["password_one"].value,
+  };
+
   const init = {
     method: 'POST',
     headers: {
       'Content-Type': 'applications/json',
     },
-    body: JSON.stringify({
-        login: input["username"].value,
-        password: input["password_one"].value
-      }),
+    body: JSON.stringify(inputValues)
   };
 
-  fetch('http://localhost:7890/api/players/', init)
-    .then((response) => {
+    try {
+      const response = await fetch('http://localhost:7890/api/players/', init);
       if (!response.ok) {
-        throw new Error(`HTTP error, status = ${response.status}`);
+        throw new Error('Error: ' + response.status);
       }
-      return response.json();
-    })
-    .then((data) => {
+      const data = await response.json();
       window.alert("You have been registered. You are now logged " + data.message);
-    })
-    .catch((e) => {
+    } catch (e) {
       console.error("Error create: ", e);
       window.alert("Error create: " + e.message);
-    })
-}
-
-// Show an error message when the username does not meet established conditions
-function setInputError(inputElement, message) {
-  inputElement.parentElement.querySelector(".form_input_error_message").textContent = message;
-
-  // once there is an error, the input will always be red, no fix for now so ignored
-  // inputElement.classList.add("text-danger");
-}
-
-// Remove the style and the message of the error message / usually called when changing pages
-function clearInputError(inputElement) {
-  inputElement.classList.remove("text_danger");
-  inputElement.parentElement.querySelector(".form_input_error_message").textContent = "";
-}
-
-// Remove the input from the input field passed as parameters / usually called when changing pages
-function clearInput(inputElement) {
-  inputElement.value = "";
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -101,8 +77,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       loginForm.classList.add("d-none");
       loginForm.querySelectorAll(".input-field").forEach(inputElement => {
-          clearInput(inputElement);
-          clearInputError(inputElement);
+          inputElement.value = "";
+          inputElement.parentElement.querySelector(".form_input_error_message").textContent = "";
       });
       loginFormTitle.classList.add("d-none");
       createAccountForm.classList.remove("d-none");
@@ -116,8 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
       loginFormTitle.classList.remove("d-none");
       createAccountForm.classList.add("d-none");
       createAccountForm.querySelectorAll(".input-field").forEach(inputElement => {
-          clearInput(inputElement);
-          clearInputError(inputElement);
+          inputElement.value = "";
+          inputElement.parentElement.querySelector(".form_input_error_message").textContent = "";
       });
       createAccountFormTitle.classList.add("d-none");
   });
@@ -137,14 +113,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.querySelectorAll(".input-field").forEach(inputElement => {
-      inputElement.addEventListener("blur", e => {
-          // if (e.target.id === "signupUsername" && e.target.value.length > 0 && e.target.value.length < 1) {
-          //     setInputError(inputElement, "Username must be at least 10 characters in length");
-          // }
-      });
-
       inputElement.addEventListener("input", e => {
-          clearInputError(inputElement);
+        inputElement.parentElement.querySelector(".form_input_error_message").textContent = "";
       });
   });
 });

@@ -109,8 +109,8 @@
                   <p class="col-12 modal-title text-center text-success fw-bold fs-2 d-none" id="createAccountTitle">Create Account</p>
                 </div>
                 <div class="modal-body text-center">
-                  <form id="login">
-                    <div class="mb-1 text-danger login_error_message"></div>
+                  <form id="popupLogin" class="">
+                    <div class="mb-1 text-danger" id="login_error_message_login"></div>
                     <div class="mb-2">
                         <div class="text-primary-emphasis">Username</div>
                         <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
@@ -129,21 +129,26 @@
                         <a id="linkCreateAccount" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Don't have an account? Create account</a>
                     </p>
                   </form>
-                  <form class="d-none" id="createAccount">
-                    <div class="mb-1 text-danger login_error_message"></div>
+                  <form class="d-none" id="popupCreateAccount">
+                    <div class="mb-1 text-danger" id="login_error_message_create"></div>
                     <div class="mb-2">
                         <div class="text-primary-emphasis">Username</div>
-                        <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
+                        <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="username">
                         <div class="form_input_error_message text-danger"></div>
                     </div>
                     <div class="mb-2">
+                      <div class="text-primary-emphasis">Email Address</div>
+                      <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="email">
+                      <div class="form_input_error_message text-danger"></div>
+                    </div>
+                    <div class="mb-2">
                         <div class="text-primary-emphasis">Password</div>
-                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
+                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="password_one">
                         <div class="form_input_error_message text-danger"></div>
                     </div>
                     <div class="mb-2">
                         <div class="text-primary-emphasis">Confirm password</div>
-                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
+                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="password_two">
                         <div class="form_input_error_message text-danger"></div>
                     </div>
                     <button class="btn btn-success mt-1" type="submit">Continue</button>
