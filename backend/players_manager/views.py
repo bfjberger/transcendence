@@ -4,7 +4,7 @@ from rest_framework.decorators import action, api_view, authentication_classes, 
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from .serializers import UserSerializer
+
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 
 
 from players_manager.models import Player
-from players_manager.serializers import UserSerializer, PlayerSerializer, PlayerDetailsSerializer, AdminPlayerSerializer
+from players_manager.serializers import PlayerSerializer, PlayerDetailsSerializer, AdminPlayerSerializer
 
 class PlayerViewSet(ModelViewSet):
 
@@ -55,15 +55,15 @@ def login(request):
 	if not user.check_password(request.data['password']):
 		return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 	token, created = Token.objects.get_or_create(user=user)
-	serializer = UserSerializer(instance=user)
+	serializer = PlayerSerializer(instance=user)
 	return Response({"token": token.key, "user": serializer.data})
 
 @api_view(['POST'])
 def signup(request):
-	serializer = UserSerializer(data=request.data)
+	serializer = PlayerSerializer(data=request.data)
 	if serializer.is_valid():
 		serializer.save()
-		user = User.objects.get(username=request.data['username'])
+		user = Player.objects.get(username=request.data['username'])
 		# check if password is a hached password for obvious security reason
 		user.set_password(request.data['password'])
 		user.save()

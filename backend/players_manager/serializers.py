@@ -8,7 +8,7 @@ class PlayerSerializer(ModelSerializer):
         fields = '__all__'
 
     def validate_login(self, value):
-        if Player.objects.filter(login=value).exists():
+        if Player.objects.filter(username=value).exists():
             raise ValidationError("This login is already taken.")
         return value
     
@@ -20,7 +20,7 @@ class PlayerSerializer(ModelSerializer):
 class PlayerDetailsSerializer(ModelSerializer):
     class Meta:
        model = Player
-       fields = ['id', 'login', 'password' ,'nickname', 'score']
+       fields = ['id', 'username', 'password' ,'nickname', 'score']
        
 class AdminPlayerSerializer(ModelSerializer):
     class Meta:
@@ -28,7 +28,7 @@ class AdminPlayerSerializer(ModelSerializer):
         fields = '__all__'
 
 
-class UserSerializer(ModelSerializer):
-    class Meta(object):
-        model= User
-        fields = ['id', 'username', 'password', 'email']
+# class UserSerializer(ModelSerializer):
+#     class Meta(object):
+#         model= User
+#         fields = ['id', 'username', 'password', 'email']
