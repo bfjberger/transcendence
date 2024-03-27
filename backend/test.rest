@@ -1,0 +1,18 @@
+POST http://127.0.0.1:7890/login
+Content-Type: application/json
+
+{"username": "zack1", "password": "Pass1234!"}
+###
+
+
+POST http://127.0.0.1:7890/signup
+Content-Type: application/json
+
+{"username": "zack1", "password": "Pass1234!", "email": "zack@gmail.com"}
+###
+
+GET http://127.0.0.1:7890/test_token
+Content-Type: application/json
+Authorization: Token bdfbd0c84e40197db7151c8ef9c9f851936355f7
+
+{}

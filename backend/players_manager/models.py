@@ -18,3 +18,5 @@ class Player (models.Model):
 	score = models.IntegerField(default=0)
 	status = models.CharField(max_length=200, choices=status.choices, default=status.OFFLINE)
 	avatar = models.ImageField(max_length=200, null=True, blank=True, upload_to='avatars/')
+	# def set_password(self, password):
+	# 	self.password = password

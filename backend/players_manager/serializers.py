@@ -1,5 +1,6 @@
 from rest_framework.serializers import ModelSerializer, ValidationError
 from players_manager.models import Player
+from django.contrib.auth.models import User
 
 class PlayerSerializer(ModelSerializer):
     class Meta:
@@ -25,3 +26,9 @@ class AdminPlayerSerializer(ModelSerializer):
     class Meta:
         model = Player
         fields = '__all__'
+
+
+class UserSerializer(ModelSerializer):
+    class Meta(object):
+        model= User
+        fields = ['id', 'username', 'password', 'email']

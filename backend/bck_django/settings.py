@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'two_players_games_manager',
     'tournaments_manager',
     'four_players_games_manager',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
