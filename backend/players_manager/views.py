@@ -61,6 +61,7 @@ def login(request):
 @api_view(['POST'])
 def signup(request):
 	serializer = PlayerSerializer(data=request.data)
+
 	if serializer.is_valid():
 		serializer.save()
 		user = Player.objects.get(username=request.data['username'])

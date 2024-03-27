@@ -7,15 +7,16 @@ class PlayerSerializer(ModelSerializer):
         model = Player
         fields = '__all__'
 
-    def validate_login(self, value):
+    def validate_username(self, value):
+        print("\n\n\n\n!!! validate_login : '", value, "'")
         if Player.objects.filter(username=value).exists():
             raise ValidationError("This login is already taken.")
         return value
     
-    def validate (self, data):
-        if data['nb_games_2p_won'] + data['nb_games_2p_lost'] != data['nb_games_2p']:
-            raise ValidationError("Inconsistency in nb_games_2p_won and nb_games_2p_lost")
-        return data
+    # def validate (self, data):
+    #    if data['nb_games_2p_won'] + data['nb_games_2p_lost'] != data['nb_games_2p']:
+    #        raise ValidationError("Inconsistency in nb_games_2p_won and nb_games_2p_lost")
+    #    return data
 
 class PlayerDetailsSerializer(ModelSerializer):
     class Meta:
