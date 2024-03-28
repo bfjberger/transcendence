@@ -44,7 +44,7 @@ class Player(AbstractUser):
 	score = models.IntegerField(default=0)
 	status = models.CharField(max_length=200, choices=status.choices, default=status.OFFLINE)
 	avatar = models.ImageField(max_length=200, null=True, blank=True, upload_to='avatars/')
-	
+
 
 # class Player (models.Model):
 	# class status(models.TextChoices):
