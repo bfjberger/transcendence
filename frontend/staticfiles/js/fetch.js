@@ -6,20 +6,20 @@ var userAvatarDefault = "../img/person-circle-Bootstrap.svg";
 async function fetchTest() {
 
   fetch("http://localhost:7890/api/players/")
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error, status = ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      console.log(data);
-      // document.querySelector("#login").textContent = data[0].login;
-      // document.querySelector("#nickname").textContent = data[3].nickname;
-    })
-    .catch((e) => {
-      console.error("Error: ", e);
-    });
+	.then((response) => {
+		if (!response.ok) {
+			throw new Error(`HTTP error, status = ${response.status}`);
+		}
+		return response.json();
+	})
+	.then((data) => {
+		console.log(data);
+		// document.querySelector("#login").textContent = data[0].login;
+		// document.querySelector("#nickname").textContent = data[3].nickname;
+	})
+	.catch((e) => {
+		console.error("Error: ", e);
+	});
 };
 
 /*
@@ -27,20 +27,21 @@ async function fetchTest() {
 */
 async function fetchAvatar() {
 
-  fetch("http://localhost:7890/api/avatars/killian.jpg")
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error, status = ${response.status}`);
-      }
-      return response.blob();
-    })
-    .then((blob) => {
-      userAvatar.src = URL.createObjectURL(blob);
-    })
-    .catch((e) => {
-      console.error("Error: ", e);
-      userAvatar.src = userAvatarDefault;
-    });
+	fetch("http://localhost:7890/api/avatars/killian.jpg")
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error(`HTTP error, status = ${response.status}`);
+			}
+			return response.blob();
+		})
+		.then((blob) => {
+			userAvatar.src = URL.createObjectURL(blob);
+		})
+		.catch((e) => {
+			console.error("Error: ", e);
+			userAvatar.src = userAvatarDefault;
+		}
+	);
 }
 
 /*
@@ -48,29 +49,30 @@ async function fetchAvatar() {
 */
 async function uploadTestGet() {
 
-  const input = document.getElementById("uploadTest");
-  const fullURL = 'http://localhost:7890/api/players/1/modify_nickname/?new_nickname=' + input.value;
-  const init = {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
+	const input = document.getElementById("uploadTest");
+	const fullURL = 'http://localhost:7890/api/players/1/modify_nickname/?new_nickname=' + input.value;
+	const init = {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	};
 
-  fetch(fullURL, init)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error, status = ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      console.log(data);
-      document.querySelector("#nickname").textContent = data.nickname;
-    })
-    .catch((e) => {
-      console.error("Error: ", e);
-    });
+	fetch(fullURL, init)
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error(`HTTP error, status = ${response.status}`);
+			}
+			return response.json();
+		})
+		.then((data) => {
+			console.log(data);
+			document.querySelector("#nickname").textContent = data.nickname;
+		})
+		.catch((e) => {
+			console.error("Error: ", e);
+		}
+	);
 }
 
 /*
@@ -78,28 +80,30 @@ async function uploadTestGet() {
 */
 async function uploadTestPut() {
 
-  const input = document.getElementById("uploadTest");
+	const input = document.getElementById("uploadTest");
+	const init = {
+		method: 'PUT',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ login: 'bberger', password: '', nickname: input.value }),
+	};
 
-  fetch('http://localhost:7890/api/players/1/', {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ login: 'bberger', password: '', nickname: input.value }),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error, status = ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      console.log(data);
-      document.querySelector("#nickname").textContent = data.nickname;
-    })
-    .catch((e) => {
-      console.error("Error: ", e);
-    });
+	fetch('http://localhost:7890/api/players/1/', init)
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error(`HTTP error, status = ${response.status}`);
+			}
+			return response.json();
+		})
+		.then((data) => {
+			console.log(data);
+			document.querySelector("#nickname").textContent = data.nickname;
+		})
+		.catch((e) => {
+			console.error("Error: ", e);
+		}
+	);
 }
 
 /* SENDING DATA
@@ -117,22 +121,22 @@ const formData = {
 fetch(apiUrl, {
   method: 'POST',
   headers: {
-    'Content-Type': 'application/json',
+	'Content-Type': 'application/json',
   },
   body: JSON.stringify(formData),
 })
   .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
+	if (!response.ok) {
+	  throw new Error('Network response was not ok');
+	}
+	return response.json();
   })
   .then(newUserData => {
-    // Process the newly created user data
-    console.log('New User Data:', newUserData);
+	// Process the newly created user data
+	console.log('New User Data:', newUserData);
   })
   .catch(error => {
-    console.error('Error:', error);
+	console.error('Error:', error);
   });
 */
 
@@ -159,19 +163,19 @@ const apiKey = 'your-api-key';
 // Make a GET request with authentication using the Fetch API
 fetch(apiUrl, {
   headers: {
-    Authorization: `Bearer ${apiKey}`,
+	Authorization: `Bearer ${apiKey}`,
   },
 })
 */
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  // fetchTest();
-  // fetchAvatar();
+	// fetchTest();
+	// fetchAvatar();
 
-  document.getElementById("uploadBtn").addEventListener("click", e => {
-    e.preventDefault();
-    // uploadTestPut();
-    uploadTestGet();
-  })
+	document.getElementById("uploadBtn").addEventListener("click", e => {
+		e.preventDefault();
+		// uploadTestPut();
+		uploadTestGet();
+  	})
 });

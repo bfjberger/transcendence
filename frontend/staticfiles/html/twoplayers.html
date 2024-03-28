@@ -1,170 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Pong Game</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" , content="width=device-width, initial-scale=1" />
-    <link rel="shortcut icon" href="#" />
+	<head>
+		<title>Two Players Game</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="shortcut icon" href="#" />
 
-    <link rel="stylesheet" href="../css/main.css" />
-    <script src="../js/login.js" defer></script>
-    <script type="module" src="../js/games/pong2players.js" defer></script>
+		<link rel="stylesheet" href="../css/main.css" />
+		<script src="../js/login.js" defer></script>
+		<script type="module" src="../js/games/pong2players.js" defer></script>
 
-    <link rel="stylesheet" href="../bootstrap-5.3.3-dist/css/bootstrap.css" />
-    <script src="../bootstrap-5.3.3-dist/js/bootstrap.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <!-- <script type="module" scr="../js/index.js" defer></script> -->
-  </head>
+		<script src="../js/router.js" defer></script>
 
-  <body>
-    <div class="container-fluid text-bg-secondary text-danger text-center">
-      <div class="row">
-        <header class="navbar sticky-top">
-          <div class="col-md-1">
-            <a href="../index.html">
-              <img src="../img/42_logo.svg" alt="logo 42" width="42" height="30" />
-            </a>
-          </div>
-          <div class="col-md-10"></div>
-          <div class="col-md-1 text-end pe-3">
-            <button class="btn btn-primary d-none" type="button" data-bs-toggle="modal" data-bs-target="#loginModal" id="login-btn">Login</button>
-          </div>
-        </header>
-      </div>
-    </div>
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-auto px-sm-2 px-0 text-bg-secondary">
-          <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 pb-5 min-vh-100" >
-            <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" >
-              <li class="nav-item">
-                <button class="btn btn-secondary nav-link text-white px-0" type="button" onclick="location.href='./twoplayers.html'">
-                  <img src="../img/table-tennis-paddle-ball-solid.svg" alt="table tennis paddle" width="20" height="20" />
-                  2 Players Mode
-                </button>
-              </li>
-              <li class="nav-item">
-                <button class="btn btn-secondary nav-link text-white px-0" type="button" onclick="location.href='./fourplayers.html'">
-                  <img src="../img/table-tennis-paddle-ball-solid.svg" alt="table tennis paddle" width="20" height="20" />
-                  4 Players Mode
-                </button>
-              </li>
-              <li class="nav-item">
-                <button class="btn btn-secondary nav-link text-white px-0" type="button" onclick="location.href='./tournament.html'">
-                  <img src="../img/tournament-icon.png" alt="tournament" width="20" height="20" />
-                  Tournament
-                </button>
-              </li>
-            </ul>
-            <div class="pb-4">
-              <div class="dropup">
-                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <img src="../img/person-circle-Bootstrap.svg" alt="user" width="30" height="30" class="rounded-circle" />
-                  user
-                </button>
-                <ul class="dropdown-menu">
-                  <li>
-                    <a href="./profile.html" class="text-primary dropdown-item">Your Profile</a>
-                  </li>
-                  <li>
-                    <a href="./friends.html" class="text-primary dropdown-item">Friends</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col container">
-          <div class="row">
-            <div class="col text-center fw-bold pt-3">
-              <h1>Two Players Pong Game</h1>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-5"></div>
-            <div class="col-2 text-white" style="visibility: hidden">
-              <p>Top Player: N/M</p>
-            </div>
-            <div class="col-5"></div>
-          </div>
-          <div class="row">
-            <div class="col text-end text-warning align-self-center">
-              <p>Left Player: W/S</p>
-            </div>
-            <div class="col d-flex justify-content-center align-items-center">
-              <div class="text-bg-success border border-black border-5">
-                <canvas id="board_two" width="650" height="480"></canvas>
-              </div>
-            </div>
-            <div class="col text-start align-self-center text-primary">
-              <p>Right Player: UpArrow/DownArrow</p>
-            </div>
-          </div>
-          <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true"> <!-- LOGIN MODAL POPUP -->
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header py-2">
-                  <p class="col-12 modal-title text-center text-success fw-bold fs-2" id="popupLoginTitle">Login</p>
-                  <p class="col-12 modal-title text-center text-success fw-bold fs-2 d-none" id="popupCreateAccountTitle">Create Account</p>
-                </div>
-                <div class="modal-body text-center">
-                  <form id="popupLogin" class="">
-                    <div class="mb-1 text-danger" id="login_error_message_login"></div>
-                    <div class="mb-2">
-                        <div class="text-primary-emphasis">Username</div>
-                        <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
-                        <div class="form_input_error_message text-danger"></div>
-                    </div>
-                    <div class="mb-2">
-                        <div class="text-primary-emphasis">Password</div>
-                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
-                        <div class="form_input_error_message text-danger"></div>
-                    </div>
-                    <button class="btn btn-success mt-1" type="submit">Continue</button>
-                    <p class="mt-2 mb-2">
-                        <a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Forgot your password?</a>
-                    </p>
-                    <p class="mb-0">
-                        <a id="linkCreateAccount" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Don't have an account? Create account</a>
-                    </p>
-                  </form>
-                  <form class="d-none" id="popupCreateAccount">
-                    <div class="mb-1 text-danger" id="login_error_message_create"></div>
-                    <div class="mb-2">
-                        <div class="text-primary-emphasis">Username</div>
-                        <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="username">
-                        <div class="form_input_error_message text-danger"></div>
-                    </div>
-                    <div class="mb-2">
-                      <div class="text-primary-emphasis">Email Address</div>
-                      <input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="email">
-                      <div class="form_input_error_message text-danger"></div>
-                    </div>
-                    <div class="mb-2">
-                        <div class="text-primary-emphasis">Password</div>
-                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="password_one">
-                        <div class="form_input_error_message text-danger"></div>
-                    </div>
-                    <div class="mb-2">
-                        <div class="text-primary-emphasis">Confirm password</div>
-                        <input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="password_two">
-                        <div class="form_input_error_message text-danger"></div>
-                    </div>
-                    <button class="btn btn-success mt-1" type="submit">Continue</button>
-                    <p class="mt-2 mb-0">
-                        <a id="linkLogin" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Already have an account? Sign in</a>
-                    </p>
-                  </form>
-                </div>
-                <div class="modal-footer py-2">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </body>
+		<link rel="stylesheet" href="../bootstrap-5.3.3-dist/css/bootstrap.css" />
+		<script src="../bootstrap-5.3.3-dist/js/bootstrap.min.js" defer></script>
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+		integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+	</head>
+	<body>
+		<div class="container-fluid text-bg-secondary text-danger text-center">
+			<div class="row">
+				<header class="navbar sticky-top">
+					<div class="col-md-1 d-flex justify-content-center">
+						<button class="btn btn-secondary nav-link text-secondary px-0 link__item" type="button" value="/staticfiles/index.html">
+							<img src="../img/42_logo.svg" alt="logo 42" width="42" height="30"/>
+						</button>
+					</div>
+					<div class="col-md-10"></div>
+					<div class="col-md-1 text-end pe-3">
+						<button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#loginModal" id="login-btn">Login</button>
+					</div>
+				</header>
+			</div>
+		</div>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-auto px-sm-2 px-0 text-bg-secondary">
+					<div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 pb-5 min-vh-100" >
+						<ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" >
+							<li class="nav-item">
+								<button class="btn btn-secondary nav-link text-white px-0 link__item" type="button" value="/staticfiles/html/twoplayers.html">
+									<img src="../img/table-tennis-paddle-ball-solid.svg" alt="table tennis paddle" width="20" height="20" />
+									2 Players Mode
+								</button>
+							</li>
+							<li class="nav-item">
+								<button class="btn btn-secondary nav-link text-white px-0 link__item" type="button" value="/staticfiles/html/fourplayers.html">
+									<img src="../img/table-tennis-paddle-ball-solid.svg" alt="table tennis paddle" width="20" height="20" />
+									4 Players Mode
+								</button>
+							</li>
+							<li class="nav-item">
+								<button class="btn btn-secondary nav-link text-white px-0 link__item" type="button" value="/staticfiles/html/tournament.html">
+									<img src="../img/tournament-icon.png" alt="tournament" width="20" height="20" />
+									Tournament
+								</button>
+							</li>
+						</ul>
+						<div class="pb-4">
+							<div class="dropup">
+								<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+									<img src="../img/person-circle-Bootstrap.svg" alt="user" width="30" height="30" class="rounded-circle" />
+									user
+								</button>
+								<ul class="dropdown-menu">
+									<li>
+										<button class="text-primary dropdown-item link__item" value="/staticfiles/html/profile.html">
+											Your Profile
+										</button>
+									</li>
+									<li>
+										<button class="text-primary dropdown-item link__item" value="/staticfiles/html/friends.html">
+											Friends
+										</button>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- LOGIN MODAL POPUP -->
+				<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered">
+						<div class="modal-content">
+						<div class="modal-header py-2">
+							<p class="col-12 modal-title text-center text-success fw-bold fs-2" id="popupLoginTitle">Login</p>
+							<p class="col-12 modal-title text-center text-success fw-bold fs-2 d-none" id="popupCreateAccountTitle">Create Account</p>
+						</div>
+						<div class="modal-body text-center">
+							<form id="popupLogin" class="">
+								<div class="mb-1 text-danger" id="login_error_message_login"></div>
+								<div class="mb-2">
+									<div class="text-primary-emphasis">Username</div>
+									<input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
+									<div class="form_input_error_message text-danger"></div>
+								</div>
+								<div class="mb-2">
+									<div class="text-primary-emphasis">Password</div>
+									<input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field">
+									<div class="form_input_error_message text-danger"></div>
+								</div>
+								<button class="btn btn-success mt-1" type="submit">Continue</button>
+								<p class="mt-2 mb-2">
+									<a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Forgot your password?</a>
+								</p>
+								<p class="mb-0">
+									<a id="linkCreateAccount" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Don't have an account? Create account</a>
+								</p>
+							</form>
+							<form class="d-none" id="popupCreateAccount">
+								<div class="mb-1 text-danger" id="login_error_message_create"></div>
+								<div class="mb-2">
+									<div class="text-primary-emphasis">Username</div>
+									<input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="username">
+									<div class="form_input_error_message text-danger"></div>
+								</div>
+								<div class="mb-2">
+									<div class="text-primary-emphasis">Email Address</div>
+									<input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="email">
+									<div class="form_input_error_message text-danger"></div>
+								</div>
+								<div class="mb-2">
+									<div class="text-primary-emphasis">Password</div>
+									<input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="password_one">
+									<div class="form_input_error_message text-danger"></div>
+								</div>
+								<div class="mb-2">
+									<div class="text-primary-emphasis">Confirm password</div>
+									<input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input-field" name="password_two">
+									<div class="form_input_error_message text-danger"></div>
+								</div>
+								<button class="btn btn-success mt-1" type="submit">Continue</button>
+								<p class="mt-2 mb-0">
+									<a id="linkLogin" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Already have an account? Sign in</a>
+								</p>
+							</form>
+						</div>
+						<div class="modal-footer py-2">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+						</div>
+						</div>
+					</div>
+				</div>
+				<div class="col container">
+					<div class="row">
+						<div class="col text-center fw-bold pt-3">
+						  <h1>Two Players Pong Game</h1>
+						</div>
+					  </div>
+					  <div class="row">
+						<div class="col-5"></div>
+						<div class="col-2 text-white" style="visibility: hidden">
+						  <p>Top Player: N/M</p>
+						</div>
+						<div class="col-5"></div>
+					  </div>
+					  <div class="row">
+						<div class="col text-end text-warning align-self-center">
+						  <p>Left Player: W/S</p>
+						</div>
+						<div class="col d-flex justify-content-center align-items-center">
+							<div class="position-absolute">
+								<button class="btn btn-primary" type="button" id="startGame2">Start the game</button>
+							</div>
+							<div class="text-bg-success border border-black border-5">
+								<canvas id="board_two" width="650" height="480"></canvas>
+							</div>
+						</div>
+						<div class="col text-start align-self-center text-primary">
+						  <p>Right Player: UpArrow/DownArrow</p>
+						</div>
+					  </div>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>
