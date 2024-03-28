@@ -24,6 +24,7 @@ from friends_manager.views import FriendViewSet
 from two_players_games_manager.views import Two_PlayerViewSet
 from tournaments_manager.views import TournamentViewSet
 from four_players_games_manager.views import Four_PlayerViewSet
+from authenticate.views import ExampleView
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -34,6 +35,7 @@ router.register('two_player', Two_PlayerViewSet, basename='two_player')
 router.register('tournaments', TournamentViewSet, basename='tournaments')
 router.register('four_player', Four_PlayerViewSet, basename='four_player')
 router.register('admin/players', AdminPlayerViewSet, basename='admin_players')
+# router.register('authenticate', ExampleView, basename='authenticate')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -41,4 +43,5 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('authenticate/', ExampleView.as_view(), name='authenticate'),
 ]

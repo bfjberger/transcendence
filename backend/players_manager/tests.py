@@ -15,8 +15,6 @@ class TestPlayers(TestCase):
 	def setUp(self):
 			# Create a Player instance for use in this test case.
 			self.player = Player.objects.create(
-					login="testplayer",
-					password="testpassword",
 					nickname="Test Nickname",
 					# Set additional fields as necessary
 			)
