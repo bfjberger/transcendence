@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+
 import os
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,15 +22,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-u7k_gv&945(bqwi@w4avw&##m#qi84myt&uty05##=f2=m@+=h'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
-
-# Application definition
+# Application definitionf
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -37,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'snippets',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'authenticate',
 ]
 
 MIDDLEWARE = [
@@ -75,11 +78,11 @@ WSGI_APPLICATION = 'bck_django.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 # DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
 #        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-#}
+#     }
+# }
 
 
 DATABASES = {
@@ -92,7 +95,6 @@ DATABASES = {
         "PORT": os.environ.get("SQL_PORT", "5432"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -134,3 +136,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+CSRF_TRUSTED_ORIGINS = ["http://localhost:7890"]
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',)
+# }

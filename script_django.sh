@@ -12,16 +12,18 @@ then
     echo "PostgreSQL started"
 fi
 
-pip install Pillow
+# pip install Pillow
+# pip install djangorestframework-simplejwt
+# pip install requests
 
 pip install djangorestframework
 
-pip install djangorestframework-simplejwt
-
-pip install requests
+pip install pygments
 
 cd /usr/backend/
 
+# django-admin startproject bck_django
+# cd bck_django
 python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser --noinput
