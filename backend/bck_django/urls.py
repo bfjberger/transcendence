@@ -21,3 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('snippets.urls')),
 ]
+
+urlpatterns += [
+    path('testaut/', include('rest_framework.urls')),
+]
