@@ -9,10 +9,8 @@ from snippets.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES
 #    linenos = serializers.BooleanField(required=False)
 #    language = serializers.ChoiceField(choices=LANGUAGE_CHOICES, default='python')
 #    style = serializers.ChoiceField(choices=STYLE_CHOICES, default='friendly')
-
 #    def create(self, validated_data):
 #        return Snippet.objects.create(**validated_data)
-
 #    def update(self, instance, validated_data):
 #        instance.title = validated_data.get('title', instance.title)
 #        instance.code = validated_data.get('code', instance.code)
