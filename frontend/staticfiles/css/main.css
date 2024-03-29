@@ -8,9 +8,9 @@ body, html {
 	min-height: 55px;
 }
 
-/* Style when hovering over links from the side bar */
-.nav-link:hover {
-	background-color: rgba(43, 47, 50, 0.5);
+.dropdown-menu {
+	left: unset !important;
+	right: 0px !important;
 }
 
 #board_two {

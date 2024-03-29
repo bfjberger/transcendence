@@ -173,9 +173,9 @@ document.addEventListener("DOMContentLoaded", () => {
 	// fetchTest();
 	// fetchAvatar();
 
-	document.getElementById("uploadBtn").addEventListener("click", e => {
-		e.preventDefault();
-		// uploadTestPut();
-		uploadTestGet();
-  	})
+	// document.getElementById("uploadBtn").addEventListener("click", e => {
+	// 	e.preventDefault();
+	// 	// uploadTestPut();
+	// 	uploadTestGet();
+  	// })
 });

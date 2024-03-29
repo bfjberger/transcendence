@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		e.preventDefault();
 
 		loginForm.classList.add("d-none");
-		loginForm.querySelectorAll(".input-field").forEach(inputElement => {
+		loginForm.querySelectorAll(".input__field").forEach(inputElement => {
 			inputElement.value = "";
 			inputElement.parentElement.querySelector(".form_input_error_message").textContent = "";
 		});
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		loginForm.classList.remove("d-none");
 		loginFormTitle.classList.remove("d-none");
 		createAccountForm.classList.add("d-none");
-		createAccountForm.querySelectorAll(".input-field").forEach(inputElement => {
+		createAccountForm.querySelectorAll(".input__field").forEach(inputElement => {
 			inputElement.value = "";
 			inputElement.parentElement.querySelector(".form_input_error_message").textContent = "";
 		});
@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		createUser(createAccountForm);
   });
 
-	document.querySelectorAll(".input-field").forEach(inputElement => {
+	document.querySelectorAll(".input__field").forEach(inputElement => {
 		inputElement.addEventListener("input", e => {
 			inputElement.parentElement.querySelector(".form_input_error_message").textContent = "";
 		});
