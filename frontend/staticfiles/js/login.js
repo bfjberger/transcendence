@@ -66,42 +66,50 @@ async function createUser(createAccountForm) {
 	}
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-	const loginForm = document.querySelector("#popupLogin");
-	const loginFormTitle = document.querySelector("#popupLoginTitle");
-	const createAccountForm = document.querySelector("#popupCreateAccount");
-	const createAccountFormTitle = document.querySelector("#popupCreateAccountTitle");
+async function connectUser42() {
+	
+}
 
-	document.querySelector("#linkCreateAccount").addEventListener("click", e => {
+document.addEventListener("DOMContentLoaded", () => {
+
+	const loginBtn = document.querySelector("#btn__login");
+	const createAccountBtn = document.querySelector("#btn__createAccount");
+	const login42Btn = document.querySelector("#btn__login--42");
+
+	const loginForm = document.querySelector("#form__login");
+	const createAccountForm = document.querySelector("#form__createAccount");
+
+	loginBtn.addEventListener("click", e => {
 		e.preventDefault();
 
-		loginForm.classList.add("d-none");
+		// reset all fields
 		loginForm.querySelectorAll(".input__field").forEach(inputElement => {
 			inputElement.value = "";
 			inputElement.parentElement.querySelector(".form_input_error_message").textContent = "";
 		});
-		loginFormTitle.classList.add("d-none");
-		createAccountForm.classList.remove("d-none");
-		createAccountFormTitle.classList.remove("d-none");
 	});
 
-	document.querySelector("#linkLogin").addEventListener("click", e => {
+	createAccountBtn.addEventListener("click", e => {
 		e.preventDefault();
 
-		loginForm.classList.remove("d-none");
-		loginFormTitle.classList.remove("d-none");
-		createAccountForm.classList.add("d-none");
+		// reset all fields
 		createAccountForm.querySelectorAll(".input__field").forEach(inputElement => {
 			inputElement.value = "";
 			inputElement.parentElement.querySelector(".form_input_error_message").textContent = "";
 		});
-		createAccountFormTitle.classList.add("d-none");
 	});
+
+	login42Btn.addEventListener("click", e => {
+		e.preventDefault();
+
+		// login with 42 handler
+		connectUser42();
+	})
 
 	loginForm.addEventListener("submit", e => {
 		e.preventDefault();
 
-		console.log('not yet supported, waiting for URL specific to login');
+		// login via normal account handler
 
 		// connectUser(loginForm);
 	});
@@ -109,9 +117,12 @@ document.addEventListener("DOMContentLoaded", () => {
 	createAccountForm.addEventListener("submit", e => {
 		e.preventDefault();
 
-		createUser(createAccountForm);
-  });
+		// create account handler
 
+		// createUser(createAccountForm);
+	});
+
+	// reset the error message field when the user select this input field
 	document.querySelectorAll(".input__field").forEach(inputElement => {
 		inputElement.addEventListener("input", e => {
 			inputElement.parentElement.querySelector(".form_input_error_message").textContent = "";
