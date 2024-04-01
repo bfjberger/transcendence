@@ -41,8 +41,9 @@ async function createUser(createAccountForm) {
 	}
 
 	const inputValues = {
-		login: input["username"].value,
-		password: input["password_one"].value,
+		login: input.username.value,
+		password: input.password_one.value,
+		email: input.email.value,
 	};
 
 	const init = {
@@ -67,7 +68,10 @@ async function createUser(createAccountForm) {
 }
 
 async function connectUser42() {
-	
+
+	let loading = document.getElementById("loading");
+
+	loading.classList.remove("d-none");
 }
 
 document.addEventListener("DOMContentLoaded", () => {

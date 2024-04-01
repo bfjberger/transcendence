@@ -248,8 +248,8 @@ window.rempliTestDebug = function () {
 
 window.startTournament = function () {
 	// remove the button of the login when the tournament is launched
-	const loginButton = document.querySelector("#login-btn");
-	loginButton.classList.add("d-none");
+	// const loginButton = document.querySelector("#login-btn");
+	// loginButton.classList.add("d-none");
 
 	const startBtn = document.querySelector("#startGame2");
 	startBtn.classList.remove("d-none");

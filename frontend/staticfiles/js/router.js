@@ -1,16 +1,13 @@
 const routes = {
 	"/staticfiles/index.html": {
-		linkLabel: "Main Page",
 		title: "Main Page",
 		content: `hello`
 	},
 	"/staticfiles/html/profile.html": {
-		linkLabel: "Profile",
 		title: "Profile",
 		content: `Profile Page`
 	},
 	"/staticfiles/html/twoplayers.html": {
-		linkLabel: "Two Players Game",
 		title: "Two Players Game",
 		content: `<div class="row">
 					<div class="col text-center fw-bold pt-3">
@@ -42,7 +39,6 @@ const routes = {
 				</div>`
 	},
 	"/staticfiles/html/fourplayers.html": {
-		linkLabel: "Four Players Game",
 		title: "Four Players Game",
 		content: `<div class="row">
 					<div class="col text-center fw-bold pt-3">
@@ -81,7 +77,6 @@ const routes = {
 				</div>`
 	},
 	"/staticfiles/html/tournament.html": {
-		linkLabel: "Tournament",
 		title: "Tournament",
 		content: `<div class="row">
 				<div class="col text-center fw-bold pt-3">
@@ -143,9 +138,112 @@ const routes = {
 			<div class="row" id="bracketContainer"></div>`
 	},
 	"/staticfiles/html/friends.html": {
-		linkLabel: "Friends",
 		title: "Friends",
 		content: `Friends Page`
+	},
+	"/staticfiles/html/login.html": {
+		title: "Login",
+		content: `<div class="list-group  d-flex align-items-center">
+					<div class="row my-5"></div>
+					<div class="row my-5">
+						<button class="btn btn-outline-primary list-group-item list-group-item-primary" type="button" data-bs-toggle="modal" data-bs-target="#modal__login" id="btn__login">Login</button>
+					</div>
+					<div class="row my-5"></div>
+					<div class="row my-5">
+						<button class="btn btn-outline-success list-group-item list-group-item-success" type="button" data-bs-toggle="modal" data-bs-target="#modal__createAccount" id="btn__createAccount">Create an Account</button>
+					</div>
+					<div class="row my-5"></div>
+					<div class="row my-5">
+						<button class="btn btn-outline-info list-group-item list-group-item-info" type="button" id="btn__login--42">Sign in with 42</button>
+					</div>
+				</div>
+				<div class="modal fade" id="modal__login" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered text-center">
+						<div class="modal-content">
+							<div class="modal-header text-primary fw-bold fs-2">
+								<p class="col-12 modal-title">Login</p>
+							</div>
+							<div class="modal-body">
+								<form id="form__login" class="">
+									<div class="mb-1 text-danger" id="login_error_message_login"></div>
+									<div class="mb-2">
+										<div class="text-primary">
+											Username
+										</div>
+										<input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="username">
+										<div class="form_input_error_message text-danger"></div>
+									</div>
+									<div class="mb-2">
+										<div class="text-primary">
+											Password
+										</div>
+										<input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="password">
+										<div class="form_input_error_message text-danger"></div>
+									</div>
+									<button class="btn btn-primary mt-1" type="submit">
+										Continue
+									</button>
+									<!-- <p class="my-2">
+										<a id="forgotPassword" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Forgot your password?</a>
+									</p> -->
+								</form>
+							</div>
+							<div class="modal-footer py-2">
+								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal fade" id="modal__createAccount" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered text-center">
+						<div class="modal-content">
+							<div class="modal-header text-success fw-bold fs-2">
+								<p class="col-12 modal-title">Create Account</p>
+							</div>
+							<div class="modal-body">
+								<form id="form__createAccount" class="">
+									<div class="mb-1 text-danger" id="login_error_message_create"></div>
+									<div class="mb-2">
+										<div class="text-success-emphasis">
+											Username
+										</div>
+										<input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="username">
+										<div class="form_input_error_message text-danger"></div>
+									</div>
+									<div class="mb-2">
+										<div class="text-success-emphasis">
+											Email Address
+										</div>
+										<input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="email">
+										<div class="form_input_error_message text-danger"></div>
+									</div>
+									<div class="mb-2">
+										<div class="text-success-emphasis">
+											Password
+										</div>
+										<input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="password_one">
+										<div class="form_input_error_message text-danger"></div>
+									</div>
+									<div class="mb-2">
+										<div class="text-success-emphasis">
+											Confirm password
+										</div>
+										<input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="password_two">
+										<div class="form_input_error_message text-danger"></div>
+									</div>
+									<button class="btn btn-success mt-1" type="submit">
+										Continue
+									</button>
+								</form>
+							</div>
+							<div class="modal-footer py-2">
+								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="d-none" id="loading"></div>`
 	}
 };
 
@@ -153,12 +251,17 @@ const routes = {
 function navigateToPage(page) {
 	const route = routes[page];
 	if (route) {
-		document.querySelector("#main-content").innerHTML = route.content;
+		document.querySelector("#main__content").innerHTML = route.content;
 		document.title = route.title; // Update page title
+		if (route.title === "Login") {
+			document.querySelector("#btn__navbar--home").setAttribute("disabled", "");
+			document.querySelector("#btn__navbar--user").setAttribute("disabled", "");
+			document.querySelector("#sidebar").classList.add("d-none");
+		}
 		history.pushState({ page }, "", page); // Update URL
 	}
 	else {
-		document.querySelector("#main-content").innerHTML = "<h2>Page Not Found</h2>";
+		document.querySelector("#main__content").innerHTML = "<h2>Page Not Found</h2>";
 	}
 }
 
@@ -170,111 +273,8 @@ document.querySelectorAll(".nav__link").forEach(link => {
 	});
 });
 
+window.onpopstate = navigateToPage;
+window.route = navigateToPage;
+
 // Initial page load
 navigateToPage("/staticfiles/index.html");
-
-/*
-	WHEN HOSTING THE PAGES (CONTENT) ON THE SERVER
-// Function to load content based on page from Django backend
-function loadPageFromDjango(page) {
-  fetch(`/api/pages/${page}`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok.");
-      }
-      return response.text();
-    })
-    .then(html => {
-      document.querySelector(".main-content").innerHTML = html;
-    })
-    .catch(error => {
-      console.error("Fetch error:", error);
-    });
-}
-
-// Event listener for navigation links
-document.querySelectorAll(".nav__link").forEach(link => {
-  link.addEventListener("click", function() {
-    const page = this.getAttribute("data-page");
-    loadPageFromDjango(page);
-  });
-});
-
-// Initial page load
-loadPageFromDjango("home");
-*/
-
-/*
-const contentElement = document.querySelector('#content');
-// const nav = document.querySelector('#nav');
-
-const renderContent = route => contentElement.innerHTML = routes[route].content;
-
-const navigate = e => {
-	const route = e.target.pathname;
-	// this is responsible for adding the new path name to the history stack
-	history.pushState({}, "", route);
-	renderContent(route);
-};
-
-// function to register click handlers
-const registerNavLinks = () => {
-	// nav.addEventListener('click', (e) => {
-	// 	e.preventDefault();
-	// 	navigate(e); // pending implementation
-	// });
-
-	document.querySelectorAll(".nav__link").forEach(linkElement => {
-
-		linkElement.addEventListener("click", e => {
-			e.preventDefault();
-			Object.keys(routes).forEach(route => {
-				if (linkElement.value === route) {
-					const { linkLabel } = routes[route];
-					linkElement.nodeValue = linkLabel;
-					return;
-				}
-			})
-			navigate(e);
-		});
-	});
-
-};
-
-/*
-// function to create new nav items
-const renderNavlinks = () => {
-	const navFragment = document.createDocumentFragment();
-	Object.keys(routes).forEach(route => {
-		const { linkLabel } = routes[route];
-
-		const linkElement = document.createElement('a')
-		linkElement.href = route;
-		linkElement.textContent = linkLabel;
-		linkElement.className = 'nav__link';
-		navFragment.appendChild(linkElement);
-	});
-
-	nav.append(navFragment);
-};
-*\/
-
-const registerBrowserBackAndForth = () => {
-	window.onpopstate = function (e) {
-		const route = location.pathname;
-		renderContent(route);
-	};
-};
-
-const renderInitialPage = () => {
-	const route = location.pathname;
-	renderContent(route);
-};
-
-(function bootup() {
-	// renderNavlinks();
-	registerNavLinks();
-	registerBrowserBackAndForth();
-	renderInitialPage();
-})();
-*/

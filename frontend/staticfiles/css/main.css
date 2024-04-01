@@ -23,11 +23,55 @@ body, html {
 	max-height: 650px;
 }
 
-/*
-if you want to animate the opening of the dropdown button of the user
-*/
-#dropdown-custom {
-	height: 0;
-	max-height: 100px;
-	transition: height 4s ease;
+/* Animation for the dropdown */
+@media (min-width: 768px) {
+	.animate {
+		animation-duration: 0.3s;
+		animation-fill-mode: both;
+	}
+}
+
+@keyframes slideIn {
+	0% {
+		transform: translateY(1rem);
+		opacity: 0;
+	}
+
+	100% {
+		transform: translateY(0rem);
+		opacity: 1;
+	}
+
+	0% {
+		transform: translateY(1rem);
+		opacity: 0;
+	}
+}
+
+.slideIn {
+	animation-name: slideIn;
+}
+
+/* Animation for the rotating circle */
+#loading::after
+{
+	content: "";
+	position: absolute;
+	inset: 45%;
+	width: 10%;
+	aspect-ratio: 1/1;
+	border-radius: 50%;
+	border: 10px solid white;
+	border-color: red green blue yellow;
+	animation: spinner 1s linear infinite;
+}
+
+@keyframes spinner
+{
+	from {
+		transform: rotateZ(0deg);
+	}
+	to {
+		transform: rotateZ(360deg);
+	}
 }
