@@ -40,10 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'players_manager',
-    'friends_manager',
-    'two_players_games_manager',
-    'tournaments_manager',
-    'four_players_games_manager',
+#    'friends_manager',
+#    'two_players_games_manager',
+#    'tournaments_manager',
+#    'four_players_games_manager',
 ]
 
 MIDDLEWARE = [
@@ -142,3 +142,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CSRF_TRUSTED_ORIGINS = ["http://localhost:7890"]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}

@@ -12,7 +12,7 @@ async function connectUser(loginForm) {
 	 const init = {
 		method: 'GET',
 		headers: {'Content-Type': 'application/json'},
-		body: JSON.stringify(inputValues)
+		// body: JSON.stringify(inputValues)
 	};
 
 	try {
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		// login via normal account handler
 
-		// connectUser(loginForm);
+		connectUser(loginForm);
 	});
 
 	createAccountForm.addEventListener("submit", e => {
