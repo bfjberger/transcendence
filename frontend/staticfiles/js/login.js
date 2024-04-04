@@ -12,7 +12,7 @@ async function connectUser(loginForm) {
 	 const init = {
 		method: 'GET',
 		headers: {'Content-Type': 'application/json'},
-		body: JSON.stringify(inputValues)
+		// body: JSON.stringify(inputValues)
 	};
 
 	try {
@@ -24,13 +24,13 @@ async function connectUser(loginForm) {
 		// depending on the result of the request treat accordingly
 		console.log(data);
 	} catch (e) {
-		console.error("Error connect: ", e);
-		window.alert("Error connect: " + e.message);
+		console.error("Error connect user: ", e);
 	}
 }
 
 // Add a new user to the DB | using POST
 // For now not working but expected to work
+// the headers for POST -> application/json; charset=UTF-8
 async function createUser(createAccountForm) {
 
 	const input = createAccountForm.elements;
@@ -41,29 +41,29 @@ async function createUser(createAccountForm) {
 	}
 
 	const inputValues = {
-		login: input.username.value,
-		password: input.password_one.value,
-		email: input.email.value,
+		// login: input.username.value,
+		// password: input.password_one.value,
+		// email: input.email.value,
+		login: "test",
+		password: "test",
+		email: "test@test.com",
 	};
 
 	const init = {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'applications/json',
-		},
+		method: 'PUT',
+		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify(inputValues)
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/players/', init);
+		const response = await fetch('http://localhost:7890/api/players/1/', init);
 		if (!response.ok) {
-			throw new Error('Error: ' + response.status);
+			throw new Error(response.status);
 		}
 		const data = await response.json();
 		window.alert("You have been registered. You are now logged " + data.message);
 	} catch (e) {
-		console.error("Error create: ", e);
-		window.alert("Error create: " + e.message);
+		console.error("Error create user: ", e);
 	}
 }
 
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		// login via normal account handler
 
-		// connectUser(loginForm);
+		connectUser(loginForm);
 	});
 
 	createAccountForm.addEventListener("submit", e => {
@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		// create account handler
 
-		// createUser(createAccountForm);
+		createUser(createAccountForm);
 	});
 
 	// reset the error message field when the user select this input field
