@@ -18,23 +18,24 @@ from django.contrib import admin
 from django.urls import path, include
 
 from rest_framework import routers
-from players_manager.views import PlayerViewSet
-from players_manager.views import AdminPlayerViewSet
-from friends_manager.views import FriendViewSet
-from two_players_games_manager.views import Two_PlayerViewSet
-from tournaments_manager.views import TournamentViewSet
-from four_players_games_manager.views import Four_PlayerViewSet
 
-router = routers.SimpleRouter()
-router.register('players', PlayerViewSet, basename='players')
-router.register('friends', FriendViewSet, basename='friends')
-router.register('two_player', Two_PlayerViewSet, basename='two_player')
-router.register('tournaments', TournamentViewSet, basename='tournaments')
-router.register('four_player', Four_PlayerViewSet, basename='four_player')
-router.register('admin/players', AdminPlayerViewSet, basename='admin_players')
+# from players_manager.views import PlayerViewSet
+# from players_manager.views import AdminPlayerViewSet
+# from friends_manager.views import FriendViewSet
+# from two_players_games_manager.views import Two_PlayerViewSet
+# from tournaments_manager.views import TournamentViewSet
+# from four_players_games_manager.views import Four_PlayerViewSet
+
+# router = routers.SimpleRouter()
+# router.register('players', PlayerViewSet, basename='players')
+# router.register('friends', FriendViewSet, basename='friends')
+# router.register('two_player', Two_PlayerViewSet, basename='two_player')
+# router.register('tournaments', TournamentViewSet, basename='tournaments')
+# router.register('four_player', Four_PlayerViewSet, basename='four_player')
+# router.register('admin/players', AdminPlayerViewSet, basename='admin_players')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
-    path('api/', include(router.urls)),
+    # path('api/', include(router.urls)),
 ]

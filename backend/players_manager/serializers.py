@@ -1,27 +1,19 @@
-from rest_framework.serializers import ModelSerializer, ValidationError
+from rest_framework import serializers
+
 from players_manager.models import Player
 
-class PlayerSerializer(ModelSerializer):
+class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = '__all__'
+        fields = ('id', 'owner')
 
-    def validate_login(self, value):
-        if Player.objects.filter(login=value).exists():
-            raise ValidationError("This login is already taken.")
-        return value
-    
-    def validate (self, data):
-        if data['nb_games_2p_won'] + data['nb_games_2p_lost'] != data['nb_games_2p']:
-            raise ValidationError("Inconsistency in nb_games_2p_won and nb_games_2p_lost")
-        return data
 
-class PlayerDetailsSerializer(ModelSerializer):
-    class Meta:
-       model = Player
-       fields = ['id', 'login', 'password' ,'nickname', 'score']
-       
-class AdminPlayerSerializer(ModelSerializer):
-    class Meta:
-        model = Player
-        fields = '__all__'
+#class LoginSerializer(serializers.Serializer):
+#    username = serializers.CharField(label="Username")
+#    password = serializers.CharField(label="Password")
+
+#		def validate(self, ):
+#			user = authenticate(**data)
+#			if user and user.is_active:
+#				return user
+#			raise serializers.ValidationError("Incorrect Credentials")
