@@ -1,3 +1,5 @@
+import urlRoute from "./router.js";
+
 // Try to connect a user | using GET
 // USE ANOTHER URL
 async function connectUser(loginForm) {
@@ -5,14 +7,14 @@ async function connectUser(loginForm) {
 	const input = loginForm.elements;
 
 	const inputValues = {
-		login: input.username.value,
+		username: input.username.value,
 		password: input.password.value,
 	};
 
 	 const init = {
-		method: 'GET',
+		method: 'POST',
 		headers: {'Content-Type': 'application/json'},
-		// body: JSON.stringify(inputValues)
+		body: JSON.stringify(inputValues)
 	};
 
 	try {
@@ -20,9 +22,11 @@ async function connectUser(loginForm) {
 		if (!response.ok) {
 			throw new Error(`HTTP error, status = ${response.status}`);
 		}
-		const data = await response.json();
-		// depending on the result of the request treat accordingly
-		console.log(data);
+		if (response.status === "202") {
+			urlRoute("/staticfiles/index.html");
+			const data = await response.json();
+			console.log(data);
+		}
 	} catch (e) {
 		console.error("Error connect user: ", e);
 	}
@@ -30,7 +34,7 @@ async function connectUser(loginForm) {
 
 // Add a new user to the DB | using POST
 // For now not working but expected to work
-// the headers for POST -> application/json; charset=UTF-8
+// in the header 'charset=UTF-8' is not necessary for it to work
 async function createUser(createAccountForm) {
 
 	const input = createAccountForm.elements;
@@ -41,12 +45,9 @@ async function createUser(createAccountForm) {
 	}
 
 	const inputValues = {
-		// login: input.username.value,
-		// password: input.password_one.value,
-		// email: input.email.value,
-		login: "test",
-		password: "test",
-		email: "test@test.com",
+		username: input.username.value,
+		password: input.password_one.value,
+		email: input.email.value,
 	};
 
 	const init = {
