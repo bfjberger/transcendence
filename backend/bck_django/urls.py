@@ -17,7 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from rest_framework import routers
+# from rest_framework import routers
+
+from players_manager.views import LoginView, ProfileView
 
 # from players_manager.views import PlayerViewSet
 # from players_manager.views import AdminPlayerViewSet
@@ -37,5 +39,6 @@ from rest_framework import routers
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
-    # path('api/', include(router.urls)),
+    path('login/', LoginView.as_view()),
+    path('profile/', ProfileView.as_view()),
 ]

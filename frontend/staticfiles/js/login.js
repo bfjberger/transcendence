@@ -18,7 +18,7 @@ async function connectUser(loginForm) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/players/', init); // will use another URL
+		const response = await fetch('http://localhost:7890/login/', init); // will use another URL
 		if (!response.ok) {
 			throw new Error(`HTTP error, status = ${response.status}`);
 		}
@@ -57,7 +57,7 @@ async function createUser(createAccountForm) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/players/1/', init);
+		const response = await fetch('http://localhost:7890/login/', init);
 		if (!response.ok) {
 			throw new Error(response.status);
 		}
