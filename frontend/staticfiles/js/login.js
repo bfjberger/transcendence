@@ -5,24 +5,25 @@ async function connectUser(loginForm) {
 	const input = loginForm.elements;
 
 	const inputValues = {
-		login: input.username.value,
+		username: input.username.value,
 		password: input.password.value,
 	};
 
 	 const init = {
-		method: 'GET',
+		method: 'POST',
 		headers: {'Content-Type': 'application/json'},
-		// body: JSON.stringify(inputValues)
+		body: JSON.stringify(inputValues)
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/players/', init); // will use another URL
+		const response = await fetch('http://localhost:7890/login/', init); // will use another URL
 		if (!response.ok) {
 			throw new Error(`HTTP error, status = ${response.status}`);
 		}
-		const data = await response.json();
+		// console.log(response.text());
+		// const data = await response.json();
 		// depending on the result of the request treat accordingly
-		console.log(data);
+		console.log('successfully');
 	} catch (e) {
 		console.error("Error connect: ", e);
 		window.alert("Error connect: " + e.message);
@@ -55,7 +56,7 @@ async function createUser(createAccountForm) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/players/', init);
+		const response = await fetch('http://localhost:7890/login/', init);
 		if (!response.ok) {
 			throw new Error('Error: ' + response.status);
 		}
