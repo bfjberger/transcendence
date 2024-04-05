@@ -1,4 +1,4 @@
-import urlRoute from "./router.js";
+import navigateToPage from "./router.js";
 
 // Try to connect a user | using GET
 // USE ANOTHER URL
@@ -22,10 +22,13 @@ async function connectUser(loginForm) {
 		if (!response.ok) {
 			throw new Error(`HTTP error, status = ${response.status}`);
 		}
-		if (response.status === "202") {
-			urlRoute("/staticfiles/index.html");
+		if (response.status === 202) {
+			console.log(response);
+			// console.log('cookie: ' + document.cookie);
 			const data = await response.json();
-			console.log(data);
+			if (!document.cookie.length) {
+				navigateToPage("index");
+			}
 		}
 	} catch (e) {
 		console.error("Error connect user: ", e);

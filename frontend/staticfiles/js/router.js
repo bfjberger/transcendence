@@ -1,5 +1,5 @@
 // create an object that maps the url to the template, title, and description
-const urlRoutes = {
+const routes = {
 	"main": {
 		title: "Main Page",
 		template: '../templates/main.html'
@@ -41,43 +41,51 @@ const urlRoutes = {
 	},
 };
 
-/*
+
 // Function to handle navigation
 async function navigateToPage(page) {
 	const route = routes[page];
-	console.log(route);
 	if (route) {
-		console.log('ici');
 		document.innerHTML = "../templates/base.html";
 		try {
-			const response = await fetch(route.content);
+			const response = await fetch(route.template);
 			if (!response.ok) {
 				throw new Error(response.status);
 			}
 			const data = await response.json();
-			console.log(data);
+			// console.log(data);
 			document.querySelector("#main__content").innerHTML(data);
 		} catch(e) {
-			console.error("Error routing: ", e);
+			console.error("Error routing:", e);
 		}
 		// document.querySelector("#main__content").insertAdjacentHTML("afterbegin", route.content);
-		document.title = route.title; // Update page title
+		document.title = route.title;
+
 		if (route.title === "Login") {
 			document.querySelector("#sidebar").classList.add("d-none");
 			document.querySelector(".navbar").innerHTML = route.navbar;
+			let script = document.createElement('script').setAttribute('src', '../js/login.js');
+			script.setAttribute('type', 'module');
+			script.setAttribute('id', 'login__script');
+			document.head.appendChild(script);
 		}
-		history.pushState({ page }, "", page); // Update URL
+		else if (document.getElementById('login__script')) {
+			document.getElementById('login__script').remove();
+		}
+		history.pushState({ page }, "", page + '.html');
 	}
 	else {
 		document.querySelector("#main__content").innerHTML = "<h2>Page Not Found</h2>";
 	}
-}
+};
 
 // Event listener for navigation links
 document.querySelectorAll(".nav__link").forEach(link => {
 	link.addEventListener("click", function() {
 		const page = this.value;
-		navigateToPage(page);
+		if (!document.cookie.length) {
+			navigateToPage(page);
+		}
 	});
 });
 
@@ -85,19 +93,7 @@ window.onpopstate = navigateToPage;
 window.route = navigateToPage;
 
 // Initial page load
-navigateToPage("login.html");
-*/
-
-const urlPageTitle = "JS Single Page Application Router";
-
-// create document click that watches the nav links only
-document.querySelectorAll("button").forEach(element => {
-
-	element.addEventListener("click", (e) => {
-		e.preventDefault();
-		urlRoute(element.value);
-	})
-});
+navigateToPage("base");
 
 async function handleProfile() {
 
@@ -111,12 +107,29 @@ async function handleProfile() {
 		if (!response.ok) {
 			throw new Error(response.status);
 		}
+		console.log('success');
 	} catch (e) {
 		console.error("error handleProfile: " + e);
 		return 0;
 	}
 	return 1;
-}
+};
+
+export default {
+	navigateToPage,
+};
+
+/*
+const urlPageTitle = "JS Single Page Application Router";
+
+// create document click that watches the nav links only
+document.querySelectorAll("button").forEach(element => {
+
+	element.addEventListener("click", (e) => {
+		e.preventDefault();
+		urlRoute(element.value);
+	})
+});
 
 // create a function that watches the url and calls the urlLocationHandler
 function urlRoute(path) {
@@ -158,7 +171,8 @@ window.onpopstate = urlLocationHandler;
 // call the urlLocationHandler function to handle the initial url
 urlLocationHandler();
 
-export default {
-	urlRoute,
-	urlLocationHandler,
-};
+// export default {
+// 	urlRoute,
+// 	urlLocationHandler,
+// };
+*/

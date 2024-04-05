@@ -4,18 +4,20 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
 
+from players_manager.models import Player
+
 
 
 from django.contrib.auth import login, logout
 
 
 
-from players_manager.serializers import LoginSerializer, UserSerializer
+from players_manager.serializers import LoginSerializer, UserSerializer, PlayerSerializer
 
 class LoginView(APIView):
 	print("Hello from LoginView")
 	permission_classes = (permissions.AllowAny,)
-	
+
 	def post(self, request, format=None):
 		print("request.data : ", request.data)
 		serializer = LoginSerializer(data=request.data, context = {'request': request})
@@ -28,7 +30,9 @@ class LoginView(APIView):
 
 class ProfileView(generics.RetrieveAPIView):
 	permission_classes = (permissions.IsAuthenticated,)
-	serializer_class = UserSerializer
+	serializer_class = PlayerSerializer
 	def get_object(self):
 		print("\n\nHello from ProfileView : ", self.request.user)
-		return self.request.user
+		player = Player.objects.get(owner=self.request.user)
+		print("player from ProfileView : ", player)
+		return player
