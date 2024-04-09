@@ -1,8 +1,13 @@
-import navigateToPage from "./router.js";
+// import navigateToPage from "./router.js";
+
+// add the field credentials: "same-origin" to the init object to send with the request the cookies
 
 // Try to connect a user | using GET
 // USE ANOTHER URL
 async function connectUser(loginForm) {
+
+	// remove a potential error message from the field
+	loginForm.querySelector("#form__login--errorMsg").textContent = "";
 
 	const input = loginForm.elements;
 
@@ -19,16 +24,22 @@ async function connectUser(loginForm) {
 
 	try {
 		const response = await fetch('http://localhost:7890/login/', init); // will use another URL
+		if (response.status === 401) {
+			const error = await response.text();
+			document.querySelector("#form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '');
+			return;
+		}
 		if (!response.ok) {
 			throw new Error(`HTTP error, status = ${response.status}`);
 		}
 		if (response.status === 202) {
 			console.log(response);
-			// console.log('cookie: ' + document.cookie);
-			const data = await response.json();
-			if (!document.cookie.length) {
-				navigateToPage("index");
-			}
+			console.log('document.cookie: ' + document.cookie);
+			const data = await response.text();
+			console.log(data);
+			// if (!document.cookie.length) {
+			// 	navigateToPage("index");
+			// }
 		}
 	} catch (e) {
 		console.error("Error connect user: ", e);
@@ -40,10 +51,13 @@ async function connectUser(loginForm) {
 // in the header 'charset=UTF-8' is not necessary for it to work
 async function createUser(createAccountForm) {
 
+	// remove a potential error message from the field
+	createAccountForm.querySelector("#form__createAccount--errorMsg").textContent = "";
+
 	const input = createAccountForm.elements;
 
 	if (input["password_one"].value !== input["password_two"].value) {
-		document.querySelector("#login_error_message_create").textContent = "The passwords are not the same";
+		document.querySelector("#form__createAccount--errorMsg").textContent = "The passwords are not the same";
 		return;
 	}
 
@@ -60,7 +74,11 @@ async function createUser(createAccountForm) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/login/', init);
+		const response = await fetch('http://localhost:7890/register/', init);
+		if (response.status === 401) {
+
+			return;
+		}
 		if (!response.ok) {
 			throw new Error(response.status);
 		}
@@ -87,53 +105,57 @@ document.addEventListener("DOMContentLoaded", () => {
 	const loginForm = document.querySelector("#form__login");
 	const createAccountForm = document.querySelector("#form__createAccount");
 
-	loginBtn.addEventListener("click", e => {
-		e.preventDefault();
+	browser.captureNetworkRequests((requestParams) => {
+		console.log('Request Number:', this.requestCount++);
+		console.log('Request URL:', requestParams.request.url);
+		console.log('Request method:', requestParams.request.method);
+		console.log('Request headers:', requestParams.request.headers);
+	})
 
-		// reset all fields
-		loginForm.querySelectorAll(".input__field").forEach(inputElement => {
-			inputElement.value = "";
-			inputElement.parentElement.querySelector(".form_input_error_message").textContent = "";
-		});
+	$('#modal__login').on('hidden.bs.modal', function () {
+		console.log('ici');
 	});
 
-	createAccountBtn.addEventListener("click", e => {
+	// Reset all fields (input and error) from the form when it's no longer on focus
+	// document.querySelector(".modal-content").addEventListener("focusout", e => {
+	// 	e.preventDefault();
+
+	// 	loginForm.querySelectorAll(".input__field").forEach(inputElement => {
+	// 		inputElement.value = "";
+	// 		inputElement.parentElement.querySelector(".form__input--errorMsg").textContent = "";
+	// 		loginForm.querySelector("#form__login--errorMsg").textContent = "";
+	// 	});
+	// });
+
+	// Reset all fields (input and error) from the form when it's no longer on focus
+	createAccountForm.addEventListener("focusout", e => {
 		e.preventDefault();
 
-		// reset all fields
 		createAccountForm.querySelectorAll(".input__field").forEach(inputElement => {
 			inputElement.value = "";
-			inputElement.parentElement.querySelector(".form_input_error_message").textContent = "";
+			inputElement.parentElement.querySelector(".form__input--errorMsg").textContent = "";
+			createAccountForm.querySelector("#form__createAccount--errorMsg").textContent = "";
 		});
 	});
 
+	// Login with 42 handler
 	login42Btn.addEventListener("click", e => {
 		e.preventDefault();
 
-		// login with 42 handler
 		connectUser42();
 	})
 
+	// Login via "normal" account handler
 	loginForm.addEventListener("submit", e => {
 		e.preventDefault();
-
-		// login via normal account handler
 
 		connectUser(loginForm);
 	});
 
+	// Create account handler
 	createAccountForm.addEventListener("submit", e => {
 		e.preventDefault();
 
-		// create account handler
-
 		createUser(createAccountForm);
-	});
-
-	// reset the error message field when the user select this input field
-	document.querySelectorAll(".input__field").forEach(inputElement => {
-		inputElement.addEventListener("input", e => {
-			inputElement.parentElement.querySelector(".form_input_error_message").textContent = "";
-		});
 	});
 });
