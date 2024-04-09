@@ -6,11 +6,7 @@ from rest_framework import generics
 
 from players_manager.models import Player
 
-
-
 from django.contrib.auth import login, logout
-
-
 
 from players_manager.serializers import LoginSerializer, UserSerializer, PlayerSerializer
 

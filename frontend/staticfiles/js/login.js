@@ -1,4 +1,4 @@
-import navigateToPage from "./router.js";
+// import navigateToPage from "./router.js";
 
 // Try to connect a user | using GET
 // USE ANOTHER URL
@@ -26,9 +26,9 @@ async function connectUser(loginForm) {
 			console.log(response);
 			// console.log('cookie: ' + document.cookie);
 			const data = await response.json();
-			if (!document.cookie.length) {
-				navigateToPage("index");
-			}
+			// if (!document.cookie.length) {
+			// 	navigateToPage("index");
+			// }
 		}
 	} catch (e) {
 		console.error("Error connect user: ", e);
