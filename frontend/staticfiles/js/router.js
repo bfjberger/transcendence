@@ -46,7 +46,7 @@ const routes = {
 async function navigateToPage(page) {
 	const route = routes[page];
 	if (route) {
-		document.innerHTML = "../templates/base.html";
+		// document.innerHTML = "../templates/base.html";
 		try {
 			const response = await fetch(route.template);
 			if (!response.ok) {
@@ -93,7 +93,15 @@ window.onpopstate = navigateToPage;
 window.route = navigateToPage;
 
 // Initial page load
-navigateToPage("base");
+navigateToPage("../index.html");
+
+document.addEventListener("DOMContentLoaded", () => {
+
+	console.log('ici');
+	if (window.location.pathname === "test/") {
+		navigateToPage("../login.html");
+	}
+});
 
 async function handleProfile() {
 

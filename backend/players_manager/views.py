@@ -10,6 +10,28 @@ from django.contrib.auth import login, logout
 
 from players_manager.serializers import LoginSerializer, UserSerializer, PlayerSerializer
 
+class IndexView(APIView):
+	print("IndexView : ")
+	permission_classes = (permissions.AllowAny,)
+
+	def get(self, request):
+		if self.request.user.is_authenticated:
+			player = Player.objects.get(owner=self.request.user)
+			serializer = PlayerSerializer(player)
+			return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+		return Response(None, status=status.HTTP_202_ACCEPTED)
+		
+
+class test(APIView):
+	def get(self, request):
+		return Response(None, status=status.HTTP_202_ACCEPTED, template_name="../../frontend/staticfiles/html/login.html")
+		
+
+class RegisterView(APIView):
+	permission_classes = (permissions.IsAuthenticated,)
+	print("RegisterView")
+	pass
+
 class LoginView(APIView):
 	print("Hello from LoginView")
 	permission_classes = (permissions.AllowAny,)

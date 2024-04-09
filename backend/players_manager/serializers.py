@@ -7,11 +7,10 @@ from players_manager.models import Player
 
 from django.contrib.auth import authenticate
 
-
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = ('id', 'owner')
+        fields = ('id', 'owner', 'nickname', 'status')
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(label="username")
@@ -27,8 +26,6 @@ class LoginSerializer(serializers.Serializer):
         else:
             attrs['user'] = user
             return attrs
-
-
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

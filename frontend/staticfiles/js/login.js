@@ -18,7 +18,7 @@ async function connectUser(loginForm) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/login/', init); // will use another URL
+		const response = await fetch('http://localhost:7890/api/login/', init); // will use another URL
 		if (!response.ok) {
 			throw new Error(`HTTP error, status = ${response.status}`);
 		}
@@ -35,7 +35,7 @@ async function connectUser(loginForm) {
 	}
 }
 
-// Add a new user to the DB | using POST
+// Add a new user to the DB | using 
 // For now not working but expected to work
 // in the header 'charset=UTF-8' is not necessary for it to work
 async function createUser(createAccountForm) {
@@ -54,13 +54,13 @@ async function createUser(createAccountForm) {
 	};
 
 	const init = {
-		method: 'PUT',
+		method: 'POST',
 		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify(inputValues)
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/login/', init);
+		const response = await fetch('http://localhost:7890/api/register/', init);
 		if (!response.ok) {
 			throw new Error(response.status);
 		}
