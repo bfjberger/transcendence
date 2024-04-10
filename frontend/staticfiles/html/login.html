@@ -7,9 +7,9 @@
 		<link rel="shortcut icon" href="#" />
 
 		<link rel="stylesheet" href="../css/main.css" />
-		<script src="../js/login.js"></script>
+		<script type="module" src="../js/login.js"></script>
 
-		<!-- <script src="../js/router.js" defer></script> -->
+		<script type="module" src="../js/router.js"></script>
 
 		<link rel="stylesheet" href="../bootstrap-5.3.3-dist/css/bootstrap.css" />
 		<script type="module" src="../bootstrap-5.3.3-dist/js/bootstrap.min.js"></script>
@@ -17,19 +17,17 @@
 		integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 	</head>
 	<body>
-		<div class="container-fluid text-bg-secondary">
-			<div class="row">
-				<header class="navbar sticky-top">
-					<div class="col-md-1 d-flex justify-content-center">
-						<img src="../img/42_logo.svg" alt="logo 42" width="42" height="30"/>
-					</div>
-					<div class="col-md-10"></div>
-					<div class="col-md-1 text-end pe-3">
-						<img src="../img/person-circle-Bootstrap.svg" alt="user" width="30" height="30" class="rounded-circle"/>
-					</div>
-				</header>
-			</div>
-		</div>
+		<header>
+			<nav class="navbar fixed-top text-bg-secondary">
+				<div class="col-md-1 d-flex justify-content-center">
+					<img src="../img/42_logo.svg" alt="logo 42" width="42" height="30"/>
+				</div>
+				<div class="col-md-10"></div>
+				<div class="col-md-1 text-end pe-3">
+					<img src="../img/person-circle-Bootstrap.svg" alt="user" width="30" height="30" class="rounded-circle"/>
+				</div>
+			</nav>
+		</header>
 		<div class="container-fluid">
 			<div class="row">
 				<!-- SIDEBAR -->
@@ -87,22 +85,22 @@
 								</div>
 								<div class="modal-body">
 									<form id="form__login" class="">
-										<div class="mb-1 text-danger" id="login_error_message_login"></div>
+										<div class="mb-1 text-danger" id="form__login--errorMsg"></div>
 										<div class="mb-2">
 											<div class="text-primary">
 												Username
 											</div>
 											<input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="username">
-											<div class="form_input_error_message text-danger"></div>
+											<div class="form__input--errorMsg text-danger"></div>
 										</div>
 										<div class="mb-2">
 											<div class="text-primary">
 												Password
 											</div>
 											<input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="password">
-											<div class="form_input_error_message text-danger"></div>
+											<div class="form__input--errorMsg text-danger"></div>
 										</div>
-										<button class="btn btn-primary mt-1" type="submit">
+										<button class="btn btn-primary mt-1" type="submit" id="form__login--btn">
 											Continue
 										</button>
 										<!-- <p class="my-2">
@@ -124,34 +122,34 @@
 								</div>
 								<div class="modal-body">
 									<form id="form__createAccount" class="">
-										<div class="mb-1 text-danger" id="login_error_message_create"></div>
+										<div class="mb-1 text-danger" id="form__createAccount--errorMsg"></div>
 										<div class="mb-2">
 											<div class="text-success-emphasis">
 												Username
 											</div>
 											<input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="username">
-											<div class="form_input_error_message text-danger"></div>
+											<div class="form__input--errorMsg text-danger"></div>
 										</div>
 										<div class="mb-2">
 											<div class="text-success-emphasis">
 												Email Address
 											</div>
 											<input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="email">
-											<div class="form_input_error_message text-danger"></div>
+											<div class="form__input--errorMsg text-danger"></div>
 										</div>
 										<div class="mb-2">
 											<div class="text-success-emphasis">
 												Password
 											</div>
 											<input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="password_one">
-											<div class="form_input_error_message text-danger"></div>
+											<div class="form__input--errorMsg text-danger"></div>
 										</div>
 										<div class="mb-2">
 											<div class="text-success-emphasis">
 												Confirm password
 											</div>
 											<input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="password_two">
-											<div class="form_input_error_message text-danger"></div>
+											<div class="form__input--errorMsg text-danger"></div>
 										</div>
 										<button class="btn btn-success mt-1" type="submit">
 											Continue
@@ -168,5 +166,19 @@
 				<div class="d-none" id="loading"></div>
 			</div>
 		</div>
+		<footer class="footer fixed-bottom text-bg-warning">
+			<div class="row text-center">
+				<img src="https://cdn.intra.42.fr/users/49c367c197f05f6dc2e0ecfc96c1b2c3/fcoindre.jpg" width="30" height="30">
+			</div>
+			<div class="row text-center">
+				<img src="https://cdn.intra.42.fr/users/febe1a9bb4ff838d1f8a990d0b67d163/pvong.jpg" width="30" height="30">
+			</div>
+			<div class="row text-center">
+				<img src="https://cdn.intra.42.fr/users/a3eca96cd935a5060ab7df17749561d1/bberger.jpg" width="30" height="30">
+			</div>
+			<div class="row text-center">
+				<img src="https://cdn.intra.42.fr/users/242d35e3cc5d878ff9093e61857e1a4b/kmorin.jpg" width="30" height="30">
+			</div>
+		</footer>
 	</body>
 </html>

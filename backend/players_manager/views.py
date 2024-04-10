@@ -22,7 +22,7 @@ class LoginView(APIView):
 			serializer = LoginSerializer(data=request.data, context = {'request': request})
 			serializer.is_valid(raise_exception=True)
 		except serializers.ValidationError:
-			return Response(serializer.errors, status=401)
+			return Response(serializer.errors, status=201)
 		user = serializer.validated_data['user']
 		print("user from LoginView : ", user)
 		login(request, user)

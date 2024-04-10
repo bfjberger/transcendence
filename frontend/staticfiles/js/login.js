@@ -1,4 +1,4 @@
-// import navigateToPage from "./router.js";
+import urlHandler from "./router.js";
 
 // add the field credentials: "same-origin" to the init object to send with the request the cookies
 
@@ -24,7 +24,8 @@ async function connectUser(loginForm) {
 
 	try {
 		const response = await fetch('http://localhost:7890/login/', init); // will use another URL
-		if (response.status === 401) {
+
+		if (response.status === 201) {
 			const error = await response.text();
 			document.querySelector("#form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '');
 			return;
@@ -36,10 +37,7 @@ async function connectUser(loginForm) {
 			console.log(response);
 			console.log('document.cookie: ' + document.cookie);
 			const data = await response.text();
-			console.log(data);
-			// if (!document.cookie.length) {
-			// 	navigateToPage("index");
-			// }
+			urlHandler.urlRoute("../html/profile.html");
 		}
 	} catch (e) {
 		console.error("Error connect user: ", e);
@@ -76,14 +74,18 @@ async function createUser(createAccountForm) {
 	try {
 		const response = await fetch('http://localhost:7890/register/', init);
 		if (response.status === 401) {
-
+			const error = await response.text();
+			document.querySelector("#form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '');
 			return;
 		}
 		if (!response.ok) {
 			throw new Error(response.status);
 		}
-		const data = await response.json();
-		window.alert("You have been registered. You are now logged " + data.message);
+		if (response.status === 202) {
+			const data = await response.text();
+			console.log(data);
+			urlRoute("profile");
+		}
 	} catch (e) {
 		console.error("Error create user: ", e);
 	}
@@ -98,37 +100,24 @@ async function connectUser42() {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-	const loginBtn = document.querySelector("#btn__login");
-	const createAccountBtn = document.querySelector("#btn__createAccount");
 	const login42Btn = document.querySelector("#btn__login--42");
 
 	const loginForm = document.querySelector("#form__login");
 	const createAccountForm = document.querySelector("#form__createAccount");
 
-	browser.captureNetworkRequests((requestParams) => {
-		console.log('Request Number:', this.requestCount++);
-		console.log('Request URL:', requestParams.request.url);
-		console.log('Request method:', requestParams.request.method);
-		console.log('Request headers:', requestParams.request.headers);
-	})
+	// Reset all fields (input and error) from the form when the modal pass to hidden
+	document.querySelector("#modal__login").addEventListener("hidden.bs.modal", e => {
+		e.preventDefault();
 
-	$('#modal__login').on('hidden.bs.modal', function () {
-		console.log('ici');
+		loginForm.querySelectorAll(".input__field").forEach(inputElement => {
+			inputElement.value = "";
+			inputElement.parentElement.querySelector(".form__input--errorMsg").textContent = "";
+			loginForm.querySelector("#form__login--errorMsg").textContent = "";
+		});
 	});
 
-	// Reset all fields (input and error) from the form when it's no longer on focus
-	// document.querySelector(".modal-content").addEventListener("focusout", e => {
-	// 	e.preventDefault();
-
-	// 	loginForm.querySelectorAll(".input__field").forEach(inputElement => {
-	// 		inputElement.value = "";
-	// 		inputElement.parentElement.querySelector(".form__input--errorMsg").textContent = "";
-	// 		loginForm.querySelector("#form__login--errorMsg").textContent = "";
-	// 	});
-	// });
-
-	// Reset all fields (input and error) from the form when it's no longer on focus
-	createAccountForm.addEventListener("focusout", e => {
+	// Reset all fields (input and error) from the form when the modal pass to hidden
+	document.querySelector("#modal__createAccount").addEventListener("hidden.bs.modal", e => {
 		e.preventDefault();
 
 		createAccountForm.querySelectorAll(".input__field").forEach(inputElement => {
@@ -144,6 +133,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		connectUser42();
 	})
+
+	document.querySelector("#form__login--btn").addEventListener("click", e => {
+		e.preventDefault();
+
+		connectUser(loginForm);
+	});
 
 	// Login via "normal" account handler
 	loginForm.addEventListener("submit", e => {
