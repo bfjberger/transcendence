@@ -55,7 +55,7 @@ async function createUser(createAccountForm) {
 
 	const init = {
 		method: 'POST',
-		headers: {'Content-Type': 'application/json'},
+		headers: {'Content-Type': 'application/json; charset=UTF-8'},
 		body: JSON.stringify(inputValues)
 	};
 
@@ -65,7 +65,7 @@ async function createUser(createAccountForm) {
 			throw new Error(response.status);
 		}
 		const data = await response.json();
-		window.alert("You have been registered. You are now logged " + data.message);
+		console.log("You have been registered. You are now logged " + data.message);
 	} catch (e) {
 		console.error("Error create user: ", e);
 	}

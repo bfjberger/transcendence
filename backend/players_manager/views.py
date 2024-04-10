@@ -8,7 +8,9 @@ from players_manager.models import Player
 
 from django.contrib.auth import login, logout
 
-from players_manager.serializers import LoginSerializer, UserSerializer, PlayerSerializer
+from django.contrib.auth.models import User
+
+from players_manager.serializers import LoginSerializer, UserSerializer, PlayerSerializer, RegisterSerializer
 
 class IndexView(APIView):
 	print("IndexView : ")
@@ -27,10 +29,10 @@ class test(APIView):
 		return Response(None, status=status.HTTP_202_ACCEPTED, template_name="../../frontend/staticfiles/html/login.html")
 		
 
-class RegisterView(APIView):
-	permission_classes = (permissions.IsAuthenticated,)
-	print("RegisterView")
-	pass
+class RegisterAction(generics.CreateAPIView):
+	queryset = User.objects.all()
+	permission_classes = (permissions.AllowAny,)
+	serializer_class = RegisterSerializer
 
 class LoginView(APIView):
 	print("Hello from LoginView")
