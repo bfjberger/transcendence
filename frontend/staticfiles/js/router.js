@@ -112,8 +112,20 @@ document.querySelectorAll("button").forEach(element => {
 */
 
 // create a function that watches the url and calls the urlLocationHandler
-function urlRoute(path) {
-	console.log('urlRoute');
+async function urlRoute(path) {
+
+	if (path.search("profile")) {
+		try {
+			const response = await fetch('http://localhost:7890/api/profile/');
+
+			setTimeout(console.log(response.text()), 5000);
+		} catch (e) {
+			console.error(e);
+			window.alert("You don't have access to this page.");
+			return;
+		}
+	}
+
 	urlLocationHandler(path);
 	window.history.pushState({}, "", path);
 }
