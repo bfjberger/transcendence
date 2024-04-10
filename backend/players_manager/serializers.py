@@ -36,19 +36,20 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'password')
 
 class RegisterSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
     email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password = serializers.CharField(required=True, write_only=True, validators=[validate_password])
+    # password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
 
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password']
+        )
+        player = Player.objects.create(owner=user)
+        return user
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password')
-
-    def create(self, validated_data):
-        user = User.objects.create(
-            username=validated_data['username'],
-            email=validated_data['email']
-        )
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
+        fields = ('id', 'username', 'email', 'password')

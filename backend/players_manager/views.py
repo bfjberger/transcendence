@@ -31,10 +31,23 @@ class test(APIView):
 		return Response(None, status=status.HTTP_202_ACCEPTED, template_name="../../frontend/staticfiles/html/login.html")
 		
 
-class RegisterAction(generics.CreateAPIView):
+class RegisterAction(APIView):
 	queryset = User.objects.all()
 	permission_classes = (permissions.AllowAny,)
 	serializer_class = RegisterSerializer
+
+	def post(self, request):
+		serializer = RegisterSerializer(data=request.data)
+
+		if serializer.is_valid():
+			user = serializer.save()
+			if user:
+				return Response(serializer.data, status=status.HTTP_201_CREATED)
+		else:
+			print("J en ai marre de rien comprendre")
+			
+		print(serializer.errors)
+		return Response(serializer.errors, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
 class LoginView(APIView):
 	print("Hello from LoginView")
@@ -46,7 +59,7 @@ class LoginView(APIView):
 			serializer = LoginSerializer(data=request.data, context = {'request': request})
 			serializer.is_valid(raise_exception=True)
 		except serializers.ValidationError:
-			return Response(serializer.errors, status=201)
+			return Response(serializer.errors, status=status.HTTP_202_ACCEPTED)
 		user = serializer.validated_data['user']
 		print("user from LoginView : ", user)
 		login(request, user)
