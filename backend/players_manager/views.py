@@ -28,7 +28,7 @@ class IndexView(APIView):
 
 class test(APIView):
 	def get(self, request):
-		return Response(None, status=status.HTTP_202_ACCEPTED, template_name="../../frontend/staticfiles/html/login.html")
+		return Response(None, status=status.HTTP_202_ACCEPTED, template_name="../../frontend/html/login.html")
 
 
 class RegisterAction(APIView):
@@ -45,7 +45,7 @@ class RegisterAction(APIView):
 				return Response(serializer.data, status=status.HTTP_201_CREATED)
 		else:
 			print("J en ai marre de rien comprendre")
-			
+
 		print(serializer.errors)
 		return Response(serializer.errors, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 

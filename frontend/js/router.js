@@ -6,7 +6,7 @@ const routes = {
 	},
 	"profile": {
 		title: "Profile",
-		template: 'frontend/staticfiles/html/profile.html'
+		template: 'frontend/html/profile.html'
 	},
 	"twoplayers": {
 		title: "Two Players Game",
@@ -26,7 +26,7 @@ const routes = {
 	},
 	"login": {
 		title: "Login",
-		template: 'frontend/staticfiles/html/login.html',
+		template: 'frontend/html/login.html',
 		navbar: `<div class="col-md-1 d-flex justify-content-center">
 					<img src="../img/42_logo.svg" alt="logo 42" width="42" height="30"/>
 				</div>

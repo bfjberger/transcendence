@@ -37,7 +37,7 @@ async function connectUser(loginForm) {
 			console.log(response);
 			console.log('document.cookie: ' + document.cookie);
 			const data = await response.text();
-			urlHandler.urlRoute("frontend/staticfiles/html/profile.html");
+			urlHandler.urlRoute("frontend/html/profile.html");
 		}
 	} catch (e) {
 		console.error("Error connect user: ", e);
@@ -84,7 +84,7 @@ async function createUser(createAccountForm) {
 		if (response.status === 202) {
 			const data = await response.text();
 			console.log(data);
-			urlRoute("frontend/staticfiles/html/profile.html");
+			urlRoute("frontend/html/profile.html");
 		}
 	} catch (e) {
 		console.error("Error create user: ", e);
@@ -99,6 +99,10 @@ async function connectUser42() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+
+	// if (window.location.pathname.search("index")) {
+
+	// }
 
 	const login42Btn = document.querySelector("#btn__login--42");
 

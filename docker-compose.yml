@@ -12,7 +12,7 @@ services:
     networks:
       - ft_transcendance
     volumes:
-      - ./frontend/staticfiles/:/var/frontend/staticfiles/
+      - ./frontend/:/var/frontend/
 
   bck_django:
     container_name: bck_django
@@ -23,7 +23,7 @@ services:
     ports:
       - 8000
     environment:
-      - SECRET_KEY=s'django-insecure-sm@b^=144g8k*vt7gc&&h7q3z7(yf4q=08mdikb=^lrr-18vz2'  
+      - SECRET_KEY=s'django-insecure-sm@b^=144g8k*vt7gc&&h7q3z7(yf4q=08mdikb=^lrr-18vz2'
       - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
       - SQL_ENGINE=django.db.backends.postgresql
       - SQL_DATABASE=db_bck_django
@@ -39,7 +39,7 @@ services:
       - ft_transcendance
     volumes:
       - ./backend/:/usr/backend/
-    depends_on: 
+    depends_on:
       - postgres
 
   postgres:
