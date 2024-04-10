@@ -1,8 +1,13 @@
-// import navigateToPage from "./router.js";
+import urlHandler from "./router.js";
+
+// add the field credentials: "same-origin" to the init object to send with the request the cookies
 
 // Try to connect a user | using GET
 // USE ANOTHER URL
 async function connectUser(loginForm) {
+
+	// remove a potential error message from the field
+	loginForm.querySelector("#form__login--errorMsg").textContent = "";
 
 	const input = loginForm.elements;
 
@@ -18,17 +23,21 @@ async function connectUser(loginForm) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/login/', init); // will use another URL
+		const response = await fetch('http://localhost:7890/login/', init); // will use another URL
+
+		if (response.status === 201) {
+			const error = await response.text();
+			document.querySelector("#form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '');
+			return;
+		}
 		if (!response.ok) {
 			throw new Error(`HTTP error, status = ${response.status}`);
 		}
 		if (response.status === 202) {
 			console.log(response);
-			// console.log('cookie: ' + document.cookie);
-			const data = await response.json();
-			// if (!document.cookie.length) {
-			// 	navigateToPage("index");
-			// }
+			console.log('document.cookie: ' + document.cookie);
+			const data = await response.text();
+			urlHandler.urlRoute("../html/profile.html");
 		}
 	} catch (e) {
 		console.error("Error connect user: ", e);
@@ -40,10 +49,13 @@ async function connectUser(loginForm) {
 // in the header 'charset=UTF-8' is not necessary for it to work
 async function createUser(createAccountForm) {
 
+	// remove a potential error message from the field
+	createAccountForm.querySelector("#form__createAccount--errorMsg").textContent = "";
+
 	const input = createAccountForm.elements;
 
 	if (input["password_one"].value !== input["password_two"].value) {
-		document.querySelector("#login_error_message_create").textContent = "The passwords are not the same";
+		document.querySelector("#form__createAccount--errorMsg").textContent = "The passwords are not the same";
 		return;
 	}
 
@@ -60,12 +72,20 @@ async function createUser(createAccountForm) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/register/', init);
+		const response = await fetch('http://localhost:7890/register/', init);
+		if (response.status === 401) {
+			const error = await response.text();
+			document.querySelector("#form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '');
+			return;
+		}
 		if (!response.ok) {
 			throw new Error(response.status);
 		}
-		const data = await response.json();
-		console.log("You have been registered. You are now logged " + data.message);
+		if (response.status === 202) {
+			const data = await response.text();
+			console.log(data);
+			urlRoute("profile");
+		}
 	} catch (e) {
 		console.error("Error create user: ", e);
 	}
@@ -80,60 +100,57 @@ async function connectUser42() {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-	const loginBtn = document.querySelector("#btn__login");
-	const createAccountBtn = document.querySelector("#btn__createAccount");
 	const login42Btn = document.querySelector("#btn__login--42");
 
 	const loginForm = document.querySelector("#form__login");
 	const createAccountForm = document.querySelector("#form__createAccount");
 
-	loginBtn.addEventListener("click", e => {
+	// Reset all fields (input and error) from the form when the modal pass to hidden
+	document.querySelector("#modal__login").addEventListener("hidden.bs.modal", e => {
 		e.preventDefault();
 
-		// reset all fields
 		loginForm.querySelectorAll(".input__field").forEach(inputElement => {
 			inputElement.value = "";
-			inputElement.parentElement.querySelector(".form_input_error_message").textContent = "";
+			inputElement.parentElement.querySelector(".form__input--errorMsg").textContent = "";
+			loginForm.querySelector("#form__login--errorMsg").textContent = "";
 		});
 	});
 
-	createAccountBtn.addEventListener("click", e => {
+	// Reset all fields (input and error) from the form when the modal pass to hidden
+	document.querySelector("#modal__createAccount").addEventListener("hidden.bs.modal", e => {
 		e.preventDefault();
 
-		// reset all fields
 		createAccountForm.querySelectorAll(".input__field").forEach(inputElement => {
 			inputElement.value = "";
-			inputElement.parentElement.querySelector(".form_input_error_message").textContent = "";
+			inputElement.parentElement.querySelector(".form__input--errorMsg").textContent = "";
+			createAccountForm.querySelector("#form__createAccount--errorMsg").textContent = "";
 		});
 	});
 
+	// Login with 42 handler
 	login42Btn.addEventListener("click", e => {
 		e.preventDefault();
 
-		// login with 42 handler
 		connectUser42();
 	})
 
-	loginForm.addEventListener("submit", e => {
+	document.querySelector("#form__login--btn").addEventListener("click", e => {
 		e.preventDefault();
-
-		// login via normal account handler
 
 		connectUser(loginForm);
 	});
 
+	// Login via "normal" account handler
+	loginForm.addEventListener("submit", e => {
+		e.preventDefault();
+
+		connectUser(loginForm);
+	});
+
+	// Create account handler
 	createAccountForm.addEventListener("submit", e => {
 		e.preventDefault();
 
-		// create account handler
-
 		createUser(createAccountForm);
-	});
-
-	// reset the error message field when the user select this input field
-	document.querySelectorAll(".input__field").forEach(inputElement => {
-		inputElement.addEventListener("input", e => {
-			inputElement.parentElement.querySelector(".form_input_error_message").textContent = "";
-		});
 	});
 });

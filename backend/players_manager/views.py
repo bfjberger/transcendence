@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
 
+from rest_framework import serializers
+
 from players_manager.models import Player
 
 from django.contrib.auth import login, logout
@@ -40,8 +42,11 @@ class LoginView(APIView):
 
 	def post(self, request, format=None):
 		print("request.data : ", request.data)
-		serializer = LoginSerializer(data=request.data, context = {'request': request})
-		serializer.is_valid(raise_exception=True)
+		try:
+			serializer = LoginSerializer(data=request.data, context = {'request': request})
+			serializer.is_valid(raise_exception=True)
+		except serializers.ValidationError:
+			return Response(serializer.errors, status=201)
 		user = serializer.validated_data['user']
 		print("user from LoginView : ", user)
 		login(request, user)
