@@ -23,7 +23,7 @@ async function connectUser(loginForm) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/login/', init); // will use another URL
+		const response = await fetch('http://localhost:7890/api/login/', init); // will use another URL
 
 		if (response.status === 201) {
 			const error = await response.text();
@@ -37,14 +37,14 @@ async function connectUser(loginForm) {
 			console.log(response);
 			console.log('document.cookie: ' + document.cookie);
 			const data = await response.text();
-			urlHandler.urlRoute("../html/profile.html");
+			urlHandler.urlRoute("frontend/staticfiles/html/profile.html");
 		}
 	} catch (e) {
 		console.error("Error connect user: ", e);
 	}
 }
 
-// Add a new user to the DB | using 
+// Add a new user to the DB | using
 // For now not working but expected to work
 // in the header 'charset=UTF-8' is not necessary for it to work
 async function createUser(createAccountForm) {
@@ -72,7 +72,7 @@ async function createUser(createAccountForm) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/register/', init);
+		const response = await fetch('http://localhost:7890/api/register/', init);
 		if (response.status === 401) {
 			const error = await response.text();
 			document.querySelector("#form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '');
