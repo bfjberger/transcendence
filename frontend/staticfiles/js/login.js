@@ -67,7 +67,7 @@ async function createUser(createAccountForm) {
 
 	const init = {
 		method: 'POST',
-		headers: {'Content-Type': 'application/json; charset=UTF-8'},
+		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify(inputValues)
 	};
 
@@ -84,7 +84,7 @@ async function createUser(createAccountForm) {
 		if (response.status === 202) {
 			const data = await response.text();
 			console.log(data);
-			urlRoute("profile");
+			urlRoute("frontend/staticfiles/html/profile.html");
 		}
 	} catch (e) {
 		console.error("Error create user: ", e);

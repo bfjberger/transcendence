@@ -24,12 +24,12 @@ class IndexView(APIView):
 			serializer = PlayerSerializer(player)
 			return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 		return Response(None, status=status.HTTP_202_ACCEPTED)
-		
+
 
 class test(APIView):
 	def get(self, request):
 		return Response(None, status=status.HTTP_202_ACCEPTED, template_name="../../frontend/staticfiles/html/login.html")
-		
+
 
 class RegisterAction(APIView):
 	queryset = User.objects.all()
