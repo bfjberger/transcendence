@@ -76,3 +76,15 @@ class ProfileView(generics.RetrieveAPIView):
 		player = Player.objects.get(owner=self.request.user)
 		print("player from ProfileView : ", player)
 		return player
+
+class TwoPlayers(APIView):
+	pass
+
+class FourPlayers(APIView):
+	pass
+
+class Tournament(APIView):
+	pass
+
+class Friends(APIView):
+	pass
