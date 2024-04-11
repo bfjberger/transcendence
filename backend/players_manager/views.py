@@ -14,16 +14,18 @@ from django.contrib.auth.models import User
 
 from players_manager.serializers import LoginSerializer, UserSerializer, PlayerSerializer, RegisterSerializer
 
-class IndexView(APIView):
-	print("IndexView : ")
+class IndexAction(APIView):
 	permission_classes = (permissions.AllowAny,)
 
 	def get(self, request):
+		print("FAUT PAS AVOIR DE BARRIERE")
 		if self.request.user.is_authenticated:
 			player = Player.objects.get(owner=self.request.user)
 			serializer = PlayerSerializer(player)
 			return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-		return Response(None, status=status.HTTP_202_ACCEPTED)
+
+		print(status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+		return Response(data="Not connected", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
 
 class test(APIView):
