@@ -100,10 +100,6 @@ async function connectUser42() {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-	// if (window.location.pathname.search("index")) {
-
-	// }
-
 	const login42Btn = document.querySelector("#btn__login--42");
 
 	const loginForm = document.querySelector("#form__login");
