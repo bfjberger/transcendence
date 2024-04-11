@@ -18,11 +18,11 @@ class IndexAction(APIView):
 	permission_classes = (permissions.AllowAny,)
 
 	def get(self, request):
-		print("FAUT PAS AVOIR DE BARRIERE")
 		if self.request.user.is_authenticated:
 			player = Player.objects.get(owner=self.request.user)
-			serializer = PlayerSerializer(player)
-			return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+			serializer_player = PlayerSerializer(player)
+			serializer_user = UserSerializer(self.request.user)
+			return Response({"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_202_ACCEPTED)
 
 		print(status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 		return Response(data="Not connected", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
