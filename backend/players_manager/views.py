@@ -22,7 +22,7 @@ class IndexAction(APIView):
 			player = Player.objects.get(owner=self.request.user)
 			serializer_player = PlayerSerializer(player)
 			serializer_user = UserSerializer(self.request.user)
-			return Response({"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_202_ACCEPTED)
+			return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_202_ACCEPTED)
 
 		print(status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 		return Response(data="Not connected", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
@@ -45,8 +45,6 @@ class RegisterAction(APIView):
 			user = serializer.save()
 			if user:
 				return Response(serializer.data, status=status.HTTP_201_CREATED)
-		else:
-			print("J en ai marre de rien comprendre")
 
 		print(serializer.errors)
 		return Response(serializer.errors, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
@@ -68,11 +66,52 @@ class LoginView(APIView):
 		return Response(None, status=status.HTTP_202_ACCEPTED)
 
 
-class ProfileView(generics.RetrieveAPIView):
+# class ProfileView(generics.RetrieveAPIView):
+# 	permission_classes = (permissions.IsAuthenticated,)
+# 	serializer_class = PlayerSerializer
+# 	def get_object(self):
+# 		print("\n\nHello from ProfileView : ", self.request.user)
+# 		player = Player.objects.get(owner=self.request.user)
+# 		print("player from ProfileView : ", player)
+# 		return player
+	
+# 	def put_object(self):
+# 		print("\nHello from put_object : \n", self.request.user)
+# 		return "put_object"
+
+
+class ProfileView(APIView):
 	permission_classes = (permissions.IsAuthenticated,)
 	serializer_class = PlayerSerializer
-	def get_object(self):
-		print("\n\nHello from ProfileView : ", self.request.user)
+
+	def get(self, request):
 		player = Player.objects.get(owner=self.request.user)
-		print("player from ProfileView : ", player)
-		return player
+		serializer_player = PlayerSerializer(player)
+		# serializer_user = UserSerializer(self.request.user)
+		return Response(data=serializer_player.data, status=status.HTTP_200_OK)
+	
+	# @transaction.atomic
+	def put(self, request):
+		print("self.request.data", self.request.data)
+
+		try :
+			player = Player.objects.get(owner=self.request.user)
+		except :
+			return Response(None, status=status.HTTP_400_BAD_REQUEST)
+		
+		serializer_player = PlayerSerializer(player, data=self.request.data)
+
+		# serializer_user = UserSerializer(self.request.user, data=self.request.data)
+
+
+		if serializer_player.is_valid():
+			# serializer_user.save()
+			print("player", serializer_player.validated_data)
+			serializer_player.save()
+			return Response(data=serializer_player.data, status=status.HTTP_200_OK)
+		return Response(data="Debug : serializer is not valid", status=status.HTTP_400_BAD_REQUEST)
+
+
+		
+	
+

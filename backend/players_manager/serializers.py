@@ -13,7 +13,20 @@ from django.contrib.auth.password_validation import validate_password
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = ('id', 'owner', 'nickname', 'status')
+        fields = "__all__"
+
+    def update(self, instance, validated_data):
+        print("\n\n","Hello from update function", self ,"\n\n")
+        
+        instance.nickname = validated_data.get("nickname", instance.nickname)
+        
+        # print("\n\ninstance.avatar : ", self, "\n\n")
+        
+        instance.avatar = validated_data.get("avatar", instance.avatar)
+
+        instance.save()
+        return instance
+    
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(label="username")
@@ -33,7 +46,12 @@ class LoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = "__all__" 
+        fields = "__all__"
+    
+    def update(self, instance, validated_data):
+        instance.password = validated_data.get('password', instance.password)
+        instance.save()
+        return instance
 
 class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
@@ -53,3 +71,10 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'password')
+
+# class UpdateSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Player
+#         fields = ("avatar")
+    
+#     def update(self, instance, validated_data):
