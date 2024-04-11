@@ -103,7 +103,6 @@ class ProfileView(APIView):
 
 		# serializer_user = UserSerializer(self.request.user, data=self.request.data)
 
-
 		if serializer_player.is_valid():
 			# serializer_user.save()
 			print("player", serializer_player.validated_data)
@@ -111,7 +110,15 @@ class ProfileView(APIView):
 			return Response(data=serializer_player.data, status=status.HTTP_200_OK)
 		return Response(data="Debug : serializer is not valid", status=status.HTTP_400_BAD_REQUEST)
 
+class TwoPlayers(APIView):
+	pass
 
-		
-	
+class FourPlayers(APIView):
+	pass
+
+class Tournament(APIView):
+	pass
+
+class Friends(APIView):
+	pass
 

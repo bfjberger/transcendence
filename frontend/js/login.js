@@ -1,4 +1,4 @@
-import urlHandler from "./router.js";
+import router from "./router.js"
 
 // add the field credentials: "same-origin" to the init object to send with the request the cookies
 
@@ -37,7 +37,7 @@ async function connectUser(loginForm) {
 			console.log(response);
 			console.log('document.cookie: ' + document.cookie);
 			const data = await response.text();
-			urlHandler.urlRoute("frontend/html/profile.html");
+			router("profile");
 		}
 	} catch (e) {
 		console.error("Error connect user: ", e);
@@ -84,7 +84,7 @@ async function createUser(createAccountForm) {
 		if (response.status === 202) {
 			const data = await response.text();
 			console.log(data);
-			urlRoute("frontend/html/profile.html");
+			router("profile");
 		}
 	} catch (e) {
 		console.error("Error create user: ", e);
@@ -98,7 +98,7 @@ async function connectUser42() {
 	loading.classList.remove("d-none");
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+export default function handleLogin() {
 
 	const login42Btn = document.querySelector("#btn__login--42");
 
@@ -153,4 +153,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		createUser(createAccountForm);
 	});
-});
+};
