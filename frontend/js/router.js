@@ -7,6 +7,10 @@ import renderTwoPlayers from "../views/viewTwoPlayers.js"
 
 import handleProfile from "./profile.js"
 import handleLogin from "./login.js"
+import handleFriends from "./friends.js"
+import handleFourPlayers from "./fourplayers.js"
+import handleTwoPlayers from "./twoplayers.js"
+import handleTournament from "./tournament.js"
 
 const routes = {
 	"profile": {
@@ -89,43 +93,35 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 });
 
-function handleFourPlayers() {};
-
-function handleFriends() {};
-
-function handleTwoPlayers() {};
-
-function handleTournament() {};
-
 function redispatch() {
 
 	if (document.title === "Profile") {
-		console.log('profile');
+		console.log("handle profile page");
 		handleProfile();
 	}
 
 	if (document.title === "Login") {
-		console.log("login");
+		console.log("handle login page");
 		handleLogin();
 	}
 
 	if (document.title === "Two Players") {
-		console.log("two players");
+		console.log("handle two players page");
 		handleTwoPlayers();
 	}
 
 	if (document.title === "Four Players") {
-		console.log("four players");
+		console.log("handle four players page");
 		handleFourPlayers();
 	}
 
 	if (document.title === "Tournament") {
-		console.log("tournament");
+		console.log("handle tournament page");
 		handleTournament();
 	}
 
 	if (document.title === "Friends") {
-		console.log("friends");
+		console.log("handle friends page");
 		handleFriends();
 	}
 };

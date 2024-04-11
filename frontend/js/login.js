@@ -127,19 +127,6 @@ export default function handleLogin() {
 		});
 	});
 
-	// Login with 42 handler
-	login42Btn.addEventListener("click", e => {
-		e.preventDefault();
-
-		connectUser42();
-	})
-
-	document.querySelector("#form__login--btn").addEventListener("click", e => {
-		e.preventDefault();
-
-		connectUser(loginForm);
-	});
-
 	// Login via "normal" account handler
 	loginForm.addEventListener("submit", e => {
 		e.preventDefault();
@@ -152,5 +139,12 @@ export default function handleLogin() {
 		e.preventDefault();
 
 		createUser(createAccountForm);
+	});
+
+	// Login with 42 handler
+	login42Btn.addEventListener("click", e => {
+		e.preventDefault();
+
+		connectUser42();
 	});
 };
