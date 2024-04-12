@@ -18,7 +18,7 @@ const routes = {
 	"profile": {
 		title: "Profile",
 		path: "/profile/",
-		view: renderProfile()
+		view: renderProfile(),
 	},
 	"twoplayers": {
 		title: "Two Players Game",
@@ -59,7 +59,7 @@ const routes = {
 
 async function handleFirstPage() {
 	try {
-		const response = await fetch('http://localhost:7890/api/index');
+		const response = await fetch('http://localhost:7890/api/index/');
 
 		if (response.status === 202) {
 			console.log("already logged");
@@ -74,9 +74,29 @@ async function handleFirstPage() {
 	}
 }
 
+async function profileLoad() {
+
+	try {
+		const response = await fetch('http://localhost:7890/api/profile/');
+
+		if (response.status === 403) {
+			const text = await response.text();
+			throw new Error(text);
+		}
+		console.log(response.status);
+	} catch (e) {
+		console.error("handleProfile: " + e);
+		router("index");
+	}
+};
+
 export default function router(value) {
 
 	var content = document.querySelector("#main__content");
+
+	if (value === "profile") {
+		profileLoad();
+	}
 
 	content.innerHTML = routes[value].view;
 	document.title = routes[value].title;

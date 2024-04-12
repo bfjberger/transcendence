@@ -15,17 +15,11 @@ class PlayerSerializer(serializers.ModelSerializer):
         model = Player
         fields = "__all__"
 
-    def update(self, instance, validated_data):
-        print("\n\n","Hello from update function", self ,"\n\n")
-        
-        instance.nickname = validated_data.get("nickname", instance.nickname)
-        
-        # print("\n\ninstance.avatar : ", self, "\n\n")
-        
-        instance.avatar = validated_data.get("avatar", instance.avatar)
-
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.nickname = validated_data.get("nickname", instance.nickname)        
+    #     instance.avatar = validated_data.get("avatar", instance.avatar)
+    #     instance.save()
+    #     return instance
     
 
 class LoginSerializer(serializers.Serializer):

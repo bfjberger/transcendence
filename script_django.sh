@@ -18,6 +18,8 @@ pip install djangorestframework
 
 pip install requests
 
+python -m pip install django-cors-headers
+
 pip install django-allauth
 
 cd /usr/backend/

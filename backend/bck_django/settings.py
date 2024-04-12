@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'players_manager',
     'allauth',
@@ -63,7 +64,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+
 ]
 
 ROOT_URLCONF = 'bck_django.urls'
@@ -158,6 +162,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CSRF_TRUSTED_ORIGINS = ["http://localhost:7890"]
 
 # REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework.authentication.TokenAuthentication',
+#     ],
 #    'DEFAULT_AUTHENTICATION_CLASSES': [
 #        'rest_framework.authentication.SessionAuthentication',
 #    ],
@@ -165,6 +172,12 @@ CSRF_TRUSTED_ORIGINS = ["http://localhost:7890"]
 #        'rest_framework.permissions.IsAuthenticated',
 #    ],
 # }
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:7890',
+]
 
 ASGI_APPLICATION = 'bck_django.asgi.application'
 
@@ -181,3 +194,4 @@ SOCIALACCOUNT_PROVIDERS = {
 
 LOGIN_REDIRECT_URL = 'http://localhost:7890'
 LOGOUT_REDIRECT_URL = 'http://localhost:7890'
+
