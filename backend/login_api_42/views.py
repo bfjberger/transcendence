@@ -50,23 +50,29 @@ def callback(request):
     print(response)
     if response.status_code == 200:
         user_data = response.json()
-        return JsonResponse(user_data)
+        # return JsonResponse(user_data)
     
         # maintenat je dois remplir dans la base les infos du user
-        # username = user_data.get('username')
-        # password = user_data.get('password')
-        # avatar = user_data.get('avatar')
-        # email = user_data.get('email')
+        username = user_data.get('login')
+        avatar = user_data.get('profile_picture')
 
         
         # Check if the user already exists in your database
-        # Assuming you have a custom User model named Player
-        # User, created = User.objects.get_or_create(username=username, password=password, defaults={'avatar': xxxxxx})
-        
-        # Log in the user
-        # login(request, user)
-        
-        # return redirect('login')  # Redirect to the home page after successful login
+        try:
+            #  Assuming the current user is authenticated
+            user = request.user
+            Player.avatar = avatar
+            # Save the changes
+            user.save()
+            player.save()
+            # Log in the user
+            login(request, user)
+            # Assuming you have a custom User model named Player
+            # User, created = User.objects.get_or_create(username=username, defaults={'avatar': xxxxxx})
+            return redirect('login')  # Redirect to the home page after successful login
+        except Player.DoesNotExist:
+            # Handle the case where the Player object does not exist for the user
+            return HttpResponse('Player profile not found', status=404)
     else:
         # Handle the case where the request to the 42 API fails
         # You might want to display an error message or redirect to a different page
