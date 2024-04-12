@@ -45,9 +45,14 @@ async function updatePassword(passwordForm) {
 		return;
 	}
 
+	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+
 	const init = {
 		method: 'PATCH',
-		headers: {'Content-Type': 'application/json'},
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrftoken,
+		},
 		body: JSON.stringify(input.password_one.value)
 	};
 
@@ -68,9 +73,14 @@ async function updateAvatar(avatarForm) {
 
 	console.log("input avatar: " + input.avatar.value);
 
+	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+
 	const init = {
 		method: 'PATCH',
-		headers: {'Content-Type': 'application/json'},
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrftoken,
+		},
 		body: JSON.stringify(input.avatar.value)
 	};
 

@@ -100,27 +100,22 @@ class ProfileView(APIView):
 	
 	# @transaction.atomic
 	# @method_decorator()
-
-
 	@method_decorator(csrf_exempt, name='dispatch')
 	def patch(self, request):
-		# print("self.request.data", self.request.data) cause erreur 415
-
 		try :
 			player = Player.objects.get(owner=self.request.user)
 		except :
 			return Response(None, status=status.HTTP_400_BAD_REQUEST)
 		
-		serializer_player = PlayerSerializer(player, data=self.request.data)
-
+		serializer_player = PlayerSerializer(player, data=self.request.data, partial=True)
+		#serializer_player.is_valid()
+		#return Response(data=serializer_player.data, status=status.HTTP_200_OK)
 		# serializer_user = UserSerializer(self.request.user, data=self.request.data)
 
 		if serializer_player.is_valid():
-			# serializer_user.save()
-			# print("player", serializer_player.validated_data)
 			serializer_player.save()
 			return Response(data=serializer_player.data, status=status.HTTP_200_OK)
-		return Response(data="Debug : serializer is not valid", status=status.HTTP_400_BAD_REQUEST)
+		return Response(data={"errors" : serializer_player.errors, "player" : serializer_player.data}, status=status.HTTP_400_BAD_REQUEST)
 
 
 

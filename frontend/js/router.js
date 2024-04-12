@@ -15,7 +15,7 @@ import handleTournament from "./tournament.js"
 const routes = {
 	"profile": {
 		title: "Profile",
-		path: "/api/profile/",
+		path: "/profile/",
 		view: renderProfile(),
 	},
 	"twoplayers": {
@@ -52,7 +52,7 @@ const routes = {
 
 async function handleFirstPage() {
 	try {
-		const response = await fetch('http://localhost:7890/api/index');
+		const response = await fetch('http://localhost:7890/api/index/');
 
 		if (response.status === 202) {
 			console.log("already logged");
