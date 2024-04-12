@@ -51,6 +51,6 @@ urlpatterns = [
     path('api/fourplayer/', FourPlayers.as_view()),
     path('api/tournament/', Tournament.as_view()),
     path('api/friends/', Friends.as_view()),
-    path('accounts/', views.accounts_view, name='accounts'),
-    path('call_back/', views.callback, name='callback'),
+    path('api/accounts/', views.accounts_view, name='accounts'),
+    path('api/call_back/', views.callback, name='callback'),
 ]

@@ -92,9 +92,9 @@ async function createUser(createAccountForm) {
 }
 
 async function connectUser42() {
-
+	
 	try {
-		const response = await fetch('http://localhost:7890/accounts/');
+		const response = await fetch('http://localhost:7890/api/accounts/');
 
 		if (!response.ok) {
 			throw new Error(`HTTP error, status = ${response.status}`);

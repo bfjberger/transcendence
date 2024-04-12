@@ -9,7 +9,7 @@ from django.http import JsonResponse
 def accounts_view(request):
     # Step 1: Redirect user to 42 authorization URL
     authorization_url = 'https://api.intra.42.fr/oauth/authorize' #by def, url where you can loggin ('https://api.intra.42.fr/oauth/authorize')
-    redirect_uri = 'http://127.0.0.1:7890/call_back'  # Change to your callback URL
+    redirect_uri = 'http://127.0.0.1:7890/api/call_back/'  # Change to your callback URL
     params = {
         'client_id': settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'],
         'redirect_uri': redirect_uri,
@@ -24,7 +24,7 @@ def callback(request):
     # Step 2: Receive authorization code and exchange for access token
     code = request.GET.get('code')
     print(code)
-    redirect_uri = 'http://127.0.0.1:7890/call_back'  # Change to your callback URL 
+    redirect_uri = 'http://127.0.0.1:7890/api/call_back/'  # Change to your callback URL 
     token_url = 'https://api.intra.42.fr/oauth/token'
     data = {
         'client_id': settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'],
@@ -53,18 +53,21 @@ def callback(request):
         return JsonResponse(user_data)
     
         # maintenat je dois remplir dans la base les infos du user
-        # username = user_data.get('login')
+        # username = user_data.get('username')
+        # password = user_data.get('password')
+        # avatar = user_data.get('avatar')
         # email = user_data.get('email')
+
         
         # Check if the user already exists in your database
         # Assuming you have a custom User model named Player
-        # User, created = User.objects.get_or_create(username=username, defaults={'email': email})
+        # User, created = User.objects.get_or_create(username=username, password=password, defaults={'avatar': xxxxxx})
         
         # Log in the user
         # login(request, user)
         
-        # return redirect('home')  # Redirect to the home page after successful login
+        # return redirect('login')  # Redirect to the home page after successful login
     else:
         # Handle the case where the request to the 42 API fails
         # You might want to display an error message or redirect to a different page
-        return redirect('accounts')  # Redirect to the accounts page with an error message
+        return redirect('api/accounts/')  # Redirect to the accounts page with an error message
