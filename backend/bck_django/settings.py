@@ -32,6 +32,8 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 # Application definition
 
 INSTALLED_APPS = [
+	'daphne',
+	'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -132,6 +134,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = 'static/'
 
 # Default primary key field type
@@ -150,3 +153,5 @@ CSRF_TRUSTED_ORIGINS = ["http://localhost:7890"]
 #        'rest_framework.permissions.IsAuthenticated',
 #    ],
 # }
+
+ASGI_APPLICATION = 'bck_django.asgi.application'
