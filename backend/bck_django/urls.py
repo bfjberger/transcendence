@@ -20,7 +20,7 @@ from django.urls import path, include
 # from rest_framework import routers
 
 from players_manager.views import LoginView, ProfileView, RegisterAction, IndexAction, test, TwoPlayers, FourPlayers, Tournament, Friends
-
+from login_api_42 import views
 # from players_manager.views import PlayerViewSet
 # from players_manager.views import AdminPlayerViewSet
 # from friends_manager.views import FriendViewSet
@@ -51,4 +51,6 @@ urlpatterns = [
     path('api/fourplayer/', FourPlayers.as_view()),
     path('api/tournament/', Tournament.as_view()),
     path('api/friends/', Friends.as_view()),
+    path('accounts/', views.accounts_view, name='accounts'),
+    path('call_back/', views.callback, name='callback'),
 ]
