@@ -4,12 +4,14 @@ import renderLogin from "../views/viewLogin.js"
 import renderProfile from "../views/viewProfile.js"
 import renderTournament from "../views/viewTournament.js"
 import renderTwoPlayers from "../views/viewTwoPlayers.js"
+import renderTwoOnline from "../views/viewTwoOnline.js"
 
 import handleProfile from "./profile.js"
 import handleLogin from "./login.js"
 import handleFriends from "./friends.js"
-import handleFourPlayers from "./fourplayers.js"
-import handleTwoPlayers from "./twoplayers.js"
+import handleFourPlayers from "./games/pong4players.js"
+import handleTwoPlayers from "./games/pong2players.js"
+import handleTwoPlayersOnline from "./games/pong2online.js"
 import handleTournament from "./tournament.js"
 
 const routes = {
@@ -22,6 +24,11 @@ const routes = {
 		title: "Two Players Game",
 		path: "/twoplayer/",
 		view: renderTwoPlayers()
+	},
+	"twoplayersonline": {
+		title: "Two Players Online Game",
+		path: "/twoplayeronline/",
+		view: renderTwoOnline()
 	},
 	"fourplayers": {
 		title: "Four Players Game",
@@ -107,12 +114,17 @@ function redispatch() {
 		handleLogin();
 	}
 
-	if (document.title === "Two Players") {
+	if (document.title === "Two Players Game") {
 		console.log("handle two players page");
 		handleTwoPlayers();
 	}
 
-	if (document.title === "Four Players") {
+	if (document.title === "Two Players Online Game") {
+		console.log("handle two players online page");
+		handleTwoPlayersOnline();
+	}
+
+	if (document.title === "Four Players Game") {
 		console.log("handle four players page");
 		handleFourPlayers();
 	}

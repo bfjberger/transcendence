@@ -407,36 +407,14 @@ function start4PlayerGame(p1_name, p2_name, p3_name, p4_name) {
 	}
 }
 
-function reload4PlayerGame() {
-	if (game) {
-		game.reloadPage();
-	}
-}
+export default function handleFourPlayers() {
 
-/*
-NOT USED FOR THE MOMENT SINCE GOT A BUTTON
-document.addEventListener("DOMContentLoaded", function () {
-  if (window.location.pathname.includes("fourplayers.html")) {
-	const game = new PongGame4Players("Player 1", "Player 2", "Player 3", "Player 4");
-	game.init();
-  }
-});
-*/
+    document.querySelector("#startGame4").addEventListener("click", e => {
+        e.preventDefault();
 
-window.onload = function() {
+        // hide the start button
+        document.querySelector("#startGame4").classList.add("d-none");
 
-	if (window.location.pathname.includes("fourplayers.html")) {
-		document.querySelector("#startGame4").addEventListener("click", e => {
-			e.preventDefault();
-			let btn = document.querySelector("#startGame4");
-			btn.classList.add("d-none");
-			start4PlayerGame();
-		});
-	}
-}
-
-export default {
-	PongGame4Players,
-	start4PlayerGame,
-	reload4PlayerGame,
+        start4PlayerGame();
+    });
 };

@@ -1,18 +1,3 @@
-/*
-	ATTEMPT TO SPA NOT WORKING
-*/
-
-// import AbstractView from '../views/AbstractView.js';
-
-// export default class extends AbstractView {
-// 	constructor() {
-// 		this.setTitle("Pong 2 Players");
-// 	}
-
-// 	async getHtml() {
-// 		return "";
-// 	}
-// }
 
 import Player, {
 	default_paddle_height,
@@ -310,40 +295,14 @@ function start2PlayerGame(p1_name, p2_name) {
 	}
 }
 
-function reload2PlayerGame() {
-	if (game) {
-		game.reloadPage();
-	}
-}
+export default function handleTwoPlayers() {
 
-/*
-NOT USED FOR THE MOMENT SINCE GOT A BUTTON
-document.addEventListener("DOMContentLoaded", function () {
-	if (window.location.pathname.includes("twoplayers.html")) {
-		const game = new PongGame2Players("Player 1", "Player 2");
-		game.init();
-	}
-});
-*/
+    document.querySelector("#startGame2").addEventListener("click", e => {
+        e.preventDefault();
 
-function procedureBeforeStart(p1_name, p2_name) {
-	document.querySelector("#startGame2").addEventListener("click", e => {
-		e.preventDefault();
-		document.querySelector("#startGame2").classList.add("d-none");
-		start2PlayerGame(p1_name, p2_name);
-	});
-}
+        // hide the start button
+        document.querySelector("#startGame2").classList.add("d-none");
 
-window.onload = function() {
-
-	if (window.location.pathname.includes("twoplayers.html")) {
-		procedureBeforeStart();
-	}
-}
-
-
-export default {
-	PongGame2Players,
-	start2PlayerGame,
-	reload2PlayerGame,
+        start2PlayerGame();
+    });
 };
