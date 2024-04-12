@@ -241,26 +241,75 @@ function rempliTestDebug() {
 	}
 }
 
-// DEBUG
-window.rempliTestDebug = function () {
-	rempliTestDebug();
+function listenerTournament() {
+
+	document.querySelector("#startTournament").addEventListener("click", e => {
+
+		// remove the button of the login when the tournament is launched
+		// const loginButton = document.querySelector("#login-btn");
+		// loginButton.classList.add("d-none");
+
+		const startBtn = document.querySelector("#startGame2");
+		startBtn.classList.remove("d-none");
+		startBtn.parentElement.classList.remove("d-none");
+
+		const board = document.querySelector("#board_two");
+		board.classList.remove("d-none");
+		board.parentElement.classList.remove("d-none");
+
+		let tournament = new Tournament();
+		tournament.startTournament();
+	});
+
+	document.querySelector("#DEBUGstartTournament").addEventListener("click", e => {
+
+		rempliTestDebug();
+
+		// remove the button of the login when the tournament is launched
+		// const loginButton = document.querySelector("#login-btn");
+		// loginButton.classList.add("d-none");
+
+		const startBtn = document.querySelector("#startGame2");
+		startBtn.classList.remove("d-none");
+		startBtn.parentElement.classList.remove("d-none");
+
+		const board = document.querySelector("#board_two");
+		board.classList.remove("d-none");
+		board.parentElement.classList.remove("d-none");
+
+		let tournament = new Tournament();
+		tournament.startTournament();
+	});
 }
 
-window.startTournament = function () {
-	// remove the button of the login when the tournament is launched
-	// const loginButton = document.querySelector("#login-btn");
-	// loginButton.classList.add("d-none");
+async function loadTournament() {
 
-	const startBtn = document.querySelector("#startGame2");
-	startBtn.classList.remove("d-none");
-	startBtn.parentElement.classList.remove("d-none");
+	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
-	const board = document.querySelector("#board_two");
-	board.classList.remove("d-none");
-	board.parentElement.classList.remove("d-none");
+	const init = {
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrftoken,
+		}
+	};
 
-	let tournament = new Tournament();
-	tournament.startTournament();
+	try {
+		const response = await fetch('http://localhost:7890/api/tournament/', init);
+
+		if (response.status === 403) {
+			const text = await response.text();
+			throw new Error(text);
+		}
+		console.log(response.status);
+		return 1;
+	} catch (e) {
+		console.error("loadTournament: " + e);
+		return 0;
+	}
 };
 
-export default Tournament;
+export default {
+
+	listenerTournament,
+	loadTournament
+};

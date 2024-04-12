@@ -1,23 +1,9 @@
-/*
-	ATTEMPT TO SPA NOT WORKING
-*/
-
-// import AbstractView from '../views/AbstractView.js';
-
-// export default class extends AbstractView {
-// 	constructor() {
-// 		this.setTitle("Pong 4 Players");
-// 	}
-
-// 	async getHtml() {
-// 		return "";
-// 	}
-// }
-
 import Player, {
 	default_paddle_height,
 	default_paddle_width,
 } from "./Player.js"; // Import the Player class from Player
+
+import router from "../logic/router.js" // Import the router for reload MIGHT LEAVE
 
 class PongGame4Players {
 	constructor(player1Name, player2Name, player3Name, player4Name) {
@@ -127,12 +113,8 @@ class PongGame4Players {
 		//		requestAnimationFrame(this.update.bind(this));
 		// }
 		if (e.key === "Escape") {
-			location.reload();
+			router("fourplayers");
 		}
-	}
-
-	reloadPage() {
-		location.reload();
 	}
 
 	handleKeyPress(e) {
@@ -407,14 +389,46 @@ function start4PlayerGame(p1_name, p2_name, p3_name, p4_name) {
 	}
 }
 
-export default function handleFourPlayers() {
+function listenerFourPlayers() {
 
-    document.querySelector("#startGame4").addEventListener("click", e => {
-        e.preventDefault();
+	document.querySelector("#startGame4").addEventListener("click", e => {
+		e.preventDefault();
 
-        // hide the start button
-        document.querySelector("#startGame4").classList.add("d-none");
+		// hide the start button
+		document.querySelector("#startGame4").classList.add("d-none");
 
-        start4PlayerGame();
-    });
+		start4PlayerGame();
+	});
+};
+
+async function loadFourPlayers() {
+
+	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+
+	const init = {
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrftoken,
+		}
+	};
+
+	try {
+		const response = await fetch('http://localhost:7890/api/fourplayer/', init);
+
+		if (response.status === 403) {
+			const text = await response.text();
+			throw new Error(text);
+		}
+		console.log(response.status);
+		return 1;
+	} catch (e) {
+		console.error("loadFourPlayers: " + e);
+		return 0;
+	}
+};
+
+export default {
+
+	listenerFourPlayers,
+	loadFourPlayers
 };

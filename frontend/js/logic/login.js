@@ -34,9 +34,8 @@ async function connectUser(loginForm) {
 			throw new Error(`HTTP error, status = ${response.status}`);
 		}
 		if (response.status === 202) {
-			console.log(response);
-			console.log('document.cookie: ' + document.cookie);
 			const data = await response.text();
+			console.log(data);
 			router("profile");
 		}
 	} catch (e) {
@@ -93,18 +92,12 @@ async function createUser(createAccountForm) {
 
 async function connectUser42() {
 
-	try {
-		const response = await fetch('http://localhost:7890/accounts/');
+	let loading = document.getElementById("loading");
 
-		if (!response.ok) {
-			throw new Error(`HTTP error, status = ${response.status}`);
-		}
-	} catch (e) {
-		console.error("Error 42: ", e);
-	}
+	loading.classList.remove("d-none");
 }
 
-export default function handleLogin() {
+function listenerLogin() {
 
 	const login42Btn = document.querySelector("#btn__login--42");
 
@@ -153,4 +146,15 @@ export default function handleLogin() {
 
 		connectUser42();
 	});
+};
+
+function loadLogin() {
+
+	return 1;
+};
+
+export default {
+
+	listenerLogin,
+	loadLogin
 };

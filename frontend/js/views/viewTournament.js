@@ -36,10 +36,10 @@ export default function renderTournament() {
 				<input type="text" class="form-control w-auto" id="player8" placeholder="Joueur 8" aria-label="Joueur 8" value="h"/>
 			</div>
 			<div class="d-flex justify-content-center pt-2">
-				<button class="btn btn-info" onclick="startTournament()">Démarrer le tournoi</button>
+				<button class="btn btn-info" id="startTournament">Démarrer le tournoi</button>
 			</div>
 			<div class="d-flex justify-content-center pt-2">
-				<button class="btn btn-info" onclick="rempliTestDebug(); startTournament();">DEBUG TOURNOI RAPIDE</button>
+				<button class="btn btn-info" id="DEBUGstartTournament">DEBUG TOURNOI RAPIDE</button>
 			</div>
 		</div>
 		<div class="row" id="title">

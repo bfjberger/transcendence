@@ -1,8 +1,9 @@
-
 import Player, {
 	default_paddle_height,
 	default_paddle_width,
 } from "./Player.js"; // Import the Player class from Player
+
+import router from "../logic/router.js" // Import the router for reload MIGHT LEAVE
 
 // Some of the constructor default values are overriden by the different set functions
 class PongGame2Players {
@@ -108,12 +109,8 @@ class PongGame2Players {
 		// 	requestAnimationFrame(this.update.bind(this));
 		// }
 		if (e.key === "Escape") {
-			location.reload();
+			router("twoplayers");
 		}
-	}
-
-	reloadPage() {
-		location.reload();
 	}
 
 	handleKeyPress(e) {
@@ -260,7 +257,7 @@ class PongGame2Players {
 		let winner = this.gameOver();
 		winner.then((winner) => {
 		if (winner) {
-			if (window.location.pathname.includes("twoplayers.html")) {
+			if (window.location.pathname === "/twoplayers") {
 				let winnerText = winner.getName() + " won !!";
 				this.context.fillStyle = winner.color;
 				this.context.font = "50px sans-serif";
@@ -271,7 +268,7 @@ class PongGame2Players {
 			}
 			this.ball.velocityX = 0;
 			this.ball.velocityY = 0;
-			if (window.location.pathname.includes("tournament.html")) {
+			if (window.location.pathname === "/tournament") {
 				this.context.reset();
 			}
 		}
@@ -295,14 +292,46 @@ function start2PlayerGame(p1_name, p2_name) {
 	}
 }
 
-export default function handleTwoPlayers() {
+function listenerTwoPlayers() {
 
-    document.querySelector("#startGame2").addEventListener("click", e => {
-        e.preventDefault();
+	document.querySelector("#startGame2").addEventListener("click", e => {
+		e.preventDefault();
 
-        // hide the start button
-        document.querySelector("#startGame2").classList.add("d-none");
+		// hide the start button
+		document.querySelector("#startGame2").classList.add("d-none");
 
-        start2PlayerGame();
-    });
+		start2PlayerGame();
+	});
+};
+
+async function loadTwoPlayers() {
+
+	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+
+	const init = {
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrftoken,
+		}
+	};
+
+	try {
+		const response = await fetch('http://localhost:7890/api/twoplayer/', init);
+
+		if (response.status === 403) {
+			const text = await response.text();
+			throw new Error(text);
+		}
+		console.log(response.status);
+		return 1;
+	} catch (e) {
+		console.error("loadTwoPlayers: " + e);
+		return 0;
+	}
+};
+
+export default {
+
+	listenerTwoPlayers,
+	loadTwoPlayers
 };

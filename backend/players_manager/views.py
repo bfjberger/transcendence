@@ -81,7 +81,7 @@ class LoginView(APIView):
 # 		player = Player.objects.get(owner=self.request.user)
 # 		print("player from ProfileView : ", player)
 # 		return player
-	
+
 # 	def put_object(self):
 # 		print("\nHello from put_object : \n", self.request.user)
 # 		return "put_object"
@@ -97,7 +97,7 @@ class ProfileView(APIView):
 		serializer_player = PlayerSerializer(player)
 		serializer_user = UserSerializer(self.request.user)
 		return Response(data=serializer_player.data, status=status.HTTP_200_OK)
-	
+
 	# @transaction.atomic
 	# @method_decorator()
 	@method_decorator(csrf_exempt, name='dispatch')
@@ -106,7 +106,7 @@ class ProfileView(APIView):
 			player = Player.objects.get(owner=self.request.user)
 		except :
 			return Response(None, status=status.HTTP_400_BAD_REQUEST)
-		
+
 		serializer_player = PlayerSerializer(player, data=self.request.data, partial=True)
 		#serializer_player.is_valid()
 		#return Response(data=serializer_player.data, status=status.HTTP_200_OK)
@@ -134,4 +134,3 @@ class Tournament(APIView):
 class Friends(APIView):
 	permission_classes = (permissions.IsAuthenticated,)
 	pass
-

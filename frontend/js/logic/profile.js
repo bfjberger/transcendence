@@ -15,17 +15,14 @@ async function updateNickname(nicknameForm) {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': csrftoken,
 		},
-		// credentials: 'same-origin',
-		// referrerPolicy: 'same-origin',
-		body: JSON.stringify({nickname: input.nickname.value})
+		body: JSON.stringify({nickname: input.nickname.value}),
+		credentials: 'same-origin',
+		referrerPolicy: 'same-origin',
 	};
 
 	try {
 		const response = await fetch('http://localhost:7890/api/profile/', init);
 
-		console.log(response.status);
-		const text = await response.text();
-		console.log(text);
 	} catch (e) {
 		console.error(e);
 	}
@@ -92,7 +89,7 @@ async function updateAvatar(avatarForm) {
 	}
 };
 
-export default function handleProfile() {
+function listenerProfile() {
 
 	const nicknameForm = document.querySelector("#form__update--nickname");
 	const passwordForm = document.querySelector("#form__update--password");
@@ -101,21 +98,50 @@ export default function handleProfile() {
 	nicknameForm.addEventListener("submit", e => {
 		e.preventDefault();
 
-		console.log('nick');
 		updateNickname(nicknameForm);
 	});
 
 	passwordForm.addEventListener("submit", e => {
 		e.preventDefault();
 
-		console.log('pass');
 		updatePassword(passwordForm);
 	});
 
 	avatarForm.addEventListener("submit", e => {
 		e.preventDefault();
 
-		console.log('avatar');
 		updateAvatar(avatarForm);
 	});
+};
+
+async function loadProfile() {
+
+	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+
+	const init = {
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrftoken,
+		}
+	};
+
+	try {
+		const response = await fetch('http://localhost:7890/api/profile/', init);
+
+		if (response.status === 403) {
+			const text = await response.text();
+			throw new Error(text);
+		}
+		console.log(response.status);
+		return 1;
+	} catch (e) {
+		console.error("loadProfile: " + e);
+		return 0;
+	}
+};
+
+export default {
+
+	listenerProfile,
+	loadProfile
 };
