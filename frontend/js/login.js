@@ -93,9 +93,15 @@ async function createUser(createAccountForm) {
 
 async function connectUser42() {
 
-	let loading = document.getElementById("loading");
+	try {
+		const response = await fetch('http://localhost:7890/accounts/');
 
-	loading.classList.remove("d-none");
+		if (!response.ok) {
+			throw new Error(`HTTP error, status = ${response.status}`);
+		}
+	} catch (e) {
+		console.error("Error 42: ", e);
+	}
 }
 
 export default function handleLogin() {

@@ -18,6 +18,8 @@ pip install djangorestframework
 
 pip install requests
 
+pip install django-allauth
+
 cd /usr/backend/
 
 python manage.py makemigrations
