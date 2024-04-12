@@ -15,8 +15,8 @@ import handleTournament from "./tournament.js"
 const routes = {
 	"profile": {
 		title: "Profile",
-		path: "/profile/",
-		view: renderProfile()
+		path: "/api/profile/",
+		view: renderProfile(),
 	},
 	"twoplayers": {
 		title: "Two Players Game",
@@ -67,9 +67,29 @@ async function handleFirstPage() {
 	}
 }
 
+async function profileLoad() {
+
+	try {
+		const response = await fetch('http://localhost:7890/api/profile/');
+
+		if (response.status === 403) {
+			const text = await response.text();
+			throw new Error(text);
+		}
+		console.log(response.status);
+	} catch (e) {
+		console.error("handleProfile: " + e);
+		router("index");
+	}
+};
+
 export default function router(value) {
 
 	var content = document.querySelector("#main__content");
+
+	if (value === "profile") {
+		profileLoad();
+	}
 
 	content.innerHTML = routes[value].view;
 	document.title = routes[value].title;
