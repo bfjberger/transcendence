@@ -7,15 +7,25 @@ async function updateNickname(nicknameForm) {
 
 	console.log("input nickname: " + input.nickname.value);
 
+	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+
 	const init = {
 		method: 'PATCH',
-		headers: {'Content-Type': 'applications/json'},
-		body: JSON.stringify(input.nickname.value)
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrftoken,
+		},
+		// credentials: 'same-origin',
+		// referrerPolicy: 'same-origin',
+		body: JSON.stringify({nickname: input.nickname.value})
 	};
 
 	try {
 		const response = await fetch('http://localhost:7890/api/profile/', init);
 
+		console.log(response.status);
+		const text = await response.text();
+		console.log(text);
 	} catch (e) {
 		console.error(e);
 	}
@@ -37,7 +47,7 @@ async function updatePassword(passwordForm) {
 
 	const init = {
 		method: 'PATCH',
-		headers: {'Content-Type': 'applications/json'},
+		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify(input.password_one.value)
 	};
 
@@ -60,7 +70,7 @@ async function updateAvatar(avatarForm) {
 
 	const init = {
 		method: 'PATCH',
-		headers: {'Content-Type': 'applications/json'},
+		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify(input.avatar.value)
 	};
 
