@@ -35,6 +35,8 @@ SITE_ID = 1
 # Application definition
 
 INSTALLED_APPS = [
+	'daphne',
+	'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -144,6 +146,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = 'static/'
 
 # Default primary key field type
@@ -163,6 +166,7 @@ CSRF_TRUSTED_ORIGINS = ["http://localhost:7890"]
 #    ],
 # }
 
+ASGI_APPLICATION = 'bck_django.asgi.application'
 
 SOCIALACCOUNT_PROVIDERS = {
     '42': {

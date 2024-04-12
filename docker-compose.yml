@@ -13,7 +13,7 @@ services:
       - ft_transcendance
     volumes:
       - ./frontend/:/var/frontend/
-
+      - ./backend/staticfiles/:/var/backend/staticfiles/
   bck_django:
     container_name: bck_django
     build:
