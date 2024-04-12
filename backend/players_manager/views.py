@@ -49,6 +49,7 @@ class RegisterAction(APIView):
 		print(serializer.errors)
 		return Response(serializer.errors, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
+
 class LoginView(APIView):
 	print("Hello from LoginView")
 	permission_classes = (permissions.AllowAny,)
@@ -91,7 +92,7 @@ class ProfileView(APIView):
 		return Response(data=serializer_player.data, status=status.HTTP_200_OK)
 	
 	# @transaction.atomic
-	def put(self, request):
+	def patch(self, request):
 		print("self.request.data", self.request.data)
 
 		try :
@@ -111,14 +112,18 @@ class ProfileView(APIView):
 		return Response(data="Debug : serializer is not valid", status=status.HTTP_400_BAD_REQUEST)
 
 class TwoPlayers(APIView):
+	permission_classes = (permissions.IsAuthenticated,)
 	pass
 
 class FourPlayers(APIView):
+	permission_classes = (permissions.IsAuthenticated,)
 	pass
 
 class Tournament(APIView):
+	permission_classes = (permissions.IsAuthenticated,)
 	pass
 
 class Friends(APIView):
+	permission_classes = (permissions.IsAuthenticated,)
 	pass
 

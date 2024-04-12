@@ -14,7 +14,7 @@ async function updateNickname(nicknameForm) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/profile', init);
+		const response = await fetch('http://localhost:7890/api/profile/', init);
 
 	} catch (e) {
 		console.error(e);
@@ -42,7 +42,7 @@ async function updatePassword(passwordForm) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/profile', init);
+		const response = await fetch('http://localhost:7890/api/profile/', init);
 
 	} catch (e) {
 		console.error(e);
@@ -65,7 +65,7 @@ async function updateAvatar(avatarForm) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/profile', init);
+		const response = await fetch('http://localhost:7890/api/profile/', init);
 
 	} catch (e) {
 		console.error(e);

@@ -15,32 +15,32 @@ import handleTournament from "./tournament.js"
 const routes = {
 	"profile": {
 		title: "Profile",
-		path: "/profile",
+		path: "/profile/",
 		view: renderProfile()
 	},
 	"twoplayers": {
 		title: "Two Players Game",
-		path: "/twoplayer",
+		path: "/twoplayer/",
 		view: renderTwoPlayers()
 	},
 	"fourplayers": {
 		title: "Four Players Game",
-		path: "/fourplayer",
+		path: "/fourplayer/",
 		view: renderFourPlayers()
 	},
 	"tournament": {
 		title: "Tournament",
-		path: "/tournament",
+		path: "/tournament/",
 		view: renderTournament()
 	},
 	"friends": {
 		title: "Friends",
-		path: "/friends",
+		path: "/friends/",
 		view: renderFriends()
 	},
 	"login": {
 		title: "Login",
-		path: "/login",
+		path: "/login/",
 		view: renderLogin()
 	},
 	"index": {
@@ -80,7 +80,9 @@ export default function router(value) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-	handleFirstPage();
+	if (window.location.pathname === "/") {
+		handleFirstPage();
+	}
 
 	// create document click that watches the nav links only
 	document.querySelectorAll(".nav__link").forEach(element => {

@@ -47,8 +47,8 @@ urlpatterns = [
     # path('api/index/', IndexView.as_view()),
     path('api/test/', test.as_view()),
     # path('staticfiles/AuthenticateChoice/', ),
-    path('api/twoplayer', TwoPlayers.as_view()),
-    path('api/fourplayer', FourPlayers.as_view()),
-    path('api/tournament', Tournament.as_view()),
-    path('api/friends', Friends.as_view()),
+    path('api/twoplayer/', TwoPlayers.as_view()),
+    path('api/fourplayer/', FourPlayers.as_view()),
+    path('api/tournament/', Tournament.as_view()),
+    path('api/friends/', Friends.as_view()),
 ]
