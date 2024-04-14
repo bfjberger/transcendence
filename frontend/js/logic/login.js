@@ -1,9 +1,6 @@
 import router from "./router.js"
 
-// add the field credentials: "same-origin" to the init object to send with the request the cookies
-
 // Try to connect a user | using GET
-// USE ANOTHER URL
 async function connectUser(loginForm) {
 
 	// remove a potential error message from the field
@@ -23,19 +20,19 @@ async function connectUser(loginForm) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/login/', init); // will use another URL
+		const response = await fetch('http://localhost:7890/api/login/', init);
 
-		if (response.status === 201) {
+		if (response.status === 500) {
+			document.querySelector("#form__login--errorMsg").textContent = "Error with the server (DEBUG check the terminal)";
+			return;
+		}
+		if (response.status === 401) {
 			const error = await response.text();
 			document.querySelector("#form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '');
 			return;
 		}
-		if (!response.ok) {
-			throw new Error(`HTTP error, status = ${response.status}`);
-		}
 		if (response.status === 202) {
-			const data = await response.text();
-			console.log(data);
+			// login is successful -> redirect to profile
 			router("profile");
 		}
 	} catch (e) {
@@ -43,9 +40,7 @@ async function connectUser(loginForm) {
 	}
 }
 
-// Add a new user to the DB | using
-// For now not working but expected to work
-// in the header 'charset=UTF-8' is not necessary for it to work
+// Add a new user to the DB | using POST
 async function createUser(createAccountForm) {
 
 	// remove a potential error message from the field
@@ -72,17 +67,20 @@ async function createUser(createAccountForm) {
 
 	try {
 		const response = await fetch('http://localhost:7890/api/register/', init);
-		if (response.status === 401) {
+
+		if (response.status === 203) {
 			const error = await response.text();
-			document.querySelector("#form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '');
+			console.log(error);
+			document.querySelector("#form__login--errorMsg").innerHTML = error.replace(/["{}[\]]/g, '');
 			return;
 		}
-		if (!response.ok) {
-			throw new Error(response.status);
-		}
-		if (response.status === 202) {
-			const data = await response.text();
-			console.log(data);
+		if (response.status === 201) {
+			// register is successful -> redirect to profile
+
+			const data = await response.json();
+
+			sessionStorage.setItem("username", data.username);
+
 			router("profile");
 		}
 	} catch (e) {
@@ -92,9 +90,22 @@ async function createUser(createAccountForm) {
 
 async function connectUser42() {
 
-	let loading = document.getElementById("loading");
+	// let loading = document.getElementById("loading");
 
-	loading.classList.remove("d-none");
+	// loading.classList.remove("d-none");
+
+	try {
+		const response = await fetch('http://localhost:7890/accounts/');
+
+		if (!response.ok) {
+			throw new Error(`HTTP error, status = ${response.status}`);
+		}
+
+		console.log("connection with 42 API successful");
+		router("profile");
+	} catch (e) {
+		console.error("Error 42: ", e);
+	}
 }
 
 function listenerLogin() {

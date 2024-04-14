@@ -92,7 +92,7 @@ async function loadIndex() {
 			document.querySelectorAll(".nav__link").forEach(btn => {
 				btn.setAttribute("disabled", true);
 			});
-			document.querySelector("#btn__navbar--user").setAttribute("disabled", true);
+			document.querySelector("#navbar__btn--user").setAttribute("disabled", true);
 			document.querySelector("#logout").setAttribute("disabled", true);
 
 			router("login");
@@ -105,14 +105,20 @@ async function loadIndex() {
 async function handleLogout() {
 
 	console.log("this is the function that will do the request to the back to do the logout");
+
+	sessionStorage.clear();
 };
 
-export default function router(value) {
+export default async function router(value) {
 
 	var page = routes[value];
 
-	if (page.load()) {
-		document.querySelector("#main__content").innerHTML = page.view();
+	if (await page.load()) {
+		document.getElementById("main__content").innerHTML = page.view();
+
+		document.getElementById("navbar__btn--text").innerHTML = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
+		document.getElementById("navbar__img--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
+		document.getElementById("navbar__img--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + avatar : "temp avatar";
 
 		document.title = page.title;
 
@@ -136,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		loadIndex();
 	}
 
-	document.querySelector("#logout").addEventListener("click", (e) => {
+	document.getElementById("logout").addEventListener("click", (e) => {
 		e.preventDefault();
 
 		handleLogout();

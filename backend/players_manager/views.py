@@ -66,7 +66,7 @@ class LoginView(APIView):
 			serializer = LoginSerializer(data=request.data, context = {'request': request})
 			serializer.is_valid(raise_exception=True)
 		except serializers.ValidationError:
-			return Response(serializer.errors, status=status.HTTP_202_ACCEPTED)
+			return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 		user = serializer.validated_data['user']
 		# print("user from LoginView : ", user)
 		login(request, user)
@@ -96,7 +96,7 @@ class ProfileView(APIView):
 		player = Player.objects.get(owner=self.request.user)
 		serializer_player = PlayerSerializer(player)
 		serializer_user = UserSerializer(self.request.user)
-		return Response(data=serializer_player.data, status=status.HTTP_200_OK)
+		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
 
 	# @transaction.atomic
 	# @method_decorator()
@@ -115,7 +115,8 @@ class ProfileView(APIView):
 		if serializer_player.is_valid():
 			serializer_player.save()
 			return Response(data=serializer_player.data, status=status.HTTP_200_OK)
-		return Response(data={"errors" : serializer_player.errors, "player" : serializer_player.data}, status=status.HTTP_400_BAD_REQUEST)
+		# return Response(data={"errors" : serializer_player.errors, "player" : serializer_player.data}, status=status.HTTP_400_BAD_REQUEST)
+		return Response(data=serializer_player.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 

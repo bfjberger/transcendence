@@ -1,11 +1,11 @@
 async function updateNickname(nicknameForm) {
 
 	// remove a potential error message from the field
-	// nicknameForm.querySelector(".form__update--nickname--errorMsg").textContent = "";
+	document.getElementById("form__update--nickname--msg").textContent = "";
+	document.getElementById("form__update--nickname--msg").classList.add("text-danger");
+	document.getElementById("form__update--nickname--msg").classList.remove("text-info");
 
 	const input = nicknameForm.elements;
-
-	console.log("input nickname: " + input.nickname.value);
 
 	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
@@ -23,6 +23,23 @@ async function updateNickname(nicknameForm) {
 	try {
 		const response = await fetch('http://localhost:7890/api/profile/', init);
 
+		if (response.status === 400) {
+			const error = await response.text();
+			document.getElementById("form__update--nickname--msg").textContent = error.replace(/["{}[\]]/g, '');
+			document.getElementById("form__update--nickname--msg").classList.add("text-danger");
+			document.getElementById("form__update--nickname--msg").classList.remove("text-info");
+			return;
+		}
+		if (response.status === 200) {
+			const data = await response.json();
+
+			sessionStorage.setItem("nickname", data.nickname);
+
+			document.getElementById("form__update--nickname--msg").textContent = "Your nickname was successfully updated.";
+			document.getElementById("form__update--nickname--msg").classList.remove("text-danger");
+			document.getElementById("form__update--nickname--msg").classList.add("text-info");
+		}
+
 	} catch (e) {
 		console.error(e);
 	}
@@ -31,14 +48,14 @@ async function updateNickname(nicknameForm) {
 async function updatePassword(passwordForm) {
 
 	// remove a potential error message from the field
-	// passwordForm.querySelector(".form__update--password--errorMsg").textContent = "";
+	document.getElementById("form__update--password--msg").textContent = "";
 
 	const input = passwordForm.elements;
 
-	console.log("input password: " + input.password_one.value + " " + input.password_two.value);
-
 	if (input.password_one.value !== input.password_two.value) {
-		passwordForm.querySelector(".form__update--password--errorMsg").textContent = "The passwords are not the same";
+		document.getElementById("form__update--password--msg").textContent = "The passwords are not the same";
+		document.getElementById("form__update--password--msg").classList.add("text-danger");
+		document.getElementById("form__update--password--msg").classList.remove("text-info");
 		return;
 	}
 
@@ -50,12 +67,26 @@ async function updatePassword(passwordForm) {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': csrftoken,
 		},
-		body: JSON.stringify(input.password_one.value)
+		body: JSON.stringify({password: input.password_one.value})
 	};
 
 	try {
 		const response = await fetch('http://localhost:7890/api/profile/', init);
 
+		if (response.status === 400) {
+			const error = await response.text();
+			document.getElementById("form__update--password--msg").textContent = error.replace(/["{}[\]]/g, '');
+			document.getElementById("form__update--password--msg").classList.add("text-danger");
+			document.getElementById("form__update--password--msg").classList.remove("text-info");
+			return;
+		}
+		if (response.status === 200) {
+			const data = await response.json();
+
+			document.getElementById("form__update--password--msg").textContent = "Your password was successfully updated.";
+			document.getElementById("form__update--password--msg").classList.remove("text-danger");
+			document.getElementById("form__update--password--msg").classList.add("text-info");
+		}
 	} catch (e) {
 		console.error(e);
 	}
@@ -64,11 +95,11 @@ async function updatePassword(passwordForm) {
 async function updateAvatar(avatarForm) {
 
 	// remove a potential error message from the field
-	// avatarForm.querySelector(".form__update--avatar--errorMsg").textContent = "";
+	document.getElementById("form__update--avatar--msg").textContent = "";
+	document.getElementById("form__update--avatar--msg").classList.add("text-danger");
+	document.getElementById("form__update--avatar--msg").classList.remove("text-info");
 
 	const input = avatarForm.elements;
-
-	console.log("input avatar: " + input.avatar.value);
 
 	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
@@ -78,12 +109,29 @@ async function updateAvatar(avatarForm) {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': csrftoken,
 		},
-		body: JSON.stringify(input.avatar.value)
+		body: JSON.stringify({avatar: input.avatar.value})
 	};
 
 	try {
 		const response = await fetch('http://localhost:7890/api/profile/', init);
 
+		if (response.status === 400) {
+			const error = await response.text();
+
+			document.getElementById("form__update--avatar--msg").textContent = error.replace(/["{}[\]]/g, '');
+			document.getElementById("form__update--avatar--msg").classList.add("text-danger");
+			document.getElementById("form__update--avatar--msg").classList.remove("text-info");
+			return;
+		}
+		if (response.status === 200) {
+			const data = await response.json();
+
+			sessionStorage.setItem("avatar", data.avatar);
+
+			document.getElementById("form__update--avatar--msg").textContent = "Your avatar was successfully updated.";
+			document.getElementById("form__update--avatar--msg").classList.remove("text-danger");
+			document.getElementById("form__update--avatar--msg").classList.add("text-info");
+		}
 	} catch (e) {
 		console.error(e);
 	}
@@ -128,11 +176,18 @@ async function loadProfile() {
 	try {
 		const response = await fetch('http://localhost:7890/api/profile/', init);
 
-		if (response.status === 403) {
+		if (!response.ok) {
 			const text = await response.text();
-			throw new Error(text);
+			throw new Error(text.replace(/["{}[\]]/g, ''));
 		}
-		console.log(response.status);
+		const data = await response.json();
+
+		if (data["player"].avatar !== null) {
+			sessionStorage.setItem("avatar", data["player"].avatar);
+		}
+		sessionStorage.setItem("username", data["user"].username);
+		sessionStorage.setItem("nickname", data["player"].nickname);
+
 		return 1;
 	} catch (e) {
 		console.error("loadProfile: " + e);
