@@ -2,11 +2,11 @@
 
 function listenerTwoPlayersOnline() {
 
-	document.querySelector("#startGame2Online").addEventListener("click", e => {
+	document.getElementById("startGame2Online").addEventListener("click", e => {
 		e.preventDefault();
 
 		// hide the start button
-		document.querySelector("#startGame2Online").classList.add("d-none");
+		document.getElementById("startGame2Online").classList.add("d-none");
 
 	});
 };
@@ -22,25 +22,22 @@ async function loadTwoPlayersOnline() {
 		}
 	};
 
-	/*
 	try {
-		const response = await fetch('http://localhost:7890/api/twoplayer/', init); // attendre avoir lien pour requete
+		const response = await fetch('http://localhost:7890/api/twoplayer/', init); // !! le lien devra changer
 
 		if (response.status === 403) {
 			const text = await response.text();
 			throw new Error(text);
 		}
-		console.log(response.status);
+
 		return 1;
 	} catch (e) {
 		console.error("loadTwoPlayers: " + e);
 		return 0;
 	}
-	*/
 };
 
 export default {
-
 	listenerTwoPlayersOnline,
 	loadTwoPlayersOnline
 };

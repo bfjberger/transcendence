@@ -1,5 +1,9 @@
 function renderIndex() {
+	return `
 
+		Welcome this is the main page.
+
+	`;
 };
 
 function listenerIndex() {
@@ -12,7 +16,6 @@ function loadIndex() {
 };
 
 export default {
-
 	renderIndex,
 	listenerIndex,
 	loadIndex

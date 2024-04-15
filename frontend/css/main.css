@@ -13,6 +13,10 @@ body, html {
 	right: 0px !important;
 }
 
+#sidebar-left, #sidebar-right {
+	width: 230px;
+}
+
 #board_two {
 	max-width: 650px;
 	max-height: 480px;

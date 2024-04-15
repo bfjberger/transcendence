@@ -4,7 +4,7 @@ import router from "./router.js"
 async function connectUser(loginForm) {
 
 	// remove a potential error message from the field
-	loginForm.querySelector("#form__login--errorMsg").textContent = "";
+	document.getElementById("form__login--errorMsg").textContent = "";
 
 	const input = loginForm.elements;
 
@@ -13,9 +13,14 @@ async function connectUser(loginForm) {
 		password: input.password.value,
 	};
 
-	 const init = {
+	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+
+	const init = {
 		method: 'POST',
-		headers: {'Content-Type': 'application/json'},
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrftoken,
+		},
 		body: JSON.stringify(inputValues)
 	};
 
@@ -23,33 +28,38 @@ async function connectUser(loginForm) {
 		const response = await fetch('http://localhost:7890/api/login/', init);
 
 		if (response.status === 500) {
-			document.querySelector("#form__login--errorMsg").textContent = "Error with the server (DEBUG check the terminal)";
+			document.getElementById("form__login--errorMsg").textContent = "Error with the server (DEBUG check the terminal)";
 			return;
 		}
 		if (response.status === 401) {
+			// Response when LoginSerializer raised an error
 			const error = await response.text();
-			document.querySelector("#form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '');
+			document.getElementById("form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '');
 			return;
 		}
 		if (response.status === 202) {
 			// login is successful -> redirect to profile
+
 			router("profile");
 		}
 	} catch (e) {
 		console.error("Error connect user: ", e);
 	}
-}
+};
 
 // Add a new user to the DB | using POST
 async function createUser(createAccountForm) {
 
 	// remove a potential error message from the field
-	createAccountForm.querySelector("#form__createAccount--errorMsg").textContent = "";
+	document.getElementById("form__createAccount--msg").textContent = "";
+	document.getElementById("form__createAccount--msg").classList.remove("text-info");
+	document.getElementById("form__createAccount--msg").classList.remove("text-danger");
 
 	const input = createAccountForm.elements;
 
 	if (input["password_one"].value !== input["password_two"].value) {
-		document.querySelector("#form__createAccount--errorMsg").textContent = "The passwords are not the same";
+		document.getElementById("form__createAccount--msg").textContent = "The passwords are not the same";
+		document.getElementById("form__createAccount--msg").classList.add("text-danger");
 		return;
 	}
 
@@ -69,24 +79,28 @@ async function createUser(createAccountForm) {
 		const response = await fetch('http://localhost:7890/api/register/', init);
 
 		if (response.status === 203) {
+			// Response when the registration failed
 			const error = await response.text();
-			console.log(error);
-			document.querySelector("#form__login--errorMsg").innerHTML = error.replace(/["{}[\]]/g, '');
+			document.getElementById("form__createAccount--msg").innerHTML = error.replace(/["{}[\]]/g, '');
+			document.getElementById("form__createAccount--msg").classList.add("text-danger");
 			return;
 		}
 		if (response.status === 201) {
 			// register is successful -> redirect to profile
 
 			const data = await response.json();
-
 			sessionStorage.setItem("username", data.username);
 
-			router("profile");
+			document.getElementById("form__createAccount--msg").innerHTML = "Your account was successfully created. You can now login.";
+			document.getElementById("form__createAccount--msg").classList.remove("text-danger");
+			document.getElementById("form__createAccount--msg").classList.add("text-info");
+
+			// router("login");
 		}
 	} catch (e) {
 		console.error("Error create user: ", e);
 	}
-}
+};
 
 async function connectUser42() {
 
@@ -106,34 +120,34 @@ async function connectUser42() {
 	} catch (e) {
 		console.error("Error 42: ", e);
 	}
-}
+};
 
 function listenerLogin() {
 
-	const login42Btn = document.querySelector("#btn__login--42");
+	const login42Btn = document.getElementById("btn__login--42");
 
-	const loginForm = document.querySelector("#form__login");
-	const createAccountForm = document.querySelector("#form__createAccount");
+	const loginForm = document.getElementById("form__login");
+	const createAccountForm = document.getElementById("form__createAccount");
 
 	// Reset all fields (input and error) from the form when the modal pass to hidden
-	document.querySelector("#modal__login").addEventListener("hidden.bs.modal", e => {
+	document.getElementById("modal__login").addEventListener("hidden.bs.modal", e => {
 		e.preventDefault();
 
 		loginForm.querySelectorAll(".input__field").forEach(inputElement => {
 			inputElement.value = "";
 			inputElement.parentElement.querySelector(".form__input--errorMsg").textContent = "";
-			loginForm.querySelector("#form__login--errorMsg").textContent = "";
+			document.getElementById("form__login--errorMsg").textContent = "";
 		});
 	});
 
 	// Reset all fields (input and error) from the form when the modal pass to hidden
-	document.querySelector("#modal__createAccount").addEventListener("hidden.bs.modal", e => {
+	document.getElementById("modal__createAccount").addEventListener("hidden.bs.modal", e => {
 		e.preventDefault();
 
 		createAccountForm.querySelectorAll(".input__field").forEach(inputElement => {
 			inputElement.value = "";
 			inputElement.parentElement.querySelector(".form__input--errorMsg").textContent = "";
-			createAccountForm.querySelector("#form__createAccount--errorMsg").textContent = "";
+			document.getElementById("form__createAccount--msg").textContent = "";
 		});
 	});
 
@@ -165,7 +179,6 @@ function loadLogin() {
 };
 
 export default {
-
 	listenerLogin,
 	loadLogin
 };

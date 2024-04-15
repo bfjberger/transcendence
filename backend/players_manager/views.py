@@ -119,19 +119,49 @@ class ProfileView(APIView):
 		return Response(data=serializer_player.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class TwoPlayers(APIView):
-	permission_classes = (permissions.IsAuthenticated,)
-	pass
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
+	serializer_class = PlayerSerializer
+
+	def get(self, request):
+		player = Player.objects.get(owner=self.request.user)
+		serializer_player = PlayerSerializer(player)
+		serializer_user = UserSerializer(self.request.user)
+		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
+
 
 class FourPlayers(APIView):
-	permission_classes = (permissions.IsAuthenticated,)
-	pass
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
+	serializer_class = PlayerSerializer
+
+	def get(self, request):
+		player = Player.objects.get(owner=self.request.user)
+		serializer_player = PlayerSerializer(player)
+		serializer_user = UserSerializer(self.request.user)
+		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
+
 
 class Tournament(APIView):
-	permission_classes = (permissions.IsAuthenticated,)
-	pass
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
+	serializer_class = PlayerSerializer
+
+	def get(self, request):
+		player = Player.objects.get(owner=self.request.user)
+		serializer_player = PlayerSerializer(player)
+		serializer_user = UserSerializer(self.request.user)
+		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
+
 
 class Friends(APIView):
-	permission_classes = (permissions.IsAuthenticated,)
-	pass
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
+	serializer_class = PlayerSerializer
+
+	def get(self, request):
+		player = Player.objects.get(owner=self.request.user)
+		serializer_player = PlayerSerializer(player)
+		serializer_user = UserSerializer(self.request.user)
+		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)

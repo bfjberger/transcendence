@@ -2,7 +2,7 @@
 
 import bracketGraph from "./bracket.js";
 import Player from "./Player.js"; // Import the Player class from Player
-import pongGame from "./pong2players.js"; // Import the PongGame2Players class from pong2players
+import { PongGame2Players } from "./pong2players.js"; // Import the PongGame2Players class from pong2players
 
 class Tournament {
 	constructor() {
@@ -195,17 +195,17 @@ class Tournament {
 	async playSingleMatch(player1, player2) {
 		let game;
 		if (player1 instanceof Player && player2 instanceof Player)
-			game = new pongGame.PongGame2Players(player1.getName(), player2.getName());
+			game = new PongGame2Players(player1.getName(), player2.getName());
 		else
-			game = new pongGame.PongGame2Players(player1, player2);
-		document.querySelector("#startGame2").addEventListener("click", e => {
+			game = new PongGame2Players(player1, player2);
+		document.getElementById("startGame2").addEventListener("click", e => {
 			e.preventDefault();
-			document.querySelector("#startGame2").classList.add("d-none");
+			document.getElementById("startGame2").classList.add("d-none");
 			game.init();
 		})
 		let winner = await game.gameOver();
 		console.log("Match finished. Winner:", winner);
-		document.querySelector("#startGame2").classList.remove("d-none");
+		document.getElementById("startGame2").classList.remove("d-none");
 		return winner;
 	}
 
@@ -243,17 +243,13 @@ function rempliTestDebug() {
 
 function listenerTournament() {
 
-	document.querySelector("#startTournament").addEventListener("click", e => {
+	document.getElementById("startTournament").addEventListener("click", e => {
 
-		// remove the button of the login when the tournament is launched
-		// const loginButton = document.querySelector("#login-btn");
-		// loginButton.classList.add("d-none");
-
-		const startBtn = document.querySelector("#startGame2");
+		const startBtn = document.getElementById("startGame2");
 		startBtn.classList.remove("d-none");
 		startBtn.parentElement.classList.remove("d-none");
 
-		const board = document.querySelector("#board_two");
+		const board = document.getElementById("board_two");
 		board.classList.remove("d-none");
 		board.parentElement.classList.remove("d-none");
 
@@ -261,19 +257,15 @@ function listenerTournament() {
 		tournament.startTournament();
 	});
 
-	document.querySelector("#DEBUGstartTournament").addEventListener("click", e => {
+	document.getElementById("DEBUGstartTournament").addEventListener("click", e => {
 
 		rempliTestDebug();
 
-		// remove the button of the login when the tournament is launched
-		// const loginButton = document.querySelector("#login-btn");
-		// loginButton.classList.add("d-none");
-
-		const startBtn = document.querySelector("#startGame2");
+		const startBtn = document.getElementById("startGame2");
 		startBtn.classList.remove("d-none");
 		startBtn.parentElement.classList.remove("d-none");
 
-		const board = document.querySelector("#board_two");
+		const board = document.getElementById("board_two");
 		board.classList.remove("d-none");
 		board.parentElement.classList.remove("d-none");
 
@@ -300,7 +292,7 @@ async function loadTournament() {
 			const text = await response.text();
 			throw new Error(text);
 		}
-		console.log(response.status);
+
 		return 1;
 	} catch (e) {
 		console.error("loadTournament: " + e);
@@ -309,7 +301,6 @@ async function loadTournament() {
 };
 
 export default {
-
 	listenerTournament,
 	loadTournament
 };

@@ -391,11 +391,11 @@ function start4PlayerGame(p1_name, p2_name, p3_name, p4_name) {
 
 function listenerFourPlayers() {
 
-	document.querySelector("#startGame4").addEventListener("click", e => {
+	document.getElementById("startGame4").addEventListener("click", e => {
 		e.preventDefault();
 
 		// hide the start button
-		document.querySelector("#startGame4").classList.add("d-none");
+		document.getElementById("startGame4").classList.add("d-none");
 
 		start4PlayerGame();
 	});
@@ -419,7 +419,7 @@ async function loadFourPlayers() {
 			const text = await response.text();
 			throw new Error(text);
 		}
-		console.log(response.status);
+
 		return 1;
 	} catch (e) {
 		console.error("loadFourPlayers: " + e);
@@ -428,7 +428,6 @@ async function loadFourPlayers() {
 };
 
 export default {
-
 	listenerFourPlayers,
 	loadFourPlayers
 };

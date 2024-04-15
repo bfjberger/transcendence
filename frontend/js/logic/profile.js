@@ -2,7 +2,7 @@ async function updateNickname(nicknameForm) {
 
 	// remove a potential error message from the field
 	document.getElementById("form__update--nickname--msg").textContent = "";
-	document.getElementById("form__update--nickname--msg").classList.add("text-danger");
+	document.getElementById("form__update--nickname--msg").classList.remove("text-danger");
 	document.getElementById("form__update--nickname--msg").classList.remove("text-info");
 
 	const input = nicknameForm.elements;
@@ -27,7 +27,6 @@ async function updateNickname(nicknameForm) {
 			const error = await response.text();
 			document.getElementById("form__update--nickname--msg").textContent = error.replace(/["{}[\]]/g, '');
 			document.getElementById("form__update--nickname--msg").classList.add("text-danger");
-			document.getElementById("form__update--nickname--msg").classList.remove("text-info");
 			return;
 		}
 		if (response.status === 200) {
@@ -49,13 +48,14 @@ async function updatePassword(passwordForm) {
 
 	// remove a potential error message from the field
 	document.getElementById("form__update--password--msg").textContent = "";
+	document.getElementById("form__update--password--msg").classList.remove("text-danger");
+	document.getElementById("form__update--password--msg").classList.remove("text-info");
 
 	const input = passwordForm.elements;
 
 	if (input.password_one.value !== input.password_two.value) {
 		document.getElementById("form__update--password--msg").textContent = "The passwords are not the same";
 		document.getElementById("form__update--password--msg").classList.add("text-danger");
-		document.getElementById("form__update--password--msg").classList.remove("text-info");
 		return;
 	}
 
@@ -77,7 +77,6 @@ async function updatePassword(passwordForm) {
 			const error = await response.text();
 			document.getElementById("form__update--password--msg").textContent = error.replace(/["{}[\]]/g, '');
 			document.getElementById("form__update--password--msg").classList.add("text-danger");
-			document.getElementById("form__update--password--msg").classList.remove("text-info");
 			return;
 		}
 		if (response.status === 200) {
@@ -96,7 +95,7 @@ async function updateAvatar(avatarForm) {
 
 	// remove a potential error message from the field
 	document.getElementById("form__update--avatar--msg").textContent = "";
-	document.getElementById("form__update--avatar--msg").classList.add("text-danger");
+	document.getElementById("form__update--avatar--msg").classList.remove("text-danger");
 	document.getElementById("form__update--avatar--msg").classList.remove("text-info");
 
 	const input = avatarForm.elements;
@@ -120,7 +119,6 @@ async function updateAvatar(avatarForm) {
 
 			document.getElementById("form__update--avatar--msg").textContent = error.replace(/["{}[\]]/g, '');
 			document.getElementById("form__update--avatar--msg").classList.add("text-danger");
-			document.getElementById("form__update--avatar--msg").classList.remove("text-info");
 			return;
 		}
 		if (response.status === 200) {
@@ -139,9 +137,9 @@ async function updateAvatar(avatarForm) {
 
 function listenerProfile() {
 
-	const nicknameForm = document.querySelector("#form__update--nickname");
-	const passwordForm = document.querySelector("#form__update--password");
-	const avatarForm = document.querySelector("#form__update--avatar");
+	const nicknameForm = document.getElementById("form__update--nickname");
+	const passwordForm = document.getElementById("form__update--password");
+	const avatarForm = document.getElementById("form__update--avatar");
 
 	nicknameForm.addEventListener("submit", e => {
 		e.preventDefault();
@@ -196,7 +194,6 @@ async function loadProfile() {
 };
 
 export default {
-
 	listenerProfile,
 	loadProfile
 };

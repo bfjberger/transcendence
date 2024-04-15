@@ -109,7 +109,8 @@ class PongGame2Players {
 		// 	requestAnimationFrame(this.update.bind(this));
 		// }
 		if (e.key === "Escape") {
-			router("twoplayers");
+			// router("twoplayers");
+			window.alert("You can't stop the game.");
 		}
 	}
 
@@ -294,11 +295,11 @@ function start2PlayerGame(p1_name, p2_name) {
 
 function listenerTwoPlayers() {
 
-	document.querySelector("#startGame2").addEventListener("click", e => {
+	document.getElementById("startGame2").addEventListener("click", e => {
 		e.preventDefault();
 
 		// hide the start button
-		document.querySelector("#startGame2").classList.add("d-none");
+		document.getElementById("startGame2").classList.add("d-none");
 
 		start2PlayerGame();
 	});
@@ -322,7 +323,7 @@ async function loadTwoPlayers() {
 			const text = await response.text();
 			throw new Error(text);
 		}
-		console.log(response.status);
+
 		return 1;
 	} catch (e) {
 		console.error("loadTwoPlayers: " + e);
@@ -330,8 +331,11 @@ async function loadTwoPlayers() {
 	}
 };
 
-export default {
+export {
+	PongGame2Players
+};
 
+export default {
 	listenerTwoPlayers,
 	loadTwoPlayers
 };

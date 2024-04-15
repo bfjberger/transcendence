@@ -20,7 +20,7 @@ async function loadFriends() {
 			const text = await response.text();
 			throw new Error(text);
 		}
-		console.log(response.status);
+
 		return 1;
 	} catch (e) {
 		console.error("loadFriends: " + e);
