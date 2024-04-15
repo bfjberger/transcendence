@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.oauth2',
+    'pong_online',
 #    'friends_manager',
 #    'two_players_games_manager',
 #    'tournaments_manager',
@@ -180,6 +181,12 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 ASGI_APPLICATION = 'bck_django.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
 
 SOCIALACCOUNT_PROVIDERS = {
     '42': {
