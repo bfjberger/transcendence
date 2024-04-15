@@ -57,21 +57,21 @@ const routes = {
 	},
 	"twoplayers": {
 		title: "Two Players Game",
-		path: "/twoplayer/",
+		path: "/twoplayers/",
 		view: renderTwoPlayers,
 		load: handleTwoPlayers.loadTwoPlayers,
 		listener: handleTwoPlayers.listenerTwoPlayers
 	},
 	"fourplayers": {
 		title: "Four Players Game",
-		path: "/fourplayer/",
+		path: "/fourplayers/",
 		view: renderFourPlayers,
 		load: handleFourPlayers.loadFourPlayers,
 		listener: handleFourPlayers.listenerFourPlayers
 	},
 	"twoplayersonline": {
 		title: "Two Players Online Game",
-		path: "/twoplayeronline/",
+		path: "/twoplayersonline/",
 		view: renderTwoOnline,
 		load: handleTwoPlayersOnline.loadTwoPlayersOnline,
 		listener: handleTwoPlayersOnline.listenerTwoPlayersOnline
