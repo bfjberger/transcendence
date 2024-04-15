@@ -253,7 +253,7 @@ function listenerTwoPlayersOnline() {
 		e.preventDefault();
 
 		// hide the start button
-		document.querySelector("#startGame2Online").classList.add("d-none");
+		document.getElementById("startGame2Online").classList.add("d-none");
 		start();
 	});
 };
@@ -269,6 +269,7 @@ async function loadTwoPlayersOnline() {
 		}
 	};
 
+	/*
 	try {
 		const response = await fetch('http://localhost:7890/api/twoplayer/', init); // !! le lien devra changer
 
