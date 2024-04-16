@@ -46,7 +46,7 @@ class GameState:
 			self.speed = 10
 			self.x_vel = 0
 			self.y_vel = 0
-			self.color = 0xaaaaaa  # Gray
+			self.color = 0xFFFFFF
 
 		def __str__(self):
 			return f"Ball position: ({self.x}, {self.y}), Ball vel: {self.x_vel}x{self.y_vel}, Color: {self.color}"
@@ -70,7 +70,7 @@ class GameState:
 				# Player one collision
 				if self.y <= player_one.y + paddle_height and self.y >= player_one.y and self.x > player_one.x:
 					if self.x - self.radius <= player_one.x + paddle_width / 2:
-						self.color = 0x00ffff
+						# self.color = 0x00ffff
 						self.x_vel *= -1
 						middle_y = player_one.y + paddle_height / 2
 						difference_in_y = middle_y - self.y
@@ -81,7 +81,7 @@ class GameState:
 				# Player two collision
 				if self.y <= player_two.y + paddle_height and self.y >= player_two.y and self.x < player_two.x:
 					if self.x + self.radius >= player_two.x - paddle_width / 2:
-						self.color = 0xff0000
+						# self.color = 0xff0000
 						self.x_vel *= -1
 						middle_y = player_two.y + paddle_height / 2
 						difference_in_y = middle_y - self.y
@@ -102,7 +102,7 @@ class GameState:
 			self.y += self.y_vel
 
 		async def reset(self):
-			self.color = 0xaaaaaa
+			self.color = 0xFFFFFF
 			self.x = game_area_width / 2
 			self.y = game_area_height / 2
 			self.y_vel = 0
