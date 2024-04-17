@@ -70,7 +70,16 @@ class LoginView(APIView):
 		user = serializer.validated_data['user']
 		# print("user from LoginView : ", user)
 		login(request, user)
-		return Response(None, status=status.HTTP_202_ACCEPTED)
+		return Response(serializer.data['username'], status=status.HTTP_202_ACCEPTED)
+
+
+class LogoutView(APIView):
+	# authentication_classes = [SessionAuthentication, BasicAuthentication]
+	# permission_classes = (permissions.IsAuthenticated)
+
+	def get(self, request):
+		logout(request)
+		return Response("Logout success", status=status.HTTP_200_OK)
 
 
 # class ProfileView(generics.RetrieveAPIView):

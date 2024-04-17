@@ -40,7 +40,18 @@ async function connectUser(loginForm) {
 		if (response.status === 202) {
 			// login is successful -> redirect to profile
 
-			router("profile");
+			const data = await response.json();
+			sessionStorage.setItem("username", data);
+
+			document.querySelector("div.modal-backdrop.fade.show").remove();
+
+			document.querySelectorAll(".nav__link").forEach(btn => {
+				btn.removeAttribute("disabled");
+			});
+			document.getElementById("navbar__btn--user").removeAttribute("disabled");
+			document.getElementById("logout").removeAttribute("disabled");
+
+			router("index");
 		}
 	} catch (e) {
 		console.error("Error connect user: ", e);
@@ -94,8 +105,6 @@ async function createUser(createAccountForm) {
 			document.getElementById("form__createAccount--msg").innerHTML = "Your account was successfully created. You can now login.";
 			document.getElementById("form__createAccount--msg").classList.remove("text-danger");
 			document.getElementById("form__createAccount--msg").classList.add("text-info");
-
-			// router("login");
 		}
 	} catch (e) {
 		console.error("Error create user: ", e);
@@ -103,10 +112,6 @@ async function createUser(createAccountForm) {
 };
 
 async function connectUser42() {
-
-	// let loading = document.getElementById("loading");
-
-	// loading.classList.remove("d-none");
 
 	try {
 		const response = await fetch('http://localhost:7890/accounts/');
@@ -116,7 +121,8 @@ async function connectUser42() {
 		}
 
 		console.log("connection with 42 API successful");
-		router("profile");
+
+		router("index");
 	} catch (e) {
 		console.error("Error 42: ", e);
 	}
@@ -174,6 +180,12 @@ function listenerLogin() {
 };
 
 function loadLogin() {
+
+	document.querySelectorAll(".nav__link").forEach(btn => {
+		btn.setAttribute("disabled", true);
+	});
+	document.getElementById("navbar__btn--user").setAttribute("disabled", true);
+	document.getElementById("logout").setAttribute("disabled", true);
 
 	return 1;
 };

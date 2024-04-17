@@ -1,5 +1,5 @@
-export const WIN_WIDTH = 800
-export const WIN_HEIGHT = 600
+export const WIN_WIDTH = 650
+export const WIN_HEIGHT = 480
 
 export const WINNING_SCORE = 3
 
@@ -14,4 +14,3 @@ export const PLAYER_SPEED = 3
 
 export const PLAYER_1_COLOR = "blue"
 export const PLAYER_2_COLOR = "red"
-

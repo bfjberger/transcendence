@@ -1,8 +1,8 @@
 import asyncio
 
 # Variables for the game area and paddles
-game_area_width = 800
-game_area_height = 600
+game_area_width = 650
+game_area_height = 480
 paddle_width = 10
 paddle_height = 70
 player_speed = 3
@@ -190,4 +190,3 @@ class GameState:
 		await self.players[1].move()
 		await self.ball.move(self.players[0], self.players[1])
 		await self.handle_scores()
-		 

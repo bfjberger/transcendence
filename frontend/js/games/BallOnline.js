@@ -5,11 +5,10 @@ export class Ball {
 		this.speed = constants.BALL_SPEED
 		this.x_vel = 0;
 		this.y_vel = 0;
-		this.color = 0xffffff;
 		this.x = constants.WIN_WIDTH / 2;
 		this.y = constants.WIN_HEIGHT / 2;
 		this.radius = constants.BALL_RADIUS;
-		this.color = 'white';
+		this.color = "'white'";
 	}
 
 	setcolor(color) {

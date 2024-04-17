@@ -19,7 +19,7 @@ from django.urls import path, include
 
 # from rest_framework import routers
 
-from players_manager.views import LoginView, ProfileView, RegisterAction, IndexAction, test, TwoPlayers, FourPlayers, Tournament, Friends
+from players_manager.views import LoginView, LogoutView, ProfileView, RegisterAction, IndexAction, test, TwoPlayers, FourPlayers, Tournament, Friends
 from login_api_42 import views
 # from players_manager.views import PlayerViewSet
 # from players_manager.views import AdminPlayerViewSet
@@ -42,6 +42,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/index/', IndexAction.as_view()),
     path('api/login/', LoginView.as_view()),
+    path('api/logout/', LogoutView.as_view()),
     path('api/register/', RegisterAction.as_view()),
     path('api/profile/', ProfileView.as_view()),
     # path('api/index/', IndexView.as_view()),
