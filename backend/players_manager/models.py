@@ -18,3 +18,9 @@ class Player(models.Model):
 	score = models.IntegerField(default=0)
 	status = models.CharField(max_length=200, choices=status.choices, default=status.OFFLINE)
 	avatar = models.ImageField(max_length=200, null=True, blank=True, upload_to='avatars/')
+
+
+class Friend(models.Model):
+		player_initiated = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='player_initiate')
+		player_received = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='player_receive')
+		accept = models.BooleanField(default=False)

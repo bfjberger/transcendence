@@ -27,15 +27,19 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(label="password")
 
     def validate(self, attrs):
-        print("Voici attrs dans serializer : ", attrs)
         user = authenticate(request=self.context.get('request'),username=attrs['username'],password=attrs['password'])
-        print("Voici user : ", user)
 
         if not user:
             raise serializers.ValidationError("Incorrect Credentials")
         else:
             attrs['user'] = user
             return attrs
+
+    # def update_status(self):
+    #     self.status = "ONLINE"
+    #     self.save()
+        
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

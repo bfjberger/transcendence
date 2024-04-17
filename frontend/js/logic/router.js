@@ -104,9 +104,25 @@ async function loadIndex() {
 
 async function handleLogout() {
 
-	sessionStorage.clear();
+	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
-	router("login");
+	const init = {
+			method: "PATCH",
+			headers: { 'X-CSRFToken': csrftoken, },
+	}
+
+	try {
+			const response = await fetch('http://localhost:7890/api/logout/', init);
+
+			if (response.status === 200) {
+					console.log("user successfull logged out");
+
+					sessionStorage.clear();
+					router("login");
+			}
+	} catch (e) {
+			console.error(e);
+	}
 };
 
 export default async function router(value) {

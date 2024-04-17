@@ -70,8 +70,29 @@ class LoginView(APIView):
 		user = serializer.validated_data['user']
 		# print("user from LoginView : ", user)
 		login(request, user)
-		return Response(None, status=status.HTTP_202_ACCEPTED)
+		# serializer.update_status()
 
+		player = Player.objects.get(owner=user)
+		player.status = "ONLINE"
+		player.save()
+
+		serializer_player = PlayerSerializer(player)
+
+		return Response({"username" : serializer.data['username'], "status" : player.status, "player_data" : serializer_player.data}, status=status.HTTP_202_ACCEPTED)
+
+
+class LogoutView(APIView):
+		authentication_classes = [SessionAuthentication, BasicAuthentication]
+		permission_classes = [permissions.IsAuthenticated]
+
+		def patch(self, request):
+			player = Player.objects.get(owner=self.request.user)
+			player.status = "OFFLINE"
+			player.save()
+
+			logout(request)
+
+			return Response("Logout success", status=status.HTTP_200_OK)
 
 # class ProfileView(generics.RetrieveAPIView):
 # 	permission_classes = (permissions.IsAuthenticated,)
