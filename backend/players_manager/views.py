@@ -12,7 +12,7 @@ from django.contrib.auth import login, logout
 
 from django.contrib.auth.models import User
 
-from players_manager.serializers import LoginSerializer, UserSerializer, PlayerSerializer, RegisterSerializer, FriendSerializer
+from players_manager.serializers import LoginSerializer, UserSerializer, PlayerSerializer, RegisterSerializer, FriendSerializer, AvatarSerializer
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
@@ -140,6 +140,26 @@ class ProfileView(APIView):
 		return Response(data=serializer_player.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ProfileUpdateAvatarView(APIView):
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
+	serializer_class = AvatarSerializer
+
+	@method_decorator(csrf_exempt, name='dispatch')
+	def patch(self, request):
+		try :
+			player = Player.objects.get(owner=self.request.user)
+		except :
+			return Response(None, status=status.HTTP_400_BAD_REQUEST)
+
+		serializer = AvatarSerializer(player, data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_200_OK)
+		else:
+			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class TwoPlayers(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]
@@ -202,4 +222,3 @@ class Friends(APIView):
 
 		# list_friends = "lol"
 		return Response(data={"friends_initiated" : list_friends_initiator, "player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
-

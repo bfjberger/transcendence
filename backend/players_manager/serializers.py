@@ -16,11 +16,11 @@ class PlayerSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     # def update(self, instance, validated_data):
-    #     instance.nickname = validated_data.get("nickname", instance.nickname)        
+    #     instance.nickname = validated_data.get("nickname", instance.nickname)
     #     instance.avatar = validated_data.get("avatar", instance.avatar)
     #     instance.save()
     #     return instance
-    
+
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(label="username")
@@ -38,14 +38,14 @@ class LoginSerializer(serializers.Serializer):
     # def update_status(self):
     #     self.status = "ONLINE"
     #     self.save()
-        
+
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = "__all__"
-    
+
     def update(self, instance, validated_data):
         instance.password = validated_data.get('password', instance.password)
         instance.save()
@@ -74,9 +74,19 @@ class RegisterSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Player
 #         fields = ("avatar")
-    
+
 #     def update(self, instance, validated_data):
 
+
+class AvatarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Player
+        fields = ['avatar']
+
+    def save(self, *args, **kwargs):
+        if self.instance.avatar:
+            self.instance.avatar.delete()
+        return super().save(*args, **kwargs)
 
 
 class FriendSerializer(serializers.ModelSerializer):
