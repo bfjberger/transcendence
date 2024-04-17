@@ -6,13 +6,13 @@ from rest_framework import generics
 
 from rest_framework import serializers
 
-from players_manager.models import Player
+from players_manager.models import Player, Friend
 
 from django.contrib.auth import login, logout
 
 from django.contrib.auth.models import User
 
-from players_manager.serializers import LoginSerializer, UserSerializer, PlayerSerializer, RegisterSerializer
+from players_manager.serializers import LoginSerializer, UserSerializer, PlayerSerializer, RegisterSerializer, FriendSerializer
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
@@ -78,7 +78,7 @@ class LoginView(APIView):
 
 		serializer_player = PlayerSerializer(player)
 
-		return Response("username" : serializer.data['username'], status=status.HTTP_202_ACCEPTED)
+		return Response(serializer.data['username'], status=status.HTTP_202_ACCEPTED)
 
 
 class LogoutView(APIView):
@@ -185,4 +185,21 @@ class Friends(APIView):
 		player = Player.objects.get(owner=self.request.user)
 		serializer_player = PlayerSerializer(player)
 		serializer_user = UserSerializer(self.request.user)
-		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
+
+		friends_as_initiator = Friend.objects.filter(player_initiated=player)
+		friends_as_receiver = Friend.objects.filter(player_received=player)
+
+		list_friends_initiator = []
+		for relation in friends_as_initiator :
+			user_received = relation.player_received.owner
+			list_friends_initiator.append(UserSerializer(user_received).data["username"])
+
+			# list_friends_initiator.append({"username" : UserSerializer(self.request.us)}PlayerSerializer(relation.player_received).data)
+
+
+		friends_as_initiator_serializer = FriendSerializer(friends_as_initiator, many=True)
+		friends_as_receiver_serializer = FriendSerializer(friends_as_receiver, many=True)
+
+		# list_friends = "lol"
+		return Response(data={"friends_initiated" : list_friends_initiator, "player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
+

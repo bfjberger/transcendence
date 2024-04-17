@@ -1,6 +1,16 @@
-
+var data
 
 function listenerFriends() {
+
+		console.log(window.location.pathname)
+		var parent_list = document.getElementById("list_friends_initiator")
+		var element_list
+		data["friends_initiated"].forEach(friend => {
+			element_list = document.createElement("li")
+			element_list.textContent = friend
+			parent_list.appendChild(element_list)
+			console.log("relation : " + friend)
+		});
 
 };
 
@@ -22,7 +32,14 @@ async function loadFriends() {
 			const text = await response.text();
 			throw new Error(text);
 		}
+		else if (response.status === 200)
+		{
+			data = await response.json()
 
+			console.log(data['friends_initiated']);
+			console.log(typeof(data['friends_initiated']));
+
+		}
 		return 1;
 	} catch (e) {
 		console.error("loadFriends: " + e);
