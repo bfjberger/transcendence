@@ -272,7 +272,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			'key': event.get('value')
 		}))
 	async def game_state(self, event):
-		print('PLAYER', self.player_id, ' | RECEVING BALL_X:', event.get('ball_x'))
+		# print('PLAYER', self.player_id, ' | RECEIVING BALL_X:', event.get('ball_x'))
 		await self.send(text_data=json.dumps({
 			'type': event.get('type'),
 			'player_one_pos_y': event.get('player_one_pos_y'),

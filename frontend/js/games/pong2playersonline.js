@@ -142,17 +142,21 @@ function updateGameState(data) {
 	player_two.y = data.player_two_pos_y;
 	ball.x = data.ball_x;
 	ball.y = data.ball_y;
+
 	if (ball.color != data.ball_color) {
 		ball.setcolor(data.ball_color);
 	}
+
 	if (data.player_one_score != player_one.score) {
 		player_one.score += 1;
 		handle_scores('player_one');
 	}
+
 	if (data.player_two_score != player_two.score) {
 		player_two.score += 1;
 		handle_scores('player_two');
 	}
+	
 	ball.get_update(data.ball_x, data.ball_y, data.ball_x_vel, data.ball_y_vel, data.ball_color);
 }
 
@@ -173,11 +177,16 @@ function render() {
 	context.fillRect(player_two.x, player_two.y, player_two.width, player_two.height);
 
 	// Draw the ball
-	context.fillStyle = ball.color;
-	context.beginPath();
-	context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-	context.closePath();
-	context.fill();
+	if (!ball.stop_flag) {
+		context.fillStyle = ball.color;
+		context.strokeStyle = "black";
+		context.lineWidth = 2;
+		context.beginPath();
+		context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2, true);
+		context.closePath();
+		context.fill();
+		context.stroke();
+	}
 }
 
 /* ---------------------------------- Main ---------------------------------- */
