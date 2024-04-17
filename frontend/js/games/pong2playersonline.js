@@ -9,8 +9,6 @@ import * as constants from './Constants.js';
  * The requests are handled in pong_online/consumers.py and also the room logic are handled there
  * The path to the websockets is /ws/game/ and is in pong_online/routing.py (+ nginx configuration)
  *
- * TODO:[] Add the score back to the game
- * TODO:[] Add the game over screen
  * TODO:[] Add a matchmaking placeholder
  *
  * !Bug: The ball is red
@@ -41,7 +39,9 @@ let ws; // websocket
  * - initControls: initializes the controls
  *
  * - updateGameState: updates the game state
- *
+ * 
+ * - drawBall: draws the ball
+ * - drawScoreAndLine: draws the score and the line
  * - animate: animates the game
  * - render: renders the game
  *
@@ -50,7 +50,8 @@ let ws; // websocket
  */
 
 /* -------------------------------- Variables ------------------------------- */
-var game_running, player_one, player_two, ball, winning_text;
+var game_running, player_one, player_two, ball, winning_text, startButton;
+var template_text, button_container;
 var position = null;
 var id = null;
 let first_launch = true;
@@ -100,18 +101,12 @@ function handle_scores(player) {
 
 function display_winner(winning_player) {
 	ball.stop();
+
 	if (winning_player === 'player_one') {
 		winning_text = "Player 1 wins!";
-		context.fillStyle = "white";
-		context.font = "50px sans-serif";
-		context.fillText(winning_text, constants.WIN_WIDTH / 2 - 50, constants.WIN_HEIGHT / 2);
 	}
 	else {
 		winning_text = "Player 2 wins!";
-		context.fillStyle = "white";
-		context.font = "50px sans-serif";
-		context.fillText(winning_text, constants.WIN_WIDTH / 2 - 50, constants.WIN_HEIGHT / 2);
-
 	}
 }
 
@@ -182,6 +177,21 @@ function drawBall(x, y, radius, color) {
 	context.stroke();
 }
 
+function drawScoreAndLine() {
+	context.beginPath();
+	context.setLineDash([5, 15]);
+	context.moveTo(constants.WIN_WIDTH / 2, 0);
+	context.lineTo(constants.WIN_WIDTH / 2, constants.WIN_HEIGHT);
+	context.strokeStyle = "white";
+	context.stroke();
+	context.setLineDash([]);
+
+	context.font = "50px sans-serif";
+	context.fillStyle = "white";
+	context.fillText(player_one.score, constants.WIN_WIDTH / 2 - 50, 50);
+	context.fillText(player_two.score, constants.WIN_WIDTH / 2 + 25, 50);
+}
+
 function animate() {
 	render();
 	id = requestAnimationFrame(animate);
@@ -200,6 +210,23 @@ function render() {
 	if (!ball.stop_flag) {
 		drawBall(ball.x, ball.y, ball.radius, intToHexColor(ball.color));
 	}
+	else {
+		if (winning_text) {
+			context.fillStyle = "white";
+			context.font = "50px sans-serif";
+			let text_width = context.measureText(winning_text).width;
+			context.fillText(winning_text, (constants.WIN_WIDTH - text_width) / 2, constants.WIN_HEIGHT / 2);
+		}
+
+		// lower the div button container
+		button_container.style.top = "65%";
+		startButton.innerHTML = "Look for another game";
+		startButton.classList.remove("d-none");
+	}
+	
+	// Draw the score and the line
+	drawScoreAndLine();
+
 }
 
 /* ---------------------------------- Main ---------------------------------- */
@@ -239,6 +266,9 @@ export function start() {
 
 		if (data.type === 'game_start') {
 			console.log('Starting game . . .');
+
+			// startButton.classList.add("d-none");
+			template_text.innerHTML = "Found player! Game starting . . .";
 			game_running = true;
 			ball.get_update(constants.WIN_WIDTH / 2, constants.WIN_HEIGHT / 2, 1, 0, 0xffffff);
 			initControls();
@@ -276,6 +306,14 @@ function listenerTwoPlayersOnline() {
 
 		// hide the start button
 		document.getElementById("startGame2Online").classList.add("d-none");
+
+
+		startButton = document.getElementById("startGame2Online");
+		button_container = document.getElementById("button_container");
+
+		template_text = document.getElementById("template_text");
+		template_text.innerHTML = "Waiting for other player";
+		
 		start();
 	});
 };
