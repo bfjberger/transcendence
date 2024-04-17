@@ -1,5 +1,16 @@
 import * as constants from './Constants.js';
 
+function intToHexColor(value) {
+	if (value[0] == "#") {
+		return value;
+	}
+    // Convert the integer value to hexadecimal format
+    var hexValue = value.toString(16);
+    // Pad the string with zeros if necessary to ensure it has 6 digits
+    var hexColor = '#' + hexValue.padStart(6, '0');
+    return hexColor;
+}
+
 export class Ball {
 	constructor() {
 		this.speed = constants.BALL_SPEED
@@ -13,6 +24,9 @@ export class Ball {
 	}
 
 	setcolor(color) {
+		if (color[0] != "#") {
+			color = intToHexColor(color);
+		}
 		this.color = color;
 	}
 

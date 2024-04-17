@@ -64,6 +64,14 @@ var context = null;
 
 /* ------------------------------ Utils & Inits ----------------------------- */
 
+function intToHexColor(value) {
+    // Convert the integer value to hexadecimal format
+    var hexValue = value.toString(16);
+    // Pad the string with zeros if necessary to ensure it has 6 digits
+    var hexColor = '#' + hexValue.padStart(6, '0');
+    return hexColor;
+}
+
 function sendMessageToServer(message) {
 	ws.send(JSON.stringify(message));
 
@@ -80,6 +88,7 @@ function initArena() {
 	player_one = new Player(1, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_1_COLOR);
 	player_two = new Player(2, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_2_COLOR);
 	ball = new Ball();
+	console.log("Ball color: ", ball.color);
 }
 
 function handle_scores(player) {
@@ -162,6 +171,17 @@ function updateGameState(data) {
 
 /* ------------------------------ Draw the game ----------------------------- */
 
+function drawBall(x, y, radius, color) {
+	context.fillStyle = color;
+	context.strokeStyle = "black";
+	context.lineWidth = 2;
+	context.beginPath();
+	context.arc(x, y, radius, 0, Math.PI * 2, true);
+	context.closePath();
+	context.fill();
+	context.stroke();
+}
+
 function animate() {
 	render();
 	id = requestAnimationFrame(animate);
@@ -178,14 +198,7 @@ function render() {
 
 	// Draw the ball
 	if (!ball.stop_flag) {
-		context.fillStyle = ball.color;
-		context.strokeStyle = "black";
-		context.lineWidth = 2;
-		context.beginPath();
-		context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2, true);
-		context.closePath();
-		context.fill();
-		context.stroke();
+		drawBall(ball.x, ball.y, ball.radius, intToHexColor(ball.color));
 	}
 }
 
@@ -278,21 +291,21 @@ async function loadTwoPlayersOnline() {
 		}
 	};
 
-	/*
-	try {
-		const response = await fetch('http://localhost:7890/api/twoplayer/', init); // !! le lien devra changer
+	
+	// try {
+	// 	const response = await fetch('http://localhost:7890/api/twoplayer/', init); // !! le lien devra changer
 
-		if (response.status === 403) {
-			const text = await response.text();
-			throw new Error(text);
-		}
+	// 	if (response.status === 403) {
+	// 		const text = await response.text();
+	// 		throw new Error(text);
+	// 	}
 
-		return 1;
-	} catch (e) {
-		console.error("loadTwoPlayers: " + e);
-		return 0;
-	}
-	*/
+	// 	return 1;
+	// } catch (e) {
+	// 	console.error("loadTwoPlayers: " + e);
+	// 	return 0;
+	// }
+	
 	return 1; // Added to get the game for now instead of the try catch block
 };
 
