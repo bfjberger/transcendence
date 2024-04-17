@@ -1,23 +1,9 @@
-/*
-	ATTEMPT TO SPA NOT WORKING
-*/
-
-// import AbstractView from '../views/AbstractView.js';
-
-// export default class extends AbstractView {
-// 	constructor() {
-// 		this.setTitle("Pong 2 Players");
-// 	}
-
-// 	async getHtml() {
-// 		return "";
-// 	}
-// }
-
 import Player, {
 	default_paddle_height,
 	default_paddle_width,
 } from "./Player.js"; // Import the Player class from Player
+
+import router from "../logic/router.js" // Import the router for reload MIGHT LEAVE
 
 // Some of the constructor default values are overriden by the different set functions
 class PongGame2Players {
@@ -123,12 +109,9 @@ class PongGame2Players {
 		// 	requestAnimationFrame(this.update.bind(this));
 		// }
 		if (e.key === "Escape") {
-			location.reload();
+			// router("twoplayers");
+			window.alert("You can't stop the game.");
 		}
-	}
-
-	reloadPage() {
-		location.reload();
 	}
 
 	handleKeyPress(e) {
@@ -275,7 +258,7 @@ class PongGame2Players {
 		let winner = this.gameOver();
 		winner.then((winner) => {
 		if (winner) {
-			if (window.location.pathname.includes("twoplayers.html")) {
+			if (window.location.pathname === "/twoplayers") {
 				let winnerText = winner.getName() + " won !!";
 				this.context.fillStyle = winner.color;
 				this.context.font = "50px sans-serif";
@@ -286,7 +269,7 @@ class PongGame2Players {
 			}
 			this.ball.velocityX = 0;
 			this.ball.velocityY = 0;
-			if (window.location.pathname.includes("tournament.html")) {
+			if (window.location.pathname === "/tournament") {
 				this.context.reset();
 			}
 		}
@@ -310,40 +293,49 @@ function start2PlayerGame(p1_name, p2_name) {
 	}
 }
 
-function reload2PlayerGame() {
-	if (game) {
-		game.reloadPage();
-	}
-}
+function listenerTwoPlayers() {
 
-/*
-NOT USED FOR THE MOMENT SINCE GOT A BUTTON
-document.addEventListener("DOMContentLoaded", function () {
-	if (window.location.pathname.includes("twoplayers.html")) {
-		const game = new PongGame2Players("Player 1", "Player 2");
-		game.init();
-	}
-});
-*/
-
-function procedureBeforeStart(p1_name, p2_name) {
-	document.querySelector("#startGame2").addEventListener("click", e => {
+	document.getElementById("startGame2").addEventListener("click", e => {
 		e.preventDefault();
-		document.querySelector("#startGame2").classList.add("d-none");
-		start2PlayerGame(p1_name, p2_name);
+
+		// hide the start button
+		document.getElementById("startGame2").classList.add("d-none");
+
+		start2PlayerGame();
 	});
-}
+};
 
-window.onload = function() {
+async function loadTwoPlayers() {
 
-	if (window.location.pathname.includes("twoplayers.html")) {
-		procedureBeforeStart();
+	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+
+	const init = {
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrftoken,
+		}
+	};
+
+	try {
+		const response = await fetch('http://localhost:7890/api/twoplayer/', init);
+
+		if (response.status === 403) {
+			const text = await response.text();
+			throw new Error(text);
+		}
+
+		return 1;
+	} catch (e) {
+		console.error("loadTwoPlayers: " + e);
+		return 0;
 	}
-}
+};
 
+export {
+	PongGame2Players
+};
 
 export default {
-	PongGame2Players,
-	start2PlayerGame,
-	reload2PlayerGame,
+	listenerTwoPlayers,
+	loadTwoPlayers
 };

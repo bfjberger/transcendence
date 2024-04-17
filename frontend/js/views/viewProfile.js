@@ -4,7 +4,7 @@ export default function renderProfile() {
 
 		<div id="profile">
 			<form id="form__update--nickname">
-				<div id="form__update--nickname--errorMsg" class="text-danger"></div>
+				<div id="form__update--nickname--msg" class=""></div>
 				<div class="text-primary">
 					Nickname
 				</div>
@@ -15,7 +15,7 @@ export default function renderProfile() {
 			</form>
 			<hr>
 			<form id="form__update--password">
-				<div id="form__update--password--errorMsg" class="text-danger"></div>
+				<div id="form__update--password--msg" class=""></div>
 				<div class="text-primary">
 					Password
 				</div>
@@ -30,7 +30,7 @@ export default function renderProfile() {
 			</form>
 			<hr>
 			<form id="form__update--avatar">
-				<div id="form__update--avatar--errorMsg" class="text-danger"></div>
+				<div id="form__update--avatar--msg" class=""></div>
 				<div class="text-primary">
 					Avatar
 				</div>

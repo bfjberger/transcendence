@@ -62,7 +62,7 @@ export default function renderLogin() {
 						</div>
 						<div class="modal-body">
 							<form id="form__createAccount" class="">
-								<div class="mb-1 text-danger" id="form__createAccount--errorMsg"></div>
+								<div class="mb-1" id="form__createAccount--msg"></div>
 								<div class="mb-2">
 									<div class="text-success-emphasis">
 										Username

@@ -7,15 +7,9 @@
 		<link rel="shortcut icon" href="#" />
 
 		<link rel="stylesheet" href="/frontend/css/main.css" />
-
-		<script type="module" src="/frontend/js/router.js"></script>
-		<script type="module" src="/frontend/js/login.js"></script>
-		<script type="module" src="/frontend/js/profile.js"></script>
-
 		<link rel="stylesheet" href="/frontend/css/bracket.css" />
-		<script type="module" src="/frontend/js/games/tournament.js"></script>
-		<script type="module" src="/frontend/js/games/pong2players.js"></script>
-		<script type="module" src="/frontend/js/games/pong4players.js"></script>
+
+		<script type="module" src="/frontend/js/logic/router.js"></script>
 
 		<link rel="stylesheet" href="/frontend/bootstrap-5.3.3-dist/css/bootstrap.css" />
 		<script type="module" src="/frontend/bootstrap-5.3.3-dist/js/bootstrap.min.js"></script>
@@ -23,25 +17,30 @@
 		integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 	</head>
 	<body>
-		<div class="container-fluid text-bg-secondary">
+		<div class="container-fluid bg-primary-subtle">
 			<div class="row">
 				<header class="navbar sticky-top">
 					<div class="col-md-1 d-flex justify-content-center">
-						<button class="btn btn-secondary nav__link" id="btn__navbar--home" type="button" value="index">
+						<button class="btn btn-outline-secondary nav__link" id="navbar__btn--home" type="button" value="index">
 							<img src="/frontend/img/42_logo.svg" alt="logo 42" width="42" height="30"/>
 						</button>
 					</div>
 					<div class="col-md-10"></div>
 					<div class="col-md-1 text-end pe-3">
 						<div class="dropdown">
-							<button class="btn btn-secondary" id="btn__navbar--user" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-								user
-								<img src="/frontend/img/person-circle-Bootstrap.svg" alt="user" width="30" height="30" class="rounded-circle"/>
+							<button class="btn btn-outline-secondary" id="navbar__btn--user" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+								<span id="navbar__btn--text" class="pe-1"></span>
+								<img src="/frontend/img/person-circle-Bootstrap.svg" alt="temp avatar" id="navbar__btn--avatar" width="30" height="30" class="rounded-circle"/>
 							</button>
 							<ul class="dropdown-menu animate slideIn">
 								<li>
 									<button class="text-primary dropdown-item nav__link" type="button" value="profile">
 										Profile
+									</button>
+								</li>
+								<li>
+									<button class="text-primary dropdown-item" type="button" id="logout">
+										logout
 									</button>
 								</li>
 							</ul>
@@ -53,13 +52,19 @@
 		<div class="container-fluid">
 			<div class="row">
 				<!-- SIDEBAR -->
-				<div class="col-auto px-1 text-bg-secondary" id="sidebar">
+				<div class="col-auto px-1 text-bg-secondary" id="sidebar-left">
 					<div class="d-flex align-items-center flex-column px-3 pt-2 min-vh-100" >
 						<ul class="nav nav-pills flex-column">
 							<li class="nav-item">
 								<button class="btn btn-secondary text-white px-0 nav__link" type="button" value="twoplayers">
 									<img src="/frontend/img/table-tennis-paddle-ball-solid.svg" alt="table tennis paddle" width="20" height="20" />
 									2 Players Mode
+								</button>
+							</li>
+							<li class="nav-item">
+								<button class="btn btn-secondary text-white px-0 nav__link" type="button" value="twoplayersonline">
+									<img src="/frontend/img/table-tennis-paddle-ball-solid.svg" alt="table tennis paddle" width="20" height="20" />
+									2 Players Mode Online
 								</button>
 							</li>
 							<li class="nav-item">
@@ -86,9 +91,11 @@
 				</div>
 				<div class="col container" id="main__content">
 				</div>
+				<div class="col-auto px-1 bg-dark-subtle" id="sidebar-right">
+				</div>
 			</div>
 		</div>
-		<footer class="footer fixed-bottom">
+		<footer class="footer fixed-bottom bg-primary-subtle">
 			<div class="text-center">
 				<img src="https://cdn.intra.42.fr/users/49c367c197f05f6dc2e0ecfc96c1b2c3/fcoindre.jpg" width="40" height="40" class="mx-1 rounded">
 				<img src="https://cdn.intra.42.fr/users/febe1a9bb4ff838d1f8a990d0b67d163/pvong.jpg" width="40" height="40" class="mx-1 rounded">

@@ -2,7 +2,7 @@
 
 import bracketGraph from "./bracket.js";
 import Player from "./Player.js"; // Import the Player class from Player
-import pongGame from "./pong2players.js"; // Import the PongGame2Players class from pong2players
+import { PongGame2Players } from "./pong2players.js"; // Import the PongGame2Players class from pong2players
 
 class Tournament {
 	constructor() {
@@ -195,17 +195,17 @@ class Tournament {
 	async playSingleMatch(player1, player2) {
 		let game;
 		if (player1 instanceof Player && player2 instanceof Player)
-			game = new pongGame.PongGame2Players(player1.getName(), player2.getName());
+			game = new PongGame2Players(player1.getName(), player2.getName());
 		else
-			game = new pongGame.PongGame2Players(player1, player2);
-		document.querySelector("#startGame2").addEventListener("click", e => {
+			game = new PongGame2Players(player1, player2);
+		document.getElementById("startGame2").addEventListener("click", e => {
 			e.preventDefault();
-			document.querySelector("#startGame2").classList.add("d-none");
+			document.getElementById("startGame2").classList.add("d-none");
 			game.init();
 		})
 		let winner = await game.gameOver();
 		console.log("Match finished. Winner:", winner);
-		document.querySelector("#startGame2").classList.remove("d-none");
+		document.getElementById("startGame2").classList.remove("d-none");
 		return winner;
 	}
 
@@ -241,26 +241,66 @@ function rempliTestDebug() {
 	}
 }
 
-// DEBUG
-window.rempliTestDebug = function () {
-	rempliTestDebug();
+function listenerTournament() {
+
+	document.getElementById("startTournament").addEventListener("click", e => {
+
+		const startBtn = document.getElementById("startGame2");
+		startBtn.classList.remove("d-none");
+		startBtn.parentElement.classList.remove("d-none");
+
+		const board = document.getElementById("board_two");
+		board.classList.remove("d-none");
+		board.parentElement.classList.remove("d-none");
+
+		let tournament = new Tournament();
+		tournament.startTournament();
+	});
+
+	document.getElementById("DEBUGstartTournament").addEventListener("click", e => {
+
+		rempliTestDebug();
+
+		const startBtn = document.getElementById("startGame2");
+		startBtn.classList.remove("d-none");
+		startBtn.parentElement.classList.remove("d-none");
+
+		const board = document.getElementById("board_two");
+		board.classList.remove("d-none");
+		board.parentElement.classList.remove("d-none");
+
+		let tournament = new Tournament();
+		tournament.startTournament();
+	});
 }
 
-window.startTournament = function () {
-	// remove the button of the login when the tournament is launched
-	// const loginButton = document.querySelector("#login-btn");
-	// loginButton.classList.add("d-none");
+async function loadTournament() {
 
-	const startBtn = document.querySelector("#startGame2");
-	startBtn.classList.remove("d-none");
-	startBtn.parentElement.classList.remove("d-none");
+	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
-	const board = document.querySelector("#board_two");
-	board.classList.remove("d-none");
-	board.parentElement.classList.remove("d-none");
+	const init = {
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrftoken,
+		}
+	};
 
-	let tournament = new Tournament();
-	tournament.startTournament();
+	try {
+		const response = await fetch('http://localhost:7890/api/tournament/', init);
+
+		if (response.status === 403) {
+			const text = await response.text();
+			throw new Error(text);
+		}
+
+		return 1;
+	} catch (e) {
+		console.error("loadTournament: " + e);
+		return 0;
+	}
 };
 
-export default Tournament;
+export default {
+	listenerTournament,
+	loadTournament
+};
