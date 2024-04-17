@@ -79,3 +79,15 @@ body, html {
 		transform: rotateZ(360deg);
 	}
 }
+
+.collapse__myStats--color--title {
+	color: rgb(86, 146, 65);
+}
+
+.collapse__myStats--color--stats {
+	color: rgb(44, 202, 175);
+}
+
+.collapse__myStats--color--context {
+	color: rgb(186, 119, 199);
+}

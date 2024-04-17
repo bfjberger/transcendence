@@ -42,6 +42,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/index/', IndexAction.as_view()),
     path('api/login/', LoginView.as_view()),
+    path('api/logout/', LogoutView.as_view()),
     path('api/register/', RegisterAction.as_view()),
     path('api/profile/', ProfileView.as_view()),
     # path('api/index/', IndexView.as_view()),
