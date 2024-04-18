@@ -147,7 +147,6 @@ class ProfileUpdateAvatarView(APIView):
 	permission_classes = [permissions.IsAuthenticated]
 	serializer_class = AvatarSerializer
 
-	@method_decorator(csrf_exempt, name='dispatch')
 	def patch(self, request):
 		try :
 			player = Player.objects.get(owner=self.request.user)

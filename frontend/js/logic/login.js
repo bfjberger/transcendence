@@ -113,14 +113,18 @@ async function createUser(createAccountForm) {
 
 async function connectUser42() {
 
+	document.getElementById("loading").classList.remove("d-none");
+
 	try {
-		const response = await fetch('http://localhost:7890/accounts/');
+		const response = await fetch('http://localhost:7890/api/accounts/');
 
 		if (!response.ok) {
 			throw new Error(`HTTP error, status = ${response.status}`);
 		}
 
 		console.log("connection with 42 API successful");
+
+		document.getElementById("loading").classList.add("d-none");
 
 		router("index");
 	} catch (e) {

@@ -205,5 +205,5 @@ LOGOUT_REDIRECT_URL = 'http://localhost:7890'
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "bck_django", "avatars")
-MEDIA_URL = "avatars/"
+MEDIA_URL = ""
+MEDIA_ROOT = os.path.join(BASE_DIR, "")

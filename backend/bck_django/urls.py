@@ -55,10 +55,10 @@ urlpatterns = [
     path('api/fourplayer/', FourPlayers.as_view()),
     path('api/tournament/', Tournament.as_view()),
     path('api/friends/', Friends.as_view()),
-    path('accounts/', views.accounts_view, name='accounts'),
-    path('call_back/', views.callback, name='callback'),
+    path('api/accounts/', views.accounts_view, name='accounts'),
+    path('api/call_back/', views.callback, name='callback'),
     path('api/logout/', LogoutView.as_view()),
     path('api/updateavatar/', ProfileUpdateAvatarView.as_view()),
 ]
 
-# urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
