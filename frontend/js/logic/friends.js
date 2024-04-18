@@ -10,7 +10,7 @@ function listenerFriends() {
 		post_friend(form_post_friend)
 	});
 
-	const button_accept_patch = document.querySelectorAll("accept_friend_button")
+	const button_accept_patch = document.querySelectorAll(".accept_friend_button")
 
 	console.log("bbb" + button_accept_patch)
 	button_accept_patch.forEach(button_accept => {
@@ -27,6 +27,36 @@ async function patch_friend (username)
 {
 	console.log("username : " + username)
 
+	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+
+	const init = {
+		method: 'PATCH',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrftoken,
+		},
+		body: JSON.stringify({username: username})
+	};
+
+	try {
+		const response = await fetch('http://localhost:7890/api/friends/', init);
+
+		if (response.status === 403) 
+		{
+			const text = await response.text();
+			throw new Error(text);
+		}
+		else if (response.status === 200)
+		{
+			//data = await response.json()
+			console.log('success')
+			// window.location.reload()
+
+		}
+
+	} catch (e) {
+		console.error("error from post friend : " + e);
+	}
 }
 
 

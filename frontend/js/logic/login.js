@@ -124,7 +124,7 @@ async function connectUser42() {
 	}
 }
 
-export default function handleLogin() {
+function listenerLogin() {
 
 	const login42Btn = document.querySelector("#btn__login--42");
 

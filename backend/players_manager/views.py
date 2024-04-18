@@ -258,3 +258,7 @@ class Friends(APIView):
 			return Response("Relation added", status=status.HTTP_201_CREATED)
 
 		return Response("serializer not valid", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+
+	
+	def patch(self, request):
+		return Response("Test", status=status.HTTP_200_OK)
