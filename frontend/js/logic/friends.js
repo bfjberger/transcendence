@@ -4,14 +4,31 @@ function listenerFriends() {
 
 	display()
 
-
 	const form_post_friend = document.getElementById("form_post_friend")
 	form_post_friend.addEventListener("submit", e => {
 		e.preventDefault()
 		post_friend(form_post_friend)
 	});
 
+	const button_accept_patch = document.querySelectorAll("accept_friend_button")
+
+	console.log("bbb" + button_accept_patch)
+	button_accept_patch.forEach(button_accept => {
+		console.log("addEvent" + button_accept)
+		button_accept.addEventListener("click", e => {
+			e.preventDefault()
+			patch_friend(button_accept.value)
+		})
+	});
+
 };
+
+async function patch_friend (username)
+{
+	console.log("username : " + username)
+
+}
+
 
 function display()
 {
@@ -28,7 +45,7 @@ function display()
 	var parent_list_received = document.getElementById("list_friends_received")
 	data["friends_received"].forEach(friend => {
 		element_list = document.createElement("li")
-		element_list.innerHTML = friend + `<button class="btn btn-danger mt-1 refuse_friend_button" type="button">Refuse</button> <button class="btn btn-success mt-1 accept_friend_button" type="button">Accept</button>`
+		element_list.innerHTML = friend + `<button class="btn btn-danger mt-1 refuse_friend_button" type="button" value="${friend}">Refuse</button> <button class="btn btn-success mt-1 accept_friend_button" type="button" value="${friend}">Accept</button>`
 		parent_list_received.appendChild(element_list)
 		// console.log("relation received : " + friend)
 	});
