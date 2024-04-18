@@ -78,14 +78,11 @@ class LoginView(APIView):
 		player.status = "ONLINE"
 		player.save()
 
-		serializer_player = PlayerSerializer(player)
-		# serializer_data = DataSerializer(player)
+		# serializer_player = PlayerSerializer(player)
+
 		user_data = request.user
 		serializer_data = DataSerializer(user_data)
-		# if serializer_data.is_valid():
-		return Response(serializer_data.data, status=status.HTTP_202_ACCEPTED)
-		# else:
-			# return Response(serializer_data.errors, status=status.HTTP_401_UNAUTHORIZED)
+		return Response(data=serializer_data.data, status=status.HTTP_202_ACCEPTED)
 
 
 class LogoutView(APIView):
@@ -121,10 +118,12 @@ class ProfileView(APIView):
 	serializer_class = PlayerSerializer
 
 	def get(self, request):
-		player = Player.objects.get(owner=self.request.user)
-		serializer_player = PlayerSerializer(player)
-		serializer_user = UserSerializer(self.request.user)
-		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
+		# player = Player.objects.get(owner=self.request.user)
+		# serializer_player = PlayerSerializer(player)
+		# serializer_user = UserSerializer(self.request.user)
+		user_data = request.user
+		serializer_data = DataSerializer(user_data)
+		return Response(data=serializer_data.data, status=status.HTTP_200_OK)
 
 	# @transaction.atomic
 	# @method_decorator()

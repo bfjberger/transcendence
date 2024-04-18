@@ -17,7 +17,7 @@ class Player(models.Model):
 	nb_games_4p_lost = models.IntegerField(default=0)
 	score = models.IntegerField(default=0)
 	status = models.CharField(max_length=200, choices=status.choices, default=status.OFFLINE)
-	avatar = models.ImageField(max_length=200, default="avatar.png", upload_to='avatars/')
+	avatar = models.ImageField(max_length=200, default="avatars/avatar.png", upload_to='avatars/')
 
 	def record_win(self, game_type):
 		if game_type == '2p':
@@ -28,7 +28,7 @@ class Player(models.Model):
 			self.nb_games_4p_won += 1
 		self.score += 1
 		self.save()
-	
+
 	def record_loss(self, game_type):
 		if game_type == '2p':
 			self.nb_games_2p += 1

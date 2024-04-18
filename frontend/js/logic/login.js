@@ -7,7 +7,7 @@ import router from "./router.js"
 async function connectUser(loginForm) {
 
 	// remove a potential error message from the field
-	loginForm.querySelector("#form__login--errorMsg").textContent = "";
+	document.getElementById("form__login--errorMsg").textContent = "";
 
 	const input = loginForm.elements;
 
@@ -27,7 +27,7 @@ async function connectUser(loginForm) {
 
 		if (response.status === 201) {
 			const error = await response.text();
-			document.querySelector("#form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '');
+			document.getElementById("form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '');
 			return;
 		}
 		if (!response.ok) {
@@ -37,8 +37,10 @@ async function connectUser(loginForm) {
 			// login is successful -> redirect to profile
 
 			const data = await response.json();
-			console.log(data);
-			// sessionStorage.setItem("username", data);
+
+			sessionStorage.setItem("username", data["username"]);
+			sessionStorage.setItem("avatar", data["player"].avatar);
+			sessionStorage.setItem("nickname", data["player"].nickname);
 
 			document.querySelector("div.modal-backdrop.fade.show").remove();
 
@@ -61,12 +63,12 @@ async function connectUser(loginForm) {
 async function createUser(createAccountForm) {
 
 	// remove a potential error message from the field
-	createAccountForm.querySelector("#form__createAccount--errorMsg").textContent = "";
+	document.getElementById("form__createAccount--msg").textContent = "";
 
 	const input = createAccountForm.elements;
 
 	if (input["password_one"].value !== input["password_two"].value) {
-		document.querySelector("#form__createAccount--errorMsg").textContent = "The passwords are not the same";
+		document.getElementById("form__createAccount--msg").textContent = "The passwords are not the same";
 		return;
 	}
 
@@ -86,14 +88,14 @@ async function createUser(createAccountForm) {
 		const response = await fetch('http://localhost:7890/api/register/', init);
 		if (response.status === 401) {
 			const error = await response.text();
-			document.querySelector("#form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '');
+			document.getElementById("form__createAccount--msg").textContent = error.replace(/["{}[\]]/g, '');
 			return;
 		}
 		if (response.status === 201) {
 			// register is successful -> redirect to profile
 
 			const data = await response.json();
-			sessionStorage.setItem("username", data.username);
+			// sessionStorage.setItem("username", data.username); pas necessaire comme oblige de login et alors recoit infos importantes
 
 			document.getElementById("form__createAccount--msg").innerHTML = "Your account was successfully created. You can now login.";
 			document.getElementById("form__createAccount--msg").classList.remove("text-danger");
@@ -133,24 +135,24 @@ function listenerLogin() {
 	const createAccountForm = document.querySelector("#form__createAccount");
 
 	// Reset all fields (input and error) from the form when the modal pass to hidden
-	document.querySelector("#modal__login").addEventListener("hidden.bs.modal", e => {
+	document.getElementById("modal__login").addEventListener("hidden.bs.modal", e => {
 		e.preventDefault();
 
 		loginForm.querySelectorAll(".input__field").forEach(inputElement => {
 			inputElement.value = "";
 			inputElement.parentElement.querySelector(".form__input--errorMsg").textContent = "";
-			loginForm.querySelector("#form__login--errorMsg").textContent = "";
+			document.getElementById("form__login--errorMsg").textContent = "";
 		});
 	});
 
 	// Reset all fields (input and error) from the form when the modal pass to hidden
-	document.querySelector("#modal__createAccount").addEventListener("hidden.bs.modal", e => {
+	document.getElementById("modal__createAccount").addEventListener("hidden.bs.modal", e => {
 		e.preventDefault();
 
 		createAccountForm.querySelectorAll(".input__field").forEach(inputElement => {
 			inputElement.value = "";
 			inputElement.parentElement.querySelector(".form__input--errorMsg").textContent = "";
-			createAccountForm.querySelector("#form__createAccount--errorMsg").textContent = "";
+			document.getElementById("form__createAccount--msg").textContent = "";
 		});
 	});
 
