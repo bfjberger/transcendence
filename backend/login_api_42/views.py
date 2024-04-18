@@ -76,4 +76,4 @@ def callback(request):
     else:
         # Handle the case where the request to the 42 API fails
         # You might want to display an error message or redirect to a different page
-        return redirect('api/accounts/')  # Redirect to the accounts page with an error message
+        return redirect('/api/accounts/')  # Redirect to the accounts page with an error message

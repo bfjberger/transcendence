@@ -195,7 +195,7 @@ SOCIALACCOUNT_PROVIDERS = {
         'METHOD': 'oauth2',
         'VERIFIED_EMAIL': False,
         'KEY': 'u-s4t2ud-f615740997c083b92e2a938e5187cc7a9370ed9ccd21d07b022db2afe9c6fe73',
-        'SECRET': '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',
+        'SECRET': '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',
     }
 }
 
