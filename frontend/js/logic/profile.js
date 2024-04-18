@@ -204,19 +204,16 @@ function listenerProfile() {
 
 	nicknameForm.addEventListener("submit", e => {
 		e.preventDefault();
-
 		updateNickname(nicknameForm);
 	});
 
 	passwordForm.addEventListener("submit", e => {
 		e.preventDefault();
-
 		updatePassword(passwordForm);
 	});
 
 	avatarForm.addEventListener("submit", e => {
 		e.preventDefault();
-
 		updateAvatar(avatarForm);
 	});
 

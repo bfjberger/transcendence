@@ -60,6 +60,8 @@ urlpatterns = [
     path('api/logout/', LogoutView.as_view()),
     path('api/updateavatar/', ProfileUpdateAvatarView.as_view()),
     path('api/data/', DataView.as_view()),
+    path('api/accounts/', views.accounts_view, name='accounts'),
+    path('api/call_back/', views.callback, name='callback'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
