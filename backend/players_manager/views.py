@@ -78,7 +78,7 @@ class LoginView(APIView):
 
 		serializer_player = PlayerSerializer(player)
 
-		return Response("username" : serializer.data['username'], status=status.HTTP_202_ACCEPTED)
+		return Response(serializer.data['username'], status=status.HTTP_202_ACCEPTED)
 
 
 class LogoutView(APIView):

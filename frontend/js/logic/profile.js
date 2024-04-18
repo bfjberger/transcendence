@@ -110,7 +110,7 @@ async function updateAvatar(avatarForm) {
 	const init = {
 		method: 'PATCH',
 		headers: {
-			'Content-Type': 'application/json',
+			'Content-Type': 'multipart/form-data',
 			'X-CSRFToken': csrftoken,
 		},
 		body: JSON.stringify({avatar: input.avatar.value})
