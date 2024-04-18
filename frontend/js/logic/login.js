@@ -41,7 +41,8 @@ async function connectUser(loginForm) {
 			// login is successful -> redirect to profile
 
 			const data = await response.json();
-			sessionStorage.setItem("username", data);
+			console.log(data);
+			// sessionStorage.setItem("username", data);
 
 			document.querySelector("div.modal-backdrop.fade.show").remove();
 

@@ -12,7 +12,7 @@ from django.contrib.auth import login, logout
 
 from django.contrib.auth.models import User
 
-from players_manager.serializers import LoginSerializer, UserSerializer, PlayerSerializer, RegisterSerializer, FriendSerializer, AvatarSerializer
+from players_manager.serializers import LoginSerializer, UserSerializer, PlayerSerializer, RegisterSerializer, FriendSerializer, AvatarSerializer, DataSerializer
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
@@ -77,8 +77,13 @@ class LoginView(APIView):
 		player.save()
 
 		serializer_player = PlayerSerializer(player)
-
-		return Response(serializer.data['username'], status=status.HTTP_202_ACCEPTED)
+		# serializer_data = DataSerializer(player)
+		user_data = request.user
+		serializer_data = DataSerializer(user_data)
+		# if serializer_data.is_valid():
+		return Response(serializer_data.data, status=status.HTTP_202_ACCEPTED)
+		# else:
+			# return Response(serializer_data.errors, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class LogoutView(APIView):
@@ -221,3 +226,9 @@ class Friends(APIView):
 
 		# list_friends = "lol"
 		return Response(data={"friends_initiated" : list_friends_initiator, "player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
+
+class DataView(APIView):
+	def get(self, request):
+		user = request.user
+		serializer = DataSerializer(user)
+		return Response(serializer.data, status=status.HTTP_200_OK)

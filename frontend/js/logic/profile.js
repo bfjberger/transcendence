@@ -1,7 +1,11 @@
+import router from "./router.js"
+
 var games_2p;
 var ratio_2p;
 var games_4p;
 var ratio_4p;
+
+const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
 async function updateNickname(nicknameForm) {
 
@@ -11,8 +15,6 @@ async function updateNickname(nicknameForm) {
 	document.getElementById("form__update--nickname--msg").classList.remove("text-info");
 
 	const input = nicknameForm.elements;
-
-	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
 	const init = {
 		method: 'PATCH',
@@ -64,8 +66,6 @@ async function updatePassword(passwordForm) {
 		return;
 	}
 
-	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
-
 	const init = {
 		method: 'PATCH',
 		headers: {
@@ -103,19 +103,15 @@ async function updateAvatar(avatarForm) {
 	document.getElementById("form__update--avatar--msg").classList.remove("text-danger");
 	document.getElementById("form__update--avatar--msg").classList.remove("text-info");
 
-	// const input = avatarForm.elements;
-
 	let data = new FormData();
 	data.append('avatar', document.getElementById("form__update--avatar--input").files[0]);
-
-	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
 	const init = {
 		method: 'PATCH',
 		headers: {
 			'X-CSRFToken': csrftoken,
 		},
-		body: data
+		body: data,
 	};
 
 	try {
@@ -142,6 +138,25 @@ async function updateAvatar(avatarForm) {
 	}
 };
 
+async function deleteAccount() {
+
+	const init = {
+		headers: {
+			'X-CSRFToken': csrftoken,
+		},
+	};
+
+	try {
+		// const response = await fetch('', init);
+
+		window.alert("Your account was sucessfully erased from our memory.");
+
+		router("login");
+	} catch (e) {
+		console.error(e);
+	}
+};
+
 function updateStats() {
 
 	const ratioGlobal = (Number(ratio_2p) + Number(ratio_4p)) / 2;
@@ -150,10 +165,10 @@ function updateStats() {
 	document.getElementById("collapse__myStats--global--wlrate").textContent = ratioGlobal.toFixed(2) + "%";
 	// document.getElementById("collapse__myStats--global--points").textContent = ;
 	document.getElementById("collapse__myStats--2player--played").textContent = games_2p;
-	document.getElementById("collapse__myStats--2player--wlrate").textContent = ratio_2p + "%";
+	document.getElementById("collapse__myStats--2player--wlrate").textContent = ratio_2p.toFixed(2) + "%";
 	// document.getElementById("collapse__myStats--2player--points").textContent = ;
 	document.getElementById("collapse__myStats--4player--played").textContent = games_4p;
-	document.getElementById("collapse__myStats--4player--wlrate").textContent = ratio_4p + "%";
+	document.getElementById("collapse__myStats--4player--wlrate").textContent = ratio_4p.toFixed(2) + "%";
 	// document.getElementById("collapse__myStats--4player--points").textContent = ;
 	// document.getElementById("collapse__myStats--tournament--best").textContent = ;
 	document.getElementById("collapse__myStats--tournament--matchwin").textContent = "%";
@@ -162,11 +177,15 @@ function updateStats() {
 
 function listenerProfile() {
 
+	document.getElementById("profile__avatar--big").src = sessionStorage.getItem("avatar") !== null ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
+	document.getElementById("profile__username--big").innerHTML = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
+
 	updateStats();
 
 	const nicknameForm = document.getElementById("form__update--nickname");
 	const passwordForm = document.getElementById("form__update--password");
 	const avatarForm = document.getElementById("form__update--avatar");
+	const deleteAccountBtn = document.getElementById("form__update--delete--account--btn");
 
 	const collapseStats = document.getElementById("collapse__myStats");
 	const collapseUpdate = document.getElementById("collapse__updateProfile");
@@ -200,6 +219,12 @@ function listenerProfile() {
 
 		updateAvatar(avatarForm);
 	});
+
+	deleteAccountBtn.addEventListener("click", e => {
+		e.preventDefault();
+
+		deleteAccount();
+	});
 };
 
 async function loadProfile() {
@@ -223,7 +248,7 @@ async function loadProfile() {
 		const data = await response.json();
 
 		games_2p = data["player"].nb_games_2p;
-		if (data["player"].nb_games_2p_lost !== 0)
+		if (data["player"].nb_games_2p !== 0)
 			ratio_2p = ((data["player"].nb_games_2p_won / data["player"].nb_games_2p) * 100).toFixed(2);
 		else
 			ratio_2p = 100;

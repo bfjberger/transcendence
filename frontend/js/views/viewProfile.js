@@ -2,7 +2,17 @@ export default function renderProfile() {
 
 	return `
 
-		<div class="row p-5"></div>
+		<div class="row p-5">
+			<div class="col-2">
+				<img src="/frontend/img/person-circle-Bootstrap.svg" alt="avatar" id="profile__avatar--big" width="100" height="100" class="rounded-circle"/>
+			</div>
+			<div class="col-8 fs-1 text-center text-info">
+				Profile de
+				<div id="profile__username--big" class="text-decoration-underline"></div>
+			</div>
+			<div class="col-2">
+			</div>
+		</div>
 		<div class="row justify-content-center">
 			<div class="col-auto">
 				<button href="#collapse__myStats" class="btn btn-primary" id="collapse__myStats--btn" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapse__myStats">
@@ -105,7 +115,7 @@ export default function renderProfile() {
 					<div class="text-primary">
 						Nickname
 					</div>
-					<input type="text" class="input__field" id="form__update--nickname--input" name="nickname">
+					<input type="text" class="input__field" id="form__update--nickname--input" maxlength="20" name="nickname">
 					<br>
 					<button class="btn btn-outline-success m-2" type="submit" id="form__update--nickname--btn">
 						Submit
@@ -143,6 +153,10 @@ export default function renderProfile() {
 						Submit
 					</button>
 				</form>
+				<hr>
+				<button class="btn btn-outline-danger" type="button" id="form__update--delete--account--btn">
+					Supprimer mon compte
+				</button>
 				<hr>
 			</div>
 		</div>
