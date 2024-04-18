@@ -4,15 +4,17 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
 
+from rest_framework.reverse import reverse_lazy
+
 from rest_framework import serializers
 
-from players_manager.models import Player
+from players_manager.models import Player, Friend
 
 from django.contrib.auth import login, logout
 
 from django.contrib.auth.models import User
 
-from players_manager.serializers import LoginSerializer, UserSerializer, PlayerSerializer, RegisterSerializer
+from players_manager.serializers import LoginSerializer, UserSerializer, PlayerSerializer, RegisterSerializer, FriendSerializer, AvatarSerializer
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
@@ -70,8 +72,29 @@ class LoginView(APIView):
 		user = serializer.validated_data['user']
 		# print("user from LoginView : ", user)
 		login(request, user)
-		return Response(None, status=status.HTTP_202_ACCEPTED)
+		# serializer.update_status()
 
+		player = Player.objects.get(owner=user)
+		player.status = "ONLINE"
+		player.save()
+
+		serializer_player = PlayerSerializer(player)
+
+		return Response(serializer.data['username'], status=status.HTTP_202_ACCEPTED)
+
+
+class LogoutView(APIView):
+		authentication_classes = [SessionAuthentication, BasicAuthentication]
+		permission_classes = [permissions.IsAuthenticated]
+
+		def patch(self, request):
+			player = Player.objects.get(owner=self.request.user)
+			player.status = "OFFLINE"
+			player.save()
+
+			logout(request)
+
+			return Response("Logout success", status=status.HTTP_200_OK)
 
 # class ProfileView(generics.RetrieveAPIView):
 # 	permission_classes = (permissions.IsAuthenticated,)
@@ -119,6 +142,25 @@ class ProfileView(APIView):
 		return Response(data=serializer_player.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ProfileUpdateAvatarView(APIView):
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
+	serializer_class = AvatarSerializer
+
+	def patch(self, request):
+		try :
+			player = Player.objects.get(owner=self.request.user)
+		except :
+			return Response(None, status=status.HTTP_400_BAD_REQUEST)
+
+		serializer = AvatarSerializer(player, data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_200_OK)
+		else:
+			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class TwoPlayers(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]
@@ -158,10 +200,61 @@ class Tournament(APIView):
 class Friends(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]
-	serializer_class = PlayerSerializer
+	serializer_class = FriendSerializer
 
 	def get(self, request):
-		player = Player.objects.get(owner=self.request.user)
-		serializer_player = PlayerSerializer(player)
+		current_player = Player.objects.get(owner=self.request.user)
+		serializer_player = PlayerSerializer(current_player)
 		serializer_user = UserSerializer(self.request.user)
-		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
+
+		friends_as_initiator = Friend.objects.filter(player_initiated=current_player)
+		friends_as_receiver = Friend.objects.filter(player_received=current_player)
+
+		list_friends_accepted = []
+
+		list_friends_initiator = []
+		for relation in friends_as_initiator :
+			user_received = relation.player_received.owner
+			if relation.accept == False :
+				list_friends_initiator.append(UserSerializer(user_received).data["username"])
+			else :
+				list_friends_accepted.append(UserSerializer(user_received).data["username"])
+
+		list_friends_received = []
+		for relation in friends_as_receiver :
+			user_initiator = relation.player_initiated.owner
+			if relation.accept == False :
+				list_friends_received.append(UserSerializer(user_initiator).data["username"])
+			else :
+				list_friends_accepted.append(UserSerializer(user_initiator).data["username"])
+
+		friends_as_initiator_serializer = FriendSerializer(friends_as_initiator, many=True)
+		friends_as_receiver_serializer = FriendSerializer(friends_as_receiver, many=True)
+
+		return Response(data={"friends_accepted" : list_friends_accepted, "friends_initiated" : list_friends_initiator, "friends_received" : list_friends_received ,"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
+
+
+	def post(self, request):
+		try :
+			user_received = User.objects.get(username=request.data['username'])
+		except :
+			return Response("This member does not exists", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+
+		if user_received.id == self.request.user.id :
+			return Response("You can not ask yourself as friend", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+
+
+		new_relation_data = {"player_initiated" : self.request.user.id, "player_received" : user_received.id, "accept" : False}
+		serializer_new_relation = FriendSerializer(data=new_relation_data)
+
+		if serializer_new_relation.is_valid():
+			relation1_already_exists = Friend.objects.filter(player_initiated=new_relation_data["player_initiated"], player_received=new_relation_data["player_received"])
+			if relation1_already_exists :
+				return Response("Relation already exists", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+			relation2_already_exists = Friend.objects.filter(player_initiated=new_relation_data["player_received"], player_received=new_relation_data["player_initiated"])
+			if relation2_already_exists :
+				return Response("Relation already exists", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+			serializer_new_relation.save()
+			return Response("Relation added", status=status.HTTP_201_CREATED)
+
+		return Response("serializer not valid", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)

@@ -17,9 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from django.conf.urls.static import static
+from django.conf import settings
+
 # from rest_framework import routers
 
-from players_manager.views import LoginView, ProfileView, RegisterAction, IndexAction, test, TwoPlayers, FourPlayers, Tournament, Friends
+from players_manager.views import LoginView, ProfileView, RegisterAction, IndexAction, test, TwoPlayers, FourPlayers, Tournament, Friends, LogoutView, ProfileUpdateAvatarView
 from login_api_42 import views
 # from players_manager.views import PlayerViewSet
 # from players_manager.views import AdminPlayerViewSet
@@ -42,6 +45,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/index/', IndexAction.as_view()),
     path('api/login/', LoginView.as_view()),
+    path('api/logout/', LogoutView.as_view()),
     path('api/register/', RegisterAction.as_view()),
     path('api/profile/', ProfileView.as_view()),
     # path('api/index/', IndexView.as_view()),
@@ -51,6 +55,13 @@ urlpatterns = [
     path('api/fourplayer/', FourPlayers.as_view()),
     path('api/tournament/', Tournament.as_view()),
     path('api/friends/', Friends.as_view()),
+    path('api/accounts/', views.accounts_view, name='accounts'),
+    path('api/call_back/', views.callback, name='callback'),
+    path('api/logout/', LogoutView.as_view()),
+    path('api/updateavatar/', ProfileUpdateAvatarView.as_view()),
+]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     path('api/accounts/', views.accounts_view, name='accounts'),
     path('api/call_back/', views.callback, name='callback'),
 ]

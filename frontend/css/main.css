@@ -56,26 +56,14 @@ body, html {
 	animation-name: slideIn;
 }
 
-/* Animation for the rotating circle */
-#loading::after
-{
-	content: "";
-	position: absolute;
-	inset: 45%;
-	width: 10%;
-	aspect-ratio: 1/1;
-	border-radius: 50%;
-	border: 10px solid white;
-	border-color: red green blue yellow;
-	animation: spinner 1s linear infinite;
+.collapse__myStats--color--title {
+	color: rgb(86, 146, 65);
 }
 
-@keyframes spinner
-{
-	from {
-		transform: rotateZ(0deg);
-	}
-	to {
-		transform: rotateZ(360deg);
-	}
+.collapse__myStats--color--stats {
+	color: rgb(44, 202, 175);
+}
+
+.collapse__myStats--color--context {
+	color: rgb(186, 119, 199);
 }

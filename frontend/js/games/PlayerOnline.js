@@ -7,7 +7,7 @@ export class Player {
 				this.x = 10;
 				break;
 			case 2:
-				this.x = constants.WIN_WIDTH - 10;
+				this.x = constants.WIN_WIDTH - constants.PADDLE_WIDTH - 10;
 				break;
 		}
 		this.y = (constants.WIN_HEIGHT - constants.PADDLE_HEIGHT)/ 2;

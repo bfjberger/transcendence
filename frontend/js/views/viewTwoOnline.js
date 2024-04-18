@@ -6,7 +6,7 @@ export default function renderTwoOnline() {
 			<div class="col text-center fw-bold pt-3">
 			<h1>Two Players Online Pong Game</h1>
 			</div>
-			<p class="text-center"> Template text for later on</p>
+			<p id="template_text" class="text-center"> Template text for later on</p>
 		</div>
 		<div class="row">
 			<div class="col-5"></div>
@@ -20,8 +20,8 @@ export default function renderTwoOnline() {
 			<p>Left Player: W/S</p>
 			</div>
 			<div class="col d-flex justify-content-center align-items-center">
-				<div class="position-absolute">
-					<button class="btn btn-primary" type="button" id="startGame2Online">Start the game</button>
+				<div id="button_container" class="position-absolute">
+					<button class="btn btn-primary" type="button" id="startGame2Online">Look for a game</button>
 				</div>
 				<div class="text-bg-success border border-black border-5">
 					<canvas id="board_two" width="650" height="480"></canvas>

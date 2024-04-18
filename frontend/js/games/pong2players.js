@@ -189,8 +189,9 @@ class PongGame2Players {
 	draw() {
 		this.drawPlayer(this.player1);
 		this.drawPlayer(this.player2);
-		if (this.start) this.drawBall("white");
-			this.drawScoreAndLine();
+		if (this.start)
+			this.drawBall("white");
+		this.drawScoreAndLine();
 	}
 
 	drawPlayer(player) {

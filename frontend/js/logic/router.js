@@ -89,12 +89,6 @@ async function loadIndex() {
 		}
 		if (response.status === 203) {
 
-			document.querySelectorAll(".nav__link").forEach(btn => {
-				btn.setAttribute("disabled", true);
-			});
-			document.getElementById("navbar__btn--user").setAttribute("disabled", true);
-			document.getElementById("logout").setAttribute("disabled", true);
-
 			router("login");
 		}
 	} catch (e) {
@@ -104,9 +98,25 @@ async function loadIndex() {
 
 async function handleLogout() {
 
-	sessionStorage.clear();
+	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
-	router("login");
+	const init = {
+			method: "PATCH",
+			headers: { 'X-CSRFToken': csrftoken, },
+	}
+
+	try {
+			const response = await fetch('http://localhost:7890/api/logout/', init);
+
+			if (response.status === 200) {
+					console.log("user successfull logged out");
+
+					sessionStorage.clear();
+					router("login");
+			}
+	} catch (e) {
+			console.error(e);
+	}
 };
 
 export default async function router(value) {
@@ -116,12 +126,12 @@ export default async function router(value) {
 	if (!page)
 		return;
 
-	if (await page.load()) {
+	if (await page.load() === 1) {
 		document.getElementById("main__content").innerHTML = page.view();
 
 		document.getElementById("navbar__btn--text").innerHTML = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
 		document.getElementById("navbar__btn--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
-		document.getElementById("navbar__btn--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + avatar : "temp avatar";
+		document.getElementById("navbar__btn--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
 
 		document.title = page.title;
 
@@ -129,17 +139,44 @@ export default async function router(value) {
 
 		page.listener();
 	}
+	else
+		router("login");
 };
 
+/*
 window.addEventListener("popstate", (e) => {
 	e.preventDefault();
 
 	// get the url, remove the '/' and if the url is null assign it to '/'
-	var url = window.location.pathname.replaceAll("/", "");
-	url = url != null ? url : "/"
+	let url = window.location.pathname.replaceAll("/", "");
+	// url = url !== null ? url : "/";
+	if (!url)
+		url === "/";
 
 	router(url);
 });
+*/
+
+window.onload = async function() {
+
+	const currentPath = window.location.pathname;
+	for (const route in routes) {
+		if (routes[route].path === currentPath) {
+			if (await routes[route].load() === 1) {
+				document.getElementById('main__content').innerHTML = routes[route].view();  // Render the HTML content for the page
+				document.title = routes[route].title;
+				document.getElementById("navbar__btn--text").innerHTML = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
+				document.getElementById("navbar__btn--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
+				document.getElementById("navbar__btn--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
+				// routes[route].load();  // Load any necessary data
+				routes[route].listener();  // Attach event listeners
+			}
+			else
+				router("login");
+			break;
+		}
+	}
+};
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -165,4 +202,5 @@ document.addEventListener("DOMContentLoaded", () => {
 			}
 		})
 	});
+
 });

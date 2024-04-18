@@ -34,10 +34,20 @@ async function connectUser(loginForm) {
 			throw new Error(`HTTP error, status = ${response.status}`);
 		}
 		if (response.status === 202) {
-			console.log(response);
-			console.log('document.cookie: ' + document.cookie);
-			const data = await response.text();
-			router("profile");
+			// login is successful -> redirect to profile
+
+			const data = await response.json();
+			sessionStorage.setItem("username", data);
+
+			document.querySelector("div.modal-backdrop.fade.show").remove();
+
+			document.querySelectorAll(".nav__link").forEach(btn => {
+				btn.removeAttribute("disabled");
+			});
+			document.getElementById("navbar__btn--user").removeAttribute("disabled");
+			document.getElementById("logout").removeAttribute("disabled");
+
+			router("index");
 		}
 	} catch (e) {
 		console.error("Error connect user: ", e);
@@ -78,13 +88,15 @@ async function createUser(createAccountForm) {
 			document.querySelector("#form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '');
 			return;
 		}
-		if (!response.ok) {
-			throw new Error(response.status);
-		}
-		if (response.status === 202) {
-			const data = await response.text();
-			console.log(data);
-			router("profile");
+		if (response.status === 201) {
+			// register is successful -> redirect to profile
+
+			const data = await response.json();
+			sessionStorage.setItem("username", data.username);
+
+			document.getElementById("form__createAccount--msg").innerHTML = "Your account was successfully created. You can now login.";
+			document.getElementById("form__createAccount--msg").classList.remove("text-danger");
+			document.getElementById("form__createAccount--msg").classList.add("text-info");
 		}
 	} catch (e) {
 		console.error("Error create user: ", e);
@@ -93,12 +105,20 @@ async function createUser(createAccountForm) {
 
 async function connectUser42() {
 
+	document.getElementById("loading").classList.remove("d-none");
+
 	try {
-		const response = await fetch('http://localhost:7890/accounts/');
+		const response = await fetch('http://localhost:7890/api/accounts/');
 
 		if (!response.ok) {
 			throw new Error(`HTTP error, status = ${response.status}`);
 		}
+
+		console.log("connection with 42 API successful");
+
+		document.getElementById("loading").classList.add("d-none");
+
+		router("index");
 	} catch (e) {
 		console.error("Error 42: ", e);
 	}
@@ -153,4 +173,20 @@ export default function handleLogin() {
 
 		connectUser42();
 	});
+};
+
+function loadLogin() {
+
+	document.querySelectorAll(".nav__link").forEach(btn => {
+		btn.setAttribute("disabled", true);
+	});
+	document.getElementById("navbar__btn--user").setAttribute("disabled", true);
+	document.getElementById("logout").setAttribute("disabled", true);
+
+	return 1;
+};
+
+export default {
+	listenerLogin,
+	loadLogin
 };
