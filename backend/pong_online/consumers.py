@@ -6,6 +6,9 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from .gamelogic import GameState
+from django.contrib.auth.models import User
+from players_manager.models import Player
+from asgiref.sync import sync_to_async
 
 tick_rate = 60
 tick_duration = 1 / tick_rate
@@ -124,7 +127,22 @@ class GameManager:
 		for room, data in self.game_rooms.items():
 			players = ', '.join(data['players'])
 			print('-----GAME MANAGER------', f"Room: {room}, Players: {players}")
+
+	def get_player_id_in_room(self, room_name, player_position):
+		if room_name in self.game_rooms:
+			if len(self.game_rooms[room_name]['players']) == 2:
+				if player_position == 'player_one':
+					return self.game_rooms[room_name]['players'][0]
+				elif player_position == 'player_two':
+					return self.game_rooms[room_name]['players'][1]
+		return None
 	
+
+def get_player_id(nickname = None):
+		if (nickname == None):
+			return uuid.uuid4()
+		player = Player.objects.get(nickname=nickname)
+		return player.id
 
 class GameConsumer(AsyncWebsocketConsumer):
 	"""
@@ -161,13 +179,52 @@ class GameConsumer(AsyncWebsocketConsumer):
 	game = None
 	update_lock = None
 
+	def get_player_id_in_room(self, room_name, player_position):
+		if room_name in self.game_manager.game_rooms:
+			if len(self.game_manager.game_rooms[room_name]['players']) == 2:
+				if player_position == 'player_one':
+					return self.game_manager.game_rooms[room_name]['players'][0]
+				elif player_position == 'player_two':
+					return self.game_manager.game_rooms[room_name]['players'][1]
+		return None
+
+	def get_winner(self):
+		if self.game.players[0].score >= self.game.winning_score:
+			return self.get_player_id_in_room(self.game_room, 'player_one')
+		elif self.game.players[1].score >= self.game.winning_score:
+			return self.get_player_id_in_room(self.game_room, 'player_two')
+		return None
+
+	def get_loser(self):
+		if self.game.players[0].score >= self.game.winning_score:
+			return self.get_player_id_in_room(self.game_room, 'player_two')
+		elif self.game.players[1].score >= self.game.winning_score:
+			return self.get_player_id_in_room(self.game_room, 'player_one')
+		return None
+
+	async def record_game_result(self, winner_id, loser_id):
+		winner = await sync_to_async(Player.objects.get)(id=winner_id)
+		loser = await sync_to_async(Player.objects.get)(id=loser_id)
+		await sync_to_async(winner.record_win)('2p')
+		await sync_to_async(loser.record_loss)('2p')
+		# winner.print_records()
+		# loser.print_records()
+
 	async def connect(self):
 		"""
 		Connects the player to the WebSocket and assigns a unique player ID.
 		"""
 		# uuid.uuid4() generates a random UUID
 		# A UUID is a 128-bit number represented as a utf8 string of five hexadecimal fields separated by hyphens
-		self.player_id = str(uuid.uuid4())
+		user = self.scope['user']
+
+		if user.is_authenticated:
+			self.player = await sync_to_async(Player.objects.get)(owner=user)
+			self.player_id = self.player.id
+			# self.player_id = user.username
+		
+		# self.player_id = str(uuid.uuid4())
+		
 		await self.accept()
 		await self.join_game()
 
@@ -246,7 +303,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 					await self.end_game('player_one')
 
 
-#-------HANDLING CHANNEL MESSAGES--------
+# ------------------------- HANDLING CHANNEL MESSAGES ------------------------ #
 	async def game_start(self, event):
 		await self.send(text_data=json.dumps({
 			'type':'game_start'
@@ -295,7 +352,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			self.game_room, self.channel_name
 		)
 
-#--------END HANDLERS---------
+# ------------------------------- END HANDLERS ------------------------------- #
 
 	async def get_update_lock(self):
 			"""
@@ -350,6 +407,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 			None
 		"""
 		self.game.is_running = False
+		winner_id = self.get_winner()
+		loser_id = self.get_loser()
+		await self.record_game_result(winner_id, loser_id)
 		if not winner:
 			game_winner = None
 			if self.game.players[0].score >= self.game.winning_score:
@@ -363,7 +423,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 	async def game_loop(self):
 		async with await self.get_update_lock():
 			while self.game.is_running == True:
-				await self.game.update();
+				await self.game.update()
 				await self.send_game_state()
 				await asyncio.sleep(tick_duration)
 			await self.end_game(None)
