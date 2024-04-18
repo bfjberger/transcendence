@@ -103,21 +103,23 @@ async function updateAvatar(avatarForm) {
 	document.getElementById("form__update--avatar--msg").classList.remove("text-danger");
 	document.getElementById("form__update--avatar--msg").classList.remove("text-info");
 
-	const input = avatarForm.elements;
+	// const input = avatarForm.elements;
+
+	let data = new FormData();
+	data.append('avatar', document.getElementById("form__update--avatar--input").files[0]);
 
 	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
 	const init = {
 		method: 'PATCH',
 		headers: {
-			'Content-Type': 'multipart/form-data',
 			'X-CSRFToken': csrftoken,
 		},
-		body: JSON.stringify({avatar: input.avatar.value})
+		body: data
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/profile/', init);
+		const response = await fetch('http://localhost:7890/api/updateavatar/', init);
 
 		if (response.status === 400) {
 			const error = await response.text();

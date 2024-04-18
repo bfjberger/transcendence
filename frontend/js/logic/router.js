@@ -131,7 +131,7 @@ export default async function router(value) {
 
 		document.getElementById("navbar__btn--text").innerHTML = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
 		document.getElementById("navbar__btn--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
-		document.getElementById("navbar__btn--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + avatar : "temp avatar";
+		document.getElementById("navbar__btn--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
 
 		document.title = page.title;
 
@@ -199,4 +199,5 @@ document.addEventListener("DOMContentLoaded", () => {
 			}
 		})
 	});
+
 });

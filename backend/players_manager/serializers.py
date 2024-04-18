@@ -4,7 +4,7 @@ from rest_framework.validators import UniqueValidator
 
 from django.contrib.auth.models import User
 
-from players_manager.models import Player
+from players_manager.models import Player, Friend
 
 from django.contrib.auth import authenticate
 
@@ -76,3 +76,20 @@ class RegisterSerializer(serializers.ModelSerializer):
 #         fields = ("avatar")
 
 #     def update(self, instance, validated_data):
+
+
+class AvatarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Player
+        fields = ['avatar']
+
+    def save(self, *args, **kwargs):
+        if self.instance.avatar:
+            self.instance.avatar.delete()
+        return super().save(*args, **kwargs)
+
+
+class FriendSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Friend
+        fields = ['id', 'player_initiated', 'player_received', 'accept']
