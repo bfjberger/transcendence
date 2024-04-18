@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
 
+from rest_framework.reverse import reverse_lazy
+
 from rest_framework import serializers
 
 from players_manager.models import Player, Friend
@@ -199,26 +201,61 @@ class Tournament(APIView):
 class Friends(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]
-	serializer_class = PlayerSerializer
+	serializer_class = FriendSerializer
 
 	def get(self, request):
-		player = Player.objects.get(owner=self.request.user)
-		serializer_player = PlayerSerializer(player)
+		current_player = Player.objects.get(owner=self.request.user)
+		serializer_player = PlayerSerializer(current_player)
 		serializer_user = UserSerializer(self.request.user)
 
-		friends_as_initiator = Friend.objects.filter(player_initiated=player)
-		friends_as_receiver = Friend.objects.filter(player_received=player)
+		friends_as_initiator = Friend.objects.filter(player_initiated=current_player)
+		friends_as_receiver = Friend.objects.filter(player_received=current_player)
+
+		list_friends_accepted = []
 
 		list_friends_initiator = []
 		for relation in friends_as_initiator :
 			user_received = relation.player_received.owner
-			list_friends_initiator.append(UserSerializer(user_received).data["username"])
+			if relation.accept == False :
+				list_friends_initiator.append(UserSerializer(user_received).data["username"])
+			else :
+				list_friends_accepted.append(UserSerializer(user_received).data["username"])
 
-			# list_friends_initiator.append({"username" : UserSerializer(self.request.us)}PlayerSerializer(relation.player_received).data)
-
+		list_friends_received = []
+		for relation in friends_as_receiver :
+			user_initiator = relation.player_initiated.owner
+			if relation.accept == False :
+				list_friends_received.append(UserSerializer(user_initiator).data["username"])
+			else :
+				list_friends_accepted.append(UserSerializer(user_initiator).data["username"])
 
 		friends_as_initiator_serializer = FriendSerializer(friends_as_initiator, many=True)
 		friends_as_receiver_serializer = FriendSerializer(friends_as_receiver, many=True)
 
-		# list_friends = "lol"
-		return Response(data={"friends_initiated" : list_friends_initiator, "player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
+		return Response(data={"friends_accepted" : list_friends_accepted, "friends_initiated" : list_friends_initiator, "friends_received" : list_friends_received ,"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
+
+
+	def post(self, request):
+		try :
+			user_received = User.objects.get(username=request.data['username'])
+		except :
+			return Response("This member does not exists", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+
+		if user_received.id == self.request.user.id :
+			return Response("You can not ask yourself as friend", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+
+
+		new_relation_data = {"player_initiated" : self.request.user.id, "player_received" : user_received.id, "accept" : False}
+		serializer_new_relation = FriendSerializer(data=new_relation_data)
+
+		if serializer_new_relation.is_valid():
+			relation1_already_exists = Friend.objects.filter(player_initiated=new_relation_data["player_initiated"], player_received=new_relation_data["player_received"])
+			if relation1_already_exists :
+				return Response("Relation already exists", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+			relation2_already_exists = Friend.objects.filter(player_initiated=new_relation_data["player_received"], player_received=new_relation_data["player_initiated"])
+			if relation2_already_exists :
+				return Response("Relation already exists", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+			serializer_new_relation.save()
+			return Response("Relation added", status=status.HTTP_201_CREATED)
+
+		return Response("serializer not valid", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
