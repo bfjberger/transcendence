@@ -129,14 +129,11 @@ class ProfileView(APIView):
 			return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
 		serializer_player = PlayerSerializer(player, data=self.request.data, partial=True)
-		#serializer_player.is_valid()
-		#return Response(data=serializer_player.data, status=status.HTTP_200_OK)
-		# serializer_user = UserSerializer(self.request.user, data=self.request.data)
 
 		if serializer_player.is_valid():
 			serializer_player.save()
 			return Response(data=serializer_player.data, status=status.HTTP_200_OK)
-		# return Response(data={"errors" : serializer_player.errors, "player" : serializer_player.data}, status=status.HTTP_400_BAD_REQUEST)
+
 		return Response(data=serializer_player.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -259,4 +256,36 @@ class Friends(APIView):
 
 
 	def patch(self, request):
-		return Response("Test", status=status.HTTP_200_OK)
+		
+		accept_param = request.query_params.get('accept')
+
+		# if (accept_param == True)
+		# {
+		# 	try :
+		# 		relation_to_modify = Friend.objects.get(player_initiated=self.request.user.id)
+		# 	except :
+		# 		return Response ("Fatal error", status=status.HTTP_400_BAD_REQUEST)
+
+		# 	serializer_friend = FriendSerializer()
+
+
+
+		# }
+		
+
+
+		return Response(accept_param, status=status.HTTP_200_OK)
+
+
+		# try :
+		# 	player = Player.objects.get(owner=self.request.user)
+		# except :
+		# 	return Response(None, status=status.HTTP_400_BAD_REQUEST)
+
+		# serializer_player = PlayerSerializer(player, data=self.request.data, partial=True)
+
+		# if serializer_player.is_valid():
+		# 	serializer_player.save()
+		# 	return Response(data=serializer_player.data, status=status.HTTP_200_OK)
+
+		# return Response(data=serializer_player.errors, status=status.HTTP_400_BAD_REQUEST)

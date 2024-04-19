@@ -17,13 +17,13 @@ function listenerFriends() {
 		console.log("addEvent" + button_accept)
 		button_accept.addEventListener("click", e => {
 			e.preventDefault()
-			patch_friend(button_accept.value)
+			patch_friend_accept(button_accept.value)
 		})
 	});
 
 };
 
-async function patch_friend (username)
+async function patch_friend_accept (username)
 {
 	console.log("username : " + username)
 
@@ -39,7 +39,7 @@ async function patch_friend (username)
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/friends/', init);
+		const response = await fetch('http://localhost:7890/api/friends/?accept=True', init);
 
 		if (response.status === 403) 
 		{
@@ -49,7 +49,9 @@ async function patch_friend (username)
 		else if (response.status === 200)
 		{
 			//data = await response.json()
-			console.log('success')
+
+			let json_response = await response.json()
+			console.log('success' + json_response)
 			// window.location.reload()
 
 		}
