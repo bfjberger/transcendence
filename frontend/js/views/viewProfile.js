@@ -2,18 +2,22 @@ export default function renderProfile() {
 
 	return `
 
-		<div class="row p-5">
-			<div class="col-2">
-				<img src="/frontend/img/person-circle-Bootstrap.svg" alt="avatar" id="profile__avatar--big" width="100" height="100" class="rounded-circle"/>
-			</div>
-			<div class="col-8 fs-1 text-center text-info">
-				Profile de
-				<div id="profile__username--big" class="text-decoration-underline"></div>
-			</div>
-			<div class="col-2">
+		<div class="row">
+			<div class="bg-image d-flex justify-content-center align-items-center" id="profile__banner">
+				<div class="col-2 text-center">
+					<img src="/frontend/img/person-circle-Bootstrap.svg" alt="avatar" id="profile__avatar--big" width="100" height="100" class="rounded-circle"/>
+				</div>
+				<div class="col-8 fs-1 text-info text-center">
+					Profile de
+					<div id="profile__username--big" class="text-decoration-underline"></div>
+				</div>
+				<div class="col-2 fs-2 text-info text-center">
+					Nickname:
+					<div id="profile__nickname--big" class="text-decoration-underline"></div>
+				</div>
 			</div>
 		</div>
-		<div class="row justify-content-center">
+		<div class="row justify-content-center p-5">
 			<div class="col-auto">
 				<button href="#collapse__myStats" class="btn btn-primary" id="collapse__myStats--btn" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapse__myStats">
 					<img src="/frontend/img/clipboard-data.svg" alt="statistics" width="15" height="15" />
@@ -124,10 +128,11 @@ export default function renderProfile() {
 				<hr>
 				<form id="form__update--password">
 					<div id="form__update--password--msg" class=""></div>
-					<div class="text-primary">
+					<!-- <div class="text-primary">
 						Your current password
 					</div>
 					<input type="password" class="input__field" id="form__update--password--current" name="password_current">
+					-->
 					<div class="text-warning">
 						Password
 					</div>

@@ -178,7 +178,7 @@ function listenerLogin() {
 	});
 };
 
-function loadLogin() {
+async function loadLogin() {
 
 	document.querySelectorAll(".nav__link").forEach(btn => {
 		btn.setAttribute("disabled", true);
@@ -186,7 +186,23 @@ function loadLogin() {
 	document.getElementById("navbar__btn--user").setAttribute("disabled", true);
 	document.getElementById("logout").setAttribute("disabled", true);
 
-	return 1;
+	try {
+		const response = await fetch('http://localhost:7890/api/index/');
+
+		if (response.status === 202) {
+
+			document.querySelectorAll(".nav__link").forEach(btn => {
+				btn.removeAttribute("disabled");
+			});
+			document.getElementById("navbar__btn--user").removeAttribute("disabled");
+			document.getElementById("logout").removeAttribute("disabled");
+
+			router("index");
+		}
+		return 1;
+	} catch (e) {
+		console.error(e);
+	}
 };
 
 export default {

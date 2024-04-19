@@ -44,6 +44,8 @@ async function updateNickname(nicknameForm) {
 			document.getElementById("form__update--nickname--msg").textContent = "Your nickname was successfully updated.";
 			document.getElementById("form__update--nickname--msg").classList.remove("text-danger");
 			document.getElementById("form__update--nickname--msg").classList.add("text-info");
+
+			window.location.reload();
 		}
 
 	} catch (e) {
@@ -132,6 +134,8 @@ async function updateAvatar(avatarForm) {
 			document.getElementById("form__update--avatar--msg").textContent = "Your avatar was successfully updated.";
 			document.getElementById("form__update--avatar--msg").classList.remove("text-danger");
 			document.getElementById("form__update--avatar--msg").classList.add("text-info");
+
+			window.location.reload();
 		}
 	} catch (e) {
 		console.error(e);
@@ -179,6 +183,7 @@ function listenerProfile() {
 
 	document.getElementById("profile__avatar--big").src = sessionStorage.getItem("avatar") !== null ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
 	document.getElementById("profile__username--big").innerHTML = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
+	document.getElementById("profile__nickname--big").textContent = sessionStorage.getItem("nickname");
 
 	updateStats();
 

@@ -67,3 +67,8 @@ body, html {
 .collapse__myStats--color--context {
 	color: rgb(186, 119, 199);
 }
+
+#profile__banner {
+	background-image: url("/frontend/img/banner_stars.jpg");
+	height: 216px;
+}
