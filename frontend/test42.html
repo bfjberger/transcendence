@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="module" src="/frontend/test42.js"></script>
+    <link rel="stylesheet" href="/frontend/bootstrap-5.3.3-dist/css/bootstrap.css" />
+    <script type="module" src="/frontend/bootstrap-5.3.3-dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container-fluid bg-primary-subtle">
+        <div class="row">
+            <header class="navbar sticky-top">
+                <div class="col-md-1 d-flex justify-content-center">
+                    <button class="btn btn-outline-secondary nav__link" id="navbar__btn--home" type="button" value="index">
+                        <img src="/frontend/img/42_logo.svg" alt="logo 42" width="42" height="30"/>
+                    </button>
+                </div>
+                <div class="col-md-10"></div>
+                <div class="col-md-1 text-end pe-3">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary" id="navbar__btn--user" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span id="navbar__btn--text" class="pe-1"></span>
+                            <img src="/frontend/img/person-circle-Bootstrap.svg" alt="temp avatar" id="navbar__btn--avatar" width="30" height="30" class="rounded-circle"/>
+                        </button>
+                        <ul class="dropdown-menu animate slideIn">
+                            <li>
+                                <button class="btn text-primary dropdown-item nav__link" type="button" value="profile">
+                                    Profile
+                                </button>
+                            </li>
+                            <li>
+                                <button class="btn text-danger dropdown-item" type="button" id="logout">
+                                    logout
+                                    <img src="/frontend/img/box-arrow-left.svg" alt="logout" width="15" height="15">
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+        </div>
+    </div>
+</body>
+</html>

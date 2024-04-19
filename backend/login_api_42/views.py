@@ -15,7 +15,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 from django.core.files.base import ContentFile
-from players_manager.serializers import PlayerSerializer
+from players_manager.serializers import PlayerSerializer, UserSerializer
 from players_manager.models import Player
 
 
@@ -30,7 +30,7 @@ class Accounts_view(APIView) :
     def get(self, request):
         # Step 1: Redirect user to 42 authorization URL
         authorization_url = 'https://api.intra.42.fr/oauth/authorize' #by def, url where you can loggin ('https://api.intra.42.fr/oauth/authorize')
-        redirect_uri = 'http://127.0.0.1:7890/api/call_back/'  # Change to your callback URL
+        redirect_uri = 'http://127.0.0.1:7890/frontend/test42.html'  # Change to your callback URL
         params = {
             'client_id': settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'],
             'redirect_uri': redirect_uri,
@@ -52,7 +52,7 @@ class Callback(APIView):
 
         code = request.GET.get('code')
 
-        redirect_uri = 'http://127.0.0.1:7890/api/call_back/'  # Change to your callback URL 
+        redirect_uri = 'http://127.0.0.1:7890//frontend/test42.html'  # Change to your callback URL 
         token_url = 'https://api.intra.42.fr/oauth/token'
         data = {
             'client_id': settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'],
@@ -112,9 +112,10 @@ class Callback(APIView):
                     print("Eh ba non c est pas si simple que ça\n\n\n\n")
                     print("player_serializer.errors", player_serializer.errors)
 
-
-            return Response(None, status=status.HTTP_200_OK)
-            
+            user_serializer = UserSerializer(user)
+            if user_serializer.is_valid():
+                return Response(data={"user" : user_serializer.data}, status=status.HTTP_200_OK)
+        return Response(None)
             # # Check if the user already exists in your database
             # try:
             #     #  Assuming the current user is authenticated
