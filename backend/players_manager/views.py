@@ -50,7 +50,6 @@ class RegisterAction(APIView):
 			if user:
 				return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-		print(serializer.errors)
 		return Response(serializer.errors, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
 
