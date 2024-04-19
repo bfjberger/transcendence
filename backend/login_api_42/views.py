@@ -91,16 +91,12 @@ class Callback(APIView):
                 # img_temp.write(img_response.read())
                 # img_temp.flush()
 
-                # player_data = {
-                #     'owner': user.id,
-                #     'avatar': None
-                # }
+                player_data = {
+                    'owner': user.id,
+                }
 
-                # player_serializer = PlayerSerializer(data=player_data)
+                player_serializer = PlayerSerializer(data=player_data)
 
-                player = Player.objects.create(owner=user, avatar="avatar2.png")
-
-                player_serializer = PlayerSerializer(data=player)
 
                 if player_serializer.is_valid() :
                     player_serializer.save()
