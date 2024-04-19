@@ -37,11 +37,6 @@ class IndexAction(APIView):
 		return Response(data="Not connected", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
 
-class test(APIView):
-	def get(self, request):
-		return Response(None, status=status.HTTP_202_ACCEPTED, template_name="../../frontend/html/login.html")
-
-
 class RegisterAction(APIView):
 	queryset = User.objects.all()
 	permission_classes = (permissions.AllowAny,)
@@ -266,9 +261,3 @@ class Friends(APIView):
 
 	def patch(self, request):
 		return Response("Test", status=status.HTTP_200_OK)
-
-class DataView(APIView):
-	def get(self, request):
-		user = request.user
-		serializer = DataSerializer(user)
-		return Response(serializer.data, status=status.HTTP_200_OK)

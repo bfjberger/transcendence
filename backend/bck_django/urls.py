@@ -22,7 +22,7 @@ from django.conf import settings
 
 # from rest_framework import routers
 
-from players_manager.views import LoginView, ProfileView, RegisterAction, IndexAction, test, TwoPlayers, FourPlayers, Tournament, Friends, LogoutView, ProfileUpdateAvatarView, DataView
+from players_manager.views import LoginView, ProfileView, RegisterAction, IndexAction, TwoPlayers, FourPlayers, Tournament, Friends, LogoutView, ProfileUpdateAvatarView
 from login_api_42 import views
 # from players_manager.views import PlayerViewSet
 # from players_manager.views import AdminPlayerViewSet
@@ -49,7 +49,6 @@ urlpatterns = [
     path('api/register/', RegisterAction.as_view()),
     path('api/profile/', ProfileView.as_view()),
     # path('api/index/', IndexView.as_view()),
-    path('api/test/', test.as_view()),
     # path('staticfiles/AuthenticateChoice/', ),
     path('api/twoplayer/', TwoPlayers.as_view()),
     path('api/fourplayer/', FourPlayers.as_view()),
@@ -59,7 +58,6 @@ urlpatterns = [
     path('api/call_back/', views.callback, name='callback'),
     path('api/logout/', LogoutView.as_view()),
     path('api/updateavatar/', ProfileUpdateAvatarView.as_view()),
-    path('api/data/', DataView.as_view()),
     path('api/accounts/', views.accounts_view, name='accounts'),
     path('api/call_back/', views.callback, name='callback'),
 ]

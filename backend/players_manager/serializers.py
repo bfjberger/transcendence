@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate
 
 from django.contrib.auth.password_validation import validate_password
 
+
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
@@ -51,6 +52,7 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
     email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
@@ -84,8 +86,11 @@ class AvatarSerializer(serializers.ModelSerializer):
         fields = ['avatar']
 
     def save(self, *args, **kwargs):
-        if self.instance.avatar:
-            self.instance.avatar.delete()
+        new_avatar = self.validated_data.get('avatar')
+        if new_avatar:
+            if self.instance.avatar.name != 'avatars/avatar.png':
+                # Delete the old avatar if it's not the default one
+                self.instance.avatar.delete()
         return super().save(*args, **kwargs)
 
 
@@ -93,6 +98,7 @@ class FriendSerializer(serializers.ModelSerializer):
     class Meta:
         model = Friend
         fields = ['id', 'player_initiated', 'player_received', 'accept']
+
 
 class DataSerializer(serializers.ModelSerializer):
     player = serializers.SerializerMethodField()
