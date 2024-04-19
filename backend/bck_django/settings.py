@@ -176,9 +176,9 @@ CSRF_TRUSTED_ORIGINS = ["http://localhost:7890"]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:7890',
-]
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:7890',
+# ]
 
 ASGI_APPLICATION = 'bck_django.asgi.application'
 
