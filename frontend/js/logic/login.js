@@ -1,5 +1,7 @@
 import router from "./router.js"
 
+
+
 // add the field credentials: "same-origin" to the init object to send with the request the cookies
 
 // Try to connect a user | using GET
@@ -108,7 +110,7 @@ async function createUser(createAccountForm) {
 
 async function connectUser42() {
 
-	document.getElementById("loading").classList.remove("d-none");
+	// document.getElementById("loading").classList.remove("d-none");
 
 	try {
 		const response = await fetch('http://localhost:7890/api/accounts/');
@@ -117,11 +119,12 @@ async function connectUser42() {
 			throw new Error(`HTTP error, status = ${response.status}`);
 		}
 
-		console.log("connection with 42 API successful");
+		let address = await response.json()
+		console.log(address);
 
-		document.getElementById("loading").classList.add("d-none");
+		// document.getElementById("loading").classList.add("d-none");
 
-		router("index");
+		window.location.href = address
 	} catch (e) {
 		console.error("Error 42: ", e);
 	}
