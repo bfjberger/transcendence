@@ -1,4 +1,7 @@
 import requests
+from django.core.files.base import ContentFile
+from players_manager.models import Player
+
 from django.shortcuts import redirect
 from django.contrib.auth import login
 from django.contrib.auth.models import User
@@ -83,19 +86,23 @@ class Callback(APIView):
 
             # check if user exists, if not it creates it
             user, created = User.objects.get_or_create(username=username,defaults={'email': email})
-            print("User", user, "\n created", created)
 
             if created == True :
-                # img_response = urlopen("https://cdn.intra.42.fr/users/a3eca96cd935a5060ab7df17749561d1/bberger.jpg")
-                # img_temp = NamedTemporaryFile(delete=True)
-                # img_temp.write(img_response.read())
-                # img_temp.flush()
+
+                img_resp = requests.get("https://cdn.intra.42.fr/users/49c367c197f05f6dc2e0ecfc96c1b2c3/fcoindre.jpg")
+
+                if img_resp.status_code != 200 :
+                    print("\n\n\nimage pas downloaded\n\n\n")
 
                 player_data = {
                     'owner': user.id,
                 }
+                player = Player(owner=user)
+                player.avatar.save(usermane+'.jpg', ContentFile(img_resp.content), save=False)
+                player.save()
 
-                player_serializer = PlayerSerializer(data=player_data)
+
+                player_serializer = PlayerSerializer(data=player)
 
 
                 if player_serializer.is_valid() :

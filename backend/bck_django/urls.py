@@ -55,14 +55,11 @@ urlpatterns = [
     path('api/twoplayer/', TwoPlayers.as_view()),
     path('api/fourplayer/', FourPlayers.as_view()),
     path('api/tournament/', Tournament.as_view()),
-    path('api/friends/', Friends.as_view()),
 
+    path('api/friends/', Friends.as_view()),
     path('api/friends/accept/', Friends.as_view()),
 
-
-
     path('api/logout/', LogoutView.as_view()),
-    path('api/call_back/', views.callback, name='callback'),
     path('api/updateavatar/', ProfileUpdateAvatarView.as_view()),
 
     path('api/call_back/', Callback.as_view(), name='callback'),

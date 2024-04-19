@@ -110,7 +110,7 @@ async function createUser(createAccountForm) {
 
 async function connectUser42() {
 
-	document.getElementById("loading").classList.remove("d-none");
+	// document.getElementById("loading").classList.remove("d-none");
 
 	try {
 		const response = await fetch('http://localhost:7890/api/accounts/');
@@ -122,7 +122,7 @@ async function connectUser42() {
 		let address = await response.json()
 		console.log(address);
 
-		document.getElementById("loading").classList.add("d-none");
+		// document.getElementById("loading").classList.add("d-none");
 
 		window.location.href = address
 	} catch (e) {
