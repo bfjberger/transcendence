@@ -14,6 +14,7 @@ from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework import status
 
+from django.core.files.base import ContentFile
 from players_manager.serializers import PlayerSerializer
 from players_manager.models import Player
 
@@ -21,6 +22,8 @@ from players_manager.models import Player
 from django.core.files import File
 from urllib.request import urlopen
 from tempfile import NamedTemporaryFile
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from io import BytesIO
 
 class Accounts_view(APIView) :
     
@@ -89,26 +92,25 @@ class Callback(APIView):
 
             if created == True :
 
-                img_resp = requests.get("https://cdn.intra.42.fr/users/49c367c197f05f6dc2e0ecfc96c1b2c3/fcoindre.jpg")
+                img_resp = requests.get(avatar)
 
                 if img_resp.status_code != 200 :
                     print("\n\n\nimage pas downloaded\n\n\n")
 
-                player_data = {
-                    'owner': user.id,
-                }
-                player = Player(owner=user)
-                player.avatar.save(usermane+'.jpg', ContentFile(img_resp.content), save=False)
-                player.save()
+                # img_response = urlopen("https://cdn.intra.42.fr/users/a3eca96cd935a5060ab7df17749561d1/bberger.jpg")
 
+                player = Player(owner=user)
+                player.avatar.save(username+'.jpg', ContentFile(img_resp.content), save=False)
+                player.save()
 
                 player_serializer = PlayerSerializer(data=player)
 
-
                 if player_serializer.is_valid() :
                     player_serializer.save()
+                    login(request, user)
                 else :
                     print("Eh ba non c est pas si simple que ça\n\n\n\n")
+                    print("player_serializer.errors", player_serializer.errors)
 
 
             return Response(None, status=status.HTTP_200_OK)
