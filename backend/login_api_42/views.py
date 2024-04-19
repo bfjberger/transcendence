@@ -11,6 +11,7 @@ from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework import status
 
+from django.core.files.base import ContentFile
 from players_manager.serializers import PlayerSerializer
 from players_manager.models import Player
 
@@ -18,6 +19,8 @@ from players_manager.models import Player
 from django.core.files import File
 from urllib.request import urlopen
 from tempfile import NamedTemporaryFile
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from io import BytesIO
 
 class Accounts_view(APIView) :
     
@@ -87,12 +90,13 @@ class Callback(APIView):
 
             if created == True :
                 # img_response = urlopen("https://cdn.intra.42.fr/users/a3eca96cd935a5060ab7df17749561d1/bberger.jpg")
-                # img_temp = NamedTemporaryFile(delete=True)
-                # img_temp.write(img_response.read())
-                # img_temp.flush()
-
+                print("Avatar url", avatar, "\n\n\n\n")
+                img_response = urlopen(avatar)
+                img_io = BytesIO(img_response.read())
+                img_file = InMemoryUploadedFile(img_io, None, username+'.jpeg', 'image/jpeg', img_io.getbuffer().nbytes, None)
                 player_data = {
                     'owner': user.id,
+                    'avatar': img_file
                 }
 
                 player_serializer = PlayerSerializer(data=player_data)
@@ -102,6 +106,7 @@ class Callback(APIView):
                     player_serializer.save()
                 else :
                     print("Eh ba non c est pas si simple que ça\n\n\n\n")
+                    print("player_serializer.errors", player_serializer.errors)
 
 
             return Response(None, status=status.HTTP_200_OK)
