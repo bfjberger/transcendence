@@ -55,11 +55,11 @@ async function delete_friend (username)
 		{
 			//data = await response.json()
 
-			let json_response = await response.json()
+			// let json_response = await response.json()
 
 
-			console.log("Delete : " + username)
-			//window.location.reload()
+			//console.log("Delete : " + username + " " + json_response)
+			window.location.reload()
 
 		}
 

@@ -274,3 +274,22 @@ class Friends(APIView):
 				Response("Fatal error", status=status.HTTP_403_FORBIDDEN)
 
 		return Response(serializer_relation.data, status=status.HTTP_200_OK)
+	
+	def delete(self, request):
+
+		try :
+			current_player = Player.objects.get(owner=self.request.user)
+			user_former_friend = User.objects.get(username=self.request.data["username"])
+			player_former_friend = Player.objects.get(owner=user_former_friend)
+		except :
+			return Resonse ("Fatal error", status=status.HTTP_400_BAD_REQUEST)
+		
+		
+		relation_to_delete = Friend.objects.filter (player_initiated=player_former_friend, player_received=current_player).first()
+		if not relation_to_delete:
+			relation_to_delete = Friend.objects.filter (player_initiated=current_player, player_received=player_former_friend).first()
+
+		relation_to_delete.delete()
+
+
+		return Response("Test delete method", status=status.HTTP_200_OK)
