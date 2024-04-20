@@ -206,7 +206,6 @@ class Friends(APIView):
 		friends_as_receiver = Friend.objects.filter(player_received=current_player)
 
 		list_friends_accepted = []
-
 		list_friends_initiator = []
 		for relation in friends_as_initiator :
 			user_received = relation.player_received.owner
@@ -256,36 +255,22 @@ class Friends(APIView):
 
 
 	def patch(self, request):
-		
 		accept_param = request.query_params.get('accept')
-
-		# if (accept_param == True)
-		# {
-		# 	try :
-		# 		relation_to_modify = Friend.objects.get(player_initiated=self.request.user.id)
-		# 	except :
-		# 		return Response ("Fatal error", status=status.HTTP_400_BAD_REQUEST)
-
-		# 	serializer_friend = FriendSerializer()
-
-
-
-		# }
 		
+		if (accept_param == "True"):
+			try :
+				current_player = Player.objects.get(owner=self.request.user)
+				user_initiator = User.objects.get(username=self.request.data["username"])
+				player_initiator = Player.objects.get(owner=user_initiator)
+				relation_to_modify = Friend.objects.filter(player_initiated=player_initiator, player_received=current_player)
+			except :
+				return Response ("Fatal error", status=status.HTTP_403_FORBIDDEN)
 
+			serializer_relation = FriendSerializer(relation_to_modify.first(), data={"accept" : True}, partial=True)
 
-		return Response(accept_param, status=status.HTTP_200_OK)
+			if serializer_relation.is_valid() :
+				serializer_relation.save()
+			else :
+				Response("Fatal error", status=status.HTTP_403_FORBIDDEN)
 
-
-		# try :
-		# 	player = Player.objects.get(owner=self.request.user)
-		# except :
-		# 	return Response(None, status=status.HTTP_400_BAD_REQUEST)
-
-		# serializer_player = PlayerSerializer(player, data=self.request.data, partial=True)
-
-		# if serializer_player.is_valid():
-		# 	serializer_player.save()
-		# 	return Response(data=serializer_player.data, status=status.HTTP_200_OK)
-
-		# return Response(data=serializer_player.errors, status=status.HTTP_400_BAD_REQUEST)
+		return Response(serializer_relation.data, status=status.HTTP_200_OK)

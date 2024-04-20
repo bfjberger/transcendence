@@ -10,22 +10,68 @@ function listenerFriends() {
 		post_friend(form_post_friend)
 	});
 
-	const button_accept_patch = document.querySelectorAll(".accept_friend_button")
+	const buttons_accept_patch = document.querySelectorAll(".accept_friend_button")
 
-	console.log("bbb" + button_accept_patch)
-	button_accept_patch.forEach(button_accept => {
-		console.log("addEvent" + button_accept)
+	buttons_accept_patch.forEach(button_accept => {
 		button_accept.addEventListener("click", e => {
 			e.preventDefault()
 			patch_friend_accept(button_accept.value)
 		})
 	});
 
+	const buttons_delete_friend = document.querySelectorAll(".delete_friend_button")
+
+	buttons_delete_friend.forEach(button_delete => {
+		button_delete.addEventListener("click", e => {
+			e.preventDefault()
+			delete_friend(button_delete.value)
+		})
+	});
 };
+
+
+async function delete_friend (username)
+{
+	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+
+	const init = {
+		method: 'DELETE',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrftoken,
+		},
+		body: JSON.stringify({username: username})
+	};
+
+	try {
+		const response = await fetch('http://localhost:7890/api/friends/', init);
+
+		if (response.status === 403) 
+		{
+			const text = await response.text();
+			throw new Error(text);
+		}
+		else if (response.status === 200)
+		{
+			//data = await response.json()
+
+			let json_response = await response.json()
+
+
+			console.log("Delete : " + username)
+			//window.location.reload()
+
+		}
+
+	} catch (e) {
+		console.error("error from post friend : " + e);
+	}	
+
+}
+
 
 async function patch_friend_accept (username)
 {
-	console.log("username : " + username)
 
 	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
@@ -51,8 +97,8 @@ async function patch_friend_accept (username)
 			//data = await response.json()
 
 			let json_response = await response.json()
-			console.log('success' + json_response)
-			// window.location.reload()
+
+			window.location.reload()
 
 		}
 
@@ -77,7 +123,7 @@ function display()
 	var parent_list_received = document.getElementById("list_friends_received")
 	data["friends_received"].forEach(friend => {
 		element_list = document.createElement("li")
-		element_list.innerHTML = friend + `<button class="btn btn-danger mt-1 refuse_friend_button" type="button" value="${friend}">Refuse</button> <button class="btn btn-success mt-1 accept_friend_button" type="button" value="${friend}">Accept</button>`
+		element_list.innerHTML = friend + `<button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend}">Refuse</button> <button class="btn btn-success mt-1 accept_friend_button" type="button" value="${friend}">Accept</button>`
 		parent_list_received.appendChild(element_list)
 		// console.log("relation received : " + friend)
 	});
@@ -97,8 +143,6 @@ async function post_friend(form_post_friend)
 	form_data.append('username', document.getElementById("username").textContent)
 
 	const input = form_post_friend.elements;
-
-
 	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
 	const init = {
