@@ -115,7 +115,7 @@ function display()
 	var element_list
 	data["friends_initiated"].forEach(friend => {
 		element_list = document.createElement("li")
-		element_list.textContent = friend
+		element_list.innerHTML = friend + `<button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend}">Supprimer</button>`
 		parent_list_initiator.appendChild(element_list)
 		// console.log("relation initiated : " + friend)
 	});
@@ -131,7 +131,7 @@ function display()
 	var parent_list_accepted = document.getElementById("list_friends_accepted")
 	data["friends_accepted"].forEach(friend => {
 		element_list = document.createElement("li")
-		element_list.textContent = friend
+		element_list.innerHTML = friend + `<button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend}">Supprimer</button>`
 		parent_list_accepted.appendChild(element_list)
 		// console.log("relation accepted : " + friend)
 	});
