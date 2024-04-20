@@ -131,7 +131,7 @@ function display()
 	var parent_list_accepted = document.getElementById("list_friends_accepted")
 	data["friends_accepted"].forEach(friend => {
 		element_list = document.createElement("li")
-		element_list.innerHTML = friend + `<button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend}">Supprimer</button>`
+		element_list.innerHTML = friend["username"] + " " + friend["status"] + `<button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend["username"]}">Supprimer</button>`
 		parent_list_accepted.appendChild(element_list)
 		// console.log("relation accepted : " + friend)
 	});

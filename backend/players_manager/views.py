@@ -212,7 +212,7 @@ class Friends(APIView):
 			if relation.accept == False :
 				list_friends_initiator.append(UserSerializer(user_received).data["username"])
 			else :
-				list_friends_accepted.append(UserSerializer(user_received).data["username"])
+				list_friends_accepted.append({"username" : UserSerializer(user_received).data["username"], "status" : PlayerSerializer(relation.player_received).data["status"]})
 
 		list_friends_received = []
 		for relation in friends_as_receiver :
@@ -220,7 +220,7 @@ class Friends(APIView):
 			if relation.accept == False :
 				list_friends_received.append(UserSerializer(user_initiator).data["username"])
 			else :
-				list_friends_accepted.append(UserSerializer(user_initiator).data["username"])
+				list_friends_accepted.append({"username" : UserSerializer(user_initiator).data["username"], "status" : PlayerSerializer(relation.player_initiated).data["status"]})
 
 		friends_as_initiator_serializer = FriendSerializer(friends_as_initiator, many=True)
 		friends_as_receiver_serializer = FriendSerializer(friends_as_receiver, many=True)
@@ -282,7 +282,7 @@ class Friends(APIView):
 			user_former_friend = User.objects.get(username=self.request.data["username"])
 			player_former_friend = Player.objects.get(owner=user_former_friend)
 		except :
-			return Resonse ("Fatal error", status=status.HTTP_400_BAD_REQUEST)
+			return Response ("Fatal error", status=status.HTTP_400_BAD_REQUEST)
 		
 		
 		relation_to_delete = Friend.objects.filter (player_initiated=player_former_friend, player_received=current_player).first()
