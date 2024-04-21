@@ -6,6 +6,7 @@ import renderProfile from "../views/viewProfile.js"
 import renderTournament from "../views/viewTournament.js"
 import renderTwoPlayers from "../views/viewTwoPlayers.js"
 import renderTwoOnline from "../views/viewTwoOnline.js"
+import renderGameHistory from "../views/ViewGameHistory.js"
 
 // Importe le script de chaque page qui gere le load et listener
 import handleFriends from "./friends.js"
@@ -15,6 +16,7 @@ import handleTournament from "../games/tournament.js"
 import handleTwoPlayers from "../games/pong2players.js"
 import handleFourPlayers from "../games/pong4players.js"
 import handleTwoPlayersOnline from "../games/pong2playersonline.js"
+import handleGameHistory from "./gamehistory.js"
 
 // Cas particulier pour index
 import handleIndex from "./index.js"
@@ -85,6 +87,14 @@ const routes = {
 		view: renderTwoOnline,
 		load: handleTwoPlayersOnline.loadTwoPlayersOnline,
 		listener: handleTwoPlayersOnline.listenerTwoPlayersOnline
+	},
+	"gamehistory": {
+		title: "Historique des parites",
+		path: "/gamehistory/",
+		view: renderGameHistory,
+		load: handleGameHistory.loadGameHistory,
+		listener: handleGameHistory.listenerGameHistory
+
 	},
 };
 
