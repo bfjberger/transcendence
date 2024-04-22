@@ -20,13 +20,15 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 
-# from rest_framework import routers
+from rest_framework import routers
 
 from players_manager.views import LoginView, ProfileView, RegisterAction, IndexAction, TwoPlayers, FourPlayers, Tournament, Friends, LogoutView, ProfileUpdateAvatarView
 
 from login_api_42.views import Accounts_view, Callback
 
 from games_manager.views import GameHistory
+
+from tournament.views import TournamentViewSet
 
 # from players_manager.views import PlayerViewSet
 # from players_manager.views import AdminPlayerViewSet
@@ -42,6 +44,10 @@ from games_manager.views import GameHistory
 # router.register('tournaments', TournamentViewSet, basename='tournaments')
 # router.register('four_player', Four_PlayerViewSet, basename='four_player')
 # router.register('admin/players', AdminPlayerViewSet, basename='admin_players')
+
+router = routers.DefaultRouter()
+router.register(r'tournaments', TournamentViewSet, basename='tournaments')
+
 
 urlpatterns = [
 
@@ -68,6 +74,7 @@ urlpatterns = [
 
     path('api/call_back/', Callback.as_view(), name='callback'),
     path('api/accounts/', Accounts_view.as_view(), name='accounts'),
+	path('api/', include(router.urls)),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
