@@ -1,9 +1,3 @@
-/* NO TO SCROLLING (ง'̀-'́)ง */
-body, html {
-	height: 100%;
-	overflow: hidden;
-}
-
 .navbar {
 	min-height: 55px;
 }
@@ -17,14 +11,9 @@ body, html {
 	width: 230px;
 }
 
-#board_two {
+#board_two, #board_four {
 	max-width: 650px;
 	max-height: 480px;
-}
-
-#board_four {
-	max-width: 650px;
-	max-height: 650px;
 }
 
 /* Animation for the dropdown */
@@ -66,9 +55,4 @@ body, html {
 
 .collapse__myStats--color--context {
 	color: rgb(186, 119, 199);
-}
-
-#profile__banner {
-	background-image: url("/frontend/img/banner_stars.jpg");
-	height: 216px;
 }

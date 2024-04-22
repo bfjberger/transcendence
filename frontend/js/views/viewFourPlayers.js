@@ -22,7 +22,7 @@ export default function renderFourPlayers() {
 					<button class="btn btn-primary" type="button" id="startGame4">Start the game</button>
 				</div>
 				<div class="text-bg-success border border-black border-5">
-					<canvas id="board_four" width="650" height="650"></canvas>
+					<canvas id="board_four" width="650" height="480"></canvas>
 				</div>
 			</div>
 			<div class="col text-start text-primary align-self-center">

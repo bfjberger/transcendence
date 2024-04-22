@@ -16,9 +16,6 @@ export default function renderLogin() {
 				<div class="row my-5">
 					<button class="btn btn-outline-info list-group-item list-group-item-info" type="button" id="btn__login--42">Sign in with 42</button>
 				</div>
-				<div class="spinner-border text-success d-none" id="loading" role="status">
-					<span class="visually-hidden">Loading...</span>
-				</div>
 			</div>
 			<div class="modal fade" id="modal__login" aria-hidden="true">
 				<div class="modal-dialog modal-dialog-centered text-center">

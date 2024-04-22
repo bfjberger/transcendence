@@ -256,7 +256,7 @@ class Friends(APIView):
 
 	def patch(self, request):
 		accept_param = request.query_params.get('accept')
-		
+
 		if (accept_param == "True"):
 			try :
 				current_player = Player.objects.get(owner=self.request.user)
@@ -274,7 +274,7 @@ class Friends(APIView):
 				Response("Fatal error", status=status.HTTP_403_FORBIDDEN)
 
 		return Response(serializer_relation.data, status=status.HTTP_200_OK)
-	
+
 	def delete(self, request):
 
 		try :
@@ -283,8 +283,8 @@ class Friends(APIView):
 			player_former_friend = Player.objects.get(owner=user_former_friend)
 		except :
 			return Response ("Fatal error", status=status.HTTP_400_BAD_REQUEST)
-		
-		
+
+
 		relation_to_delete = Friend.objects.filter (player_initiated=player_former_friend, player_received=current_player).first()
 		if not relation_to_delete:
 			relation_to_delete = Friend.objects.filter (player_initiated=current_player, player_received=player_former_friend).first()

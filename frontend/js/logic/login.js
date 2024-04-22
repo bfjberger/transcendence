@@ -1,11 +1,6 @@
 import router from "./router.js"
 
-
-
-// add the field credentials: "same-origin" to the init object to send with the request the cookies
-
 // Try to connect a user | using GET
-// USE ANOTHER URL
 async function connectUser(loginForm) {
 
 	// remove a potential error message from the field
@@ -108,9 +103,39 @@ async function createUser(createAccountForm) {
 	}
 }
 
-async function connectUser42() {
+async function waitFor42() {
 
-	// document.getElementById("loading").classList.remove("d-none");
+	try {
+		const response = await fetch('http://localhost:7890/api/call_back/');
+
+		if (!response.ok) {
+			throw new Error(`HTTP error, status = ${response.status}`);
+		}
+
+		const data = await response.json()
+		console.log(data);
+
+		// const interval = setInterval(async () => {
+		// 	const response = await fetch('http://localhost:7890/api/accounts/');
+
+		// 	if (!response.ok) {
+		// 		throw new Error(`HTTP error, status = ${response.status}`);
+		// 	}
+
+		// 	let data = await response.json();
+		// 	console.log(data);
+
+		// 	if (data["username"]) {
+		// 		clearInterval(interval);
+		// 		window.location.href = "http://localhost:7890/index/";
+		// 	}
+		// }, 1000);
+	} catch (e) {
+		console.error("waitFor42: ", e);
+	}
+};
+
+async function connectUser42() {
 
 	try {
 		const response = await fetch('http://localhost:7890/api/accounts/');
@@ -119,12 +144,11 @@ async function connectUser42() {
 			throw new Error(`HTTP error, status = ${response.status}`);
 		}
 
-		let address = await response.json()
+		const address = await response.json()
 		console.log(address);
 
-		// document.getElementById("loading").classList.add("d-none");
-
-		window.location.href = address
+		window.location.href = address;
+		waitFor42();
 	} catch (e) {
 		console.error("Error 42: ", e);
 	}

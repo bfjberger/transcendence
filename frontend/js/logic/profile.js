@@ -5,7 +5,7 @@ var ratio_2p;
 var games_4p;
 var ratio_4p;
 
-const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+var csrftoken;
 
 async function updateNickname(nicknameForm) {
 
@@ -180,6 +180,8 @@ function updateStats() {
 };
 
 function listenerProfile() {
+
+	csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
 	document.getElementById("profile__avatar--big").src = sessionStorage.getItem("avatar") !== null ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
 	document.getElementById("profile__username--big").innerHTML = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";

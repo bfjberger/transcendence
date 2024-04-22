@@ -26,7 +26,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from io import BytesIO
 
 class Accounts_view(APIView) :
-    
+
     def get(self, request):
         # Step 1: Redirect user to 42 authorization URL
         authorization_url = 'https://api.intra.42.fr/oauth/authorize' #by def, url where you can loggin ('https://api.intra.42.fr/oauth/authorize')
@@ -52,7 +52,7 @@ class Callback(APIView):
 
         code = request.GET.get('code')
 
-        redirect_uri = 'http://127.0.0.1:7890/api/call_back/'  # Change to your callback URL 
+        redirect_uri = 'http://127.0.0.1:7890/profile/'  # Change to your callback URL
         token_url = 'https://api.intra.42.fr/oauth/token'
         data = {
             'client_id': settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'],
@@ -69,7 +69,7 @@ class Callback(APIView):
         # Step 3: Use access token to access 42 API
         access_token = token_data.get('access_token')
         # Now you can use the access_token to make requests to the 42 API
-        
+
 
         # Make a request to the 42 API to retrieve user details
         response = requests.get('https://api.intra.42.fr/v2/me', headers={'Authorization': f'Bearer {access_token}'})
@@ -78,7 +78,7 @@ class Callback(APIView):
         if response.status_code == 200:
             user_data = response.json()
             # return JsonResponse(user_data)
-        
+
             # maintenat je dois remplir dans la base les infos du user
             username = user_data.get('login')
             avatar = user_data.get('image')["link"]
@@ -113,8 +113,8 @@ class Callback(APIView):
                     print("player_serializer.errors", player_serializer.errors)
 
 
-            return Response(None, status=status.HTTP_200_OK)
-            
+            return Response(player_serializer.data, status=status.HTTP_200_OK)
+
             # # Check if the user already exists in your database
             # try:
             #     #  Assuming the current user is authenticated

@@ -1,4 +1,5 @@
-var data
+var data;
+var csrftoken;
 
 function listenerFriends() {
 
@@ -30,9 +31,9 @@ function listenerFriends() {
 };
 
 
-async function delete_friend (username)
-{
-	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+async function delete_friend(username) {
+
+	csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
 	const init = {
 		method: 'DELETE',
@@ -46,7 +47,7 @@ async function delete_friend (username)
 	try {
 		const response = await fetch('http://localhost:7890/api/friends/', init);
 
-		if (response.status === 403) 
+		if (response.status === 403)
 		{
 			const text = await response.text();
 			throw new Error(text);
@@ -65,15 +66,14 @@ async function delete_friend (username)
 
 	} catch (e) {
 		console.error("error from post friend : " + e);
-	}	
+	}
 
 }
 
 
-async function patch_friend_accept (username)
-{
+async function patch_friend_accept(username) {
 
-	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+	csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
 	const init = {
 		method: 'PATCH',
@@ -87,7 +87,7 @@ async function patch_friend_accept (username)
 	try {
 		const response = await fetch('http://localhost:7890/api/friends/?accept=True', init);
 
-		if (response.status === 403) 
+		if (response.status === 403)
 		{
 			const text = await response.text();
 			throw new Error(text);
@@ -108,8 +108,8 @@ async function patch_friend_accept (username)
 }
 
 
-function display()
-{
+function display() {
+
 	console.log("path = " + window.location.pathname)
 	var parent_list_initiator = document.getElementById("list_friends_initiator")
 	var element_list
@@ -137,13 +137,13 @@ function display()
 	});
 }
 
-async function post_friend(form_post_friend)
-{
+async function post_friend(form_post_friend) {
+
 	let form_data = new FormData()
 	form_data.append('username', document.getElementById("username").textContent)
 
 	const input = form_post_friend.elements;
-	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+	csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
 	const init = {
 		method: 'POST',
@@ -157,7 +157,7 @@ async function post_friend(form_post_friend)
 	try {
 		const response = await fetch('http://localhost:7890/api/friends/', init);
 
-		if (response.status === 403) 
+		if (response.status === 403)
 		{
 			const text = await response.text();
 			throw new Error(text);
@@ -182,7 +182,7 @@ async function post_friend(form_post_friend)
 
 async function loadFriends() {
 
-	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+	csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
 	const init = {
 		headers: {
