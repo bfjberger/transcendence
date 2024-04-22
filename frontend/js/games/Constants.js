@@ -14,3 +14,5 @@ export const PLAYER_SPEED = 3
 
 export const PLAYER_1_COLOR = "blue"
 export const PLAYER_2_COLOR = "red"
+export const PLAYER_3_COLOR = "violet"
+export const PLAYER_4_COLOR = "orange"

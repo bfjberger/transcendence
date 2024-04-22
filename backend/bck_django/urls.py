@@ -28,6 +28,8 @@ from login_api_42.views import Accounts_view, Callback
 
 from games_manager.views import GameHistory
 
+from pong_online.views import TwoPlayersOnlineView, FourPlayersOnlineView
+
 # from players_manager.views import PlayerViewSet
 # from players_manager.views import AdminPlayerViewSet
 # from friends_manager.views import FriendViewSet
@@ -68,6 +70,9 @@ urlpatterns = [
 
     path('api/call_back/', Callback.as_view(), name='callback'),
     path('api/accounts/', Accounts_view.as_view(), name='accounts'),
+
+    path('api/twoplayeronline/', TwoPlayersOnlineView.as_view()),
+    path('api/fourplayeronline/', FourPlayersOnlineView.as_view()),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -8,7 +8,7 @@ import router from "../logic/router.js" // Import the router for reload MIGHT LE
 class PongGame4Players {
 	constructor(player1Name, player2Name, player3Name, player4Name) {
 		// board
-		[this.boardWidth, this.boardHeight] = [650, 650];
+		[this.boardWidth, this.boardHeight] = [650, 480];
 		[this.board, this.context] = [null, null]; // defined in setBoard()
 		this.start = false;
 
@@ -299,14 +299,8 @@ class PongGame4Players {
 		this.context.font = "20px sans-serif";
 		this.context.fillStyle = "black";
 		this.context.fillText(this.player1.getScore(), 10, this.boardHeight / 2);
-
-		this.context.fillStyle = "black";
 		this.context.fillText(this.player2.getScore(), this.boardWidth - 20, this.boardHeight / 2);
-
-		this.context.fillStyle = "black";
 		this.context.fillText(this.player3.getScore(), this.boardWidth / 2, 20);
-
-		this.context.fillStyle = "black";
 		this.context.fillText(this.player4.getScore(), this.boardWidth / 2, this.boardHeight - 20);
 	}
 

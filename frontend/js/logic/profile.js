@@ -253,12 +253,12 @@ async function loadProfile() {
 
 		games_2p = data["player"].nb_games_2p;
 		if (data["player"].nb_games_2p !== 0)
-			ratio_2p = ((data["player"].nb_games_2p_won / data["player"].nb_games_2p) * 100).toFixed(2);
+			ratio_2p = Number(((data["player"].nb_games_2p_won / data["player"].nb_games_2p) * 100).toFixed(2));
 		else
 			ratio_2p = 100;
 		games_4p = data["player"].nb_games_4p;
 		if (data["player"].nb_games_4p !== 0)
-			ratio_4p = ((data["player"].nb_games_4p_won / data["player"].nb_games_4p) * 100).toFixed(2);
+			ratio_4p = Number(((data["player"].nb_games_4p_won / data["player"].nb_games_4p) * 100).toFixed(2));
 		else
 			ratio_4p = 100;
 

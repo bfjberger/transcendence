@@ -1,5 +1,6 @@
 // Importe la View de chaque page
 import renderFourPlayers from "../views/viewFourPlayers.js"
+import renderFourOnline from "../views/viewFourOnline.js"
 import renderFriends from "../views/viewFriends.js"
 import renderLogin from "../views/viewLogin.js"
 import renderProfile from "../views/viewProfile.js"
@@ -16,6 +17,7 @@ import handleTournament from "../games/tournament.js"
 import handleTwoPlayers from "../games/pong2players.js"
 import handleFourPlayers from "../games/pong4players.js"
 import handleTwoPlayersOnline from "../games/pong2playersonline.js"
+import handleFourPlayersOnline from "../games/pong4playersonline.js"
 import handleGameHistory from "./gamehistory.js"
 
 // Cas particulier pour index
@@ -94,7 +96,13 @@ const routes = {
 		view: renderGameHistory,
 		load: handleGameHistory.loadGameHistory,
 		listener: handleGameHistory.listenerGameHistory
-
+	},
+	"fourplayersonline": {
+		title: "Four Players Online Game",
+		path: "/fourplayersonline/",
+		view: renderFourOnline,
+		load: handleFourPlayersOnline.loadFourPlayersOnline,
+		listener: handleFourPlayersOnline.listenerFourPlayersOnline
 	},
 };
 

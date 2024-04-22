@@ -5,7 +5,7 @@ import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from .gamelogic import GameState
+from .gamelogic_four import GameState
 from django.contrib.auth.models import User
 from players_manager.models import Player
 from asgiref.sync import sync_to_async
@@ -41,7 +41,7 @@ class GameManager:
 		"""
 		print('checking for available room ...')
 		for room, data in self.game_rooms.items():
-			if len(data['players']) < 2:
+			if len(data['players']) < 4:
 				print('Room available')
 				return room
 		print('no available room, creating one...')
@@ -65,7 +65,7 @@ class GameManager:
 			None
 		"""
 		if room_name in self.game_rooms:
-			if len(self.game_rooms[room_name]['players']) < 2:
+			if len(self.game_rooms[room_name]['players']) < 4:
 				print('---PLAYER :', player_id, 'IS JOINING', room_name)
 				self.game_rooms[room_name]['players'].append(player_id)
 
@@ -130,11 +130,15 @@ class GameManager:
 
 	def get_player_id_in_room(self, room_name, player_position):
 		if room_name in self.game_rooms:
-			if len(self.game_rooms[room_name]['players']) == 2:
+			if len(self.game_rooms[room_name]['players']) == 4:
 				if player_position == 'player_one':
 					return self.game_rooms[room_name]['players'][0]
 				elif player_position == 'player_two':
 					return self.game_rooms[room_name]['players'][1]
+				elif player_position == 'player_three':
+					return self.game_rooms[room_name]['players'][2]
+				elif player_position == 'player_four':
+					return self.game_rooms[room_name]['players'][3]
 		return None
 
 
@@ -144,7 +148,7 @@ def get_player_id(nickname = None):
 		player = Player.objects.get(nickname=nickname)
 		return player.id
 
-class GameConsumer(AsyncWebsocketConsumer):
+class GameConsumerFour(AsyncWebsocketConsumer):
 	"""
 	Represents a consumer for handling game-related WebSocket connections.
 
@@ -181,11 +185,15 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 	def get_player_id_in_room(self, room_name, player_position):
 		if room_name in self.game_manager.game_rooms:
-			if len(self.game_manager.game_rooms[room_name]['players']) == 2:
+			if len(self.game_manager.game_rooms[room_name]['players']) == 4:
 				if player_position == 'player_one':
 					return self.game_manager.game_rooms[room_name]['players'][0]
 				elif player_position == 'player_two':
 					return self.game_manager.game_rooms[room_name]['players'][1]
+				elif player_position == 'player_three':
+					return self.game_manager.game_rooms[room_name]['players'][2]
+				elif player_position == 'player_four':
+					return self.game_manager.game_rooms[room_name]['players'][3]
 		return None
 
 	def get_winner(self):
@@ -193,6 +201,10 @@ class GameConsumer(AsyncWebsocketConsumer):
 			return self.get_player_id_in_room(self.game_room, 'player_one')
 		elif self.game.players[1].score >= self.game.winning_score:
 			return self.get_player_id_in_room(self.game_room, 'player_two')
+		elif self.game.players[2].score >= self.game.winning_score:
+			return self.get_player_id_in_room(self.game_room, 'player_three')
+		elif self.game.players[3].score >= self.game.winning_score:
+			return self.get_player_id_in_room(self.game_room, 'player_four')
 		return None
 
 	def get_loser(self):
@@ -200,12 +212,17 @@ class GameConsumer(AsyncWebsocketConsumer):
 			return self.get_player_id_in_room(self.game_room, 'player_two')
 		elif self.game.players[1].score >= self.game.winning_score:
 			return self.get_player_id_in_room(self.game_room, 'player_one')
+		elif self.game.players[2].score >= self.game.winning_score:
+			return self.get_player_id_in_room(self.game_room, 'player_three')
+		elif self.game.players[3].score >= self.game.winning_score:
+			return self.get_player_id_in_room(self.game_room, 'player_four')
 		return None
 
 	async def record_game_result(self, winner_id, loser_id):
 		winner = await sync_to_async(Player.objects.get)(id=winner_id)
 		loser = await sync_to_async(Player.objects.get)(id=loser_id)
-		await sync_to_async(loser.record_loss)('2p')
+		await sync_to_async(winner.record_win)('4p')
+		await sync_to_async(loser.record_loss)('4p')
 		# winner.print_records()
 		# loser.print_records()
 
@@ -262,18 +279,30 @@ class GameConsumer(AsyncWebsocketConsumer):
 				'type':'set_position',
 				'value':'player_one'
 			}))
-		else:
+		elif self.game_manager.room_len(self.game_room) == 2:
 			self.position = 2
 			await self.send(text_data=json.dumps({
 				'type':'set_position',
 				'value':'player_two'
+			}))
+		elif self.game_manager.room_len(self.game_room) == 3:
+			self.position = 3
+			await self.send(text_data=json.dumps({
+				'type':'set_position',
+				'value':'player_three'
+			}))
+		elif self.game_manager.room_len(self.game_room) == 4:
+			self.position = 4
+			await self.send(text_data=json.dumps({
+				'type':'set_position',
+				'value':'player_four'
 			}))
 
 		await self.channel_layer.group_add(
 			self.game_room, self.channel_name
 		)
 
-		if len(self.game_manager.players_in_room(self.game_room)) == 2:
+		if len(self.game_manager.players_in_room(self.game_room)) == 4:
 			self.game.is_running = True
 			await self.channel_layer.group_send(
 				self.game_room,
@@ -296,11 +325,18 @@ class GameConsumer(AsyncWebsocketConsumer):
 		if data_type == 'player_left':
 			if self.game.is_running == True:
 				print('PLAYER', data.get("player", ""), 'LEFT')
-				if data.get("player", "") == 'player_one':
-					await self.end_game('player_two')
-				elif data.get("player", "") == 'player_two':
-					await self.end_game('player_one')
-
+				if self.game.players[0].score > self.game.players[1].score and self.game.players[0].score > self.game.players[2].score and self.game.players[0].score > self.game.players[3].score:
+					if data.get("player", "") != 'player_one':
+						await self.end_game('player_one')
+				elif self.game.players[1].score > self.game.players[0].score and self.game.players[1].score > self.game.players[2].score and self.game.players[1].score > self.game.players[3].score:
+					if data.get("player", "") != 'player_two':
+						await self.end_game('player_two')
+				elif self.game.players[2].score > self.game.players[0].score and self.game.players[2].score > self.game.players[1].score and self.game.players[2].score > self.game.players[3].score:
+					if data.get("player", "") != 'player_three':
+						await self.end_game('player_three')
+				elif self.game.players[3].score > self.game.players[0].score and self.game.players[3].score > self.game.players[1].score and self.game.players[3].score > self.game.players[2].score:
+					if data.get("player", "") != 'player_four':
+						await self.end_game('player_four')
 
 # ------------------------- HANDLING CHANNEL MESSAGES ------------------------ #
 	async def game_start(self, event):
@@ -333,8 +369,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 			'type': event.get('type'),
 			'player_one_pos_y': event.get('player_one_pos_y'),
 			'player_two_pos_y': event.get('player_two_pos_y'),
+			'player_three_pos_x': event.get('player_three_pos_x'),
+			'player_four_pos_x': event.get('player_four_pos_x'),
 			'player_one_score': event.get('player_one_score'),
 			'player_two_score': event.get('player_two_score'),
+			'player_three_score': event.get('player_three_score'),
+			'player_four_score': event.get('player_four_score'),
 			'ball_x': event.get('ball_x'),
 			'ball_y': event.get('ball_y'),
 			'ball_x_vel': event.get('ball_x_vel'),
@@ -378,8 +418,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 				'type': 'game_state',
 				'player_one_pos_y': self.game.players[0].y,
 				'player_two_pos_y': self.game.players[1].y,
+				'player_three_pos_x': self.game.players[2].x,
+				'player_four_pos_x': self.game.players[3].x,
 				'player_one_score': self.game.players[0].score,
 				'player_two_score': self.game.players[1].score,
+				'player_three_pos_y': self.game.players[2].score,
+				'player_four_pos_y': self.game.players[3].score,
 				'ball_x': self.game.ball.x,
 				'ball_y': self.game.ball.y,
 				'ball_x_vel': self.game.ball.x_vel,
@@ -415,6 +459,10 @@ class GameConsumer(AsyncWebsocketConsumer):
 				game_winner = 'player_one'
 			elif self.game.players[1].score >= self.game.winning_score:
 				game_winner = 'player_two'
+			elif self.game.players[2].score >= self.game.winning_score:
+				game_winner = 'player_three'
+			elif self.game.players[3].score >= self.game.winning_score:
+				game_winner = 'player_four'
 			await self.send_game_end(game_winner)
 		else:
 			await self.send_game_end(winner)

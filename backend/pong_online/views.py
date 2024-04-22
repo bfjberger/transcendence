@@ -1,16 +1,25 @@
-from django.shortcuts import render
+from rest_framework import permissions, status
 
-# Create your views here.
-# class test(APIView):
-# 	authentication_classes = [SessionAuthentication, BasicAuthentication]
-# 	permission_classes = [permissions.IsAuthenticated]
+from rest_framework.views import APIView
 
-# 	def get(self, request):
-# 		user = self.request.user.id
-# 		return Response(user, status=status.HTTP_200_OK)
-	
-# 	def post(self, request):
-# 		return Response("Hello World")
-	
-# 	def put(self, request):
-# 		return Response("Hello World")
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+
+from players_manager.serializers import DataSerializer
+
+class TwoPlayersOnlineView(APIView):
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
+
+	def get(self, request):
+		user_data = request.user
+		serializer_data = DataSerializer(user_data)
+		return Response(data=serializer_data.data, status=status.HTTP_200_OK)
+
+class FourPlayersOnlineView(APIView):
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
+
+	def get(self, request):
+		user_data = request.user
+		serializer_data = DataSerializer(user_data)
+		return Response(data=serializer_data.data, status=status.HTTP_200_OK)

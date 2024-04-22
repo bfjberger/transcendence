@@ -1,6 +1,5 @@
 import router from "./router.js"
 
-// Try to connect a user | using GET
 async function connectUser(loginForm) {
 
 	// remove a potential error message from the field
@@ -54,9 +53,6 @@ async function connectUser(loginForm) {
 	}
 }
 
-// Add a new user to the DB | using
-// For now not working but expected to work
-// in the header 'charset=UTF-8' is not necessary for it to work
 async function createUser(createAccountForm) {
 
 	// remove a potential error message from the field
@@ -112,7 +108,7 @@ async function waitFor42() {
 			throw new Error(`HTTP error, status = ${response.status}`);
 		}
 
-		const data = await response.json()
+		const data = await response.json();
 		console.log(data);
 
 		// const interval = setInterval(async () => {

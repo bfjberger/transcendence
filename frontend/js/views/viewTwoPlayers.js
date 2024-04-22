@@ -4,19 +4,19 @@ export default function renderTwoPlayers() {
 
 		<div class="row">
 			<div class="col text-center fw-bold pt-3">
-			<h1>Two Players Pong Game</h1>
+				<h1>Two Players Pong Game</h1>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-5"></div>
 			<div class="col-2 text-white" style="visibility: hidden">
-			<p>Top Player: N/M</p>
+				<p>Top Player: N/M</p>
 			</div>
 			<div class="col-5"></div>
 		</div>
 		<div class="row">
 			<div class="col text-end text-warning align-self-center">
-			<p>Left Player: W/S</p>
+				<p>Left Player: W/S</p>
 			</div>
 			<div class="col d-flex justify-content-center align-items-center">
 				<div class="position-absolute">
@@ -27,7 +27,7 @@ export default function renderTwoPlayers() {
 				</div>
 			</div>
 			<div class="col text-start align-self-center text-primary">
-			<p>Right Player: UpArrow/DownArrow</p>
+				<p>Right Player: UpArrow/DownArrow</p>
 			</div>
 		</div>
 

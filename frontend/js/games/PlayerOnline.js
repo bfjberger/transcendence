@@ -5,12 +5,21 @@ export class Player {
 		switch (side) {
 			case 1:
 				this.x = 10;
+				this.y = (constants.WIN_HEIGHT - constants.PADDLE_HEIGHT) / 2;
 				break;
 			case 2:
 				this.x = constants.WIN_WIDTH - constants.PADDLE_WIDTH - 10;
+				this.y = (constants.WIN_HEIGHT - constants.PADDLE_HEIGHT) / 2;
+				break;
+			case 3:
+				this.x = (constants.WIN_WIDTH - constants.PADDLE_HEIGHT) / 2;
+				this.y = 10;
+				break;
+			case 4:
+				this.x = (constants.WIN_WIDTH - constants.PADDLE_HEIGHT) / 2;
+				this.y = constants.WIN_HEIGHT - constants.PADDLE_WIDTH - 10;
 				break;
 		}
-		this.y = (constants.WIN_HEIGHT - constants.PADDLE_HEIGHT)/ 2;
 		this.width = width;
 		this.height = height;
 		this.color = color;
