@@ -1,4 +1,4 @@
-export default function renderTournament() {
+function renderTournament() {
 
 	return `
 
@@ -63,3 +63,31 @@ export default function renderTournament() {
 
 	`;
 };
+
+function renderTournamentOnline() {
+	return `
+		<div id="create-tournament-form">
+		<label for="name">Tournament Name:</label>
+		<input type="text" id="name" name="name" required><br>
+		
+		<input type="radio" id="public" name="visibility" value="public" checked>
+		<label for="public">Public</label><br>
+		
+		<input type="radio" id="private" name="visibility" value="private">
+		<label for="private">Private</label><br>
+		
+		<input type="password" id="password" name="password" placeholder="Password (if private)"><br>
+		
+		<button id="create-tournament-button">Create Tournament</button>
+	</div>
+	
+	<div id="tournament-list">
+		<!-- List of tournaments will be displayed here -->
+	</div>
+	`;
+}
+
+export default {
+	renderTournament,
+	renderTournamentOnline
+}

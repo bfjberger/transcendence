@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.oauth2',
     'pong_online',
     'games_manager',
+	'tournament',
 #    'friends_manager',
 #    'two_players_games_manager',
 #    'tournaments_manager',
