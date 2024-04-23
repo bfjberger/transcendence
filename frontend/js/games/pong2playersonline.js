@@ -329,20 +329,21 @@ async function loadTwoPlayersOnline() {
 		}
 	};
 
+	try {
+		let hostnameport = "http://" + window.location.host;
 
-	// try {
-	// 	const response = await fetch('http://localhost:7890/api/twoplayer/', init); // !! le lien devra changer
+		const response = await fetch(hostnameport + '/api/twoplayeronline/', init);
 
-	// 	if (response.status === 403) {
-	// 		const text = await response.text();
-	// 		throw new Error(text);
-	// 	}
+		if (response.status === 403) {
+			const text = await response.text();
+			throw new Error(text);
+		}
 
-	// 	return 1;
-	// } catch (e) {
-	// 	console.error("loadTwoPlayers: " + e);
-	// 	return 0;
-	// }
+		return 1;
+	} catch (e) {
+		console.error("loadTwoPlayers: " + e);
+		return 0;
+	}
 
 	return 1; // Added to get the game for now instead of the try catch block
 };

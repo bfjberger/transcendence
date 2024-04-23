@@ -79,11 +79,10 @@ async function createUser(createAccountForm) {
 	};
 
 	try {
-
-
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "http://" + window.location.host;
 
 		const response = await fetch(hostnameport + '/api/register/', init);
+
 		if (!response.ok || response.status === 203) {
 			const error = await response.text();
 			document.getElementById("form__createAccount--msg").textContent = error.replace(/["{}[\]]/g, '');
