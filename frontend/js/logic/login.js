@@ -19,7 +19,10 @@ async function connectUser(loginForm) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/login/', init); // will use another URL
+
+		let hostnameport = "http://" + window.location.host
+
+		const response = await fetch(hostnameport + '/api/login/', init); // will use another URL
 
 		if (!response.ok || response.status === 203) {
 			const error = await response.text();
@@ -76,7 +79,11 @@ async function createUser(createAccountForm) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/register/', init);
+
+
+		let hostnameport = "http://" + window.location.host
+
+		const response = await fetch(hostnameport + '/api/register/', init);
 		if (!response.ok || response.status === 203) {
 			const error = await response.text();
 			document.getElementById("form__createAccount--msg").textContent = error.replace(/["{}[\]]/g, '');
@@ -102,7 +109,10 @@ async function createUser(createAccountForm) {
 async function waitFor42() {
 
 	try {
-		const response = await fetch('http://localhost:7890/api/call_back/');
+
+		let hostnameport = "http://" + window.location.host
+
+		const response = await fetch(hostnameport + '/api/call_back/');
 
 		if (!response.ok) {
 			throw new Error(`HTTP error, status = ${response.status}`);
@@ -134,7 +144,10 @@ async function waitFor42() {
 async function connectUser42() {
 
 	try {
-		const response = await fetch('http://localhost:7890/api/accounts/');
+
+		let hostnameport = "http://" + window.location.host
+
+		const response = await fetch(hostnameport + '/api/accounts/');
 
 		if (!response.ok) {
 			throw new Error(`HTTP error, status = ${response.status}`);
@@ -210,7 +223,10 @@ async function loadLogin() {
 	document.getElementById("logout").setAttribute("disabled", true);
 
 	try {
-		const response = await fetch('http://localhost:7890/api/index/');
+
+		let hostnameport = "http://" + window.location.host
+
+		const response = await fetch(hostnameport + '/api/index/');
 
 		if (response.status === 202) {
 

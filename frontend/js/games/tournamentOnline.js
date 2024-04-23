@@ -3,7 +3,10 @@ function createTournament() {
 	const visibility = document.querySelector('input[name="visibility"]:checked').value;
 	const password = document.getElementById('password').value;
 	
-	fetch('http://localhost:7890/api/tournaments/', {
+	let hostnameport = "http://" + window.location.host
+
+
+	fetch(hostnameport + '/api/tournaments/', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -27,7 +30,10 @@ function createTournament() {
 }
 
 function loadTournaments() {
-	fetch('http://localhost:7890/api/tournaments/load_tournaments/') // Endpoint to fetch tournaments
+
+	let hostnameport = "http://" + window.location.host
+
+	fetch(hostnameport + '/api/tournaments/load_tournaments/') 
 		.then(response => response.json())
 		.then(data => {
 			const tournamentList = document.getElementById('tournament-list');

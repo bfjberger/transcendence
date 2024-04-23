@@ -417,7 +417,9 @@ async function loadFourPlayersOnline() {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/fourplayeronline/', init);
+		let hostnameport = "http://" + window.location.host
+
+		const response = await fetch(hostnameport + '/api/fourplayeronline/', init);
 
 		if (response.status === 403) {
 			const text = await response.text();

@@ -28,7 +28,9 @@ async function updateNickname(nicknameForm) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/profile/', init);
+		let hostnameport = "http://" + window.location.host
+
+		const response = await fetch(hostnameport + '/api/profile/', init);
 
 		if (response.status === 400) {
 			const error = await response.text();
@@ -78,7 +80,10 @@ async function updatePassword(passwordForm) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/profile/', init);
+
+		let hostnameport = "http://" + window.location.host
+
+		const response = await fetch(hostnameport + '/api/profile/', init);
 
 		if (response.status === 400) {
 			const error = await response.text();
@@ -117,7 +122,10 @@ async function updateAvatar(avatarForm) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/updateavatar/', init);
+
+		let hostnameport = "http://" + window.location.host
+
+		const response = await fetch(hostnameport + '/api/updateavatar/', init);
 
 		if (response.status === 400) {
 			const error = await response.text();
@@ -243,7 +251,10 @@ async function loadProfile() {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/profile/', init);
+
+		let hostnameport = "http://" + window.location.host
+
+		const response = await fetch(hostnameport + '/api/profile/', init);
 
 		if (!response.ok) {
 			const text = await response.text();

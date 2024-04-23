@@ -13,9 +13,17 @@ function listenerIndex() {
 async function loadIndex() {
 
 	try {
-		const response = await fetch('http://localhost:7890/api/index/');
+		let hostnameport = "http://" + window.location.host
+
+		const response = await fetch(hostnameport + '/api/index/');
 
 		if (response.status === 202) {
+
+			const data = await response.json();
+
+			sessionStorage.setItem("username", data["username"]);
+			sessionStorage.setItem("avatar", data["player"].avatar);
+			sessionStorage.setItem("nickname", data["player"].nickname);
 
 			return 1;
 		}
