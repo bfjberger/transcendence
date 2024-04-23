@@ -39,7 +39,7 @@ let ws; // websocket
  * - initControls: initializes the controls
  *
  * - updateGameState: updates the game state
- * 
+ *
  * - drawBall: draws the ball
  * - drawScoreAndLine: draws the score and the line
  * - animate: animates the game
@@ -86,9 +86,9 @@ function initDisplay() {
 }
 
 function initArena() {
-	player_one = new Player(1, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_1_COLOR);
-	player_two = new Player(2, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_2_COLOR);
-	ball = new Ball();
+	player_one = new Player(1, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_1_COLOR, 2);
+	player_two = new Player(2, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_2_COLOR, 2);
+	ball = new Ball(2);
 	console.log("Ball color: ", ball.color);
 }
 
@@ -160,7 +160,7 @@ function updateGameState(data) {
 		player_two.score += 1;
 		handle_scores('player_two');
 	}
-	
+
 	ball.get_update(data.ball_x, data.ball_y, data.ball_x_vel, data.ball_y_vel, data.ball_color);
 }
 
@@ -223,7 +223,7 @@ function render() {
 		startButton.innerHTML = "Look for another game";
 		startButton.classList.remove("d-none");
 	}
-	
+
 	// Draw the score and the line
 	drawScoreAndLine();
 
@@ -313,7 +313,7 @@ function listenerTwoPlayersOnline() {
 
 		template_text = document.getElementById("template_text");
 		template_text.innerHTML = "Waiting for other player";
-		
+
 		start();
 	});
 };
@@ -329,22 +329,20 @@ async function loadTwoPlayersOnline() {
 		}
 	};
 
-	
-	// try {
-	// 	const response = await fetch('http://localhost:7890/api/twoplayer/', init); // !! le lien devra changer
+	try {
+		const response = await fetch('http://localhost:7890/api/twoplayeronline/', init);
 
-	// 	if (response.status === 403) {
-	// 		const text = await response.text();
-	// 		throw new Error(text);
-	// 	}
+		if (response.status === 403) {
+			const text = await response.text();
+			throw new Error(text);
+		}
 
-	// 	return 1;
-	// } catch (e) {
-	// 	console.error("loadTwoPlayers: " + e);
-	// 	return 0;
-	// }
-	
-	return 1; // Added to get the game for now instead of the try catch block
+		return 1;
+	} catch (e) {
+		console.error("loadTwoPlayers: " + e);
+		return 0;
+	}
+
 };
 
 /* ------------------------ Leaving or reloading game ----------------------- */

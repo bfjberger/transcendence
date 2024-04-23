@@ -2,7 +2,7 @@ import asyncio
 
 # Variables for the game area and paddles
 game_area_width = 650
-game_area_height = 480
+game_area_height = 650
 paddle_width = 10
 paddle_height = 70
 player_speed = 3

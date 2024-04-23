@@ -12,13 +12,16 @@ function intToHexColor(value) {
 }
 
 export class Ball {
-	constructor() {
+	constructor(game_mode) {
 		this.speed = constants.BALL_SPEED
 		this.x_vel = 0;
 		this.y_vel = 0;
 		this.color = 0xFFFFFF;
 		this.x = constants.WIN_WIDTH / 2;
-		this.y = constants.WIN_HEIGHT / 2;
+		if (game_mode == 2)
+			this.y = constants.WIN_HEIGHT / 2;
+		else
+			this.y = constants.FOUR_WIN_HEIGHT / 2;
 		this.radius = constants.BALL_RADIUS;
 		this.stop_flag = false;
 	}

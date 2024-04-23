@@ -258,25 +258,25 @@ class PongGame2Players {
 		this.draw();
 		let winner = this.gameOver();
 		winner.then((winner) => {
-		if (winner) {
-			if (window.location.pathname === "/twoplayers") {
-				let winnerText = winner.getName() + " won !!";
-				this.context.fillStyle = winner.color;
-				this.context.font = "50px sans-serif";
-				const textWidth = this.context.measureText(winnerText).width;
-				const textX = this.boardWidth / 2 - textWidth / 2;
-				const textY = this.boardHeight / 2 + 15;
-				this.context.fillText(winnerText, textX, textY);
+			if (winner) {
+				if (window.location.pathname === "/twoplayers/") {
+					let winnerText = winner.getName() + " won !!";
+					this.context.fillStyle = winner.color;
+					this.context.font = "50px sans-serif";
+					const textWidth = this.context.measureText(winnerText).width;
+					const textX = this.boardWidth / 2 - textWidth / 2;
+					const textY = this.boardHeight / 2 + 15;
+					this.context.fillText(winnerText, textX, textY);
+				}
+				this.ball.velocityX = 0;
+				this.ball.velocityY = 0;
+				if (window.location.pathname === "/tournament/") {
+					this.context.reset();
+				}
 			}
-			this.ball.velocityX = 0;
-			this.ball.velocityY = 0;
-			if (window.location.pathname === "/tournament") {
-				this.context.reset();
+			else {
+				requestAnimationFrame(this.update.bind(this));
 			}
-		}
-		else {
-			requestAnimationFrame(this.update.bind(this));
-		}
 		});
 		requestAnimationFrame(this.update.bind(this));
 	}
