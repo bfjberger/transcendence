@@ -45,7 +45,9 @@ async function delete_friend(username) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/friends/', init);
+		let hostnameport = "http://" + window.location.host
+
+		const response = await fetch(hostnameport + '/api/friends/', init);
 
 		if (response.status === 403)
 		{
@@ -85,7 +87,9 @@ async function patch_friend_accept(username) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/friends/?accept=True', init);
+		let hostnameport = "http://" + window.location.host
+
+		const response = await fetch(hostnameport + '/api/friends/?accept=True', init);
 
 		if (response.status === 403)
 		{
@@ -155,7 +159,9 @@ async function post_friend(form_post_friend) {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/friends/', init);
+		let hostnameport = "http://" + window.location.host
+
+		const response = await fetch(hostnameport + '/api/friends/', init);
 
 		if (response.status === 403)
 		{
@@ -192,7 +198,9 @@ async function loadFriends() {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/friends/', init);
+		let hostnameport = "http://" + window.location.host
+
+		const response = await fetch(hostnameport + '/api/friends/', init);
 
 		if (response.status === 403) {
 			const text = await response.text();

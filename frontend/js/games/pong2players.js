@@ -318,7 +318,10 @@ async function loadTwoPlayers() {
 	};
 
 	try {
-		const response = await fetch('http://localhost:7890/api/twoplayer/', init);
+
+		let hostnameport = "http://" + window.location.host
+
+		const response = await fetch(hostnameport +'/api/twoplayer/', init);
 
 		if (response.status === 403) {
 			const text = await response.text();

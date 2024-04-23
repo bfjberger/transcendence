@@ -123,7 +123,10 @@ const routes = {
 async function loadIndex() {
 
 	try {
-		const response = await fetch('http://localhost:7890/api/index/');
+
+		let hostnameport = "http://" + window.location.host
+
+		const response = await fetch(hostnameport + '/api/index/');
 
 		if (response.status === 202) {
 
@@ -153,7 +156,10 @@ async function handleLogout() {
 	}
 
 	try {
-		const response = await fetch('http://localhost:7890/api/logout/', init);
+
+		let hostnameport = "http://" + window.location.host
+
+		const response = await fetch(hostnameport + '/api/logout/', init);
 
 		if (response.status === 200) {
 			console.log("user successfull logged out");
