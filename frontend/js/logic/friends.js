@@ -209,9 +209,6 @@ async function loadFriends() {
 		else if (response.status === 200)
 		{
 			data = await response.json()
-
-
-
 		}
 		return 1;
 	} catch (e) {
