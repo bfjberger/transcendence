@@ -28,7 +28,7 @@ from login_api_42.views import Accounts_view, Callback
 
 from games_manager.views import ListTwoPlayersGamesAPIView
 
-from tournament.views import TournamentViewSet
+from tournament.views import TournamentViewSet, PlayerViewSet
 
 from pong_online.views import TwoPlayersOnlineView, FourPlayersOnlineView
 
@@ -77,6 +77,9 @@ urlpatterns = [
     path('api/call_back/', Callback.as_view(), name='callback'),
     path('api/accounts/', Accounts_view.as_view(), name='accounts'),
 	path('api/', include(router.urls)),
+	# path('api/tournaments/join_tournament/', TournamentViewSet.as_view({'post': 'join_tournament'})),
+	path('api/tournaments/<str:tournament_name>/players/', PlayerViewSet.as_view({'get': 'list'}), name='tournament-players'),
+    # path('api/tournaments/join_tournament/<str:room>/', TournamentViewSet.as_view({'post': 'join_tournament'}), name='join-tournament'),
 
     path('api/twoplayeronline/', TwoPlayersOnlineView.as_view()),
     path('api/fourplayeronline/', FourPlayersOnlineView.as_view()),

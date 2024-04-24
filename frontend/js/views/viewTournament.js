@@ -87,7 +87,20 @@ function renderTournamentOnline() {
 	`;
 }
 
+export function renderTournamentRoom() {
+	return `
+		<div id="tournament-room">
+		<h1 id="tournament-name"></h1>
+		
+		<div id="players-list">
+			<!-- List of players will be displayed here -->
+		</div>
+		
+		<button id="start-tournament-button">Start Tournament</button>`
+}
+
 export default {
 	renderTournament,
-	renderTournamentOnline
+	renderTournamentOnline,
+	renderTournamentRoom,
 }

@@ -77,6 +77,13 @@ const routes = {
 		load: handleTournamentOnline.loadTournamentOnline,
 		listener: handleTournamentOnline.listenerTournamentOnline
 	},
+	"tournament_online_room": {
+		title: "TournamentRoom",
+		path: "/tournamentRoom/",
+		view: renderTournament.renderTournamentRoom,
+		load: handleTournamentOnline.loadTournamentOnline,
+		listener: handleTournamentOnline.listenerTournamentOnline
+	},
 	"twoplayers": {
 		title: "Two Players Game",
 		path: "/twoplayers/",

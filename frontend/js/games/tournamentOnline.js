@@ -1,3 +1,5 @@
+import { renderTournamentRoom } from '../views/viewTournament.js';
+
 function createTournament() {
 	const name = document.getElementById('name').value;
 	const visibility = document.querySelector('input[name="visibility"]:checked').value;
@@ -6,7 +8,7 @@ function createTournament() {
 	let hostnameport = "http://" + window.location.host
 
 
-	fetch(hostnameport + '/api/tournaments/', {
+	fetch('/api/tournaments/', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -33,7 +35,7 @@ function loadTournaments() {
 
 	let hostnameport = "http://" + window.location.host
 
-	fetch(hostnameport + '/api/tournaments/load_tournaments/') 
+	fetch('/api/tournaments/load_tournaments/') 
 		.then(response => response.json())
 		.then(data => {
 			const tournamentList = document.getElementById('tournament-list');
@@ -57,6 +59,7 @@ function loadTournaments() {
 					return function() {
 						// Handle join button click
 						console.log('Joining tournament:', tournament.name, 'with password:', passwordInput.value);
+						joinRoom(tournament.name);
 					};
 				})(tournament, passwordInput));
 
@@ -71,6 +74,53 @@ function loadTournaments() {
 			console.error('Error:', error);
 		});
 }
+
+
+function joinRoom(tournamentName) {
+	fetch(`/api/tournaments/join_tournament/`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': getCookie('csrftoken') // Ensure to include CSRF token
+		},
+		body: JSON.stringify({"name": tournamentName}),
+	})
+		.then(response => {
+			if (response.ok) {
+				// Handle success response
+				console.log('Successfully joined tournament');
+
+			} else {
+				// Handle error response
+				console.error('Failed to join tournament');
+				console.error(response);
+			}
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
+}
+
+function loadRoom(tournamentName) {
+	fetch(`/api/tournaments/${tournamentName}/`)
+		.then(response => response.json())
+		.then(data => {
+			renderTournamentRoom(data);
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
+}
+
+
+
+
+
+
+
+
+
+/* ---------------------------------- Utils --------------------------------- */
 
 // Function to get CSRF token from cookies
 function getCookie(name) {
@@ -87,6 +137,18 @@ function getCookie(name) {
 	}
 	return cookieValue;
 }
+
+
+
+
+
+
+
+
+
+
+
+/* ------------ Listener and loader for the tournamentOnline page ----------- */
 
 function listenerTournamentOnline() {
 	const button_create_tournament = document.getElementById('create-tournament-button');
