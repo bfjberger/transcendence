@@ -1,3 +1,8 @@
+import { renderTournamentRoom } from '../views/viewTournament.js';
+import { renderTournamentOnline } from '../views/viewTournament.js';
+
+let tournament_name = '';
+
 function createTournament() {
 	const name = document.getElementById('name').value;
 	const visibility = document.querySelector('input[name="visibility"]:checked').value;
@@ -6,7 +11,7 @@ function createTournament() {
 	let hostnameport = "http://" + window.location.host
 
 
-	fetch(hostnameport + '/api/tournaments/', {
+	fetch('/api/tournaments/', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -33,7 +38,7 @@ function loadTournaments() {
 
 	let hostnameport = "http://" + window.location.host
 
-	fetch(hostnameport + '/api/tournaments/load_tournaments/') 
+	fetch('/api/tournaments/load_tournaments/') 
 		.then(response => response.json())
 		.then(data => {
 			const tournamentList = document.getElementById('tournament-list');
@@ -57,6 +62,7 @@ function loadTournaments() {
 					return function() {
 						// Handle join button click
 						console.log('Joining tournament:', tournament.name, 'with password:', passwordInput.value);
+						joinRoom(tournament.name);
 					};
 				})(tournament, passwordInput));
 
@@ -71,6 +77,160 @@ function loadTournaments() {
 			console.error('Error:', error);
 		});
 }
+
+
+// function joinRoom(tournamentName) {
+// 	fetch(`/api/tournaments/join_tournament/`, {
+// 		method: 'POST',
+// 		headers: {
+// 			'Content-Type': 'application/json',
+// 			'X-CSRFToken': getCookie('csrftoken') // Ensure to include CSRF token
+// 		},
+// 		body: JSON.stringify({"name": tournamentName}),
+// 	})
+// 		.then(response => {
+// 			if (response.ok) {
+// 				// Handle success response
+// 				console.log('Successfully joined tournament');
+// 				tournament_name = tournamentName;
+// 				document.getElementById('main__content').innerHTML = renderTournamentRoom();
+// 				loadRoom();
+// 				listenerRoom();
+
+// 			} else {
+// 				// Handle error response
+// 				console.error('Failed to join tournament');
+// 				console.error(response);
+// 			}
+// 		})
+// 		.catch(error => {
+// 			console.error('Error:', error);
+// 		});
+// }
+
+function joinRoom(tournamentName) {
+	fetch(`/api/tournaments/${tournamentName}/join_tournament/`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': getCookie('csrftoken') // Ensure to include CSRF token
+		},
+	})
+		.then(response => {
+			if (response.ok) {
+				// Handle success response
+				console.log('Successfully joined tournament');
+				tournament_name = tournamentName;
+				document.getElementById('main__content').innerHTML = renderTournamentRoom();
+				loadRoom();
+				listenerRoom();
+			} else {
+				// Handle error response
+				console.error('Failed to join tournament');
+				console.error(response);
+			}
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
+}
+
+// function leaveRoom() {
+// 	fetch('/api/tournaments/leave_tournament/', {
+// 		method: 'POST',
+// 		headers: {
+// 			'Content-Type': 'application/json',
+// 			'X-CSRFToken': getCookie('csrftoken') // Ensure to include CSRF token
+// 		},
+// 		body: JSON.stringify({"name": tournament_name}),
+// 	})
+// 		.then(response => {
+// 			if (response.ok) {
+// 				// Handle success response
+// 				console.log('Successfully left tournament');
+// 				document.getElementById('main__content').innerHTML = renderTournamentOnline();
+// 				listenerTournamentOnline();
+// 			} else {
+// 				// Handle error response
+// 				console.error('Failed to leave tournament');
+// 				console.error(response);
+// 			}
+// 		})
+// 		.catch(error => {
+// 			console.error('Error:', error);
+// 		});
+// }
+
+function leaveRoom() {
+	fetch(`/api/tournaments/${tournament_name}/leave_tournament/`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': getCookie('csrftoken') // Ensure to include CSRF token
+		},
+	})
+		.then(response => {
+			if (response.ok) {
+				// Handle success response
+				console.log('Successfully left tournament');
+				document.getElementById('main__content').innerHTML = renderTournamentOnline();
+				listenerTournamentOnline();
+			} else {
+				// Handle error response
+				console.error('Failed to leave tournament');
+				console.error(response);
+			}
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
+}
+
+function listenerRoom() {
+	const leaveRoomButton = document.getElementById('leave-room-button');
+	leaveRoomButton.addEventListener('click', (event) => {
+		event.preventDefault();
+		leaveRoom();
+	});
+
+	const startTournamentButton = document.getElementById('start-tournament-button');
+	startTournamentButton.addEventListener('click', (event) => {
+		event.preventDefault();
+		// startTournament();
+	});
+
+}
+
+function loadRoom() {
+	let divRoom = document.getElementById('tournament-room');
+	let tournamentName = document.getElementById('tournament-name');
+	let playersList = document.getElementById('players-list');
+
+	fetch(`/api/tournaments/${tournament_name}/load_players/`) 
+		.then(response => response.json())
+		.then(players => {
+			tournamentName.textContent = tournament_name;
+			playersList.innerHTML = ''; // Clear existing list
+
+			players.forEach(player => {
+				const playerItem = document.createElement('div');
+				playerItem.textContent = player.id;
+				playersList.appendChild(playerItem);
+			});
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
+
+}
+
+
+
+
+
+
+
+/* ---------------------------------- Utils --------------------------------- */
 
 // Function to get CSRF token from cookies
 function getCookie(name) {
@@ -87,6 +247,18 @@ function getCookie(name) {
 	}
 	return cookieValue;
 }
+
+
+
+
+
+
+
+
+
+
+
+/* ------------ Listener and loader for the tournamentOnline page ----------- */
 
 function listenerTournamentOnline() {
 	const button_create_tournament = document.getElementById('create-tournament-button');
