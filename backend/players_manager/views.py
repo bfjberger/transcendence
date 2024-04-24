@@ -8,7 +8,7 @@ from rest_framework.reverse import reverse_lazy
 
 from rest_framework import serializers
 
-from players_manager.models import Player, Friend
+from players_manager.models import Player
 
 from django.contrib.auth import login, logout
 
@@ -21,7 +21,6 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-
 
 class IndexAction(APIView):
 	permission_classes = (permissions.AllowAny,)
@@ -191,104 +190,104 @@ class Tournament(APIView):
 		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
 
 
-class Friends(APIView):
-	authentication_classes = [SessionAuthentication, BasicAuthentication]
-	permission_classes = [permissions.IsAuthenticated]
-	serializer_class = FriendSerializer
+# class Friends(APIView):
+# 	authentication_classes = [SessionAuthentication, BasicAuthentication]
+# 	permission_classes = [permissions.IsAuthenticated]
+# 	serializer_class = FriendSerializer
 
-	def get(self, request):
-		current_player = Player.objects.get(owner=self.request.user)
-		serializer_player = PlayerSerializer(current_player)
-		serializer_user = UserSerializer(self.request.user)
+# 	def get(self, request):
+# 		current_player = Player.objects.get(owner=self.request.user)
+# 		serializer_player = PlayerSerializer(current_player)
+# 		serializer_user = UserSerializer(self.request.user)
 
-		friends_as_initiator = Friend.objects.filter(player_initiated=current_player)
-		friends_as_receiver = Friend.objects.filter(player_received=current_player)
+# 		friends_as_initiator = Friend.objects.filter(player_initiated=current_player)
+# 		friends_as_receiver = Friend.objects.filter(player_received=current_player)
 
-		list_friends_accepted = []
-		list_friends_initiator = []
-		for relation in friends_as_initiator :
-			user_received = relation.player_received.owner
-			if relation.accept == False :
-				list_friends_initiator.append(UserSerializer(user_received).data["username"])
-			else :
-				list_friends_accepted.append({"username" : UserSerializer(user_received).data["username"], "status" : PlayerSerializer(relation.player_received).data["status"]})
+# 		list_friends_accepted = []
+# 		list_friends_initiator = []
+# 		for relation in friends_as_initiator :
+# 			user_received = relation.player_received.owner
+# 			if relation.accept == False :
+# 				list_friends_initiator.append(UserSerializer(user_received).data["username"])
+# 			else :
+# 				list_friends_accepted.append({"username" : UserSerializer(user_received).data["username"], "status" : PlayerSerializer(relation.player_received).data["status"]})
 
-		list_friends_received = []
-		for relation in friends_as_receiver :
-			user_initiator = relation.player_initiated.owner
-			if relation.accept == False :
-				list_friends_received.append(UserSerializer(user_initiator).data["username"])
-			else :
-				list_friends_accepted.append({"username" : UserSerializer(user_initiator).data["username"], "status" : PlayerSerializer(relation.player_initiated).data["status"]})
+# 		list_friends_received = []
+# 		for relation in friends_as_receiver :
+# 			user_initiator = relation.player_initiated.owner
+# 			if relation.accept == False :
+# 				list_friends_received.append(UserSerializer(user_initiator).data["username"])
+# 			else :
+# 				list_friends_accepted.append({"username" : UserSerializer(user_initiator).data["username"], "status" : PlayerSerializer(relation.player_initiated).data["status"]})
 
-		friends_as_initiator_serializer = FriendSerializer(friends_as_initiator, many=True)
-		friends_as_receiver_serializer = FriendSerializer(friends_as_receiver, many=True)
+# 		friends_as_initiator_serializer = FriendSerializer(friends_as_initiator, many=True)
+# 		friends_as_receiver_serializer = FriendSerializer(friends_as_receiver, many=True)
 
-		return Response(data={"friends_accepted" : list_friends_accepted, "friends_initiated" : list_friends_initiator, "friends_received" : list_friends_received ,"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
-
-
-	def post(self, request):
-		try :
-			user_received = User.objects.get(username=request.data['username'])
-		except :
-			return Response("This member does not exists", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
-
-		if user_received.id == self.request.user.id :
-			return Response("You can not ask yourself as friend", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+# 		return Response(data={"friends_accepted" : list_friends_accepted, "friends_initiated" : list_friends_initiator, "friends_received" : list_friends_received ,"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
 
 
-		new_relation_data = {"player_initiated" : self.request.user.id, "player_received" : user_received.id, "accept" : False}
-		serializer_new_relation = FriendSerializer(data=new_relation_data)
+# 	def post(self, request):
+# 		try :
+# 			user_received = User.objects.get(username=request.data['username'])
+# 		except :
+# 			return Response("This member does not exists", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
-		if serializer_new_relation.is_valid():
-			relation1_already_exists = Friend.objects.filter(player_initiated=new_relation_data["player_initiated"], player_received=new_relation_data["player_received"])
-			if relation1_already_exists :
-				return Response("Relation already exists", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
-			relation2_already_exists = Friend.objects.filter(player_initiated=new_relation_data["player_received"], player_received=new_relation_data["player_initiated"])
-			if relation2_already_exists :
-				return Response("Relation already exists", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
-			serializer_new_relation.save()
-			return Response("Relation added", status=status.HTTP_201_CREATED)
-
-		return Response("serializer not valid", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+# 		if user_received.id == self.request.user.id :
+# 			return Response("You can not ask yourself as friend", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
 
-	def patch(self, request):
-		accept_param = request.query_params.get('accept')
+# 		new_relation_data = {"player_initiated" : self.request.user.id, "player_received" : user_received.id, "accept" : False}
+# 		serializer_new_relation = FriendSerializer(data=new_relation_data)
 
-		if (accept_param == "True"):
-			try :
-				current_player = Player.objects.get(owner=self.request.user)
-				user_initiator = User.objects.get(username=self.request.data["username"])
-				player_initiator = Player.objects.get(owner=user_initiator)
-				relation_to_modify = Friend.objects.filter(player_initiated=player_initiator, player_received=current_player)
-			except :
-				return Response ("Fatal error", status=status.HTTP_403_FORBIDDEN)
+# 		if serializer_new_relation.is_valid():
+# 			relation1_already_exists = Friend.objects.filter(player_initiated=new_relation_data["player_initiated"], player_received=new_relation_data["player_received"])
+# 			if relation1_already_exists :
+# 				return Response("Relation already exists", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+# 			relation2_already_exists = Friend.objects.filter(player_initiated=new_relation_data["player_received"], player_received=new_relation_data["player_initiated"])
+# 			if relation2_already_exists :
+# 				return Response("Relation already exists", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+# 			serializer_new_relation.save()
+# 			return Response("Relation added", status=status.HTTP_201_CREATED)
 
-			serializer_relation = FriendSerializer(relation_to_modify.first(), data={"accept" : True}, partial=True)
-
-			if serializer_relation.is_valid() :
-				serializer_relation.save()
-			else :
-				Response("Fatal error", status=status.HTTP_403_FORBIDDEN)
-
-		return Response(serializer_relation.data, status=status.HTTP_200_OK)
-
-	def delete(self, request):
-
-		try :
-			current_player = Player.objects.get(owner=self.request.user)
-			user_former_friend = User.objects.get(username=self.request.data["username"])
-			player_former_friend = Player.objects.get(owner=user_former_friend)
-		except :
-			return Response ("Fatal error", status=status.HTTP_400_BAD_REQUEST)
+# 		return Response("serializer not valid", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
 
-		relation_to_delete = Friend.objects.filter (player_initiated=player_former_friend, player_received=current_player).first()
-		if not relation_to_delete:
-			relation_to_delete = Friend.objects.filter (player_initiated=current_player, player_received=player_former_friend).first()
+# 	def patch(self, request):
+# 		accept_param = request.query_params.get('accept')
 
-		relation_to_delete.delete()
+# 		if (accept_param == "True"):
+# 			try :
+# 				current_player = Player.objects.get(owner=self.request.user)
+# 				user_initiator = User.objects.get(username=self.request.data["username"])
+# 				player_initiator = Player.objects.get(owner=user_initiator)
+# 				relation_to_modify = Friend.objects.filter(player_initiated=player_initiator, player_received=current_player)
+# 			except :
+# 				return Response ("Fatal error", status=status.HTTP_403_FORBIDDEN)
+
+# 			serializer_relation = FriendSerializer(relation_to_modify.first(), data={"accept" : True}, partial=True)
+
+# 			if serializer_relation.is_valid() :
+# 				serializer_relation.save()
+# 			else :
+# 				Response("Fatal error", status=status.HTTP_403_FORBIDDEN)
+
+# 		return Response(serializer_relation.data, status=status.HTTP_200_OK)
+
+# 	def delete(self, request):
+
+# 		try :
+# 			current_player = Player.objects.get(owner=self.request.user)
+# 			user_former_friend = User.objects.get(username=self.request.data["username"])
+# 			player_former_friend = Player.objects.get(owner=user_former_friend)
+# 		except :
+# 			return Response ("Fatal error", status=status.HTTP_400_BAD_REQUEST)
 
 
-		return Response("Test delete method", status=status.HTTP_200_OK)
+# 		relation_to_delete = Friend.objects.filter (player_initiated=player_former_friend, player_received=current_player).first()
+# 		if not relation_to_delete:
+# 			relation_to_delete = Friend.objects.filter (player_initiated=current_player, player_received=player_former_friend).first()
+
+# 		relation_to_delete.delete()
+
+
+# 		return Response("Test delete method", status=status.HTTP_200_OK)

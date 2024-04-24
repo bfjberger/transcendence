@@ -31,7 +31,7 @@ down:
 	docker-compose -f ${PATH_DOCKER_COMPOSE} -p ${NAME} down
 
 clean: down
-	docker system prune -a
+	docker system prune -af
 
 fclean: down
 	docker system prune -af --volumes

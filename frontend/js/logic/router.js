@@ -15,6 +15,7 @@ import handleLogin from "./login.js"
 import handleProfile from "./profile.js"
 import handleTournament from "../games/tournament.js"
 import handleTournamentOnline from "../games/tournamentOnline.js"
+import handleTournamentRoom from "../games/tournamentRoom.js"
 import handleTwoPlayers from "../games/pong2players.js"
 import handleFourPlayers from "../games/pong4players.js"
 import handleTwoPlayersOnline from "../games/pong2playersonline.js"
@@ -76,6 +77,13 @@ const routes = {
 		view: renderTournament.renderTournamentOnline,
 		load: handleTournamentOnline.loadTournamentOnline,
 		listener: handleTournamentOnline.listenerTournamentOnline
+	},
+	"tournament_online_room": {
+		title: "TournamentRoom",
+		path: "/tournamentRoom/",
+		view: renderTournament.renderTournamentRoom,
+		load: handleTournamentRoom.loadTournamentRoom,
+		listener: handleTournamentRoom.listenerTournamentRoom
 	},
 	"twoplayers": {
 		title: "2 Joueurs Local",
