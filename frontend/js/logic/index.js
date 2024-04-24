@@ -17,7 +17,6 @@ async function loadIndex() {
 
 		const response = await fetch(hostnameport + '/api/index/');
 		
-		console.log("ididididid " + hostnameport)
 
 		if (response.status === 202) {
 

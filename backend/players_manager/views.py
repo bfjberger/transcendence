@@ -44,12 +44,10 @@ class RegisterAction(APIView):
 
 	def post(self, request):
 		serializer = RegisterSerializer(data=request.data)
-
 		if serializer.is_valid():
 			user = serializer.save()
 			if user:
 				return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 		return Response(serializer.errors, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
 

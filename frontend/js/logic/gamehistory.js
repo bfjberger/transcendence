@@ -15,23 +15,23 @@ async function loadGameHistory (){
 	try {
 		let hostnameport = "http://" + window.location.host
 
-		const response = await fetch(hostnameport + '/api/gamehistory/', init);
-
+		const response = await fetch(hostnameport + '/api/gameshistory/', init);
+		
 		if (response.status === 403) {
 			const text = await response.text();
 			throw new Error(text);
 		}
 		else if (response.status === 200)
 		{
-			var data = await response.json()
-			console.log ("OK tu peux travailler " + data)
+			var data_json = await response.text()
+			// var data_text = await response.text()
+			console.log ("OK tu peux travailler " + " " + data_json)
 		}
 		return 1;
 	} catch (e) {
-		console.error("loadGameHistory: " + e);
+		console.error("loadGameHistory Error : " + e);
 		return 0;
 	}	
-
 };
 
 export default {
