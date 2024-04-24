@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'pong_online',
     'games_manager',
 	'tournament',
+    'friends_manager',
 #    'friends_manager',
 #    'two_players_games_manager',
 #    'tournaments_manager',

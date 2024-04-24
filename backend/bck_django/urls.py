@@ -22,7 +22,7 @@ from django.conf import settings
 
 from rest_framework import routers
 
-from players_manager.views import LoginView, ProfileView, RegisterAction, IndexAction, TwoPlayers, FourPlayers, Tournament, Friends, LogoutView, ProfileUpdateAvatarView
+from players_manager.views import LoginView, ProfileView, RegisterAction, IndexAction, TwoPlayers, FourPlayers, Tournament, LogoutView, ProfileUpdateAvatarView
 
 from login_api_42.views import Accounts_view, Callback
 
@@ -31,6 +31,9 @@ from games_manager.views import ListTwoPlayersGamesAPIView, CreateTwoPlayersGame
 from tournament.views import TournamentViewSet
 
 from pong_online.views import TwoPlayersOnlineView, FourPlayersOnlineView
+
+
+from friends_manager.views import ListFriendAPIView, CreateFriendAPIView, AcceptFriendAPIView, DeleteFriendAPIView
 
 # from players_manager.views import PlayerViewSet
 # from players_manager.views import AdminPlayerViewSet
@@ -66,8 +69,10 @@ urlpatterns = [
     path('api/fourplayer/', FourPlayers.as_view()),
     path('api/tournament/', Tournament.as_view()),
 
-    path('api/friends/', Friends.as_view()),
-    path('api/friends/accept/', Friends.as_view()),
+    path('api/friends/', ListFriendAPIView.as_view()),
+    path('api/friends/create/', CreateFriendAPIView.as_view()),
+    path('api/friends/accept/', AcceptFriendAPIView.as_view()),
+    path('api/friends/delete/', DeleteFriendAPIView.as_view()),
 
     path('api/logout/', LogoutView.as_view()),
     path('api/updateavatar/', ProfileUpdateAvatarView.as_view()),

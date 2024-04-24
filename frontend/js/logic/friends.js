@@ -1,4 +1,6 @@
-var data;
+var data_list_initiated;
+var data_list_received;
+var data_list_accepted;
 var csrftoken;
 
 function listenerFriends() {
@@ -45,7 +47,7 @@ async function delete_friend(username) {
 	try {
 		let hostnameport = "http://" + window.location.host
 
-		const response = await fetch(hostnameport + '/api/friends/', init);
+		const response = await fetch(hostnameport + '/api/friends/delete/', init);
 
 		if (response.status === 403)
 		{
@@ -87,7 +89,7 @@ async function patch_friend_accept(username) {
 	try {
 		let hostnameport = "http://" + window.location.host
 
-		const response = await fetch(hostnameport + '/api/friends/?accept=True', init);
+		const response = await fetch(hostnameport + '/api/friends/accept/', init);
 
 		if (response.status === 403)
 		{
@@ -114,29 +116,40 @@ function display() {
 
 	console.log("path = " + window.location.pathname)
 	var parent_list_initiator = document.getElementById("list_friends_initiator")
-	var element_list
-	data["friends_initiated"].forEach(friend => {
-		element_list = document.createElement("li")
-		element_list.innerHTML = friend + `<button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend}">Supprimer</button>`
-		parent_list_initiator.appendChild(element_list)
-		// console.log("relation initiated : " + friend)
-	});
-
 	var parent_list_received = document.getElementById("list_friends_received")
-	data["friends_received"].forEach(friend => {
-		element_list = document.createElement("li")
-		element_list.innerHTML = friend + `<button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend}">Refuse</button> <button class="btn btn-success mt-1 accept_friend_button" type="button" value="${friend}">Accept</button>`
-		parent_list_received.appendChild(element_list)
-		// console.log("relation received : " + friend)
+	var parent_list_accepted = document.getElementById("list_friends_accepted")
+	var element_list
+
+	data_list_initiated.forEach(friend => {
+		if (friend.accept == false)
+		{
+			element_list = document.createElement("li")
+			element_list.innerHTML = friend.user_received.username + `<button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.id}">Refuser</button> <button class="btn btn-success mt-1 accept_friend_button" type="button" value="${friend.id}">Accepter</button>`
+			parent_list_initiator.appendChild(element_list)
+		}
+		else
+		{
+			element_list = document.createElement("li")
+			element_list.innerHTML = `<p>${friend.user_received.username} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.id}">Supprimer</button></p>`
+			parent_list_accepted.appendChild(element_list)
+		}
+	});
+		
+	data_list_received.forEach(friend => {
+		if (friend.accept == false)
+		{
+			element_list = document.createElement("li")
+			element_list.innerHTML = `<p> ${friend.user_initiated.username} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.id}">Supprimer</button></p>`
+			parent_list_received.appendChild(element_list)
+		}
+		else
+		{
+			element_list = document.createElement("li")
+			element_list.innerHTML = `<p>${friend.user_received.username} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.id}">Supprimer</button></p>`
+			parent_list_accepted.appendChild(element_list)
+		}
 	});
 
-	var parent_list_accepted = document.getElementById("list_friends_accepted")
-	data["friends_accepted"].forEach(friend => {
-		element_list = document.createElement("li")
-		element_list.innerHTML = friend["username"] + " " + friend["status"] + `<button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend["username"]}">Supprimer</button>`
-		parent_list_accepted.appendChild(element_list)
-		// console.log("relation accepted : " + friend)
-	});
 }
 
 async function post_friend(form_post_friend) {
@@ -159,23 +172,19 @@ async function post_friend(form_post_friend) {
 	try {
 		let hostnameport = "http://" + window.location.host
 
-		const response = await fetch(hostnameport + '/api/friends/', init);
+		const response = await fetch(hostnameport + '/api/friends/create/', init);
 
-		if (response.status === 403)
+		if (response.status != 200)
 		{
 			const text = await response.text();
 			throw new Error(text);
 		}
-		else if (response.status === 201)
+		else
 		{
-			//data = await response.json()
-			console.log('success')
-			window.location.reload()
+			var data = await response.text()
+			console.log('response = ' + data)
+			//window.location.reload()
 
-		}
-		else if (response.status === 203)
-		{
-			console.log("PAS OK POUR LA DEMANDE D AMI" + await response.json())
 		}
 
 	} catch (e) {
@@ -197,16 +206,22 @@ async function loadFriends() {
 
 	try {
 		let hostnameport = "http://" + window.location.host
-
-		const response = await fetch(hostnameport + '/api/friends/', init);
-
-		if (response.status === 403) {
+		const response_list_initiated = await fetch(hostnameport + '/api/friends/?type=initiated', init);
+		const response_list_received = await fetch(hostnameport + '/api/friends/?type=received', init)
+		//const response_list_accepted = await fetch(hostnameport + '/api/friends/', init)
+		if (response_list_initiated.status != 200 || response_list_received.status != 200) {
 			const text = await response.text();
 			throw new Error(text);
 		}
-		else if (response.status === 200)
+		else
 		{
-			data = await response.json()
+			data_list_initiated = await response_list_initiated.json()
+			data_list_received = await response_list_received.json()
+			// data_list_accepted = await response_list_accepted.json()
+			// data = [{"user_initiated":{"username":"fx"},"user_received":{"username":"qw"},"accept":false}] 
+			// [{"user_initiated":{"username":"er"},"user_received":{"username":"fx"},"accept":false}]
+
+			console.log("data = " + data_list_initiated + " " + data_list_received)
 		}
 		return 1;
 	} catch (e) {
