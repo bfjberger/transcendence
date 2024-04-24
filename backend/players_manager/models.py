@@ -8,13 +8,14 @@ class Player(models.Model):
 		OFFLINE = "OFFLINE"
 		PLAYING = "PLAYING"
 	owner = models.OneToOneField('auth.User', related_name='Player', on_delete=models.CASCADE)
-	nickname = models.CharField(max_length=20, default="Anonymous")
+	nickname = models.CharField(max_length=20, default="bob")
 	nb_games_2p = models.IntegerField(default=0)
 	nb_games_2p_won = models.IntegerField(default=0)
 	nb_games_2p_lost = models.IntegerField(default=0)
 	nb_games_4p = models.IntegerField(default=0)
 	nb_games_4p_won = models.IntegerField(default=0)
 	nb_games_4p_lost = models.IntegerField(default=0)
+	nb_points_4p = models.IntegerField(default=0)
 	score = models.IntegerField(default=0)
 	status = models.CharField(max_length=200, choices=status.choices, default=status.OFFLINE)
 	avatar = models.ImageField(max_length=200, default="avatars/avatar.png", upload_to='avatars/')
@@ -37,6 +38,20 @@ class Player(models.Model):
 			self.nb_games_4p += 1
 			self.nb_games_4p_lost += 1
 		self.score -= 1
+		self.save()
+
+	def record_win_four(self, elo, points):
+		self.nb_games_4p += 1
+		self.nb_games_4p_won += 1
+		self.score += elo
+		self.nb_points_4p += points
+		self.save()
+
+	def record_loss_four(self, elo, points):
+		self.nb_games_4p += 1
+		self.nb_games_4p_lost += 1
+		self.score -= elo
+		self.nb_points_4p += points
 		self.save()
 
 	def print_records(self):

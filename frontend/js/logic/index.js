@@ -1,7 +1,7 @@
 function renderIndex() {
 	return `
 
-		Welcome, this is the main page.
+		Bienvenue, ceci est la page principale.
 
 	`;
 };
@@ -16,7 +16,6 @@ async function loadIndex() {
 		let hostnameport = "http://" + window.location.host
 
 		const response = await fetch(hostnameport + '/api/index/');
-		
 
 		if (response.status === 202) {
 

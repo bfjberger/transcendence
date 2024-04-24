@@ -43,7 +43,7 @@ const routes = {
 		listener: handleIndex.listenerIndex
 	},
 	"friends": {
-		title: "Friends",
+		title: "Amis",
 		path: "/friends/",
 		view: renderFriends,
 		load: handleFriends.loadFriends,
@@ -64,49 +64,49 @@ const routes = {
 		listener: handleProfile.listenerProfile
 	},
 	"tournament": {
-		title: "Tournament",
+		title: "Tournoi Local",
 		path: "/tournament/",
 		view: renderTournament.renderTournament,
 		load: handleTournament.loadTournament,
 		listener: handleTournament.listenerTournament
 	},
 	"tournament_online": {
-		title: "TournamentOnline",
+		title: "Tournoi en Ligne",
 		path: "/tournamentOnline/",
 		view: renderTournament.renderTournamentOnline,
 		load: handleTournamentOnline.loadTournamentOnline,
 		listener: handleTournamentOnline.listenerTournamentOnline
 	},
 	"twoplayers": {
-		title: "Two Players Game",
+		title: "2 Joueurs Local",
 		path: "/twoplayers/",
 		view: renderTwoPlayers,
 		load: handleTwoPlayers.loadTwoPlayers,
 		listener: handleTwoPlayers.listenerTwoPlayers
 	},
 	"fourplayers": {
-		title: "Four Players Game",
+		title: "4 Joueurs Local",
 		path: "/fourplayers/",
 		view: renderFourPlayers,
 		load: handleFourPlayers.loadFourPlayers,
 		listener: handleFourPlayers.listenerFourPlayers
 	},
 	"twoplayersonline": {
-		title: "Two Players Online Game",
+		title: "2 Joueurs en Ligne",
 		path: "/twoplayersonline/",
 		view: renderTwoOnline,
 		load: handleTwoPlayersOnline.loadTwoPlayersOnline,
 		listener: handleTwoPlayersOnline.listenerTwoPlayersOnline
 	},
 	"gamehistory": {
-		title: "Historique des parites",
+		title: "Historique des parties",
 		path: "/gamehistory/",
 		view: renderGameHistory,
 		load: handleGameHistory.loadGameHistory,
 		listener: handleGameHistory.listenerGameHistory
 	},
 	"fourplayersonline": {
-		title: "Four Players Online Game",
+		title: "4 Joueurs en Ligne",
 		path: "/fourplayersonline/",
 		view: renderFourOnline,
 		load: handleFourPlayersOnline.loadFourPlayersOnline,

@@ -31,7 +31,8 @@ class IndexAction(APIView):
 			player = Player.objects.get(owner=self.request.user)
 			serializer_player = PlayerSerializer(player)
 			serializer_user = UserSerializer(self.request.user)
-			return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_202_ACCEPTED)
+			data_serializer = DataSerializer(self.request.user)
+			return Response(data=data_serializer.data, status=status.HTTP_202_ACCEPTED)
 
 		# print(status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 		return Response(data="Not connected", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
@@ -72,7 +73,7 @@ class LoginView(APIView):
 
 		# serializer_player = PlayerSerializer(player)
 
-		user_data = request.user
+		user_data = self.request.user
 		serializer_data = DataSerializer(user_data)
 		return Response(data=serializer_data.data, status=status.HTTP_202_ACCEPTED)
 
@@ -113,7 +114,7 @@ class ProfileView(APIView):
 		# player = Player.objects.get(owner=self.request.user)
 		# serializer_player = PlayerSerializer(player)
 		# serializer_user = UserSerializer(self.request.user)
-		user_data = request.user
+		user_data = self.request.user
 		serializer_data = DataSerializer(user_data)
 		return Response(data=serializer_data.data, status=status.HTTP_200_OK)
 

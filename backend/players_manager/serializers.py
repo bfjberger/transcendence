@@ -57,7 +57,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
     email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
     password = serializers.CharField(required=True, write_only=True, validators=[validate_password])
-    # password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
 
     def create(self, validated_data):
         user = User.objects.create_user(
@@ -65,7 +64,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             password=validated_data['password']
         )
-        player = Player.objects.create(owner=user)
+        player = Player.objects.create(owner=user, nickname=validated_data['username'])
         return user
 
     class Meta:

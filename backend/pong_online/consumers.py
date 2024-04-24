@@ -188,6 +188,15 @@ class GameConsumer(AsyncWebsocketConsumer):
 					return self.game_manager.game_rooms[room_name]['players'][1]
 		return None
 
+	def get_player_in_room(self, room_name, player_position):
+		if room_name in self.game_manager.game_rooms:
+			if len(self.game_manager.game_rooms[room_name]['players']) == 2:
+				if player_position == 'player_one':
+					return self.game_manager.game_rooms[room_name]['players'][0]
+				elif player_position == 'player_two':
+					return self.game_manager.game_rooms[room_name]['players'][1]
+		return None
+
 	def get_winner(self):
 		if self.game.players[0].score >= self.game.winning_score:
 			return self.get_player_id_in_room(self.game_room, 'player_one')
@@ -279,6 +288,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 				self.game_room,
 				{
 					'type': 'game_start',
+					'adversary': self.get_player_in_room(self.game_room, 'player_two'),
 				}
 			)
 			print('#GAMECONSUMER# Room', self.game_room, 'full, can start game')

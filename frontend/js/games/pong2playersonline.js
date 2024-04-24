@@ -269,6 +269,9 @@ export function start() {
 
 			// startButton.classList.add("d-none");
 			template_text.innerHTML = "Found player! Game starting . . .";
+
+			document.getElementById("two__online--adversary").textContent = `${data.adversary}`;
+
 			game_running = true;
 			ball.get_update(constants.WIN_WIDTH / 2, constants.WIN_HEIGHT / 2, 1, 0, 0xffffff);
 			initControls();
@@ -301,12 +304,13 @@ export function start() {
 
 function listenerTwoPlayersOnline() {
 
+	document.getElementById("online__two--domicile").textContent = `${sessionStorage.getItem("nickname")}`;
+
 	document.getElementById("startGame2Online").addEventListener("click", e => {
 		e.preventDefault();
 
 		// hide the start button
 		document.getElementById("startGame2Online").classList.add("d-none");
-
 
 		startButton = document.getElementById("startGame2Online");
 		button_container = document.getElementById("button_container");

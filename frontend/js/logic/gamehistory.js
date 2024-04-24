@@ -1,22 +1,132 @@
-var data_json
+var data_2_json;
+var data_4_json;
 
+function listenerGameHistory() {
+	var gameHistoryTwo = document.getElementById("game__historyTwo--main");
+	var gameHistoryFour = document.getElementById("game__historyFour--main");
 
-function listenerGameHistory(){
-	var parent_list_games = document.getElementById("list_game_history")
+	var gameHistoryEntry;
 
-	var element_list
-	data_json.forEach(game => {
-		element_list = document.createElement('li')
-		element_list.innerHTML = `<li> ${game.user1.username} ( ${game.score_user1} ) VS ${game.user2.username} (${game.score_user2}) le ${game.date} </li>`
-		parent_list_games.appendChild(element_list)
-		console.log ("<li>" + game.user1.username + " ("+ game.score_user1 +")" + " VS " + game.user2.username + " ("+ game.score_user2 +") " + "le " + game.date + "</li>")
-	});
+	if (data_2_json == undefined || data_2_json == null || data_2_json.length == 0) {
+		gameHistoryEntry = document.createElement('div');
+		gameHistoryEntry.innerHTML = `<div class="h3">Aucune partie jouée</div>`;
+		gameHistoryTwo.appendChild(gameHistoryEntry);
+	}
+	else {
+		data_2_json.forEach((game, game_index) => {
+			gameHistoryEntry = document.createElement('div');
+			const date = game.date.replace("Z", "").split("T");
+			gameHistoryEntry.innerHTML = `
+					<div class="row border-top border-bottom border-success" id="game__historyTwo--${game_index}">
+						<div class="col mt-2">
+							<div class="d-inline" id="game__historyTwo--${game_index}--left">
+								${game.user1.username}
+								<br>
+								${game.score_user1}
+							</div>
+						</div>
+						<div class="col mt-2 align-self-center">VS</div>
+						<div class="col mt-2">
+							<div class="d-inline" id="game__historyTwo--${game_index}--right">
+								${game.user2.username}
+								<br>
+								${game.score_user2}
+							</div>
+						</div>
+						<div class="mb-2" id="game__historyTwo--${game_index}--date">
+							Le ${date[0]} à ${date[1]}
+						</div>
+					</div>
+				`;
+			gameHistoryTwo.appendChild(gameHistoryEntry);
+			if (game.win_player.username == game.user1.username) {
+				document.getElementById(`game__historyTwo--${game_index}--left`).classList.add("bg-success-subtle");
+				document.getElementById(`game__historyTwo--${game_index}--right`).classList.add("bg-danger-subtle");
+			}
+			else {
+				document.getElementById(`game__historyTwo--${game_index}--left`).classList.add("bg-danger-subtle");
+				document.getElementById(`game__historyTwo--${game_index}--right`).classList.add("bg-success-subtle");
+			}
+		});
+	}
 
-
-
+	if (data_4_json == undefined || data_4_json == null || data_4_json.length == 0) {
+		gameHistoryEntry = document.createElement('div');
+		gameHistoryEntry.innerHTML = `<div class="h3">Aucune partie jouée</div>`;
+		gameHistoryFour.appendChild(gameHistoryEntry);
+	}
+	else {
+		data_4_json.forEach((game, game_index) => {
+			gameHistoryEntry = document.createElement('div');
+			const date = game.date.replace("Z", "").split("T");
+			gameHistoryEntry.innerHTML = `
+					<div class="row border-top border-bottom border-success" id="game__historyFour--${game_index}">
+						<div class="col mt-2">
+							<div class="d-inline" id="game__historyFour--${game_index}--one">
+								${game.user1.username}
+								<br>
+								${game.score_user1}
+							</div>
+						</div>
+						<div class="col mt-2">VS</div>
+						<div class="col mt-2">
+							<div class="d-inline" id="game__historyFour--${game_index}--two">
+								${game.user2.username}
+								<br>
+								${game.score_user2}
+							</div>
+						</div>
+						<div class="col mt-2">VS</div>
+						<div class="col mt-2">
+							<div class="d-inline" id="game__historyFour--${game_index}--three">
+								${game.user3.username}
+								<br>
+								${game.score_user3}
+							</div>
+						</div>
+						<div class="col mt-2">VS</div>
+						<div class="col mt-2">
+							<div class="d-inline" id="game__historyFour--${game_index}--four">
+								${game.user4.username}
+								<br>
+								${game.score_user4}
+							</div>
+						</div>
+						<div class="mb-2" id="game__historyFour--${game_index}--date">
+							Le ${date[0]} à ${date[1]}
+						</div>
+					</div>
+				`;
+			gameHistoryFour.appendChild(gameHistoryEntry);
+			if (game.win_player.username == game.user1.username) {
+				document.getElementById(`game__historyFour--${game_index}--one`).classList.add("bg-success-subtle");
+				document.getElementById(`game__historyFour--${game_index}--two`).classList.add("bg-danger-subtle");
+				document.getElementById(`game__historyFour--${game_index}--three`).classList.add("bg-danger-subtle");
+				document.getElementById(`game__historyFour--${game_index}--four`).classList.add("bg-danger-subtle");
+			}
+			else if (game.win_player.username == game.user2.username) {
+				document.getElementById(`game__historyFour--${game_index}--one`).classList.add("bg-danger-subtle");
+				document.getElementById(`game__historyFour--${game_index}--two`).classList.add("bg-success-subtle");
+				document.getElementById(`game__historyFour--${game_index}--three`).classList.add("bg-danger-subtle");
+				document.getElementById(`game__historyFour--${game_index}--four`).classList.add("bg-danger-subtle");
+			}
+			else if (game.win_player.username == game.user3.username) {
+				document.getElementById(`game__historyFour--${game_index}--one`).classList.add("bg-danger-subtle");
+				document.getElementById(`game__historyFour--${game_index}--two`).classList.add("bg-danger-subtle");
+				document.getElementById(`game__historyFour--${game_index}--three`).classList.add("bg-success-subtle");
+				document.getElementById(`game__historyFour--${game_index}--four`).classList.add("bg-danger-subtle");
+			}
+			else if (game.win_player.username == game.user4.username) {
+				document.getElementById(`game__historyFour--${game_index}--one`).classList.add("bg-danger-subtle");
+				document.getElementById(`game__historyFour--${game_index}--two`).classList.add("bg-danger-subtle");
+				document.getElementById(`game__historyFour--${game_index}--three`).classList.add("bg-danger-subtle");
+				document.getElementById(`game__historyFour--${game_index}--four`).classList.add("bg-success-subtle");
+			}
+		});
+	}
 };
 
-async function loadGameHistory (){
+async function loadGameHistory() {
 
 	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
@@ -24,29 +134,42 @@ async function loadGameHistory (){
 		headers: {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': csrftoken,
-		}
+		},
 	};
 
 	try {
 		let hostnameport = "http://" + window.location.host
 
 		const response = await fetch(hostnameport + '/api/gamehistory/', init);
-		
-		if (response.status === 403) {
+
+		if (response.status === 403 || !response.ok) {
 			const text = await response.text();
 			throw new Error(text);
 		}
-		else if (response.status === 200)
-		{
-			data_json = await response.json()
+		else if (response.status === 200) {
+			data_2_json = await response.json();
 
+			/*
+			try {
+				const responseFour = await fetch(hostnameport + '/api/gamehistoryfour/', init);
 
+				if (responseFour.status === 403 || !responseFour.ok) {
+					const error = await responseFour.text();
+					throw new Error(error);
+				}
+				else if (responseFour.status === 200) {
+					data_4_json = await responseFour.json();
+				}
+			} catch (e) {
+				console.error(e);
+			}
+			*/
 		}
 		return 1;
 	} catch (e) {
 		console.error("loadGameHistory Error : " + e);
 		return 0;
-	}	
+	}
 };
 
 export default {

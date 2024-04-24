@@ -62,7 +62,7 @@ async function createUser(createAccountForm) {
 	const input = createAccountForm.elements;
 
 	if (input["password_one"].value !== input["password_two"].value) {
-		document.getElementById("form__createAccount--msg").textContent = "The passwords are not the same";
+		document.getElementById("form__createAccount--msg").textContent = "Les mots de passe ne correspondent pas.";
 		return;
 	}
 
@@ -96,7 +96,7 @@ async function createUser(createAccountForm) {
 			const data = await response.json();
 			// sessionStorage.setItem("username", data.username); pas necessaire comme oblige de login et alors recoit infos importantes
 
-			document.getElementById("form__createAccount--msg").innerHTML = "Your account was successfully created. You can now login.";
+			document.getElementById("form__createAccount--msg").innerHTML = "Ton compte à été créé ! Tu peux te logger.";
 			document.getElementById("form__createAccount--msg").classList.remove("text-danger");
 			document.getElementById("form__createAccount--msg").classList.add("text-info");
 		}

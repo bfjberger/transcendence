@@ -1,9 +1,19 @@
 export default function renderGameHistory() {
+
 	return `
-		<div>
-			<h1>Historique des parties jouée(s) : </h1>
-			<ul id="list_game_history">
-			</ul>
+
+		<div class="text-center row mt-4">
+			<h1>Historique des parties 2 Joueurs jouée(s) : </h1>
+			<div id="game__historyTwo--main">
+			</div>
 		</div>
+		<br>
+		<hr>
+		<br>
+		<div class="text-center row">
+			<h1>Historique des parties 4 Joueurs jouée(s) : </h1>
+			<div id="game__historyFour--main">
+		</div>
+
 	`;
 };

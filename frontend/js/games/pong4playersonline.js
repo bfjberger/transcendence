@@ -294,6 +294,7 @@ export function startGame() {
 		 * game_start: the server sends a message to start the game
 		 * game_state: the server sends the game state (positions of the players and the ball)
 		 * game_end: the server sends a message to end the game
+		 * game_end_left: the server sends a message to end the game because a player left
 		 */
 		const data = JSON.parse(e.data);
 
@@ -321,6 +322,14 @@ export function startGame() {
 			game_running = false;
 			console.log('Game over');
 			display_winner(data.winner);
+			ws.close();
+		}
+
+		if (data.type === 'game_end_left') {
+			game_running = false;
+			console.log('Game over');
+			ball.stop();
+			winning_text = "Player left the game";
 			ws.close();
 		}
 	};

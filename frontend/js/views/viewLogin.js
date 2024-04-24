@@ -6,22 +6,22 @@ export default function renderLogin() {
 			<div class="list-group d-flex align-items-center">
 				<div class="row my-5"></div>
 				<div class="row my-5">
-					<button class="btn btn-outline-primary list-group-item list-group-item-primary" type="button" data-bs-toggle="modal" data-bs-target="#modal__login" id="btn__login">Login</button>
+					<button class="btn btn-outline-primary list-group-item list-group-item-primary" type="button" data-bs-toggle="modal" data-bs-target="#modal__login" id="btn__login">Se connecter</button>
 				</div>
 				<div class="row my-5"></div>
 				<div class="row my-5">
-					<button class="btn btn-outline-success list-group-item list-group-item-success" type="button" data-bs-toggle="modal" data-bs-target="#modal__createAccount" id="btn__createAccount">Create an Account</button>
+					<button class="btn btn-outline-success list-group-item list-group-item-success" type="button" data-bs-toggle="modal" data-bs-target="#modal__createAccount" id="btn__createAccount">S'inscrire</button>
 				</div>
 				<div class="row my-5"></div>
 				<div class="row my-5">
-					<button class="btn btn-outline-info list-group-item list-group-item-info" type="button" id="btn__login--42">Sign in with 42</button>
+					<button class="btn btn-outline-info list-group-item list-group-item-info" type="button" id="btn__login--42">Se connecter avec 42</button>
 				</div>
 			</div>
 			<div class="modal fade" id="modal__login" aria-hidden="true">
 				<div class="modal-dialog modal-dialog-centered text-center">
 					<div class="modal-content">
 						<div class="modal-header text-primary fw-bold fs-2">
-							<p class="col-12 modal-title">Login</p>
+							<p class="col-12 modal-title">Se connecter</p>
 						</div>
 						<div class="modal-body">
 							<form id="form__login" class="">
@@ -41,7 +41,7 @@ export default function renderLogin() {
 									<div class="form__input--errorMsg text-danger"></div>
 								</div>
 								<button class="btn btn-primary mt-1" type="submit" id="form__login--btn">
-									Continue
+									Se connecter
 								</button>
 								<!-- <p class="my-2">
 									<a id="forgotPassword" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Forgot your password?</a>
@@ -58,7 +58,7 @@ export default function renderLogin() {
 				<div class="modal-dialog modal-dialog-centered text-center">
 					<div class="modal-content">
 						<div class="modal-header text-success fw-bold fs-2">
-							<p class="col-12 modal-title">Create Account</p>
+							<p class="col-12 modal-title">Créer son compte</p>
 						</div>
 						<div class="modal-body">
 							<form id="form__createAccount" class="">
@@ -72,27 +72,27 @@ export default function renderLogin() {
 								</div>
 								<div class="mb-2">
 									<div class="text-success-emphasis">
-										Email Address
+										Adresse mail
 									</div>
 									<input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="email">
 									<div class="form__input--errorMsg text-danger"></div>
 								</div>
 								<div class="mb-2">
 									<div class="text-success-emphasis">
-										Password
+										Mot de passe
 									</div>
 									<input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="password_one">
 									<div class="form__input--errorMsg text-danger"></div>
 								</div>
 								<div class="mb-2">
 									<div class="text-success-emphasis">
-										Confirm password
+										Confirmer le mot de passe
 									</div>
 									<input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="password_two">
 									<div class="form__input--errorMsg text-danger"></div>
 								</div>
 								<button class="btn btn-success mt-1" type="submit">
-									Continue
+									Créer le compte
 								</button>
 							</form>
 						</div>

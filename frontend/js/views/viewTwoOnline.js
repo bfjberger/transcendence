@@ -15,8 +15,8 @@ export default function renderTwoOnline() {
 			<div class="col-5"></div>
 		</div>
 		<div class="row">
-			<div class="col text-end text-warning align-self-center h3">
-				<p>Moi</p>
+			<div class="col text-end text-warning align-self-center h3" id="online__two--domicile">
+
 			</div>
 			<div class="col d-flex justify-content-center align-items-center">
 				<div id="button_container" class="position-absolute">
@@ -33,7 +33,7 @@ export default function renderTwoOnline() {
 		<div class="row">
 			<div class="col-5"></div>
 			<div class="col-2 text-center mt-3 h4">
-				<p>Jouer avec les touches W/S</p>
+				<p>Joue avec les touches W/S</p>
 			</div>
 			<div class="col-5"></div>
 		</div>
