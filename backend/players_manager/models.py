@@ -19,6 +19,9 @@ class Player(models.Model):
 	status = models.CharField(max_length=200, choices=status.choices, default=status.OFFLINE)
 	avatar = models.ImageField(max_length=200, default="avatars/avatar.png", upload_to='avatars/')
 
+	def __str__(self):
+		return self.owner.username
+
 	def record_win(self, game_type):
 		if game_type == '2p':
 			self.nb_games_2p += 1

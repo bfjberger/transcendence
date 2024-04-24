@@ -50,7 +50,6 @@ from pong_online.views import TwoPlayersOnlineView, FourPlayersOnlineView
 router = routers.DefaultRouter()
 router.register(r'tournaments', TournamentViewSet, basename='tournaments')
 
-
 urlpatterns = [
 
     path('admin/', admin.site.urls),
@@ -77,10 +76,10 @@ urlpatterns = [
 
     path('api/call_back/', Callback.as_view(), name='callback'),
     path('api/accounts/', Accounts_view.as_view(), name='accounts'),
-	path('api/', include(router.urls)),
-	# path('api/tournaments/join_tournament/', TournamentViewSet.as_view({'post': 'join_tournament'})),
-	path('api/tournaments/<str:tournament_name>/players/', PlayerViewSet.as_view({'get': 'list'}), name='tournament-players'),
-    # path('api/tournaments/join_tournament/<str:room>/', TournamentViewSet.as_view({'post': 'join_tournament'}), name='join-tournament'),
+    path('api/', include(router.urls)),
+    path('api/tournaments/<str:tournament_name>/players/', PlayerViewSet.as_view({'get': 'list'}), name='tournament-players'),
+    # path('api/tournaments/<str:tournament_name>/join_tournament/', TournamentViewSet.as_view({'post': 'join_tournament'}), name='join-tournament'),
+    # path('api/tournaments/<str:tournament_name>/leave_tournament/', TournamentViewSet.as_view({'post': 'leave_tournament'}), name='leave-tournament'),
 
     path('api/twoplayeronline/', TwoPlayersOnlineView.as_view()),
     path('api/fourplayeronline/', FourPlayersOnlineView.as_view()),
