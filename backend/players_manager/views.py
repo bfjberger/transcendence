@@ -22,7 +22,6 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
-
 class IndexAction(APIView):
 	permission_classes = (permissions.AllowAny,)
 

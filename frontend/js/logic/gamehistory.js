@@ -9,11 +9,8 @@ function listenerGameHistory(){
 		element_list = document.createElement('li')
 		element_list.innerHTML = `<li> ${game.user1.username} ( ${game.score_user1} ) VS ${game.user2.username} (${game.score_user2}) le ${game.date} </li>`
 		parent_list_games.appendChild(element_list)
-		console.log ("<li>" + game.user1.username + " ("+ game.score_user1 +")" + " VS " + game.user2.username + " ("+ game.score_user2 +") " + "le " + game.date + "</li>")
+		// console.log ("<li>" + game.user1.username + " ("+ game.score_user1 +")" + " VS " + game.user2.username + " ("+ game.score_user2 +") " + "le " + game.date + "</li>")
 	});
-
-
-
 };
 
 async function loadGameHistory (){
@@ -40,7 +37,7 @@ async function loadGameHistory (){
 		{
 			data_json = await response.json()
 
-
+			console.log("json data = " + data_json)
 		}
 		return 1;
 	} catch (e) {
