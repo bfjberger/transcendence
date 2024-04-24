@@ -72,7 +72,7 @@ urlpatterns = [
     path('api/logout/', LogoutView.as_view()),
     path('api/updateavatar/', ProfileUpdateAvatarView.as_view()),
 
-    path('api/gameshistory/', ListTwoPlayersGamesAPIView.as_view()),
+    path('api/gamehistory/', ListTwoPlayersGamesAPIView.as_view()),
 
     path('api/call_back/', Callback.as_view(), name='callback'),
     path('api/accounts/', Accounts_view.as_view(), name='accounts'),

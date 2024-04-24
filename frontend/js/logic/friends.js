@@ -12,7 +12,6 @@ function listenerFriends() {
 	});
 
 	const buttons_accept_patch = document.querySelectorAll(".accept_friend_button")
-
 	buttons_accept_patch.forEach(button_accept => {
 		button_accept.addEventListener("click", e => {
 			e.preventDefault()
@@ -21,7 +20,6 @@ function listenerFriends() {
 	});
 
 	const buttons_delete_friend = document.querySelectorAll(".delete_friend_button")
-
 	buttons_delete_friend.forEach(button_delete => {
 		button_delete.addEventListener("click", e => {
 			e.preventDefault()

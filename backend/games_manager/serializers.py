@@ -13,6 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
 class TwoPlayersGameSerializer(serializers.ModelSerializer):
 	user1 = UserSerializer(read_only=True)
 	user2 = UserSerializer(read_only=True)
+	win_player = UserSerializer(read_only=True)
 	class Meta:
 		model = TwoPlayersGame
 		fields = ["user1","user2","score_user1", "score_user2", "score_max", "win_player", "id_tournament", "level", "date"]
