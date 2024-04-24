@@ -11,7 +11,7 @@
 	width: 230px;
 }
 
-#board_two, #board_four {
+#board_two {
 	max-width: 650px;
 	max-height: 480px;
 }

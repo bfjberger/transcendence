@@ -6,7 +6,7 @@ import * as constants from './Constants.js'
  * Currently the pong game is working with 2 different browsers.
  * The game logic is in pong_online/gamelogic.py
  * The requests are handled in pong_online/consumers.py and also the room logic are handled there
- * The path to the websockets is /ws/game/ and is in pong_online/routing.py (+ nginx configuration)
+ * The path to the websockets is /ws/gameFour/ and is in pong_online/routing.py (+ nginx configuration)
  *
  * TODO:[] Add a matchmaking placeholder
  *
@@ -39,14 +39,14 @@ let ws; // websocket
 */
 
 /* -------------------------------- Variables ------------------------------- */
-var game_running, player_one, player_two, player_three, player_four, ball, winning_text, startButton;
-var template_text, button_container;
+var ball, winning_text;
+var player_one, player_two, player_three, player_four;
+var template_text, button_container, startButton;
 var position = null;
 var id = null;
 let first_launch = true;
 const keys = {};
-
-game_running = false;
+var game_running = false;
 
 // Boards
 var board = null;
@@ -70,25 +70,25 @@ function initDisplay() {
 	board = document.getElementById("board_four");
 	context = board.getContext("2d");
 	board.width = constants.WIN_WIDTH;
-	board.height = constants.WIN_HEIGHT;
+	board.height = constants.FOUR_WIN_HEIGHT;
 };
 
 function initArena() {
-	player_one = new Player(1, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_1_COLOR);
-	player_two = new Player(2, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_2_COLOR);
-	player_three = new Player(3, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_3_COLOR);
-	player_four = new Player(4, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_4_COLOR);
-	ball = new Ball();
-	console.log("Ball color: ", ball.color);
+	player_one = new Player(1, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_1_COLOR, 4);
+	player_two = new Player(2, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_2_COLOR, 4);
+	player_three = new Player(3, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_3_COLOR);
+	player_four = new Player(4, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_4_COLOR);
+	ball = new Ball(4);
 };
 
 function handle_scores(player) {
+	console.log("handle_scores " + player);
 	context.font = "20px sans-serif";
 	context.fillStyle = "black";
-	context.fillText(player_one.score, 10, constants.WIN_HEIGHT / 2);
-	context.fillText(player_two.score, constants.WIN_WIDTH - 20, constants.WIN_HEIGHT / 2);
+	context.fillText(player_one.score, 10, constants.FOUR_WIN_HEIGHT / 2);
+	context.fillText(player_two.score, constants.WIN_WIDTH - 20, constants.FOUR_WIN_HEIGHT / 2);
 	context.fillText(player_three.score, constants.WIN_WIDTH / 2, 20);
-	context.fillText(player_four.score, constants.WIN_WIDTH / 2, constants.WIN_HEIGHT - 20);
+	context.fillText(player_four.score, constants.WIN_WIDTH / 2, constants.FOUR_WIN_HEIGHT - 20);
 };
 
 function display_winner(winning_player) {
@@ -120,12 +120,24 @@ function handleKeyDown(e) {
 			keys[e.code] = true;
 			sendMessageToServer({type: 'player_key_down', player: position, direction: up});
 		}
+		if (!keys[e.code] && (e.code == 'KeyJ' || e.code == 'KeyK')) {
+			var left = false;
+			if (e.code == 'KeyJ') {
+				left = true;
+			}
+			keys[e.code] = true;
+			sendMessageToServer({type: 'player_key_down', player: position, direction: left});
+		}
 	}
 };
 
 function handleKeyUp(e) {
 	if (game_running) {
 		if (e.code == 'KeyW' || e.code == 'KeyS') {
+			keys[e.code] = false;
+			sendMessageToServer({type: 'player_key_up', player: position});
+		}
+		if (e.code == 'KeyJ' || e.code == 'KeyK') {
 			keys[e.code] = false;
 			sendMessageToServer({type: 'player_key_up', player: position});
 		}
@@ -192,7 +204,7 @@ function drawScoreAndLine() {
 	context.beginPath();
 	context.setLineDash([5, 15]);
 	context.moveTo(constants.WIN_WIDTH / 2, 0);
-	context.lineTo(constants.WIN_WIDTH / 2, constants.WIN_HEIGHT);
+	context.lineTo(constants.WIN_WIDTH / 2, constants.FOUR_WIN_HEIGHT);
 	context.strokeStyle = "white";
 	context.stroke();
 	context.setLineDash([]);
@@ -200,8 +212,8 @@ function drawScoreAndLine() {
 	// Draw the vertical line
 	context.beginPath();
 	context.setLineDash([5, 15]);
-	context.moveTo(0, constants.WIN_HEIGHT / 2);
-	context.lineTo(constants.WIN_WIDTH, constants.WIN_HEIGHT / 2);
+	context.moveTo(0, constants.FOUR_WIN_HEIGHT / 2);
+	context.lineTo(constants.WIN_WIDTH, constants.FOUR_WIN_HEIGHT / 2);
 	context.strokeStyle = "white";
 	context.stroke();
 	context.setLineDash([]);
@@ -209,10 +221,10 @@ function drawScoreAndLine() {
 	// Draw the scores
 	context.font = "20px sans-serif";
 	context.fillStyle = "black";
-	context.fillText(player_one.score, 10, constants.WIN_HEIGHT / 2);
-	context.fillText(player_two.score, constants.WIN_WIDTH - 20, constants.WIN_HEIGHT / 2);
+	context.fillText(player_one.score, 10, constants.FOUR_WIN_HEIGHT / 2);
+	context.fillText(player_two.score, constants.WIN_WIDTH - 20, constants.FOUR_WIN_HEIGHT / 2);
 	context.fillText(player_three.score, constants.WIN_WIDTH / 2, 20);
-	context.fillText(player_four.score, constants.WIN_WIDTH / 2, constants.WIN_HEIGHT - 20);
+	context.fillText(player_four.score, constants.WIN_WIDTH / 2, constants.FOUR_WIN_HEIGHT - 20);
 };
 
 function animate() {
@@ -221,7 +233,7 @@ function animate() {
 };
 
 function render() {
-	context.clearRect(0, 0, constants.WIN_WIDTH, constants.WIN_HEIGHT);
+	context.clearRect(0, 0, constants.WIN_WIDTH, constants.FOUR_WIN_HEIGHT);
 
 	// Draw the players
 	context.fillStyle = player_one.color;
@@ -242,7 +254,7 @@ function render() {
 			context.fillStyle = "white";
 			context.font = "50px sans-serif";
 			let text_width = context.measureText(winning_text).width;
-			context.fillText(winning_text, (constants.WIN_WIDTH - text_width) / 2, constants.WIN_HEIGHT / 2);
+			context.fillText(winning_text, (constants.WIN_WIDTH - text_width) / 2, constants.FOUR_WIN_HEIGHT / 2);
 		}
 
 		// lower the div button container
@@ -288,6 +300,7 @@ export function startGame() {
 		if (data.type === 'set_position') {
 			position = data.value;
 			console.log('I am at position', position);
+			gameUpdateListener();
 		}
 
 		if (data.type === 'game_start') {
@@ -296,7 +309,7 @@ export function startGame() {
 			// startButton.classList.add("d-none");
 			template_text.innerHTML = "Found player! Game starting . . .";
 			game_running = true;
-			ball.get_update(constants.WIN_WIDTH / 2, constants.WIN_HEIGHT / 2, 1, 0, 0xffffff);
+			ball.get_update(constants.WIN_WIDTH / 2, constants.FOUR_WIN_HEIGHT / 2, 1, 0, 0xffffff);
 			initControls();
 		}
 
@@ -327,13 +340,13 @@ export function startGame() {
 
 window.addEventListener('unload', function() {
 	if (ws)
-		sendMessageToServer({type: 'player_left', player: position})
-})
+		sendMessageToServer({type: 'player_left', player: position});
+});
 
 function handlePageReload() {
 	if (ws)
-		sendMessageToServer({type: 'player_left', player: position})
-}
+		sendMessageToServer({type: 'player_left', player: position});
+};
 
 window.addEventListener('beforeunload', handlePageReload);
 
@@ -350,10 +363,46 @@ function listenerFourPlayersOnline() {
 
 		startButton.classList.add("d-none");
 
-		template_text.innerHTML = "Waiting for other players . . .";
+		template_text.innerHTML = "En attente d'autres joueurs. . .";
 
 		startGame();
+
+		gameUpdateListener();
 	});
+};
+
+function gameUpdateListener() {
+
+	const instructions = document.getElementById("instructions");
+
+	if (position === "player_one") {
+		template_text.innerHTML = "Vous êtes le joueur Gauche";
+		document.getElementById("four__online--leftPlayer").style.color = constants.FOUR_PLAYER_1_COLOR;
+		document.getElementById("four__online--leftPlayer").classList.replace("h4", "h3");
+		instructions.innerHTML = "Utilisez les touches W et S pour bouger";
+		instructions.style.color = constants.FOUR_PLAYER_1_COLOR;
+	}
+	else if (position === "player_two") {
+		template_text.innerHTML = "Vous êtes le joueur Droit";
+		document.getElementById("four__online--rightPlayer").style.color = constants.FOUR_PLAYER_2_COLOR;
+		document.getElementById("four__online--leftPlayer").classList.replace("h4", "h3");
+		instructions.innerHTML = "Utilisez les touches W et S pour bouger";
+		instructions.style.color = constants.FOUR_PLAYER_2_COLOR;
+	}
+	else if (position === "player_three") {
+		template_text.innerHTML = "Vous êtes le joueur Haut";
+		document.getElementById("four__online--topPlayer").style.color = constants.FOUR_PLAYER_3_COLOR;
+		document.getElementById("four__online--leftPlayer").classList.replace("h4", "h3");
+		instructions.innerHTML = "Utilisez les touches J et K pour bouger";
+		instructions.style.color = constants.FOUR_PLAYER_3_COLOR;
+	}
+	else if (position === "player_four") {
+		template_text.innerHTML = "Vous êtes le joueur Bas";
+		document.getElementById("four__online--bottomPlayer").style.color = constants.FOUR_PLAYER_4_COLOR;
+		document.getElementById("four__online--leftPlayer").classList.replace("h4", "h3");
+		instructions.innerHTML = "Utilisez les touches J et K pour bouger";
+		instructions.style.color = constants.FOUR_PLAYER_4_COLOR;
+	}
 };
 
 async function loadFourPlayersOnline() {
@@ -369,8 +418,8 @@ async function loadFourPlayersOnline() {
 
 	try {
 		let hostnameport = "http://" + window.location.host
-		
-		const response = await fetch(hostnameport + '/api/fourplayer/', init);
+
+		const response = await fetch(hostnameport + '/api/fourplayeronline/', init);
 
 		if (response.status === 403) {
 			const text = await response.text();

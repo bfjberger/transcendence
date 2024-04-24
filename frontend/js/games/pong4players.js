@@ -8,7 +8,7 @@ import router from "../logic/router.js" // Import the router for reload MIGHT LE
 class PongGame4Players {
 	constructor(player1Name, player2Name, player3Name, player4Name) {
 		// board
-		[this.boardWidth, this.boardHeight] = [650, 480];
+		[this.boardWidth, this.boardHeight] = [650, 650];
 		[this.board, this.context] = [null, null]; // defined in setBoard()
 		this.start = false;
 

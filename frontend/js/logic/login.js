@@ -19,19 +19,16 @@ async function connectUser(loginForm) {
 	};
 
 	try {
-		
+
 		let hostnameport = "http://" + window.location.host
-		
 
 		const response = await fetch(hostnameport + '/api/login/', init); // will use another URL
 
-		if (response.status === 201) {
+		if (!response.ok || response.status === 203) {
 			const error = await response.text();
+			console.log(error);
 			document.getElementById("form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '');
 			return;
-		}
-		if (!response.ok) {
-			throw new Error(`HTTP error, status = ${response.status}`);
 		}
 		if (response.status === 202) {
 			// login is successful -> redirect to profile
@@ -55,7 +52,7 @@ async function connectUser(loginForm) {
 	} catch (e) {
 		console.error("Error connect user: ", e);
 	}
-}
+};
 
 async function createUser(createAccountForm) {
 
@@ -82,14 +79,15 @@ async function createUser(createAccountForm) {
 	};
 
 	try {
-
-
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "http://" + window.location.host;
 
 		const response = await fetch(hostnameport + '/api/register/', init);
-		if (response.status === 401) {
+
+		if (!response.ok || response.status === 203) {
 			const error = await response.text();
 			document.getElementById("form__createAccount--msg").textContent = error.replace(/["{}[\]]/g, '');
+			document.getElementById("form__createAccount--msg").classList.add("text-danger");
+			document.getElementById("form__createAccount--msg").classList.remove("text-info");
 			return;
 		}
 		if (response.status === 201) {
@@ -105,7 +103,7 @@ async function createUser(createAccountForm) {
 	} catch (e) {
 		console.error("Error create user: ", e);
 	}
-}
+};
 
 async function waitFor42() {
 
@@ -162,7 +160,7 @@ async function connectUser42() {
 	} catch (e) {
 		console.error("Error 42: ", e);
 	}
-}
+};
 
 function listenerLogin() {
 
