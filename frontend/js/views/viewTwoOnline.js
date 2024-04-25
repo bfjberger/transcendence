@@ -9,14 +9,12 @@ export default function renderTwoOnline() {
 		</div>
 		<div class="row">
 			<div class="col-5"></div>
-			<div class="col-2">
-				<p id="template_text" class="text-center h4 my-2">Template text for later on</p>
+			<div class="col-2 text-center h4 my-2" id="template_text">
 			</div>
 			<div class="col-5"></div>
 		</div>
 		<div class="row">
-			<div class="col text-end text-warning align-self-center h3" id="online__two--domicile">
-
+			<div class="col text-end text-warning align-self-center h3" id="two__online--domicile">
 			</div>
 			<div class="col d-flex justify-content-center align-items-center">
 				<div id="button_container" class="position-absolute">
@@ -26,8 +24,7 @@ export default function renderTwoOnline() {
 					<canvas id="board_two" width="650" height="480"></canvas>
 				</div>
 			</div>
-			<div class="col text-start align-self-center text-primary h3">
-				<p id="two__online--adversary"></p>
+			<div class="col text-start align-self-center text-primary h3" id="two__online--adversary">
 			</div>
 		</div>
 		<div class="row">

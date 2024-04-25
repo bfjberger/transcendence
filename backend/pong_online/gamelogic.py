@@ -18,7 +18,51 @@ class GameState:
 		players (list): A list of Player objects representing the players in the game.
 		is_running (bool): Indicates whether the game is currently running.
 		winning_score (int): The score required to win the game.
+
+	Methods:
+		__init__(): Initializes the game state with the ball, players, and game settings.
+		set_player_movement(player_pos, is_moving, directionV, directionH): Sets the movement of a player based on the direction.
+		?? reset_players_pos(): Resets the position of the players.
+		handle_scores(): Handles scoring and checks for a winner.
+		update(): Updates the game state by moving the players and the ball.
 	"""
+	def __init__(self):
+		self.ball = self.Ball()
+		self.players = [self.Player(1), self.Player(2)]
+		self.is_running = False
+		self.winning_score = 3
+
+	async def set_player_movement(self, player_pos, is_moving, direction):
+		if player_pos == 'player_one' :
+			self.players[0].is_moving = is_moving
+			self.players[0].up = direction
+		elif player_pos == 'player_two' :
+			self.players[1].is_moving = is_moving
+			self.players[1].up = direction
+
+	async def reset_players_pos(self):
+		self.players[0].y = middle_player_y_pos
+		self.players[1].y = middle_player_y_pos
+
+	async def handle_scores(self):
+		if self.ball.x <= 0 - (self.ball.radius / 2) :
+			await self.players[1].score_point()
+			await self.ball.reset()
+			# await self.reset_players_pos()
+		elif self.ball.x >= game_area_width + (self.ball.radius / 2) :
+			await self.players[0].score_point()
+			await self.ball.reset()
+			# await self.reset_players_pos()
+
+		if self.players[0].score >= self.winning_score or self.players[1].score >= self.winning_score :
+			self.is_running = False
+
+	async def update(self):
+		await self.players[0].move()
+		await self.players[1].move()
+		await self.ball.move(self.players[0], self.players[1])
+		await self.handle_scores()
+
 	class Ball:
 		"""
 		Represents a ball in the game.
@@ -118,6 +162,15 @@ class GameState:
 			score (int): The player's score.
 			is_moving (bool): Indicates whether the player is currently moving.
 			up (bool): Indicates whether the player is moving up or down.
+			name (str): The name of the player.
+
+		Methods:
+			__init__(position): Initializes the player with a starting position.
+			__str__(): Returns a string representation of the player.
+			move(): Moves the player up or down based on the current direction.
+			reset(): Resets the player's position.
+			score_point(): Increments the player's score.
+			set_name(name): Sets the name of the player.
 		"""
 
 		def __init__(self, position):
@@ -129,6 +182,7 @@ class GameState:
 			self.score = 0
 			self.is_moving = False
 			self.up = False
+			self.str = None
 
 		def __str__(self):
 			return f"Player position: ({self.x}, {self.y}), Paddle size: {paddle_width}x{paddle_height}, Score: {self.score}"
@@ -154,39 +208,5 @@ class GameState:
 		async def score_point(self):
 			self.score += 1
 
-	def __init__(self):
-		self.ball = self.Ball()
-		self.players = [self.Player(1), self.Player(2)]
-		self.is_running = False
-		self.winning_score = 3
-
-	async def set_player_movement(self, player_pos, is_moving, direction):
-		if player_pos == 'player_one' :
-			self.players[0].is_moving = is_moving
-			self.players[0].up = direction
-		elif player_pos == 'player_two' :
-			self.players[1].is_moving = is_moving
-			self.players[1].up = direction
-
-	async def reset_players_pos(self):
-		self.players[0].y = middle_player_y_pos
-		self.players[1].y = middle_player_y_pos
-
-	async def handle_scores(self):
-		if self.ball.x <= 0 - (self.ball.radius / 2) :
-			await self.players[1].score_point()
-			await self.ball.reset()
-			await self.reset_players_pos()
-		elif self.ball.x >= game_area_width + (self.ball.radius / 2) :
-			await self.players[0].score_point()
-			await self.ball.reset()
-			await self.reset_players_pos()
-
-		if self.players[0].score >= self.winning_score or self.players[1].score >= self.winning_score :
-			self.is_running = False
-
-	async def update(self):
-		await self.players[0].move()
-		await self.players[1].move()
-		await self.ball.move(self.players[0], self.players[1])
-		await self.handle_scores()
+		async def set_name(self, name):
+			self.name = name

@@ -260,7 +260,7 @@ class PongGame2Players {
 		winner.then((winner) => {
 			if (winner) {
 				if (window.location.pathname === "/twoplayers/") {
-					let winnerText = winner.getName() + " won !!";
+					let winnerText = winner.getName() + " à gagner !!";
 					this.context.fillStyle = winner.color;
 					this.context.font = "50px sans-serif";
 					const textWidth = this.context.measureText(winnerText).width;
@@ -286,10 +286,7 @@ var game;
 
 function start2PlayerGame(p1_name, p2_name) {
 	if (!game) {
-		if (!p1_name && !p2_name)
-			game = new PongGame2Players("Player 1", "Player 2");
-		else
-			game = new PongGame2Players(p1_name, p2_name);
+		game = new PongGame2Players(p1_name, p2_name);
 		game.init();
 	}
 }
@@ -304,7 +301,7 @@ function listenerTwoPlayers() {
 		// hide the start button
 		document.getElementById("startGame2").classList.add("d-none");
 
-		start2PlayerGame();
+		start2PlayerGame(sessionStorage.getItem("nickname"), "Joueur Invité");
 	});
 };
 

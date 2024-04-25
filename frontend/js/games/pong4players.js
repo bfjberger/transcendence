@@ -353,7 +353,7 @@ class PongGame4Players {
 		let winner = this.gameOver();
 		winner.then((winner) => {
 		if (winner) {
-			let winnerText = winner.getName() + " won !!";
+			let winnerText = winner.getName() + " à gagner !!";
 			this.context.fillStyle = winner.color;
 			this.context.font = "50px sans-serif";
 			const textWidth = this.context.measureText(winnerText).width;
@@ -376,7 +376,7 @@ var game;
 function start4PlayerGame(p1_name, p2_name, p3_name, p4_name) {
 	if (!game) {
 		if (!p1_name && !p2_name && !p3_name && !p4_name)
-			game = new PongGame4Players("Player 1", "Player 2", "Player 3", "Player 4");
+			game = new PongGame4Players("Joueur 1", "Joueur 2", "Joueur 3", "Joueur 4");
 		else
 			game = new PongGame4Players(p1_name, p2_name, p3_name, p4_name);
 		game.init();
