@@ -125,25 +125,25 @@ function display() {
 
 	data_list_initiated.forEach(friend => {
 			element_list = document.createElement("li")
-			element_list.innerHTML =  `<p>${friend.user_received.username}<button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.user_received.username}">Supprimer</button></p>`
+			element_list.innerHTML =  `<p>${friend.user_received.username} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.user_received.username}">Supprimer</button></p>`
 			parent_list_initiator.appendChild(element_list)
 	});
 		
 	data_list_received.forEach(friend => {
 			element_list = document.createElement("li")
-			element_list.innerHTML = `<p> ${friend.user_initiated.username}<button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.user_initiated.username}">Refuser</button> <button class="btn btn-success mt-1 accept_friend_button" type="button" value="${friend.user_initiated.username}">Accepter</button></p>`
+			element_list.innerHTML = `<p> ${friend.user_initiated.username} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.user_initiated.username}">Refuser</button> <button class="btn btn-success mt-1 accept_friend_button" type="button" value="${friend.user_initiated.username}">Accepter</button></p>`
 			parent_list_received.appendChild(element_list)
 		});
 		
 	data_list_initiated_accepted.forEach(friend => {
 		element_list = document.createElement("li")
-		element_list.innerHTML = `<p>${friend.user_received.username} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.user_received.username}">Supprimer</button></p>`
+		element_list.innerHTML = `<p>${friend.username} | ${friend.status} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.username}">Supprimer</button></p>`
 		parent_list_accepted.appendChild(element_list)
 	});
 
 	data_list_received_accepted.forEach(friend => {
 		element_list = document.createElement("li")
-		element_list.innerHTML = `<p>${friend.user_initiated.username} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.user_initiated.username}">Supprimer</button></p>`
+		element_list.innerHTML = `<p>${friend.usermane} | ${friend.status} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.username}">Supprimer</button></p>`
 		parent_list_accepted.appendChild(element_list)
 	});
 }
@@ -214,6 +214,8 @@ async function loadFriends() {
 			data_list_received = await response_list_received.json()
 			data_list_initiated_accepted = await response_list_initiated_accepted.json()
 			data_list_received_accepted = await response_list_received_accepted.json()
+			
+			console.log(data_list_initiated_accepted + " " + data_list_received_accepted)
 
 
 		}

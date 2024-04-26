@@ -14,22 +14,39 @@ from .models import Friend
 from .serializers import FriendSerializer, UserSerializer, FriendSerializerPOST
 
 
+from players_manager.models import Player
+from players_manager.serializers import PlayerSerializer
+
+
 class ListFriendAPIView(ListAPIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]
 	serializer_class = FriendSerializer
 	
-	def get_queryset(self):
+	def get(self, request):
 		param = self.request.query_params.get('type')
 		if param == "initiated" :
-			return Friend.objects.filter(user_initiated = self.request.user, accept = False)
+			initiated_serialized = FriendSerializer(Friend.objects.filter(user_initiated = self.request.user, accept = False), many =True)
+			return Response(initiated_serialized.data, status=status.HTTP_200_OK)
 		elif param == "received" :
-			return Friend.objects.filter(user_received = self.request.user, accept = False)
+			received_serialized = FriendSerializer(Friend.objects.filter(user_received = self.request.user, accept = False), many = True)
+			return Response(received_serialized.data, status=status.HTTP_200_OK)
 		elif param == "initiated_accpeted" :
-			return Friend.objects.filter(user_initiated = self.request.user , accept = True)
+			initiated_accepted = Friend.objects.filter(user_initiated = self.request.user.id , accept = True)
+			result = []
+			for o in initiated_accepted :
+				player_received = Player.objects.filter(owner=o.user_received.id).first()
+				result.append({"username" : o.user_received.username, "status" : player_received.status})
+			print(result, "\n\n\n")
+			return Response(result, status=status.HTTP_200_OK)
 		elif param == "received_accepted" :
-			return Friend.objects.filter(user_received = self.request.user , accept = True)
-			
+			received_accepted = Friend.objects.filter(user_received = self.request.user.id , accept = True)
+			result = []
+			for o in received_accepted :
+				player_initiated = Player.objects.filter(owner=o.user_initiated.id).first()
+				result.append({"username" : o.user_initiated.username, "status" : player_initiated.status})
+			print(result, "\n\n\n")
+			return Response(result, status=status.HTTP_200_OK)
 
 class CreateFriendAPIView(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
