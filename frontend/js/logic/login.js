@@ -153,10 +153,10 @@ async function connectUser42() {
 		}
 
 		const address = await response.json()
-		console.log(address);
+		console.log("Voici l'adresse : " + address);
 
 		window.location.href = address;
-		waitFor42();
+		// waitFor42();
 	} catch (e) {
 		console.error("Error 42: ", e);
 	}

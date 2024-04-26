@@ -32,7 +32,6 @@ function listenerFriends() {
 	});
 };
 
-
 async function delete_friend(username) {
 	console.log("DELETE FUNCTION CALLED")
 	csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
@@ -58,16 +57,9 @@ async function delete_friend(username) {
 		}
 		else
 		{
-			//data = await response.json()
-
-			console.log("USERNAME = " + username)
-
 			let json_response = await response.json()
-
-
 			console.log("Delete : " + username + " " + json_response)
 			window.location.reload()
-
 		}
 
 	} catch (e) {

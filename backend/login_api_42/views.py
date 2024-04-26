@@ -18,6 +18,8 @@ from django.core.files.base import ContentFile
 from players_manager.serializers import PlayerSerializer
 from players_manager.models import Player
 
+from django.contrib.auth import authenticate
+
 
 from django.core.files import File
 from urllib.request import urlopen
@@ -30,29 +32,31 @@ class Accounts_view(APIView) :
     def get(self, request):
         # Step 1: Redirect user to 42 authorization URL
         authorization_url = 'https://api.intra.42.fr/oauth/authorize' #by def, url where you can loggin ('https://api.intra.42.fr/oauth/authorize')
-        redirect_uri = 'http://127.0.0.1:7890/api/call_back/'  # Change to your callback URL
+        redirect_uri = 'http://localhost:7890/'  # Change to your callback URL
         params = {
             'client_id': settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'],
             'redirect_uri': redirect_uri,
             'response_type': 'code',
             # Add any additional scopes your app requires
-            'scope': "public profile"
+            'scope': "public"
         }
         auth_url = '{}?{}'.format(authorization_url, urlencode(params))
 
-        # print("auth_url", auth_url)
+
 
         return Response(auth_url, status=status.HTTP_200_OK)
 
 class Callback(APIView):
 
-    def get(self, request):
+    def post(self, request):
         # Step 2: Receive authorization code and exchange for access token
 
 
-        code = request.GET.get('code')
+        code = request.data["code"]
 
-        redirect_uri = 'http://127.0.0.1:7890/profile/'  # Change to your callback URL
+        # return Response(code, status=status.HTTP_200_OK)
+
+        redirect_uri = 'http://localhost:7890/'  # Change to your callback URL
         token_url = 'https://api.intra.42.fr/oauth/token'
         data = {
             'client_id': settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'],
@@ -66,8 +70,10 @@ class Callback(APIView):
         response = requests.post(token_url, data=data)
         token_data = response.json()
 
+
         # Step 3: Use access token to access 42 API
         access_token = token_data.get('access_token')
+
         # Now you can use the access_token to make requests to the 42 API
 
 
@@ -75,24 +81,30 @@ class Callback(APIView):
         response = requests.get('https://api.intra.42.fr/v2/me', headers={'Authorization': f'Bearer {access_token}'})
 
 
+
+        # return Response(response, status=status.HTTP_200_OK)
+
         if response.status_code == 200:
             user_data = response.json()
             # return JsonResponse(user_data)
 
-            # maintenat je dois remplir dans la base les infos du user
+            # maintenat je dois remplir dans la base les infos du user 
             username = user_data.get('login')
             avatar = user_data.get('image')["link"]
             email = user_data.get('email')
 
-            print("\n\n\n", avatar, "\n")
+
 
 
             # check if user exists, if not it creates it
             user, created = User.objects.get_or_create(username=username,defaults={'email': email})
 
             if created == True :
-
+                
+                user.set_password("zz11zz11")
+                user.save()
                 img_resp = requests.get(avatar)
+
 
                 if img_resp.status_code != 200 :
                     print("\n\n\nimage pas downloaded\n\n\n")
@@ -112,8 +124,50 @@ class Callback(APIView):
                     print("Eh ba non c est pas si simple que ça\n\n\n\n")
                     print("player_serializer.errors", player_serializer.errors)
 
+            test_user = authenticate(username="fcoindre", password="zz11zz11")
 
-            return Response(player_serializer.data, status=status.HTTP_200_OK)
+
+            login(request, test_user)
+            print("user = ", test_user)
+
+
+            return Response("On avance", status=status.HTTP_200_OK)
+
+
+# class LoginSerializer(serializers.Serializer):
+#     username = serializers.CharField(label="username")
+#     password = serializers.CharField(label="password")
+
+#     def validate(self, attrs):
+#         user = authenticate(request=self.context.get('request'),username=attrs['username'],password=attrs['password'])
+
+#         if not user:
+#             raise serializers.ValidationError("Incorrect Credentials")
+#         else:
+#             attrs['user'] = user
+#             return attrs
+
+# class LoginView(APIView):
+# 	permission_classes = (permissions.AllowAny,)
+
+# 	def post(self, request, format=None):
+# 		try:
+# 			serializer = LoginSerializer(data=request.data, context = {'request': request})
+# 			serializer.is_valid(raise_exception=True)
+# 		except serializers.ValidationError:
+# 			return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+# 		user = serializer.validated_data['user']
+# 		login(request, user)
+
+# 		player = Player.objects.get(owner=user)
+# 		player.status = "ONLINE"
+# 		player.save()
+
+# 		user_data = self.request.user
+# 		serializer_data = DataSerializer(user_data)
+# 		return Response(data=serializer_data.data, status=status.HTTP_202_ACCEPTED)
+
+
 
             # # Check if the user already exists in your database
             # try:
