@@ -293,7 +293,7 @@ function start2PlayerGame(p1_name, p2_name) {
 
 function listenerTwoPlayers() {
 
-	document.getElementById("two__local--domicile").textContent = `${sessionStorage.getItem("nickname")}: W/S`;
+	document.getElementById("two__local--left").textContent = `${sessionStorage.getItem("nickname")}: W/S`;
 
 	document.getElementById("startGame2").addEventListener("click", e => {
 		e.preventDefault();

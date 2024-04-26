@@ -30,6 +30,11 @@ export class Player {
 		this.height = height;
 		this.color = color;
 		this.score = 0;
+		this.name = "";
+	}
+
+	set_name(name) {
+		this.name = name;
 	}
 
 	/*

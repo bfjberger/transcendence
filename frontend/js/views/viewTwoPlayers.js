@@ -15,7 +15,7 @@ export default function renderTwoPlayers() {
 			<div class="col-5"></div>
 		</div>
 		<div class="row">
-			<div class="col text-end text-warning align-self-center h3" id="two__local--domicile">
+			<div class="col text-end text-warning align-self-center h3" id="two__local--left">
 				Joueur Gauche: W/S
 			</div>
 			<div class="col d-flex justify-content-center align-items-center">

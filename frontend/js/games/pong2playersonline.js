@@ -12,8 +12,8 @@ import * as constants from './Constants.js';
  * TODO:[] Add a matchmaking placeholder
  */
 
-const wsurl = 'ws://' + window.location.host + '/ws/game/'; // link to websocket
-let ws; // websocket
+const wsurl = 'ws://' + window.location.host + '/ws/rooms/'; // link to websocket
+let g_websocket; // websocket
 
 /**
  * What is a websocket?
@@ -53,7 +53,8 @@ var g_id = null;
 var g_position = null;
 let g_first_launch = true;
 var g_game_running = false;
-var g_player_one, g_player_two;
+var g_room_name = null;
+var g_player_left, g_player_right;
 var g_template_text, g_button_container, g_startButton;
 const g_keys = {};
 
@@ -73,7 +74,7 @@ function intToHexColor(value) {
 };
 
 function sendMessageToServer(message) {
-	ws.send(JSON.stringify(message));
+	g_websocket.send(JSON.stringify(message));
 };
 
 function initDisplay() {
@@ -84,26 +85,26 @@ function initDisplay() {
 };
 
 function initArena() {
-	g_player_one = new Player(1, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_1_COLOR, 2);
-	g_player_two = new Player(2, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_2_COLOR, 2);
+	g_player_left = new Player(1, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_1_COLOR, 2);
+	g_player_right = new Player(2, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_2_COLOR, 2);
 	g_ball = new Ball(2);
 };
 
 function handle_scores(player) {
 	g_context.font = "50px sans-serif";
 	g_context.fillStyle = "white";
-	g_context.fillText(g_player_one.score, constants.WIN_WIDTH / 2 - 50, 50);
-	g_context.fillText(g_player_two.score, constants.WIN_WIDTH / 2 + 25, 50);
+	g_context.fillText(g_player_left.score, constants.WIN_WIDTH / 2 - 50, 50);
+	g_context.fillText(g_player_right.score, constants.WIN_WIDTH / 2 + 25, 50);
 };
 
 function display_winner(winning_player) {
 	g_ball.stop();
 
-	if (winning_player === 'player_one') {
-		g_board_winning_text = "Player 1 wins!";
+	if (winning_player === 'player_left') {
+		g_board_winning_text = g_player_left.name + " wins!";
 	}
 	else {
-		g_board_winning_text = "Player 2 wins!";
+		g_board_winning_text = g_player_right.name + " wins!";
 	}
 };
 
@@ -117,7 +118,7 @@ function handleKeyDown(e) {
 				up = true;
 			}
 			g_keys[e.code] = true;
-			sendMessageToServer({type: 'player_key_down', player: g_position, direction: up});
+			sendMessageToServer({type: 'player_key_down', player: g_position, direction: up, room_name: g_room_name});
 		}
 	}
 };
@@ -126,21 +127,40 @@ function handleKeyUp(e) {
 	if (g_game_running) {
 		if (e.code == 'KeyW' || e.code == 'KeyS') {
 			g_keys[e.code] = false;
-			sendMessageToServer({type: 'player_key_up', player: g_position});
+			sendMessageToServer({type: 'player_key_up', player: g_position, room_name: g_room_name});
+		}
+	}
+};
+
+function handleKeys(e) {
+
+	if (g_game_running) {
+		if (!g_keys[e.code] && (e.code == 'KeyW' || e.code == 'KeyS')) {
+			var up = false;
+			if (e.code == 'KeyW') {
+				up = true;
+			}
+			g_keys[e.code] = true;
+			sendMessageToServer({type: 'set_player_movement', player: g_position, direction: up, room_name: g_room_name});
+		}
+		else if (e.code == 'KeyW' || e.code == 'KeyS') {
+			g_keys[e.code] = false;
+			sendMessageToServer({type: 'set_player_movement', player: g_position, direction: false, room_name: g_room_name});
 		}
 	}
 };
 
 function initControls() {
-	window.addEventListener('keydown', handleKeyDown);
-	window.addEventListener('keyup', handleKeyUp);
+	window.addEventListener('keydown', handleKeys);
+	window.addEventListener('keyup', handleKeys);
 };
 
 /* -------------------------------- GameState ------------------------------- */
 
 function updateGameState(data) {
-	g_player_one.y = data.player_one_pos_y;
-	g_player_two.y = data.player_two_pos_y;
+	console.log(data);
+	g_player_left.y = data.player_one_pos_y;
+	g_player_right.y = data.player_two_pos_y;
 	g_ball.x = data.ball_x;
 	g_ball.y = data.ball_y;
 
@@ -148,13 +168,13 @@ function updateGameState(data) {
 		g_ball.setcolor(data.ball_color);
 	}
 
-	if (data.player_one_score != g_player_one.score) {
-		g_player_one.score += 1;
+	if (data.player_one_score != g_player_left.score) {
+		g_player_left.score += 1;
 		handle_scores('player_one');
 	}
 
-	if (data.player_two_score != g_player_two.score) {
-		g_player_two.score += 1;
+	if (data.player_two_score != g_player_right.score) {
+		g_player_right.score += 1;
 		handle_scores('player_two');
 	}
 
@@ -185,8 +205,8 @@ function drawScoreAndLine() {
 
 	g_context.font = "50px sans-serif";
 	g_context.fillStyle = "white";
-	g_context.fillText(g_player_one.score, constants.WIN_WIDTH / 2 - 50, 50);
-	g_context.fillText(g_player_two.score, constants.WIN_WIDTH / 2 + 25, 50);
+	g_context.fillText(g_player_left.score, constants.WIN_WIDTH / 2 - 50, 50);
+	g_context.fillText(g_player_right.score, constants.WIN_WIDTH / 2 + 25, 50);
 };
 
 function animate() {
@@ -198,10 +218,10 @@ function render() {
 	g_context.clearRect(0, 0, constants.WIN_WIDTH, constants.WIN_HEIGHT);
 
 	// Draw the players
-	g_context.fillStyle = g_player_one.color;
-	g_context.fillRect(g_player_one.x, g_player_one.y, g_player_one.width, g_player_one.height);
-	g_context.fillStyle = g_player_two.color;
-	g_context.fillRect(g_player_two.x, g_player_two.y, g_player_two.width, g_player_two.height);
+	g_context.fillStyle = g_player_left.color;
+	g_context.fillRect(g_player_left.x, g_player_left.y, g_player_left.width, g_player_left.height);
+	g_context.fillStyle = g_player_right.color;
+	g_context.fillRect(g_player_right.x, g_player_right.y, g_player_right.width, g_player_right.height);
 
 	// Draw the ball
 	if (!g_ball.stop_flag) {
@@ -232,7 +252,7 @@ function render() {
  * Starts the game and initializes the WebSocket connection.
  */
 export function start() {
-	ws = new WebSocket(wsurl);
+	g_websocket = new WebSocket(wsurl);
 
 	if (g_first_launch) {
 		initDisplay();
@@ -241,11 +261,11 @@ export function start() {
 
 	initArena();
 
-	ws.onopen = () => {
+	g_websocket.onopen = () => {
 		console.log('Websocket connected');
 	}
 
-	ws.onmessage = (e) => {
+	g_websocket.onmessage = (e) => {
 		/**
 		 * Possible types: set_position, game_start, game_state, game_end
 		 *
@@ -267,8 +287,11 @@ export function start() {
 			// g_startButton.classList.add("d-none");
 			g_template_text.innerHTML = "Found player! Game starting . . .";
 
-			document.getElementById("two__online--domicile").textContent = `${data.player_one_name}`;
-			document.getElementById("two__online--adversary").textContent = `${data.player_two_name}`;
+			g_player_left.set_name(data.player_left);
+			g_player_right.set_name(data.player_right);
+
+			document.getElementById("two__online--left").textContent = g_player_left.name;
+			document.getElementById("two__online--right").textContent = g_player_right.name;
 
 			g_game_running = true;
 			g_ball.get_update(constants.WIN_WIDTH / 2, constants.WIN_HEIGHT / 2, 1, 0, 0xffffff);
@@ -283,11 +306,11 @@ export function start() {
 			g_game_running = false;
 			console.log('Game over');
 			display_winner(data.winner);
-			ws.close();
+			g_websocket.close();
 		}
 	};
 
-	ws.onclose = () => {
+	g_websocket.onclose = () => {
 		console.log('Websocket closed');
 	}
 
@@ -351,13 +374,13 @@ async function loadTwoPlayersOnline() {
 /* ------------------------ Leaving or reloading game ----------------------- */
 
 window.addEventListener('unload', function() {
-	if (ws)
-		sendMessageToServer({type: 'player_left', player: g_position})
+	if (g_websocket)
+		sendMessageToServer({type: 'player_left', player: g_position, room_name: g_room_name})
 });
 
 function handlePageReload() {
-	if (ws)
-		sendMessageToServer({type: 'player_left', player: g_position})
+	if (g_websocket)
+		sendMessageToServer({type: 'player_left', player: g_position, room_name: g_room_name})
 };
 
 window.addEventListener('beforeunload', handlePageReload);
