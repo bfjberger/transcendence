@@ -143,7 +143,7 @@ function display() {
 
 	data_list_received_accepted.forEach(friend => {
 		element_list = document.createElement("li")
-		element_list.innerHTML = `<p>${friend.usermane} | ${friend.status} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.username}">Supprimer</button></p>`
+		element_list.innerHTML = `<p>${friend.username} | ${friend.status} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.username}">Supprimer</button></p>`
 		parent_list_accepted.appendChild(element_list)
 	});
 }
