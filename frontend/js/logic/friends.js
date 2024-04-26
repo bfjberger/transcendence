@@ -1,6 +1,8 @@
 var data_list_initiated;
 var data_list_received;
-var data_list_accepted;
+var data_list_initiated_accepted
+var data_list_received_accepted
+
 var csrftoken;
 
 function listenerFriends() {
@@ -122,37 +124,28 @@ function display() {
 	var element_list
 
 	data_list_initiated.forEach(friend => {
-
-		if (friend.accept == false)
-		{
 			element_list = document.createElement("li")
-			element_list.innerHTML =  `<p>${friend.user_received.username}<button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.user_received.username}">Supprimer</button></p>`
+			element_list.innerHTML =  `<p>${friend.user_received.username} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.user_received.username}">Supprimer</button></p>`
 			parent_list_initiator.appendChild(element_list)
-		}
-		else
-		{
-			element_list = document.createElement("li")
-			element_list.innerHTML = `<p>${friend.user_received.username} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.user_received.username}">Supprimer</button></p>`
-			parent_list_accepted.appendChild(element_list)
-		}
 	});
 		
 	data_list_received.forEach(friend => {
-
-		if (friend.accept == false)
-		{
 			element_list = document.createElement("li")
-			element_list.innerHTML = `<p> ${friend.user_initiated.username}<button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.user_initiated.username}">Refuser</button> <button class="btn btn-success mt-1 accept_friend_button" type="button" value="${friend.user_initiated.username}">Accepter</button></p>`
+			element_list.innerHTML = `<p> ${friend.user_initiated.username} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.user_initiated.username}">Refuser</button> <button class="btn btn-success mt-1 accept_friend_button" type="button" value="${friend.user_initiated.username}">Accepter</button></p>`
 			parent_list_received.appendChild(element_list)
-		}
-		else
-		{
-			element_list = document.createElement("li")
-			element_list.innerHTML = `<p>${friend.user_initiated.username} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.user_initiated.username}">Supprimer</button></p>`
-			parent_list_accepted.appendChild(element_list)
-		}
+		});
+		
+	data_list_initiated_accepted.forEach(friend => {
+		element_list = document.createElement("li")
+		element_list.innerHTML = `<p>${friend.username} | ${friend.status} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.username}">Supprimer</button></p>`
+		parent_list_accepted.appendChild(element_list)
 	});
 
+	data_list_received_accepted.forEach(friend => {
+		element_list = document.createElement("li")
+		element_list.innerHTML = `<p>${friend.usermane} | ${friend.status} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.username}">Supprimer</button></p>`
+		parent_list_accepted.appendChild(element_list)
+	});
 }
 
 async function post_friend(form_post_friend) {
@@ -208,8 +201,10 @@ async function loadFriends() {
 		let hostnameport = "http://" + window.location.host
 		const response_list_initiated = await fetch(hostnameport + '/api/friends/?type=initiated', init);
 		const response_list_received = await fetch(hostnameport + '/api/friends/?type=received', init)
-		//const response_list_accepted = await fetch(hostnameport + '/api/friends/', init)
-		if (response_list_initiated.status != 200 || response_list_received.status != 200) {
+		const response_list_initiated_accepted = await fetch(hostnameport + '/api/friends/?type=initiated_accpeted', init)
+		const response_list_received_accepted = await fetch(hostnameport + '/api/friends/?type=received_accepted', init)
+
+		if (response_list_initiated.status != 200 || response_list_received.status != 200 || response_list_initiated_accepted.status != 200) {
 			const text = await response.text();
 			throw new Error(text);
 		}
@@ -217,11 +212,12 @@ async function loadFriends() {
 		{
 			data_list_initiated = await response_list_initiated.json()
 			data_list_received = await response_list_received.json()
-			// data_list_accepted = await response_list_accepted.json()
-			// data = [{"user_initiated":{"username":"fx"},"user_received":{"username":"qw"},"accept":false}] 
-			// [{"user_initiated":{"username":"er"},"user_received":{"username":"fx"},"accept":false}]
+			data_list_initiated_accepted = await response_list_initiated_accepted.json()
+			data_list_received_accepted = await response_list_received_accepted.json()
+			
+			console.log(data_list_initiated_accepted + " " + data_list_received_accepted)
 
-			console.log("data = " + data_list_initiated + " " + data_list_received)
+
 		}
 		return 1;
 	} catch (e) {
