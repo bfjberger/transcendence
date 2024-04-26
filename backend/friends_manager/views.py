@@ -22,11 +22,14 @@ class ListFriendAPIView(ListAPIView):
 	def get_queryset(self):
 		param = self.request.query_params.get('type')
 		if param == "initiated" :
-			return Friend.objects.filter(user_initiated = self.request.user)
+			return Friend.objects.filter(user_initiated = self.request.user, accept = False)
 		elif param == "received" :
-			return Friend.objects.filter(user_received = self.request.user)
-		else :
-			return Friend.objects.filter(Q(user_received = self.request.user) | Q(user_received = self.request.user))
+			return Friend.objects.filter(user_received = self.request.user, accept = False)
+		elif param == "initiated_accpeted" :
+			return Friend.objects.filter(user_initiated = self.request.user , accept = True)
+		elif param == "received_accepted" :
+			return Friend.objects.filter(user_received = self.request.user , accept = True)
+			
 
 class CreateFriendAPIView(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -57,7 +60,6 @@ class CreateFriendAPIView(APIView):
 			return Response("Demande envoyée", status=status.HTTP_201_CREATED)
 
 		return Response(serializer_new_relation.errors, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
-
 
 class AcceptFriendAPIView(APIView) :
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -94,6 +96,7 @@ class DeleteFriendAPIView(APIView):
 		relation_to_delete = Friend.objects.filter(user_initiated = former_friend , user_received = self.request.user).first()
 
 		if not relation_to_delete :
+			print("Je rentre", self.request.user, " " ,former_friend)
 			relation_to_delete = Friend.objects.filter(user_initiated = self.request.user , user_received = former_friend).first()
 
 		if not relation_to_delete :
