@@ -282,8 +282,6 @@ function called when the user try to login with 42 app
 async function load42Profile(code)
 {
 	try {
-
-		console.log("CODE = " + code)
 		let hostnameport = "http://" + window.location.host
 
 		const init = {
@@ -300,11 +298,29 @@ async function load42Profile(code)
 
 		if (response.status == 200)
 		{
+			const data = await response.json()
+			
+			console.log("username " + data["username"])
+			console.log("avatar " + data["player"].avatar)
+			console.log("nickname " + data["player"].nickname)
 
-			let data = await response.text()
+			sessionStorage.setItem("username", data["username"]);
+			sessionStorage.setItem("avatar", data["player"].avatar);
+			sessionStorage.setItem("nickname", data["player"].nickname);
 
-			console.log("data = " + data)
-			router("index");
+			// document.querySelector("div.modal-backdrop.fade.show").remove();
+
+			document.querySelectorAll(".nav__link").forEach(btn => {
+				btn.removeAttribute("disabled");
+			});
+			document.getElementById("navbar__btn--user").removeAttribute("disabled");
+			document.getElementById("logout").removeAttribute("disabled");
+
+
+
+			loadIndex();
+
+			// router("index");
 		}
 		else
 		{
@@ -326,7 +342,6 @@ async function load42Profile(code)
 document.addEventListener("DOMContentLoaded", () => {
 
 	if (window.location.search) {
-		console.log("capter")
 		let code = window.location.search.split("=")[1]
 		// console.log("code = ", code)
 		load42Profile(code)

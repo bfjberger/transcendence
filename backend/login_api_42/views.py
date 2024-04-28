@@ -1,6 +1,7 @@
 import requests
 from django.core.files.base import ContentFile
 from players_manager.models import Player
+from players_manager.serializers import DataSerializer
 
 from django.shortcuts import redirect
 from django.contrib.auth import login
@@ -42,21 +43,14 @@ class Accounts_view(APIView) :
         }
         auth_url = '{}?{}'.format(authorization_url, urlencode(params))
 
-
-
         return Response(auth_url, status=status.HTTP_200_OK)
 
 class Callback(APIView):
 
     def post(self, request):
         # Step 2: Receive authorization code and exchange for access token
-
-
         code = request.data["code"]
-
-        # return Response(code, status=status.HTTP_200_OK)
-
-        redirect_uri = 'http://localhost:7890/'  # Change to your callback URL
+        redirect_uri = 'http://localhost:7890/'
         token_url = 'https://api.intra.42.fr/oauth/token'
         data = {
             'client_id': settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'],
@@ -67,71 +61,53 @@ class Callback(APIView):
             'scope': "public profile"
 
         }
+
         response = requests.post(token_url, data=data)
         token_data = response.json()
-
 
         # Step 3: Use access token to access 42 API
         access_token = token_data.get('access_token')
 
         # Now you can use the access_token to make requests to the 42 API
-
-
         # Make a request to the 42 API to retrieve user details
         response = requests.get('https://api.intra.42.fr/v2/me', headers={'Authorization': f'Bearer {access_token}'})
 
-
-
-        # return Response(response, status=status.HTTP_200_OK)
-
         if response.status_code == 200:
             user_data = response.json()
-            # return JsonResponse(user_data)
 
-            # maintenat je dois remplir dans la base les infos du user 
             username = user_data.get('login')
             avatar = user_data.get('image')["link"]
             email = user_data.get('email')
 
-
-
-
-            # check if user exists, if not it creates it
             user, created = User.objects.get_or_create(username=username,defaults={'email': email})
 
             if created == True :
                 
                 user.set_password("zz11zz11")
                 user.save()
+
                 img_resp = requests.get(avatar)
-
-
                 if img_resp.status_code != 200 :
                     print("\n\n\nimage pas downloaded\n\n\n")
-
-                # img_response = urlopen("https://cdn.intra.42.fr/users/a3eca96cd935a5060ab7df17749561d1/bberger.jpg")
 
                 player = Player(owner=user)
                 player.avatar.save(username+'.jpg', ContentFile(img_resp.content), save=False)
                 player.save()
 
-                player_serializer = PlayerSerializer(data=player)
+                user_auth = authenticate(username=username, password="zz11zz11")
+                login(request, user_auth)
 
-                if player_serializer.is_valid() :
-                    player_serializer.save()
-                    login(request, user)
-                else :
-                    print("Eh ba non c est pas si simple que ça\n\n\n\n")
-                    print("player_serializer.errors", player_serializer.errors)
-
-            test_user = authenticate(username="fcoindre", password="zz11zz11")
+                serializer_data = DataSerializer(user_auth)
+                return Response(data=serializer_data.data, status=status.HTTP_200_OK)
 
 
-            login(request, test_user)
-            print("user = ", test_user)
+            user_to_login = authenticate(username=username, password="zz11zz11")
+            login(request, user_to_login)
 
+            serializer_data = DataSerializer(user_to_login)
+            return Response(serializer_data.data, status=status.HTTP_200_OK)
 
-            return Response("On avance", status=status.HTTP_200_OK)
+        return Response ("Error from API 42", status=status.HTTP_401_UNAUTHORIZED)
 
 
 # class LoginSerializer(serializers.Serializer):
