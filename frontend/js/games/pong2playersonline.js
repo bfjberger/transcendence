@@ -53,7 +53,7 @@ var g_id = null;
 var g_position = null;
 let g_first_launch = true;
 var g_game_running = false;
-var g_room_name = null;
+var g_winner = null;
 var g_player_left, g_player_right;
 var g_template_text, g_button_container, g_startButton;
 const g_keys = {};
@@ -85,8 +85,8 @@ function initDisplay() {
 };
 
 function initArena() {
-	g_player_left = new Player(1, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_1_COLOR, 2);
-	g_player_right = new Player(2, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_2_COLOR, 2);
+	g_player_left = new Player(1, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_LEFT_COLOR, 2);
+	g_player_right = new Player(2, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_RIGHT_COLOR, 2);
 	g_ball = new Ball(2);
 };
 
@@ -101,15 +101,18 @@ function display_winner(winning_player) {
 	g_ball.stop();
 
 	if (winning_player === 'player_left') {
+		g_winner = g_player_left.name;
 		g_board_winning_text = g_player_left.name + " wins!";
 	}
 	else {
+		g_winner = g_player_right.name;
 		g_board_winning_text = g_player_right.name + " wins!";
 	}
 };
 
 /* -------------------------------- Controls -------------------------------- */
 
+/*
 function handleKeyDown(e) {
 	if (g_game_running) {
 		if (!g_keys[e.code] && (e.code == 'KeyW' || e.code == 'KeyS')) {
@@ -118,7 +121,7 @@ function handleKeyDown(e) {
 				up = true;
 			}
 			g_keys[e.code] = true;
-			sendMessageToServer({type: 'player_key_down', player: g_position, direction: up, room_name: g_room_name});
+			sendMessageToServer({type: 'player_key_down', player: g_position, direction: up});
 		}
 	}
 };
@@ -127,25 +130,34 @@ function handleKeyUp(e) {
 	if (g_game_running) {
 		if (e.code == 'KeyW' || e.code == 'KeyS') {
 			g_keys[e.code] = false;
-			sendMessageToServer({type: 'player_key_up', player: g_position, room_name: g_room_name});
+			sendMessageToServer({type: 'player_key_up', player: g_position, direction: false});
 		}
 	}
 };
+*/
 
+/*
+The event parameter contains information about the key that was pressed or released.
+The function checks if the key was already in g_keys and if the key is 'W' or 'S'.
+If the key was not in g_keys (key is pressed) and the key is 'W' or 'S',
+	the function checks which one was pressed and sets the value of up accordingly.
+If the key was in g_keys (key is released) and the key is 'W' or 'S',
+	the function sets the value of the key in g_keys to false.
+*/
 function handleKeys(e) {
 
 	if (g_game_running) {
 		if (!g_keys[e.code] && (e.code == 'KeyW' || e.code == 'KeyS')) {
-			var up = false;
+			var up = -1;
 			if (e.code == 'KeyW') {
-				up = true;
+				up = 1;
 			}
 			g_keys[e.code] = true;
-			sendMessageToServer({type: 'set_player_movement', player: g_position, direction: up, room_name: g_room_name});
+			sendMessageToServer({type: 'set_player_movement', player: g_position, is_moving: true, direction_v: up});
 		}
-		else if (e.code == 'KeyW' || e.code == 'KeyS') {
+		if (e.code == 'KeyW' || e.code == 'KeyS') {
 			g_keys[e.code] = false;
-			sendMessageToServer({type: 'set_player_movement', player: g_position, direction: false, room_name: g_room_name});
+			sendMessageToServer({type: 'set_player_movement', player: g_position, is_moving: false, direction_v: 0});
 		}
 	}
 };
@@ -158,9 +170,8 @@ function initControls() {
 /* -------------------------------- GameState ------------------------------- */
 
 function updateGameState(data) {
-	console.log(data);
-	g_player_left.y = data.player_one_pos_y;
-	g_player_right.y = data.player_two_pos_y;
+	g_player_left.y = data.player_left_y;
+	g_player_right.y = data.player_right_y;
 	g_ball.x = data.ball_x;
 	g_ball.y = data.ball_y;
 
@@ -168,12 +179,12 @@ function updateGameState(data) {
 		g_ball.setcolor(data.ball_color);
 	}
 
-	if (data.player_one_score != g_player_left.score) {
+	if (data.player_left_score != g_player_left.score) {
 		g_player_left.score += 1;
 		handle_scores('player_one');
 	}
 
-	if (data.player_two_score != g_player_right.score) {
+	if (data.player_right_score != g_player_right.score) {
 		g_player_right.score += 1;
 		handle_scores('player_two');
 	}
@@ -225,16 +236,21 @@ function render() {
 
 	// Draw the ball
 	if (!g_ball.stop_flag) {
-		drawBall(g_ball.x, g_ball.y, g_ball.radius, intToHexColor(g_ball.color));
+		drawBall(g_ball.x, g_ball.y, g_ball.radius, g_ball.color);
 	}
 	else {
-		if (g_board_winning_text) {
-			g_context.fillStyle = "white";
+		if (g_winner !== null) {
+			if (g_winner === g_player_left.name) {
+				g_context.fillStyle = g_player_left.color;
+			}
+			else {
+				g_context.fillStyle = g_player_right.color;
+			}
 			g_context.font = "50px sans-serif";
 			let text_width = g_context.measureText(g_board_winning_text).width;
 			g_context.fillText(g_board_winning_text, (constants.WIN_WIDTH - text_width) / 2, constants.WIN_HEIGHT / 2);
-		}
 
+		}
 		// lower the div button container
 		g_button_container.style.top = "65%";
 		g_startButton.innerHTML = "Look for another game";
@@ -243,7 +259,6 @@ function render() {
 
 	// Draw the score and the line
 	drawScoreAndLine();
-
 };
 
 /* ---------------------------------- Main ---------------------------------- */
@@ -277,7 +292,15 @@ export function start() {
 		const data = JSON.parse(e.data);
 
 		if (data.type === 'set_position') {
-			g_position = data.value;
+			g_position = data.position;
+			if (g_position === "player_left") {
+				g_player_left = new Player(g_position, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_LEFT_COLOR, 2);
+				g_player_left.set_name(data.name);
+			}
+			else {
+				g_player_right = new Player(g_position, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_RIGHT_COLOR, 2);
+				g_player_right.set_name(data.name);
+			}
 			console.log('I am at position', g_position);
 		}
 
@@ -287,8 +310,14 @@ export function start() {
 			// g_startButton.classList.add("d-none");
 			g_template_text.innerHTML = "Found player! Game starting . . .";
 
-			g_player_left.set_name(data.player_left);
-			g_player_right.set_name(data.player_right);
+			if (g_position === "player_left") {
+				g_player_right = new Player("player_right", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_RIGHT_COLOR, 2);
+				g_player_right.set_name(data.player_right);
+			}
+			else {
+				g_player_left = new Player("player_left", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_LEFT_COLOR, 2);
+				g_player_left.set_name(data.player_left);
+			}
 
 			document.getElementById("two__online--left").textContent = g_player_left.name;
 			document.getElementById("two__online--right").textContent = g_player_right.name;
@@ -375,12 +404,12 @@ async function loadTwoPlayersOnline() {
 
 window.addEventListener('unload', function() {
 	if (g_websocket)
-		sendMessageToServer({type: 'player_left', player: g_position, room_name: g_room_name})
+		sendMessageToServer({type: 'player_disconnect', player_pos: g_position})
 });
 
 function handlePageReload() {
 	if (g_websocket)
-		sendMessageToServer({type: 'player_left', player: g_position, room_name: g_room_name})
+		sendMessageToServer({type: 'player_disconnect', player_pos: g_position})
 };
 
 window.addEventListener('beforeunload', handlePageReload);

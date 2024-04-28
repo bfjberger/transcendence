@@ -35,7 +35,7 @@ export default function renderLogin() {
 								</div>
 								<div class="mb-2">
 									<div class="text-primary">
-										Password
+										Mot de passe
 									</div>
 									<input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="password">
 									<div class="form__input--errorMsg text-danger"></div>
@@ -49,7 +49,7 @@ export default function renderLogin() {
 							</form>
 						</div>
 						<div class="modal-footer py-2">
-							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
 						</div>
 					</div>
 				</div>
@@ -97,7 +97,7 @@ export default function renderLogin() {
 							</form>
 						</div>
 						<div class="modal-footer py-2">
-							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
 						</div>
 					</div>
 				</div>

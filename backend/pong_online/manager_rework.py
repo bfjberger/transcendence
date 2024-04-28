@@ -35,7 +35,7 @@ class RoomManager:
 	def __init__(self):
 		self.rooms = {}
 
-	async def room_available(self):
+	def room_available(self):
 		"""
 		Return the name of the first available room.
 
@@ -46,10 +46,10 @@ class RoomManager:
 			if len(self.rooms[room_name].players) < 2:
 				return room_name
 		new_room_name = f"room_{len(self.rooms) + 1}"
-		await self.create_room(new_room_name)
+		self.create_room(new_room_name)
 		return new_room_name
 
-	async def create_room(self, room_name):
+	def create_room(self, room_name):
 		"""
 		Create a new online game room with the given name.
 
@@ -58,7 +58,7 @@ class RoomManager:
 		"""
 		self.rooms[room_name] = GameState(room_name)
 
-	async def delete_room(self, room_name):
+	def delete_room(self, room_name):
 		"""
 		Delete the online game room with the given name.
 
@@ -66,7 +66,6 @@ class RoomManager:
 			room_name (str): The name of the room to delete.
 		"""
 		del self.rooms[room_name]
-		await self.channel_layer.group_discard(room_name, self.channel_name)
 
 class RoomConsumer(AsyncWebsocketConsumer):
 	"""
@@ -74,7 +73,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
 	Attributes:
 		manager (RoomManager): The room manager object that manages the room.
-		game_state (GameState): The game state object for the room.
+		game_state_obj (GameState): The game state object for the room.
 		room_name (str): The name of the room.
 		update_lock (asyncio.Lock): A lock to prevent concurrent updates to the game state.
 
@@ -93,12 +92,10 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
 		game_loop(): The game loop for the room.
 
-		handle_message(message): Handle a message received from the client.
-
 		game_start(event): Send a 'game start' event to the WebSocket connection.
-		player_key_down(event): Send a 'player key down' event to the WebSocket connection.
-		player_key_up(event): Send a 'player key up' event to the WebSocket connection.
-		?? ball_update(event): Send a 'ball update' event to the WebSocket connection.
+		? USED ? player_key_down(event): Send a 'player key down' event to the WebSocket connection.
+		? USED ? player_key_up(event): Send a 'player key up' event to the WebSocket connection.
+		? USED ? ball_update(event): Send a 'ball update' event to the WebSocket connection.
 
 		send_game_start(): Send the game start message to all connected clients.
 		send_game_state(): Send the game state to all connected clients.
@@ -106,7 +103,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 	"""
 
 	manager = RoomManager()
-	game_state = None
+	game_state_obj = None
 	room_name = None
 	# update_lock = asyncio.Lock()
 	update_lock = None
@@ -134,10 +131,15 @@ class RoomConsumer(AsyncWebsocketConsumer):
 		Args:
 			close_code (int): The code indicating the reason for the disconnection.
 		"""
-		# for room_name in self.rooms:
-		# 	await self.rooms[room_name].remove_player(self.scope['user'].id)
-		# await self.channel_layer.group_send(, {'type': 'game_end', 'room_name':})
-		# await self.channel_layer.group_discard(, self.channel_name)
+		self.game_state_obj.remove_player_from_dict(self.position)
+		await self.channel_layer.group_send(self.room_name,
+			{
+				'type': 'player_disconnect',
+				'player_pos': self.position
+			})
+		if len(self.game_state_obj.players) == 0:
+			self.manager.delete_room(self.room_name)
+		await self.channel_layer.group_discard(self.room_name, self.channel_name)
 
 	async def receive(self, text_data):
 		"""
@@ -148,7 +150,16 @@ class RoomConsumer(AsyncWebsocketConsumer):
 			text_data (str): The message received from the websocket.
 		"""
 		data = json.loads(text_data)
-		await self.handle_message(data)
+		type = data['type']
+		if type == 'set_player_movement':
+			await self.game_state_obj.set_player_movement(data['player'], data['is_moving'], data['direction_v'])
+		elif type == 'player_disconnect':
+			if self.game_state_obj.is_running == True:
+				if data["player_pos"] == 'player_left':
+					await self.end_game('player_right')
+				elif data["player_pos"] == 'player_right':
+					await self.end_game('player_left')
+			# 4 Joueurs await self.game_state_obj.set_player_movement(message['player_pos'], message['is_moving'], message['direction_v'], message['direction_h'])
 
 	async def handle_new_connection(self, user):
 		"""
@@ -165,49 +176,65 @@ class RoomConsumer(AsyncWebsocketConsumer):
 		Args:
 			user (User): The user object representing the player that connected.
 		"""
-		self.room_name = await self.manager.room_available()
-		self.game_state = self.manager.rooms.get(self.room_name)
+		self.room_name = self.manager.room_available()
+		self.game_state_obj = self.manager.rooms.get(self.room_name)
 		player = await sync_to_async(Player.objects.get)(owner=user)
 
-		if len(self.game_state.players) == 0:
+		if len(self.game_state_obj.players) == 0:
 			self.position = 'player_left'
-			await self.game_state.add_player_to_dict(self.position, player)
+			self.game_state_obj.add_player_to_dict(self.position, player)
 			await self.send(text_data=json.dumps({
 				'type': 'set_position',
-				'value': self.position
+				'position': self.position,
+				'name': player.nickname
 			}))
 		else:
 			self.position = 'player_right'
-			await self.game_state.add_player_to_dict(self.position, player)
+			self.game_state_obj.add_player_to_dict(self.position, player)
 			await self.send(text_data=json.dumps({
 				'type': 'set_position',
-				'value': self.position
+				'position': self.position,
+				'name': player.nickname
 			}))
 
 		await self.channel_layer.group_add(self.room_name, self.channel_name)
 
-		if len(self.game_state.players) == 2:
+		if len(self.game_state_obj.players) == 2:
 			await self.start_game()
 
 	async def start_game(self):
 		"""
 		Start the game in the room.
 		"""
-		self.game_state.is_running = True
+		self.game_state_obj.is_running = True
 		await self.channel_layer.group_send(self.room_name,
 			{
 				'type': 'game_start',
-				'player_left': self.game_state.players['player_left'].player_model.nickname,
-				'player_right': self.game_state.players['player_right'].player_model.nickname,
+				'player_left': self.game_state_obj.players['player_left'].player_model.nickname,
+				'player_right': self.game_state_obj.players['player_right'].player_model.nickname,
 			})
 		asyncio.create_task(self.game_loop())
 
-	async def end_game(self):
+	async def end_game(self, winner):
 		"""
 		End the game in the room.
 		"""
-		self.game_state.is_running = False
-		await self.send_game_end(self.game_state.get_winner_pos())
+		self.game_state_obj.is_running = False
+		game_history = TwoPlayersGame()
+		if winner == 'player_left':
+			await self.game_state_obj.record_game_result(winner, "player_right")
+			await sync_to_async(game_history.record)(self.game_state_obj.players['player_left'].player_model, self.game_state_obj.players['player_right'].player_model, self.game_state_obj.players['player_left'].player_model, self.game_state_obj.players['player_left'].score, self.game_state_obj.players['player_right'].score)
+			await self.send_game_end(winner)
+		elif winner == 'player_right':
+			await self.game_state_obj.record_game_result(winner, "player_left")
+			await sync_to_async(game_history.record)(self.game_state_obj.players['player_left'].player_model, self.game_state_obj.players['player_right'].player_model, self.game_state_obj.players['player_right'].player_model, self.game_state_obj.players['player_left'].score, self.game_state_obj.players['player_right'].score)
+			await self.send_game_end(winner)
+		else:
+			winner = await self.game_state_obj.get_winner_pos()
+			loser = "player_left" if winner == "player_right" else "player_right"
+			await self.game_state_obj.record_game_result(winner, loser)
+			await sync_to_async(game_history.record)(self.game_state_obj.players['player_left'].player_model, self.game_state_obj.players['player_right'].player_model, self.game_state_obj.players[winner].player_model, self.game_state_obj.players['player_left'].score, self.game_state_obj.players['player_right'].score)
+			await self.send_game_end(winner)
 
 	async def get_update_lock(self):
 		if self.update_lock is None:
@@ -220,24 +247,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
 		"""
 		# async with self.update_lock:
 		async with await self.get_update_lock():
-			while self.game_state.is_running:
-				await self.game_state.update()
+			while self.game_state_obj.is_running == True:
+				await self.game_state_obj.update()
 				await self.send_game_state()
 				await asyncio.sleep(TICK_DURATION)
-			await self.end_game()
-
-	async def handle_message(self, message):
-		"""
-		Handle a message received from the client.
-
-		Args:
-			message (str): The message received from the client.
-		"""
-		type = message['type']
-		print(message)
-		# if type == 'set_player_movement':
-			#await self.game_state.set_player_movement(message['player_pos'], message['is_moving'], message['direction_v'])
-			# 4 Joueurs await self.game_state.set_player_movement(message['player_pos'], message['is_moving'], message['direction_v'], message['direction_h'])
+			await self.end_game(None)
 
 	async def game_start(self, event):
 		"""
@@ -254,9 +268,17 @@ class RoomConsumer(AsyncWebsocketConsumer):
 		}))
 
 	async def game_state(self, event):
+		"""
+		Sends a 'game state' event to the WebSocket connection.
+		The content of the message is the game state:
+			- the players positions and scores
+			- the ball position, velocity and color
+
+		Args:
+			event (dict): The event data received from the channel layer.
+		"""
 		await self.send(text_data=json.dumps({
 			'type': event.get('type'),
-			'room_name': event['room_name'],
 			'player_left_y': event['player_left_y'],
 			'player_right_y': event['player_right_y'],
 			'player_left_score': event['player_left_score'],
@@ -268,21 +290,33 @@ class RoomConsumer(AsyncWebsocketConsumer):
 			'ball_color': event['ball_color']
 		}))
 
-	async def player_key_down(self, event):
-		"""
-		Sends a 'player key down' event to the WebSocket connection.
-		The content of the message is the position of the player and the key that was pressed.
+	# async def game_end(self, event):
+	# 	"""
+	# 	Sends a 'game end' event to the WebSocket connection.
+	# 	The content of the message is the position of the winning player.
 
-		Args:
-			event (dict): The event data received from the channel layer.
-		"""
-		print("\nplayer_key_down event:", event, "\n")
-		await self.send(text_data=json.dumps({
-			'type': event.get('type'),
-			'room_name': event['room_name'],
-			'player_pos': event.get('player_pos'),
-			'key': event.get('key')
-		}))
+	# 	Args:
+	# 		event (dict): The event data received from the channel layer.
+	# 	"""
+	# 	await self.send(text_data=json.dumps({
+	# 		'type': event.get('type'),
+	# 		'winner': event.get('winner')
+	# 	}))
+
+	# async def player_key_down(self, event):
+	# 	"""
+	# 	Sends a 'player key down' event to the WebSocket connection.
+	# 	The content of the message is the position of the player and the key that was pressed.
+
+	# 	Args:
+	# 		event (dict): The event data received from the channel layer.
+	# 	"""
+	# 	print("\nplayer_key_down event:", event, "\n")
+	# 	await self.send(text_data=json.dumps({
+	# 		'type': event.get('type'),
+	# 		'player_pos': event.get('player_pos'),
+	# 		'key': event.get('key')
+	# 	}))
 
 	async def player_key_up(self, event):
 		"""
@@ -295,7 +329,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
 		print("\nplayer_key_up event:", event, "\n")
 		await self.send(text_data=json.dumps({
 			'type': event.get('type'),
-			'room_name': event['room_name'],
 			'player': event.get('position'),
 			'key': event.get('value')
 		}))
@@ -311,7 +344,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
 	# 	print("\nball_update event:", event, "\n")
 	# 	await self.send(text_data=json.dumps({
 	# 		'type': event.get('type'),
-	# 		'room_name': event['room_name'],
 	# 		'x': event.get('x'),
 	# 		'y': event.get('y')
 	# 	}))
@@ -328,15 +360,15 @@ class RoomConsumer(AsyncWebsocketConsumer):
 		await self.channel_layer.group_send(self.room_name,
 			{
 				'type': 'game_state',
-				'player_left_y': self.game_state.players['player_left'].y,
-				'player_right_y': self.game_state.players['player_right'].y,
-				'player_left_score': self.game_state.players['player_left'].score,
-				'player_right_score': self.game_state.players['player_right'].score,
-				'ball_x': self.game_state.ball.x,
-				'ball_y': self.game_state.ball.y,
-				'ball_x_vel': self.game_state.ball.x_vel,
-				'ball_y_vel': self.game_state.ball.y_vel,
-				'ball_color': self.game_state.ball.color,
+				'player_left_y': self.game_state_obj.players['player_left'].y,
+				'player_right_y': self.game_state_obj.players['player_right'].y,
+				'player_left_score': self.game_state_obj.players['player_left'].score,
+				'player_right_score': self.game_state_obj.players['player_right'].score,
+				'ball_x': self.game_state_obj.ball.x,
+				'ball_y': self.game_state_obj.ball.y,
+				'ball_x_vel': self.game_state_obj.ball.x_vel,
+				'ball_y_vel': self.game_state_obj.ball.y_vel,
+				'ball_color': self.game_state_obj.ball.color,
 			})
 
 	async def send_game_end(self, winner):
@@ -349,6 +381,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
 		await self.channel_layer.group_send(self.room_name,
 			{
 				'type': 'game_end',
-				'room_name': self.room_name,
 				'winner': winner
 			})
+		self.channel_layer.group_discard(self.room_name, self.channel_name)

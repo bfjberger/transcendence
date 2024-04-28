@@ -14,8 +14,8 @@ export const BALL_RESPAWN_TIME = 1
 
 export const PLAYER_SPEED = 3
 
-export const PLAYER_1_COLOR = "blue"
-export const PLAYER_2_COLOR = "red"
+export const PLAYER_LEFT_COLOR = "blue"
+export const PLAYER_RIGHT_COLOR = "orange"
 
 /* CONSTANTS FOR FOUR PLAYERS */
 
