@@ -8,10 +8,10 @@ export default function renderTwoOnline() {
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-5"></div>
-			<div class="col-2 text-center h4 my-2" id="template_text">
+			<div class="col-4"></div>
+			<div class="col-4 text-center h4 my-2" id="template_text">
 			</div>
-			<div class="col-5"></div>
+			<div class="col-4"></div>
 		</div>
 		<div class="row">
 			<div class="col text-end text-primary align-self-center h3" id="two__online--left">

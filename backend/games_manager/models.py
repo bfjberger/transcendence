@@ -21,14 +21,18 @@ class TwoPlayersGame(models.Model):
 	def __str__(self):
 		return f"{self.user1} vs {self.user2}"
 
-	def record(self, player_1, player_2, winner, score_1, score_2):
+	def create(self, player_1, player_2):
 		self.user1 = player_1.owner
 		self.user2 = player_2.owner
+		self.date = timezone.now()
+		self.save()
+
+	def result(self, winner, score_1, score_2):
 		self.score_user1 = score_1
 		self.score_user2 = score_2
-		if (winner == player_1):
-			self.win_player = player_1.owner
+		if (winner.owner == self.user1):
+			self.win_player = winner.owner
 		else:
-			self.win_player = player_2.owner
+			self.win_player = winner.owner
 		self.date = timezone.now()
 		self.save()

@@ -17,7 +17,7 @@ function listenerGameHistory() {
 			gameHistoryEntry = document.createElement('div');
 			const date = game.date.replace("Z", "").split("T");
 			gameHistoryEntry.innerHTML = `
-					<div class="row border-top border-bottom border-success" id="game__historyTwo--${game_index}">
+					<div class="row border-top border-warning" id="game__historyTwo--${game_index}">
 						<div class="col mt-2">
 							<div class="d-inline" id="game__historyTwo--${game_index}--left">
 								${game.user1.username}
@@ -34,11 +34,11 @@ function listenerGameHistory() {
 							</div>
 						</div>
 						<div class="mb-2" id="game__historyTwo--${game_index}--date">
-							Le ${date[0]} à ${date[1]}
+							Le ${date[0]} à ${date[1].split(".")[0]}
 						</div>
 					</div>
 				`;
-			gameHistoryTwo.appendChild(gameHistoryEntry);
+			gameHistoryTwo.insertBefore(gameHistoryEntry, gameHistoryTwo.firstChild);
 			if (game.win_player.username == game.user1.username) {
 				document.getElementById(`game__historyTwo--${game_index}--left`).classList.add("bg-success-subtle");
 				document.getElementById(`game__historyTwo--${game_index}--right`).classList.add("bg-danger-subtle");
@@ -60,7 +60,7 @@ function listenerGameHistory() {
 			gameHistoryEntry = document.createElement('div');
 			const date = game.date.replace("Z", "").split("T");
 			gameHistoryEntry.innerHTML = `
-					<div class="row border-top border-bottom border-success" id="game__historyFour--${game_index}">
+					<div class="row border-top border-primary" id="game__historyFour--${game_index}">
 						<div class="col mt-2">
 							<div class="d-inline" id="game__historyFour--${game_index}--one">
 								${game.user1.username}
@@ -97,7 +97,7 @@ function listenerGameHistory() {
 						</div>
 					</div>
 				`;
-			gameHistoryFour.appendChild(gameHistoryEntry);
+			gameHistoryFour.insertBefore(gameHistoryEntry, gameHistoryFour.firstChild);
 			if (game.win_player.username == game.user1.username) {
 				document.getElementById(`game__historyFour--${game_index}--one`).classList.add("bg-success-subtle");
 				document.getElementById(`game__historyFour--${game_index}--two`).classList.add("bg-danger-subtle");

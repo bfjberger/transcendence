@@ -110,7 +110,7 @@ class PongGame2Players {
 		// }
 		if (e.key === "Escape") {
 			// router("twoplayers");
-			window.alert("You can't stop the game.");
+			window.alert("Tu ne peux pas arrêter la partie.");
 		}
 	}
 
@@ -260,7 +260,7 @@ class PongGame2Players {
 		winner.then((winner) => {
 			if (winner) {
 				if (window.location.pathname === "/twoplayers/") {
-					let winnerText = winner.getName() + " à gagner !!";
+					let winnerText = winner.getName() + " a gagné !!";
 					this.context.fillStyle = winner.color;
 					this.context.font = "50px sans-serif";
 					const textWidth = this.context.measureText(winnerText).width;

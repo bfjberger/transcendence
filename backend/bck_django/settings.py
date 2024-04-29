@@ -188,3 +188,5 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 MEDIA_URL = ""
 MEDIA_ROOT = os.path.join(BASE_DIR, "")
+
+TIME_ZONE = 'Europe/Zurich'

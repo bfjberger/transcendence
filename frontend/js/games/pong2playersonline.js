@@ -4,9 +4,6 @@ import {Ball} from './BallOnline.js';
 import * as constants from './Constants.js';
 
 /**
- * Currently the pong game is working with 2 different browsers.
- * The game logic is in pong_online/gamelogic.py
- * The requests are handled in pong_online/consumers.py and also the room logic are handled there
  * The path to the websockets is /ws/game/ and is in pong_online/routing.py (+ nginx configuration)
  *
  * TODO:[] Add a matchmaking placeholder
@@ -102,11 +99,11 @@ function display_winner(winning_player) {
 
 	if (winning_player === 'player_left') {
 		g_winner = g_player_left.name;
-		g_board_winning_text = g_player_left.name + " wins!";
+		g_board_winning_text = g_player_left.name + " a gagné!";
 	}
 	else {
 		g_winner = g_player_right.name;
-		g_board_winning_text = g_player_right.name + " wins!";
+		g_board_winning_text = g_player_right.name + " a gagné!";
 	}
 };
 
@@ -250,11 +247,11 @@ function render() {
 			let text_width = g_context.measureText(g_board_winning_text).width;
 			g_context.fillText(g_board_winning_text, (constants.WIN_WIDTH - text_width) / 2, constants.WIN_HEIGHT / 2);
 
+			// lower the div button container
+			g_button_container.style.top = "65%";
+			g_startButton.innerHTML = "Chercher une autre partie";
+			g_startButton.classList.remove("d-none");
 		}
-		// lower the div button container
-		g_button_container.style.top = "65%";
-		g_startButton.innerHTML = "Look for another game";
-		g_startButton.classList.remove("d-none");
 	}
 
 	// Draw the score and the line
@@ -308,7 +305,7 @@ export function start() {
 			console.log('Starting game . . .');
 
 			// g_startButton.classList.add("d-none");
-			g_template_text.innerHTML = "Found player! Game starting . . .";
+			g_template_text.innerHTML = "Adversaire trouvé! La partie commence . . .";
 
 			if (g_position === "player_left") {
 				g_player_right = new Player("player_right", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_RIGHT_COLOR, 2);
@@ -364,7 +361,7 @@ function listenerTwoPlayersOnline() {
 		g_button_container = document.getElementById("button_container");
 
 		g_template_text = document.getElementById("template_text");
-		g_template_text.innerHTML = "Waiting for other player";
+		g_template_text.innerHTML = "En attente d'un adversaire";
 
 		start();
 	});

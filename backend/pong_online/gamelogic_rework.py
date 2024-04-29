@@ -3,6 +3,7 @@ import random, math
 from asgiref.sync import sync_to_async
 
 from players_manager.models import Player
+from games_manager.models import TwoPlayersGame
 
 # Constants for the game area and paddles
 GAME_AREA_WIDTH = 650
@@ -24,6 +25,7 @@ class GameState:
 		players (dict): A dictionary with the player positions as keys and Player objects as values.
 		is_running (bool): Indicates whether the game is currently running.
 		winning_score (int): The score required to win the game.
+		game_history (TwoPlayersGame): The game history object to record the results of the games.
 
 	Methods:
 		add_player_to_dict(player_pos, player_model): Add a player to the game state dictionary.
@@ -39,6 +41,7 @@ class GameState:
 		self.players = {}
 		self.is_running = False
 		self.winning_score = 3
+		self.game_history = TwoPlayersGame()
 
 	def add_player_to_dict(self, player_pos, player_model):
 		"""
@@ -67,9 +70,9 @@ class GameState:
 			str: position of the winner ('player_left' or 'player_right') or None if there is no winner yet
 		"""
 		if len(self.players) < 2:
-			if self.players['player_left'] is None:
+			if "player_left" in self.players.keys():
 				return "player_right"
-			elif self.players['player_right'] is None:
+			elif "player_right" in self.players.keys():
 				return "player_left"
 			else:
 				return None
@@ -134,10 +137,15 @@ class GameState:
 			winner_pos (str): position of the winner ('player_left' or 'player_right')
 			loser_pos (str): position of the loser ('player_left' or 'player_right')
 		"""
-		winner = self.players[winner_pos].player_model
-		loser = self.players[loser_pos].player_model
-		await sync_to_async(winner.record_win)('2p', self.players[winner_pos].score)
-		await sync_to_async(loser.record_loss)('2p', self.players[loser_pos].score)
+		if winner_pos is not None:
+			winner = self.players[winner_pos].player_model
+			await sync_to_async(winner.record_win)('2p', self.players[winner_pos].score)
+		if loser_pos is not None:
+			loser = self.players[loser_pos].player_model
+			await sync_to_async(loser.record_loss)('2p', self.players[loser_pos].score)
+		if winner_pos is not None and loser_pos is not None:
+			winner = self.players[winner_pos].player_model
+			await sync_to_async(self.game_history.result)(winner, self.players["player_left"].score, self.players["player_right"].score)
 
 	class Player:
 		"""

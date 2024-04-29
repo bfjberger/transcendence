@@ -66,7 +66,11 @@ class LoginView(APIView):
 		login(request, user)
 		# serializer.update_status()
 
-		player = Player.objects.get(owner=user)
+		try:
+			player = Player.objects.get(owner=user)
+		except Player.DoesNotExist:
+			return Response("Player not found.", status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
 		player.status = "ONLINE"
 		player.save()
 
