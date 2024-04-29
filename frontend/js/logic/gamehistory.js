@@ -13,7 +13,9 @@ function listenerGameHistory() {
 		gameHistoryTwo.appendChild(gameHistoryEntry);
 	}
 	else {
-		data_2_json.forEach((game, game_index) => {
+		for (const [game_index, game] of data_2_json.reverse().entries()) {
+			if (game_index == 10)
+				break;
 			gameHistoryEntry = document.createElement('div');
 			const date = game.date.replace("Z", "").split("T");
 			gameHistoryEntry.innerHTML = `
@@ -47,7 +49,7 @@ function listenerGameHistory() {
 				document.getElementById(`game__historyTwo--${game_index}--left`).classList.add("bg-danger-subtle");
 				document.getElementById(`game__historyTwo--${game_index}--right`).classList.add("bg-success-subtle");
 			}
-		});
+		};
 	}
 
 	if (data_4_json == undefined || data_4_json == null || data_4_json.length == 0) {
@@ -56,7 +58,9 @@ function listenerGameHistory() {
 		gameHistoryFour.appendChild(gameHistoryEntry);
 	}
 	else {
-		data_4_json.forEach((game, game_index) => {
+		for (const [game_index, game] of data_4_json.reverse().entries()) {
+			if (game_index == 10)
+				break;
 			gameHistoryEntry = document.createElement('div');
 			const date = game.date.replace("Z", "").split("T");
 			gameHistoryEntry.innerHTML = `
@@ -122,7 +126,7 @@ function listenerGameHistory() {
 				document.getElementById(`game__historyFour--${game_index}--three`).classList.add("bg-danger-subtle");
 				document.getElementById(`game__historyFour--${game_index}--four`).classList.add("bg-success-subtle");
 			}
-		});
+		};
 	}
 };
 

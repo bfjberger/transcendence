@@ -126,7 +126,7 @@ class GameState:
 		"""
 		for player in self.players.values():
 			await player.move()
-		await self.ball.move()
+		await self.ball.move(self.players["player_left"], self.players["player_right"])
 		await self.handle_scores()
 
 	async def record_game_result(self, winner_pos, loser_pos):
@@ -172,8 +172,8 @@ class GameState:
 			self.y = PLAYER_START_POS_Y
 			self.score = 0
 			self.is_moving = False
-			self.vertical = 0
-			self.horizontal = 0
+			self.vertical = False
+			self.horizontal = False
 			self.player_model = player_model
 
 		async def move(self):
@@ -185,10 +185,10 @@ class GameState:
 			"""
 			if self.is_moving:
 				if self.vertical:
-					if (self.y + PADDLE_HEIGHT / 2) + PLAYER_SPEED <= GAME_AREA_HEIGHT:
+					if (self.y + PADDLE_HEIGHT / 2) + self.vel_y <= GAME_AREA_HEIGHT:
 						self.y -= PLAYER_SPEED
-				else:
-					if (self.y + PADDLE_HEIGHT / 2) - PLAYER_SPEED >= GAME_AREA_HEIGHT * -1:
+				elif not self.vertical:
+					if (self.y - PADDLE_HEIGHT / 2) - self.vel_y >= GAME_AREA_HEIGHT * -1:
 						self.y += PLAYER_SPEED
 
 		async def score_point(self):
@@ -208,8 +208,8 @@ class GameState:
 			color (tuple): color of the ball (RGB values)
 
 		Methods:
-			move(): Move the ball based on its velocity.
 			handle_collision(): Handle collisions with the walls and the paddles.
+			move(): Move the ball based on its velocity.
 			reset(): Reset the ball to its initial position and velocity.
 		"""
 		def __init__(self):
@@ -221,28 +221,24 @@ class GameState:
 			self.speed_multiplier_x = 1.1
 			self.speed_multiplier_y = 1.05
 			random_angle = random.uniform(MIN_START_ANGLE, MAX_START_ANGLE)
-			direction = random.choice([-1, 1])
+			direction = -1 if random.choice([0, 1]) < 0.5 else 1
 			self.x_vel = (math.cos(random_angle) * self.speed) * direction
 			self.y_vel = math.sin(random_angle) * self.speed
 
-		async def move(self):
-			"""
-			Move the ball based on its velocity.
-
-			Update the x and y coordinates of the ball by adding the velocity components.
-			"""
-			self.handle_collision()
-			self.x += self.x_vel * self.speed
-			self.y += self.y_vel * self.speed
-
-		async def handle_collision(self):
+		def handle_collision(self, player_left, player_right):
 			"""
 			Handle collisions with the walls and the paddles.
 
-			If the ball hits the top or bottom wall, reverse the y-velocity.
+			If the ball hits the top or bottom wall, reverse the y-velocity and augment the x-velocity.
 			If the ball hits the bottom wall, set the y-coordinate to the ball radius.
 			If the ball hits the top wall, set the y-coordinate to the game area height minus the ball radius.
-			If the ball hits a paddle, reverse the x-velocity.
+
+			Checks for the collision with the left paddle if the ball is moving left.
+			Checks for the collision with the right paddle if the ball is moving right.
+
+			Args:
+				player_left (Player): Player object from the GameState object.
+				player_right (Player): Player object from the GameState object.
 			"""
 			if self.y - self.radius <= 0 or self.y + self.radius >= GAME_AREA_HEIGHT:
 				self.y_vel *= -1 * self.speed_multiplier_y
@@ -252,15 +248,37 @@ class GameState:
 			if self.y + self.radius >= GAME_AREA_HEIGHT:
 				self.y = GAME_AREA_HEIGHT - self.radius
 
-			for player in self.players.values():
-				if (self.x - self.radius <= player.x + PADDLE_WIDTH and
-					self.y >= player.y and self.y <= player.y + PADDLE_HEIGHT):
-					self.x_vel *= -1 * self.speed_multiplier_x
-					middle_y = player.y + PADDLE_HEIGHT / 2
-					difference_in_y = middle_y - self.y
-					reduction_factor = (PADDLE_HEIGHT / 2) / self.speed
-					new_y_vel = difference_in_y / reduction_factor
-					self.y_vel = -1 * new_y_vel * self.speed_multiplier_y
+			if self.x_vel <= 0:
+				if self.y <= player_left.y + PADDLE_HEIGHT and self.y >= player_left.y and self.x > player_left.x:
+					if self.x - self.radius <= player_left.x + PADDLE_WIDTH / 2:
+						self.x_vel *= -1 * self.speed_multiplier_x
+						middle_y = player_left.y + PADDLE_HEIGHT / 2
+						difference_in_y = middle_y - self.y
+						reduction_factor = (PADDLE_HEIGHT / 2) / self.speed
+						new_y_vel = difference_in_y / reduction_factor
+						self.y_vel = -1 * new_y_vel * self.speed_multiplier_y
+			else:
+				if self.y <= player_right.y + PADDLE_HEIGHT and self.y >= player_right.y and self.x < player_right.x:
+					if self.x + self.radius >= player_right.x - PADDLE_WIDTH / 2:
+						self.x_vel *= -1 * self.speed_multiplier_x
+						middle_y = player_right.y + PADDLE_HEIGHT / 2
+						difference_in_y = middle_y - self.y
+						reduction_factor = (PADDLE_HEIGHT / 2) / self.speed
+						new_y_vel = difference_in_y / reduction_factor
+						self.y_vel = -1 * new_y_vel * self.speed_multiplier_y
+
+		async def move(self, player_left, player_right):
+			"""
+			Move the ball based on its velocity.
+
+			Update the x and y coordinates of the ball by adding the velocity components.
+
+			Args:
+				players (list): List of Player objects from the GameState object.
+			"""
+			self.handle_collision(player_left, player_right)
+			self.x += self.x_vel * self.speed
+			self.y += self.y_vel * self.speed
 
 		async def reset(self):
 			"""
@@ -269,6 +287,6 @@ class GameState:
 			self.x = GAME_AREA_WIDTH / 2
 			self.y = random.randint(200, GAME_AREA_HEIGHT - 200)
 			random_angle = random.uniform(MIN_START_ANGLE, MAX_START_ANGLE)
-			direction = random.choice([-1, 1])
+			direction = -1 if random.choice([0, 1]) < 0.5 else 1
 			self.x_vel = (math.cos(random_angle) * self.speed) * direction
 			self.y_vel = math.sin(random_angle) * self.speed

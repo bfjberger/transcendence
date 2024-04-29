@@ -107,9 +107,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
 		game_loop(): The game loop for the room.
 
 		game_start(event): Send a 'game start' event to the WebSocket connection.
-		? USED ? player_key_down(event): Send a 'player key down' event to the WebSocket connection.
-		? USED ? player_key_up(event): Send a 'player key up' event to the WebSocket connection.
-		? USED ? ball_update(event): Send a 'ball update' event to the WebSocket connection.
+		game_state(event): Send a 'game state' event to the WebSocket connection.
+		game_end(event): Send a 'game end' event to the WebSocket connection.
 
 		send_game_start(): Send the game start message to all connected clients.
 		send_game_state(): Send the game state to all connected clients.
@@ -164,8 +163,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
 		if type == 'set_player_movement':
 			await self.game_state_obj.set_player_movement(data['player'], data['is_moving'], data['direction_v'])
 		elif type == 'player_disconnect':
-			print("received disconnect message", self.position)
-			# if self.game_state_obj.is_running == True:
+			if len(self.game_state_obj.players) == 1:
+				self.manager.delete_room(self.room_name)
 			if data["player_pos"] == 'player_left':
 				await self.end_game('player_right')
 			elif data["player_pos"] == 'player_right':
@@ -316,51 +315,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
 			'type': event.get('type'),
 			'winner': event.get('winner')
 		}))
-
-	# async def player_key_down(self, event):
-	# 	"""
-	# 	Sends a 'player key down' event to the WebSocket connection.
-	# 	The content of the message is the position of the player and the key that was pressed.
-
-	# 	Args:
-	# 		event (dict): The event data received from the channel layer.
-	# 	"""
-	# 	print("\nplayer_key_down event:", event, "\n")
-	# 	await self.send(text_data=json.dumps({
-	# 		'type': event.get('type'),
-	# 		'player_pos': event.get('player_pos'),
-	# 		'key': event.get('key')
-	# 	}))
-
-	# async def player_key_up(self, event):
-	# 	"""
-	# 	Sends a 'player key up' event to the WebSocket connection.
-	# 	The content of the message is the position of the player and the key that was released.
-
-	# 	Args:
-	# 		event (dict): The event data received from the channel layer.
-	# 	"""
-	# 	print("\nplayer_key_up event:", event, "\n")
-	# 	await self.send(text_data=json.dumps({
-	# 		'type': event.get('type'),
-	# 		'player': event.get('position'),
-	# 		'key': event.get('value')
-	# 	}))
-
-	# async def ball_update(self, event):
-	# 	"""
-	# 	Sends a 'ball update' event to the WebSocket connection.
-	# 	The content of the message is the new position of the ball.
-
-	# 	Args:
-	# 		event (dict): The event data received from the channel layer.
-	# 	"""
-	# 	print("\nball_update event:", event, "\n")
-	# 	await self.send(text_data=json.dumps({
-	# 		'type': event.get('type'),
-	# 		'x': event.get('x'),
-	# 		'y': event.get('y')
-	# 	}))
 
 	async def send_game_state(self):
 		"""

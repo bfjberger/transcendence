@@ -1,4 +1,3 @@
-// LA LOGIQUE DU JEU ICI
 import {Player} from './PlayerOnline.js';
 import {Ball} from './BallOnline.js';
 import * as constants from './Constants.js';
@@ -110,6 +109,14 @@ function display_winner(winning_player) {
 /* -------------------------------- Controls -------------------------------- */
 
 /*
+The event parameter contains information about the key that was pressed or released.
+The function checks if the key was already in g_keys and if the key is 'W' or 'S'.
+If the key was not in g_keys (key is pressed) and the key is 'W' or 'S',
+	the function checks which one was pressed and sets the value of up accordingly.
+If the key was in g_keys (key is released) and the key is 'W' or 'S',
+	the function sets the value of the key in g_keys to false.
+*/
+
 function handleKeyDown(e) {
 	if (g_game_running) {
 		if (!g_keys[e.code] && (e.code == 'KeyW' || e.code == 'KeyS')) {
@@ -118,7 +125,7 @@ function handleKeyDown(e) {
 				up = true;
 			}
 			g_keys[e.code] = true;
-			sendMessageToServer({type: 'player_key_down', player: g_position, direction: up});
+			sendMessageToServer({type: 'set_player_movement', player: g_position, is_moving: true, direction_v: up});
 		}
 	}
 };
@@ -127,41 +134,14 @@ function handleKeyUp(e) {
 	if (g_game_running) {
 		if (e.code == 'KeyW' || e.code == 'KeyS') {
 			g_keys[e.code] = false;
-			sendMessageToServer({type: 'player_key_up', player: g_position, direction: false});
-		}
-	}
-};
-*/
-
-/*
-The event parameter contains information about the key that was pressed or released.
-The function checks if the key was already in g_keys and if the key is 'W' or 'S'.
-If the key was not in g_keys (key is pressed) and the key is 'W' or 'S',
-	the function checks which one was pressed and sets the value of up accordingly.
-If the key was in g_keys (key is released) and the key is 'W' or 'S',
-	the function sets the value of the key in g_keys to false.
-*/
-function handleKeys(e) {
-
-	if (g_game_running) {
-		if (!g_keys[e.code] && (e.code == 'KeyW' || e.code == 'KeyS')) {
-			var up = -1;
-			if (e.code == 'KeyW') {
-				up = 1;
-			}
-			g_keys[e.code] = true;
-			sendMessageToServer({type: 'set_player_movement', player: g_position, is_moving: true, direction_v: up});
-		}
-		if (e.code == 'KeyW' || e.code == 'KeyS') {
-			g_keys[e.code] = false;
 			sendMessageToServer({type: 'set_player_movement', player: g_position, is_moving: false, direction_v: 0});
 		}
 	}
 };
 
 function initControls() {
-	window.addEventListener('keydown', handleKeys);
-	window.addEventListener('keyup', handleKeys);
+	window.addEventListener('keydown', handleKeyDown);
+	window.addEventListener('keyup', handleKeyUp);
 };
 
 /* -------------------------------- GameState ------------------------------- */
@@ -293,10 +273,12 @@ export function start() {
 			if (g_position === "player_left") {
 				g_player_left = new Player(g_position, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_LEFT_COLOR, 2);
 				g_player_left.set_name(data.name);
+				document.getElementById("two__online--left").classList.add("text-decoration-underline");
 			}
 			else {
 				g_player_right = new Player(g_position, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_RIGHT_COLOR, 2);
 				g_player_right.set_name(data.name);
+				document.getElementById("two__online--right").classList.add("text-decoration-underline");
 			}
 			console.log('I am at position', g_position);
 		}
