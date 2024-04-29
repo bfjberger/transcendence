@@ -62,7 +62,11 @@ class LoginView(APIView):
 		user = serializer.validated_data['user']
 		login(request, user)
 
-		player = Player.objects.get(owner=user)
+		try:
+			player = Player.objects.get(owner=user)
+		except Player.DoesNotExist:
+			return Response("Player not found.", status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
 		player.status = "ONLINE"
 		player.save()
 
@@ -164,4 +168,3 @@ class Tournament(APIView):
 		serializer_player = PlayerSerializer(player)
 		serializer_user = UserSerializer(self.request.user)
 		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
-
