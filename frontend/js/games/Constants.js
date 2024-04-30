@@ -21,7 +21,7 @@ export const PLAYER_RIGHT_COLOR = "orange"
 
 export const FOUR_WIN_HEIGHT = 650
 
-export const FOUR_PLAYER_1_COLOR = "orange"
-export const FOUR_PLAYER_2_COLOR = "blue"
-export const FOUR_PLAYER_3_COLOR = "violet"
-export const FOUR_PLAYER_4_COLOR = "red"
+export const FOUR_PLAYER_LEFT_COLOR = "blue"
+export const FOUR_PLAYER_RIGHT_COLOR = "orange"
+export const FOUR_PLAYER_TOP_COLOR = "violet"
+export const FOUR_PLAYER_BOTTOM_COLOR = "red"

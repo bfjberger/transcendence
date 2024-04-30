@@ -61,7 +61,8 @@ class RoomManager:
 		Args:
 			room_name (str): The name of the room to delete.
 		"""
-		del self.rooms[room_name]
+		if room_name in self.rooms.keys():
+			del self.rooms[room_name]
 
 	async def save_room(self, room_name, winner, loser):
 		"""
@@ -179,7 +180,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
 				await self.end_game('player_right')
 			elif data["player_pos"] == 'player_right':
 				await self.end_game('player_left')
-			# 4 Joueurs await self.game_state_obj.set_player_movement(message['player_pos'], message['is_moving'], message['direction_v'], message['direction_h'])
 
 	async def handle_new_connection(self, user):
 		"""

@@ -362,6 +362,9 @@ class PongGame4Players {
 			this.context.fillText(winnerText, textX, textY);
 			this.ball.velocityX = 0;
 			this.ball.velocityY = 0;
+			document.getElementById("button_container").style.top = "55%";
+			document.getElementById("startGame4").innerHTML = "Rejouer ?";
+			document.getElementById("startGame4").classList.remove("d-none");
 		}
 		else {
 			requestAnimationFrame(this.update.bind(this));

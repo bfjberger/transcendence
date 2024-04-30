@@ -20,7 +20,7 @@ export default function renderFourPlayers() {
 				<p>Joueur Gauche: Q/A</p>
 			</div>
 			<div class="col d-flex justify-content-center align-items-center">
-				<div class="position-absolute">
+				<div class="position-absolute" id="button_container">
 					<button class="btn btn-danger" type="button" id="startGame4">Commencer la partie</button>
 				</div>
 				<div class="text-bg-success border border-black border-5">

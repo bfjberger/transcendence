@@ -6,15 +6,18 @@ from games_manager.models import TwoPlayersGame
 
 # Constants for the game area and paddles
 GAME_AREA_WIDTH = 650
-GAME_AREA_HEIGHT = 480
+GAME_AREA_HEIGHT = 650
 PADDLE_WIDTH = 10
 PADDLE_HEIGHT = 70
 PLAYER_SPEED = 3
-PLAYER_START_POS_Y = (GAME_AREA_HEIGHT - PADDLE_HEIGHT) / 2
+# MIDDLE_PLAYER_Y_POS = GAME_AREA_HEIGHT / 2 - PADDLE_HEIGHT / 2
+# MIDDLE_PLAYER_X_POS = GAME_AREA_WIDTH / 2 - PADDLE_WIDTH / 2
+MIDDLE_PLAYER_X_POS = (GAME_AREA_WIDTH - PADDLE_WIDTH) / 2
+MIDDLE_PLAYER_Y_POS = (GAME_AREA_HEIGHT - PADDLE_HEIGHT) / 2
 MIN_START_ANGLE = math.pi - (math.pi / 9)
 MAX_START_ANGLE = math.pi + (math.pi / 9)
 
-class GameState:
+class GameStateFour:
 	"""
 	Represents the state of the game, including the ball, players, and game logic.
 
@@ -30,7 +33,7 @@ class GameState:
 		add_player_to_dict(player_pos, player_model): Add a player to the game state dictionary.
 		remove_player_from_dict(player_pos): Remove a player from the game state dictionary.
 		get_winner_pos(): Get the winner of the game.
-		set_player_movement(player_pos, is_moving, direction_v): Set the movement of a player based on the input received from the client.
+		set_player_movement(player_pos, is_moving, direction_v, direction_h): Set the movement of a player based on the input received from the client.
 		handle_scores(): Handle scoring and check for a winner.
 		update(): Update the game state by moving the players and the ball.
 		record_game_result(winner_pos, loser_pos): Record the result of the game in the database.
@@ -48,7 +51,7 @@ class GameState:
 		Add a player to the game state dictionary.
 
 		Args:
-			player_pos (str): position of the player ('player_left' or 'player_right')
+			player_pos (str): position of the player ('player_left', 'player_right', 'player_top' or 'player_bottom')
 			player_model (Player model instance): instance of the model Player associated with the player
 		"""
 		self.players[player_pos] = self.Player(player_pos, player_model)
@@ -58,7 +61,7 @@ class GameState:
 		Remove a player from the game state dictionary.
 
 		Args:
-			player_pos (str): position of the player ('player_left' or 'player_right')
+			player_pos (str): position of the player ('player_left', 'player_right', 'player_top' or 'player_bottom')
 		"""
 		del self.players[player_pos]
 
@@ -68,7 +71,7 @@ class GameState:
 		If there is only one player, the other player wins by default (case for deconnection).
 
 		Returns:
-			str: position of the winner ('player_left' or 'player_right') or None if there is no winner yet
+			str: position of the winner ('player_left', 'player_right', 'player_top' or 'player_bottom') or None if there is no winner yet
 		"""
 		if len(self.players) < 2:
 			if "player_left" in self.players.keys():
@@ -92,12 +95,14 @@ class GameState:
 		Set the movement of a player based on the input received from the client.
 
 		Args:
-			player_pos (str): position of the player ('player_left' or 'player_right')
+			player_pos (str): position of the player ('player_left', 'player_right', 'player_top' or 'player_bottom')
 			is_moving (bool): indicates if the player is moving
 			direction_v (bool): vertical direction of the player's movement (True for up, False for down)
+			4 Joueurs direction_h (int): horizontal direction of the player's movement (1 for left, -1 for right and 0 for no movement)
 		"""
 		self.players[player_pos].is_moving = is_moving
 		self.players[player_pos].vertical = direction_v
+		# 4 Joueurs player.horizontal = direction_h
 
 	async def handle_scores(self):
 		"""
@@ -133,8 +138,8 @@ class GameState:
 		The checks are necessary to avoid recording a game result of a player who was removed from the game.
 
 		Args:
-			winner_pos (str): position of the winner ('player_left' or 'player_right')
-			loser_pos (str): position of the loser ('player_left' or 'player_right')
+			winner_pos (str): position of the winner ('player_left', 'player_right', 'player_top' or 'player_bottom')
+			loser_pos (str): position of the loser ('player_left', 'player_right', 'player_top' or 'player_bottom')
 		"""
 		if winner_pos is not None:
 			winner = self.players[winner_pos].player_model
@@ -156,6 +161,7 @@ class GameState:
 			score (int): player's score
 			is_moving (bool): indicates if the player is currently moving
 			vertical (bool): vertical direction of the player's movement (True for up, False for down)
+			horizontal (bool): horizontal direction of the player's movement (True for left, False for right)
 			player_model (Player model instance): instance of the model Player associated with the player
 
 		Methods:
@@ -165,17 +171,36 @@ class GameState:
 		"""
 		def __init__(self, position, player_model):
 			if position == 'player_left':
-				self.x = 0 + PADDLE_WIDTH
-			else:
-				self.x = GAME_AREA_WIDTH - PADDLE_WIDTH
-			self.y = PLAYER_START_POS_Y
+				self.x = GAME_AREA_WIDTH - 10
+				self.y = MIDDLE_PLAYER_Y_POS
+			elif position == 'player_right':
+				self.x = 0 + 10
+				self.y = MIDDLE_PLAYER_Y_POS
+			elif position == 'player_top':
+				self.x = MIDDLE_PLAYER_X_POS
+				self.y = GAME_AREA_HEIGHT - 10
+			elif position == 'player_bottom':
+				self.x = MIDDLE_PLAYER_X_POS
+				self.y = 0 + 10
 			self.score = 0
 			self.is_moving = False
 			self.vertical = False
 			self.horizontal = False
 			self.player_model = player_model
 
-		def check_bounds(self, y_position):
+		def check_bounds_x(self, x_position):
+			"""
+			Check if the player is within the bounds of the game area.
+
+			Args:
+				x_position (int): sum of the x-coordinate and the velocity i.e. the possible new x-coordinate
+
+			Returns:
+				True if the player is out of bounds, False otherwise
+			"""
+			return x_position < 0 or x_position > GAME_AREA_WIDTH - PADDLE_WIDTH
+
+		def check_bounds_y(self, y_position):
 			"""
 			Check if the player is within the bounds of the game area.
 
@@ -193,13 +218,21 @@ class GameState:
 
 			If the player is moving up, decrease the y-coordinate by the player speed.
 			If the player is moving down, increase the y-coordinate by the player speed.
+			If the player is moving left, the x-coordinate is decreased by the player speed.
+			If the player is moving right, the x-coordinate is increased by the player speed.
 			"""
 			if self.is_moving:
 				if self.vertical:
 					velocity_y = -PLAYER_SPEED
 				elif not self.vertical:
 					velocity_y = PLAYER_SPEED
-				if self.check_bounds(velocity_y + self.y) == 0:
+				if self.horizontal:
+					velocity_x = -PLAYER_SPEED
+				elif not self.horizontal:
+					velocity_x = PLAYER_SPEED
+				if self.check_bounds_x(velocity_x + self.x) == 0:
+					self.x += velocity_x
+				if self.check_bounds_y(velocity_y + self.y) == 0:
 					self.y += velocity_y
 
 		async def score_point(self):
@@ -220,6 +253,8 @@ class GameState:
 
 		Methods:
 			handle_collision(): Handle collisions with the walls and the paddles.
+			adjust_y_velocity(player): Adjust the y-velocity of the ball based on the position of the ball on the paddle.
+			adjust_x_velocity(player): Adjust the x-velocity of the ball based on the position of the ball on the paddle.
 			move(): Move the ball based on its velocity.
 			reset(): Reset the ball to its initial position and velocity.
 		"""
@@ -236,7 +271,7 @@ class GameState:
 			self.x_vel = (math.cos(random_angle) * self.speed) * direction
 			self.y_vel = math.sin(random_angle) * self.speed
 
-		def handle_collision(self, player_left, player_right):
+		def handle_collision(self, player_left, player_right, player_top, player_bottom):
 			"""
 			Handle collisions with the walls and the paddles.
 
@@ -252,6 +287,8 @@ class GameState:
 			Args:
 				player_left (Player): Player object from the GameState object.
 				player_right (Player): Player object from the GameState object.
+				player_top (Player): Player object from the GameState object.
+				player_bottom (Player): Player object from the GameState object.
 			"""
 			if self.y - self.radius <= 0 or self.y + self.radius >= GAME_AREA_HEIGHT:
 				self.y_vel *= -1 * self.speed_multiplier_y
@@ -265,22 +302,38 @@ class GameState:
 				if (self.y <= player_left.y + PADDLE_HEIGHT and self.y >= player_left.y and self.x > player_left.x
 					and self.x - self.radius <= player_left.x + PADDLE_WIDTH / 2):
 						self.x_vel *= -1 * self.speed_multiplier_x
-						middle_y = player_left.y + PADDLE_HEIGHT / 2
-						difference_in_y = middle_y - self.y
-						reduction_factor = PADDLE_HEIGHT / 2
-						new_y_vel = difference_in_y / reduction_factor
-						self.y_vel = -1 * new_y_vel
+						self.adjust_y_velocity(player_left)
 			else:
 				if (self.y <= player_right.y + PADDLE_HEIGHT and self.y >= player_right.y and self.x < player_right.x
 					and self.x + self.radius >= player_right.x - PADDLE_WIDTH / 2):
 						self.x_vel *= -1 * self.speed_multiplier_x
-						middle_y = player_right.y + PADDLE_HEIGHT / 2
-						difference_in_y = middle_y - self.y
-						reduction_factor = PADDLE_HEIGHT / 2
-						new_y_vel = difference_in_y / reduction_factor
-						self.y_vel = -1 * new_y_vel
+						self.adjust_y_velocity(player_right)
+			if self.y_vel <= 0:
+				if (self.x <= player_top.x + PADDLE_WIDTH and self.x >= player_top.x and self.y > player_top.y
+					and self.y - self.radius <= player_top.y + PADDLE_HEIGHT / 2):
+						self.y_vel *= -1 * self.speed_multiplier_y
+						self.adjust_x_velocity(player_top)
+			else:
+				if (self.x <= player_bottom.x + PADDLE_WIDTH and self.x >= player_bottom.x and self.y < player_bottom.y
+					and self.y + self.radius >= player_bottom.y - PADDLE_HEIGHT / 2):
+						self.y_vel *= -1 * self.speed_multiplier_y
+						self.adjust_x_velocity(player_bottom)
 
-		async def move(self, player_left, player_right):
+		def adjust_y_velocity(self, player):
+			middle_y = player.y + PADDLE_HEIGHT / 2
+			difference_in_y = middle_y - self.y
+			reduction_factor = PADDLE_HEIGHT / 2
+			new_y_vel = difference_in_y / reduction_factor
+			self.y_vel = -1 * new_y_vel
+
+		def adjust_x_velocity(self, player):
+			middle_x = player.x + PADDLE_WIDTH / 2
+			difference_in_x = middle_x - self.x
+			reduction_factor = PADDLE_WIDTH / 2
+			new_x_vel = difference_in_x / reduction_factor
+			self.x_vel = -1 * new_x_vel
+
+		async def move(self, player_left, player_right, player_top, player_bottom):
 			"""
 			Move the ball based on its velocity.
 
@@ -289,9 +342,9 @@ class GameState:
 			Args:
 				players (list): List of Player objects from the GameState object.
 			"""
-			self.handle_collision(player_left, player_right)
-			self.x += self.x_vel * self.speed
-			self.y += self.y_vel * self.speed
+			self.handle_collision(player_left, player_right, player_top, player_bottom)
+			self.x += self.x_vel
+			self.y += self.y_vel
 
 		async def reset(self):
 			"""
@@ -303,3 +356,4 @@ class GameState:
 			direction = -1 if random.choice([0, 1]) < 0.5 else 1
 			self.x_vel = (math.cos(random_angle) * self.speed) * direction
 			self.y_vel = math.sin(random_angle) * self.speed
+			self.color = "white"

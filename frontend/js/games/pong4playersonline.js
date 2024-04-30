@@ -3,9 +3,6 @@ import {Ball} from './BallOnline.js'
 import * as constants from './Constants.js'
 
 /**
- * Currently the pong game is working with 2 different browsers.
- * The game logic is in pong_online/gamelogic.py
- * The requests are handled in pong_online/consumers.py and also the room logic are handled there
  * The path to the websockets is /ws/gameFour/ and is in pong_online/routing.py (+ nginx configuration)
  *
  * TODO:[] Add a matchmaking placeholder
@@ -35,7 +32,7 @@ let ws; // websocket
  * - render: renders the game
  *
  * - listenerFourPlayersOnline: listens for the start button click
- * - loadFourPlayersOnlie: loads the game
+ * - loadFourPlayersOnline: loads the game
 */
 
 /* ---------------------------- GLOBALS VARIABLES --------------------------- */
@@ -44,8 +41,10 @@ var g_id = null;
 var g_position = null;
 let g_first_launch = true;
 var g_game_running = false;
-var g_player_one, g_player_two, g_player_three, g_player_four;
+var g_winner = null;
+var g_player_left, g_player_right, g_player_top, g_player_bottom;
 var g_template_text, g_button_container, g_startButton;
+var g_left_container, g_right_container, g_top_container, g_bottom_container;
 const g_keys = {};
 
 // Boards
@@ -54,14 +53,6 @@ var g_context = null;
 var g_board_winning_text;
 
 /* ------------------------------ Utils & Inits ----------------------------- */
-
-function intToHexColor(value) {
-	// Convert the integer value to hexadecimal format
-	var hexValue = value.toString(16);
-	// Pad the string with zeros if necessary to ensure it has 6 digits
-	var hexColor = '#' + hexValue.padStart(6, '0');
-	return hexColor;
-};
 
 function sendMessageToServer(message) {
 	ws.send(JSON.stringify(message));
@@ -75,37 +66,40 @@ function initDisplay() {
 };
 
 function initArena() {
-	g_player_one = new Player(1, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_1_COLOR, 4);
-	g_player_two = new Player(2, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_2_COLOR, 4);
-	g_player_three = new Player(3, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_3_COLOR);
-	g_player_four = new Player(4, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_4_COLOR);
+	g_player_left = new Player(1, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_LEFT_COLOR, 4);
+	g_player_right = new Player(2, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_RIGHT_COLOR, 4);
+	g_player_top = new Player(3, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_TOP_COLOR);
+	g_player_bottom = new Player(4, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_BOTTOM_COLOR);
 	g_ball = new Ball(4);
 };
 
-function handle_scores(player) {
-	console.log("handle_scores " + player);
+function handle_scores() {
 	g_context.font = "20px sans-serif";
 	g_context.fillStyle = "black";
-	g_context.fillText(g_player_one.score, 10, constants.FOUR_WIN_HEIGHT / 2);
-	g_context.fillText(g_player_two.score, constants.WIN_WIDTH - 20, constants.FOUR_WIN_HEIGHT / 2);
-	g_context.fillText(g_player_three.score, constants.WIN_WIDTH / 2, 20);
-	g_context.fillText(g_player_four.score, constants.WIN_WIDTH / 2, constants.FOUR_WIN_HEIGHT - 20);
+	g_context.fillText(g_player_left.score, 10, constants.FOUR_WIN_HEIGHT / 2);
+	g_context.fillText(g_player_right.score, constants.WIN_WIDTH - 20, constants.FOUR_WIN_HEIGHT / 2);
+	g_context.fillText(g_player_top.score, constants.WIN_WIDTH / 2, 20);
+	g_context.fillText(g_player_bottom.score, constants.WIN_WIDTH / 2, constants.FOUR_WIN_HEIGHT - 20);
 };
 
 function display_winner(winning_player) {
 	g_ball.stop();
 
 	if (winning_player === 'player_one') {
-		g_board_winning_text = "Player 1 wins!";
+		g_winner = g_player_left.name;
+		g_board_winning_text = g_winner + " a gagné!";
 	}
 	else if (winning_player === 'player_two') {
-		g_board_winning_text = "Player 2 wins!";
+		g_winner = g_player_right.name;
+		g_board_winning_text = g_winner + " a gagné!";
 	}
 	else if (winning_player === 'player_three') {
-		g_board_winning_text = "Player 3 wins!";
+		g_winner = g_player_top.name;
+		g_board_winning_text = g_winner + " a gagné!";
 	}
 	else if (winning_player === 'player_four') {
-		g_board_winning_text = "Player 4 wins!";
+		g_winner = g_player_bottom.name;
+		g_board_winning_text = g_winner + " a gagné!";
 	}
 };
 
@@ -119,7 +113,7 @@ function handleKeyDown(e) {
 				up = true;
 			}
 			g_keys[e.code] = true;
-			sendMessageToServer({type: 'player_key_down', player: g_position, direction: up});
+			sendMessageToServer({type: 'set_player_movement', player: g_position, is_moving: true, direction_v: up});
 		}
 		if (!g_keys[e.code] && (e.code == 'KeyJ' || e.code == 'KeyK')) {
 			var left = false;
@@ -127,7 +121,7 @@ function handleKeyDown(e) {
 				left = true;
 			}
 			g_keys[e.code] = true;
-			sendMessageToServer({type: 'player_key_down', player: g_position, direction: left});
+			sendMessageToServer({type: 'set_player_movement', player: g_position, is_moving: true, direction_h: left});
 		}
 	}
 };
@@ -136,11 +130,11 @@ function handleKeyUp(e) {
 	if (g_game_running) {
 		if (e.code == 'KeyW' || e.code == 'KeyS') {
 			g_keys[e.code] = false;
-			sendMessageToServer({type: 'player_key_up', player: g_position});
+			sendMessageToServer({type: 'set_player_movement', player: g_position, is_moving: false, direction_v: 0});
 		}
 		if (e.code == 'KeyJ' || e.code == 'KeyK') {
 			g_keys[e.code] = false;
-			sendMessageToServer({type: 'player_key_up', player: g_position});
+			sendMessageToServer({type: 'set_player_movement', player: g_position, is_moving: false, direction_h: 0});
 		}
 	}
 };
@@ -153,10 +147,10 @@ function initControls() {
 /* -------------------------------- GameState ------------------------------- */
 
 function updateGameState(data) {
-	g_player_one.y = data.player_one_pos_y;
-	g_player_two.y = data.player_two_pos_y;
-	g_player_three.x = data.player_three_pos_x;
-	g_player_four.x = data.player_four_pos_x;
+	g_player_left.y = data.player_one_pos_y;
+	g_player_right.y = data.player_two_pos_y;
+	g_player_top.x = data.player_three_pos_x;
+	g_player_bottom.x = data.player_four_pos_x;
 	g_ball.x = data.ball_x;
 	g_ball.y = data.ball_y;
 
@@ -164,24 +158,24 @@ function updateGameState(data) {
 		g_ball.setcolor(data.ball_color);
 	}
 
-	if (data.player_one_score != g_player_one.score) {
-		g_player_one.score += 1;
-		handle_scores('player_one');
+	if (data.player_one_score != g_player_left.score) {
+		g_player_left.score += 1;
+		handle_scores();
 	}
 
-	if (data.player_two_score != g_player_two.score) {
-		g_player_two.score += 1;
-		handle_scores('player_two');
+	if (data.player_two_score != g_player_right.score) {
+		g_player_right.score += 1;
+		handle_scores();
 	}
 
-	if (data.player_three_score != g_player_three.score) {
-		g_player_three.score += 1;
-		handle_scores('player_three');
+	if (data.player_three_score != g_player_top.score) {
+		g_player_top.score += 1;
+		handle_scores();
 	}
 
-	if (data.player_four_score != g_player_four.score) {
-		g_player_four.score += 1;
-		handle_scores('player_four');
+	if (data.player_four_score != g_player_bottom.score) {
+		g_player_bottom.score += 1;
+		handle_scores();
 	}
 
 	g_ball.get_update(data.ball_x, data.ball_y, data.ball_x_vel, data.ball_y_vel, data.ball_color);
@@ -222,10 +216,10 @@ function drawScoreAndLine() {
 	// Draw the scores
 	g_context.font = "20px sans-serif";
 	g_context.fillStyle = "black";
-	g_context.fillText(g_player_one.score, 10, constants.FOUR_WIN_HEIGHT / 2);
-	g_context.fillText(g_player_two.score, constants.WIN_WIDTH - 20, constants.FOUR_WIN_HEIGHT / 2);
-	g_context.fillText(g_player_three.score, constants.WIN_WIDTH / 2, 20);
-	g_context.fillText(g_player_four.score, constants.WIN_WIDTH / 2, constants.FOUR_WIN_HEIGHT - 20);
+	g_context.fillText(g_player_left.score, 10, constants.FOUR_WIN_HEIGHT / 2);
+	g_context.fillText(g_player_right.score, constants.WIN_WIDTH - 20, constants.FOUR_WIN_HEIGHT / 2);
+	g_context.fillText(g_player_top.score, constants.WIN_WIDTH / 2, 20);
+	g_context.fillText(g_player_bottom.score, constants.WIN_WIDTH / 2, constants.FOUR_WIN_HEIGHT - 20);
 };
 
 function animate() {
@@ -237,31 +231,42 @@ function render() {
 	g_context.clearRect(0, 0, constants.WIN_WIDTH, constants.FOUR_WIN_HEIGHT);
 
 	// Draw the players
-	g_context.fillStyle = g_player_one.color;
-	g_context.fillRect(g_player_one.x, g_player_one.y, g_player_one.width, g_player_one.height);
-	g_context.fillStyle = g_player_two.color;
-	g_context.fillRect(g_player_two.x, g_player_two.y, g_player_two.width, g_player_two.height);
-	g_context.fillStyle = g_player_three.color;
-	g_context.fillRect(g_player_three.x, g_player_three.y, g_player_three.height, g_player_three.width);
-	g_context.fillStyle = g_player_four.color;
-	g_context.fillRect(g_player_four.x, g_player_four.y, g_player_four.height, g_player_four.width);
+	g_context.fillStyle = g_player_left.color;
+	g_context.fillRect(g_player_left.x, g_player_left.y, g_player_left.width, g_player_left.height);
+	g_context.fillStyle = g_player_right.color;
+	g_context.fillRect(g_player_right.x, g_player_right.y, g_player_right.width, g_player_right.height);
+	g_context.fillStyle = g_player_top.color;
+	g_context.fillRect(g_player_top.x, g_player_top.y, g_player_top.height, g_player_top.width);
+	g_context.fillStyle = g_player_bottom.color;
+	g_context.fillRect(g_player_bottom.x, g_player_bottom.y, g_player_bottom.height, g_player_bottom.width);
 
 	// Draw the ball
 	if (!g_ball.stop_flag) {
-		drawBall(g_ball.x, g_ball.y, g_ball.radius, intToHexColor(g_ball.color));
+		drawBall(g_ball.x, g_ball.y, g_ball.radius, g_ball.color);
 	}
 	else {
-		if (g_board_winning_text) {
-			g_context.fillStyle = "white";
+		if (g_winner !== null) {
+			if (g_winner === g_player_left.name) {
+				g_context.fillStyle = g_player_left.color;
+			}
+			else if (g_winner === g_player_right.name) {
+				g_context.fillStyle = g_player_right.color;
+			}
+			else if (g_winner === g_player_top.name) {
+				g_context.fillStyle = g_player_top.color;
+			}
+			else if (g_winner === g_player_bottom.name) {
+				g_context.fillStyle = g_player_bottom.color;
+			}
 			g_context.font = "50px sans-serif";
 			let text_width = g_context.measureText(g_board_winning_text).width;
 			g_context.fillText(g_board_winning_text, (constants.WIN_WIDTH - text_width) / 2, constants.FOUR_WIN_HEIGHT / 2);
-		}
 
-		// lower the div button container
-		g_button_container.style.top = "65%";
-		g_startButton.innerHTML = "Look for another game";
-		g_startButton.classList.remove("d-none");
+			// lower the div button container
+			g_button_container.style.top = "65%";
+			g_startButton.innerHTML = "Chercher une autre partie";
+			g_startButton.classList.remove("d-none");
+		}
 	}
 
 	// Draw the score and the line
@@ -270,11 +275,76 @@ function render() {
 
 /* ---------------------------------- Main ---------------------------------- */
 
+function setPositionStyleUpdate(data) {
+
+	const instructions = document.getElementById("instructions");
+
+	if (g_position === "player_left") {
+		g_player_left.set_name(data.name);
+		g_left_container.classList.add("text-decoration-underline");
+		g_left_container.style.color = constants.FOUR_PLAYER_LEFT_COLOR;
+		instructions.innerHTML = "Ton camp est à gauche. Utilise les touches W et S pour bouger";
+		instructions.style.color = constants.FOUR_PLAYER_LEFT_COLOR;
+	}
+	else if (g_position === "player_right") {
+		g_player_right.set_name(data.name);
+		g_right_container.classList.add("text-decoration-underline");
+		g_right_container.style.color = constants.FOUR_PLAYER_RIGHT_COLOR;
+		instructions.innerHTML = "Ton camp est à droite. Utilise les touches W et S pour bouger";
+		instructions.style.color = constants.FOUR_PLAYER_RIGHT_COLOR;
+	}
+	else if (g_position === "player_top") {
+		g_player_top.set_name(data.name);
+		g_top_container.classList.add("text-decoration-underline");
+		g_top_container.style.color = constants.FOUR_PLAYER_TOP_COLOR;
+		instructions.innerHTML = "Ton camp est au sommet. Utilise les touches J et K pour bouger";
+		instructions.style.color = constants.FOUR_PLAYER_TOP_COLOR;
+	}
+	else if (g_position === "player_bottom") {
+		g_player_bottom.set_name(data.name);
+		g_bottom_container.classList.add("text-decoration-underline");
+		g_bottom_container.style.color = constants.FOUR_PLAYER_BOTTOM_COLOR;
+		instructions.innerHTML = "Ton camp est en bas. Utilise les touches J et K pour bouger";
+		instructions.style.color = constants.FOUR_PLAYER_BOTTOM_COLOR;
+	}
+};
+
+function gameStartStyleUpdate(data) {
+
+	g_player_left.set_name(data.player_left);
+	g_player_right.set_name(data.player_right);
+	g_player_top.set_name(data.player_top);
+	g_player_bottom.set_name(data.player_bottom);
+
+	g_left_container.textContent = g_player_left.name;
+	g_left_container.style.color = constants.FOUR_PLAYER_LEFT_COLOR;
+	g_right_container.textContent = g_player_right.name;
+	g_right_container.style.color = constants.FOUR_PLAYER_RIGHT_COLOR;
+	g_top_container.textContent = g_player_top.name;
+	g_top_container.style.color = constants.FOUR_PLAYER_TOP_COLOR;
+	g_bottom_container.textContent = g_player_bottom.name;
+	g_bottom_container.style.color = constants.FOUR_PLAYER_BOTTOM_COLOR;
+};
+
 /**
  * Starts the game and initializes the WebSocket connection.
  */
 export function startGame() {
 	ws = new WebSocket(wsurl);
+
+	// Remove the underline if it is already present
+	if (g_top_container.classList.contains("text-decoration-underline")) {
+		g_top_container.classList.remove("text-decoration-underline");
+	}
+	if (g_bottom_container.classList.contains("text-decoration-underline")) {
+		g_bottom_container.classList.remove("text-decoration-underline");
+	}
+	if (g_left_container.classList.contains("text-decoration-underline")) {
+		g_left_container.classList.remove("text-decoration-underline");
+	}
+	if (g_right_container.classList.contains("text-decoration-underline")) {
+		g_right_container.classList.remove("text-decoration-underline");
+	}
 
 	if (g_first_launch) {
 		initDisplay();
@@ -295,21 +365,22 @@ export function startGame() {
 		 * game_start: the server sends a message to start the game
 		 * game_state: the server sends the game state (positions of the players and the ball)
 		 * game_end: the server sends a message to end the game
-		 * game_end_left: the server sends a message to end the game because a player left
 		 */
 		const data = JSON.parse(e.data);
 
 		if (data.type === 'set_position') {
-			g_position = data.value;
+			g_position = data.position;
 			console.log('I am at position', g_position);
-			gameUpdateListener();
+			setPositionStyleUpdate(data);
 		}
 
 		if (data.type === 'game_start') {
 			console.log('Starting game . . .');
 
-			// g_startButton.classList.add("d-none");
-			g_template_text.innerHTML = "Found player! Game starting . . .";
+			g_template_text.innerHTML = "Adversaire trouvé! La partie commence . . .";
+
+			gameStartStyleUpdate(data);
+
 			g_game_running = true;
 			g_ball.get_update(constants.WIN_WIDTH / 2, constants.FOUR_WIN_HEIGHT / 2, 1, 0, 0xffffff);
 			initControls();
@@ -323,14 +394,6 @@ export function startGame() {
 			g_game_running = false;
 			console.log('Game over');
 			display_winner(data.winner);
-			ws.close();
-		}
-
-		if (data.type === 'game_end_left') {
-			g_game_running = false;
-			console.log('Game over');
-			g_ball.stop();
-			g_board_winning_text = "Player left the game";
 			ws.close();
 		}
 	};
@@ -349,24 +412,28 @@ export function startGame() {
 /* ------------------------ Leaving or reloading game ----------------------- */
 
 window.addEventListener('unload', function() {
-	if (ws)
-		sendMessageToServer({type: 'player_left', player: g_position});
+	if (g_websocket)
+		sendMessageToServer({type: 'player_disconnect', player_pos: g_position})
 });
 
 function handlePageReload() {
-	if (ws)
-		sendMessageToServer({type: 'player_left', player: g_position});
+	if (g_websocket)
+		sendMessageToServer({type: 'player_disconnect', player_pos: g_position})
 };
 
 window.addEventListener('beforeunload', handlePageReload);
 
-/* -------------------------- Event Listeners ------------------------- */
+/* ----------------------------- Event Listeners ---------------------------- */
 
 function listenerFourPlayersOnline() {
 
 	g_startButton = document.getElementById("startGame4Online");
 	g_template_text = document.getElementById("template_text");
 	g_button_container = document.getElementById("button_container");
+	g_left_container = document.getElementById("four__online--left");
+	g_right_container = document.getElementById("four__online--right");
+	g_top_container = document.getElementById("four__online--top");
+	g_bottom_container = document.getElementById("four__online--bottom");
 
 	g_startButton.addEventListener("click", e => {
 		e.preventDefault();
@@ -377,42 +444,7 @@ function listenerFourPlayersOnline() {
 
 		startGame();
 
-		gameUpdateListener();
 	});
-};
-
-function gameUpdateListener() {
-
-	const instructions = document.getElementById("instructions");
-
-	if (g_position === "player_one") {
-		g_template_text.innerHTML = "Vous êtes le joueur Gauche";
-		document.getElementById("four__online--leftPlayer").style.color = constants.FOUR_PLAYER_1_COLOR;
-		document.getElementById("four__online--leftPlayer").classList.replace("h4", "h3");
-		instructions.innerHTML = "Utilisez les touches W et S pour bouger";
-		instructions.style.color = constants.FOUR_PLAYER_1_COLOR;
-	}
-	else if (g_position === "player_two") {
-		g_template_text.innerHTML = "Vous êtes le joueur Droit";
-		document.getElementById("four__online--rightPlayer").style.color = constants.FOUR_PLAYER_2_COLOR;
-		document.getElementById("four__online--leftPlayer").classList.replace("h4", "h3");
-		instructions.innerHTML = "Utilisez les touches W et S pour bouger";
-		instructions.style.color = constants.FOUR_PLAYER_2_COLOR;
-	}
-	else if (g_position === "player_three") {
-		g_template_text.innerHTML = "Vous êtes le joueur Haut";
-		document.getElementById("four__online--topPlayer").style.color = constants.FOUR_PLAYER_3_COLOR;
-		document.getElementById("four__online--leftPlayer").classList.replace("h4", "h3");
-		instructions.innerHTML = "Utilisez les touches J et K pour bouger";
-		instructions.style.color = constants.FOUR_PLAYER_3_COLOR;
-	}
-	else if (g_position === "player_four") {
-		g_template_text.innerHTML = "Vous êtes le joueur Bas";
-		document.getElementById("four__online--bottomPlayer").style.color = constants.FOUR_PLAYER_4_COLOR;
-		document.getElementById("four__online--leftPlayer").classList.replace("h4", "h3");
-		instructions.innerHTML = "Utilisez les touches J et K pour bouger";
-		instructions.style.color = constants.FOUR_PLAYER_4_COLOR;
-	}
 };
 
 async function loadFourPlayersOnline() {

@@ -3,12 +3,12 @@ import {Ball} from './BallOnline.js';
 import * as constants from './Constants.js';
 
 /**
- * The path to the websockets is /ws/game/ and is in pong_online/routing.py (+ nginx configuration)
+ * The path to the websockets is /ws/gameTwo/ and is in pong_online/routing.py (+ nginx configuration)
  *
  * TODO:[] Add a matchmaking placeholder
  */
 
-const wsurl = 'ws://' + window.location.host + '/ws/rooms/'; // link to websocket
+const wsurl = 'ws://' + window.location.host + '/ws/gameTwo/'; // link to websocket
 let g_websocket; // websocket
 
 /**
@@ -52,6 +52,7 @@ var g_game_running = false;
 var g_winner = null;
 var g_player_left, g_player_right;
 var g_template_text, g_button_container, g_startButton;
+var g_left_container, g_right_container;
 const g_keys = {};
 
 // Boards
@@ -60,14 +61,6 @@ var g_context = null;
 var g_board_winning_text;
 
 /* ------------------------------ Utils & Inits ----------------------------- */
-
-function intToHexColor(value) {
-	// Convert the integer value to hexadecimal format
-	var hexValue = value.toString(16);
-	// Pad the string with zeros if necessary to ensure it has 6 digits
-	var hexColor = '#' + hexValue.padStart(6, '0');
-	return hexColor;
-};
 
 function sendMessageToServer(message) {
 	g_websocket.send(JSON.stringify(message));
@@ -81,12 +74,12 @@ function initDisplay() {
 };
 
 function initArena() {
-	g_player_left = new Player(1, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_LEFT_COLOR, 2);
-	g_player_right = new Player(2, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_RIGHT_COLOR, 2);
+	g_player_left = new Player("player_left", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_LEFT_COLOR, 2);
+	g_player_right = new Player("player_right", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_RIGHT_COLOR, 2);
 	g_ball = new Ball(2);
 };
 
-function handle_scores(player) {
+function handle_scores() {
 	g_context.font = "50px sans-serif";
 	g_context.fillStyle = "white";
 	g_context.fillText(g_player_left.score, constants.WIN_WIDTH / 2 - 50, 50);
@@ -158,12 +151,12 @@ function updateGameState(data) {
 
 	if (data.player_left_score != g_player_left.score) {
 		g_player_left.score += 1;
-		handle_scores('player_one');
+		handle_scores();
 	}
 
 	if (data.player_right_score != g_player_right.score) {
 		g_player_right.score += 1;
-		handle_scores('player_two');
+		handle_scores();
 	}
 
 	g_ball.get_update(data.ball_x, data.ball_y, data.ball_x_vel, data.ball_y_vel, data.ball_color);
@@ -183,6 +176,7 @@ function drawBall(x, y, radius, color) {
 };
 
 function drawScoreAndLine() {
+	// Draw the vertical line
 	g_context.beginPath();
 	g_context.setLineDash([5, 15]);
 	g_context.moveTo(constants.WIN_WIDTH / 2, 0);
@@ -191,6 +185,7 @@ function drawScoreAndLine() {
 	g_context.stroke();
 	g_context.setLineDash([]);
 
+	// Draw the scores
 	g_context.font = "50px sans-serif";
 	g_context.fillStyle = "white";
 	g_context.fillText(g_player_left.score, constants.WIN_WIDTH / 2 - 50, 50);
@@ -247,11 +242,11 @@ export function start() {
 	g_websocket = new WebSocket(wsurl);
 
 	// Remove the underline if it is already present
-	if (document.getElementById("two__online--left").classList.contains("text-decoration-underline")) {
-		document.getElementById("two__online--left").classList.remove("text-decoration-underline");
+	if (g_left_container.classList.contains("text-decoration-underline")) {
+		g_left_container.classList.remove("text-decoration-underline");
 	}
-	if (document.getElementById("two__online--right").classList.contains("text-decoration-underline")) {
-		document.getElementById("two__online--right").classList.remove("text-decoration-underline");
+	if (g_right_container.classList.contains("text-decoration-underline")) {
+		g_right_container.classList.remove("text-decoration-underline");
 	}
 
 	if (g_first_launch) {
@@ -278,15 +273,18 @@ export function start() {
 
 		if (data.type === 'set_position') {
 			g_position = data.position;
+			const instructions = document.getElementById("instructions");
 			if (g_position === "player_left") {
-				g_player_left = new Player(g_position, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_LEFT_COLOR, 2);
 				g_player_left.set_name(data.name);
-				document.getElementById("two__online--left").classList.add("text-decoration-underline");
+				g_left_container.classList.add("text-decoration-underline");
+				instructions.innerHTML = "Ton camp est à gauche";
+				instructions.style.color = constants.PLAYER_LEFT_COLOR;
 			}
 			else {
-				g_player_right = new Player(g_position, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_RIGHT_COLOR, 2);
 				g_player_right.set_name(data.name);
-				document.getElementById("two__online--right").classList.add("text-decoration-underline");
+				g_right_container.classList.add("text-decoration-underline");
+				instructions.innerHTML = "Ton camp est à droite";
+				instructions.style.color = constants.PLAYER_RIGHT_COLOR;
 			}
 			console.log('I am at position', g_position);
 		}
@@ -294,20 +292,15 @@ export function start() {
 		if (data.type === 'game_start') {
 			console.log('Starting game . . .');
 
-			// g_startButton.classList.add("d-none");
 			g_template_text.innerHTML = "Adversaire trouvé! La partie commence . . .";
 
-			if (g_position === "player_left") {
-				g_player_right = new Player("player_right", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_RIGHT_COLOR, 2);
-				g_player_right.set_name(data.player_right);
-			}
-			else {
-				g_player_left = new Player("player_left", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_LEFT_COLOR, 2);
-				g_player_left.set_name(data.player_left);
-			}
+			g_player_right.set_name(data.player_right);
+			g_player_left.set_name(data.player_left);
 
-			document.getElementById("two__online--left").textContent = g_player_left.name;
-			document.getElementById("two__online--right").textContent = g_player_right.name;
+			g_left_container.textContent = g_player_left.name;
+			g_left_container.style.color = constants.PLAYER_LEFT_COLOR;
+			g_right_container.textContent = g_player_right.name;
+			g_right_container.style.color = constants.PLAYER_RIGHT_COLOR;
 
 			g_game_running = true;
 			g_ball.get_update(constants.WIN_WIDTH / 2, constants.WIN_HEIGHT / 2, 1, 0, 0xffffff);
@@ -337,20 +330,35 @@ export function start() {
 	animate();
 };
 
-/* -------------------------- Login Event Listeners ------------------------- */
+/* ------------------------ Leaving or reloading game ----------------------- */
+
+window.addEventListener('unload', function() {
+	if (g_websocket)
+		sendMessageToServer({type: 'player_disconnect', player_pos: g_position})
+});
+
+function handlePageReload() {
+	if (g_websocket)
+		sendMessageToServer({type: 'player_disconnect', player_pos: g_position})
+};
+
+window.addEventListener('beforeunload', handlePageReload);
+
+/* ----------------------------- Event Listeners ---------------------------- */
 
 function listenerTwoPlayersOnline() {
 
-	document.getElementById("startGame2Online").addEventListener("click", e => {
+	g_startButton = document.getElementById("startGame2Online");
+	g_button_container = document.getElementById("button_container");
+	g_template_text = document.getElementById("template_text");
+	g_left_container = document.getElementById("two__online--left");
+	g_right_container = document.getElementById("two__online--right");
+
+	g_startButton.addEventListener("click", e => {
 		e.preventDefault();
 
-		// hide the start button
-		document.getElementById("startGame2Online").classList.add("d-none");
+		g_startButton.classList.add("d-none");
 
-		g_startButton = document.getElementById("startGame2Online");
-		g_button_container = document.getElementById("button_container");
-
-		g_template_text = document.getElementById("template_text");
 		g_template_text.innerHTML = "En attente d'un adversaire";
 
 		start();
@@ -386,20 +394,6 @@ async function loadTwoPlayersOnline() {
 
 	return 1; // Added to get the game for now instead of the try catch block
 };
-
-/* ------------------------ Leaving or reloading game ----------------------- */
-
-window.addEventListener('unload', function() {
-	if (g_websocket)
-		sendMessageToServer({type: 'player_disconnect', player_pos: g_position})
-});
-
-function handlePageReload() {
-	if (g_websocket)
-		sendMessageToServer({type: 'player_disconnect', player_pos: g_position})
-};
-
-window.addEventListener('beforeunload', handlePageReload);
 
 export default {
 	listenerTwoPlayersOnline,

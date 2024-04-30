@@ -36,3 +36,43 @@ class TwoPlayersGame(models.Model):
 			self.win_player = winner.owner
 		self.date = timezone.now()
 		self.save()
+
+class FourPlayersGame(models.Model):
+	user1 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='user1_4')
+	user2 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='user2_4')
+	user3 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='user3_4')
+	user4 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='user4_4')
+	score_user1 = models.IntegerField(default=0)
+	score_user2 = models.IntegerField(default=0)
+	score_user3 = models.IntegerField(default=0)
+	score_user4 = models.IntegerField(default=0)
+	score_max = models.IntegerField(default=3)
+	win_player = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='win_player_4')
+	date = models.DateTimeField(default=timezone.now)
+
+	def __str__(self):
+		return f"{self.user1} vs {self.user2} vs {self.user3} vs {self.user4}"
+
+	def create(self, player_1, player_2, player_3, player_4):
+		self.user1 = player_1.owner
+		self.user2 = player_2.owner
+		self.user3 = player_3.owner
+		self.user4 = player_4.owner
+		self.date = timezone.now()
+		self.save()
+
+	def result(self, winner, score_1, score_2, score_3, score_4):
+		self.score_user1 = score_1
+		self.score_user2 = score_2
+		self.score_user3 = score_3
+		self.score_user4 = score_4
+		if (winner.owner == self.user1):
+			self.win_player = winner.owner
+		elif (winner.owner == self.user2):
+			self.win_player = winner.owner
+		elif (winner.owner == self.user3):
+			self.win_player = winner.owner
+		else:
+			self.win_player = winner.owner
+		self.date = timezone.now()
+		self.save()
