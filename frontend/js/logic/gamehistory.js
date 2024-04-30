@@ -40,7 +40,7 @@ function listenerGameHistory() {
 						</div>
 					</div>
 				`;
-			gameHistoryTwo.insertBefore(gameHistoryEntry, gameHistoryTwo.firstChild);
+			gameHistoryTwo.appendChild(gameHistoryEntry, gameHistoryTwo.firstChild);
 			if (game.win_player.username == game.user1.username) {
 				document.getElementById(`game__historyTwo--${game_index}--left`).classList.add("bg-success-subtle");
 				document.getElementById(`game__historyTwo--${game_index}--right`).classList.add("bg-danger-subtle");
@@ -101,7 +101,7 @@ function listenerGameHistory() {
 						</div>
 					</div>
 				`;
-			gameHistoryFour.insertBefore(gameHistoryEntry, gameHistoryFour.firstChild);
+			gameHistoryFour.appendChild(gameHistoryEntry, gameHistoryFour.firstChild);
 			if (game.win_player.username == game.user1.username) {
 				document.getElementById(`game__historyFour--${game_index}--one`).classList.add("bg-success-subtle");
 				document.getElementById(`game__historyFour--${game_index}--two`).classList.add("bg-danger-subtle");

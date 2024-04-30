@@ -174,31 +174,33 @@ async function deleteAccount() {
 function updateStats() {
 
 	let ratioGlobal;
-	if (g_ratio_2p === 0 && g_ratio_4p === 0) {
-		ratioGlobal = 0;
+	if (g_ratio_2p === "no data" && g_ratio_4p === "no data") {
+		ratioGlobal = "no data";
 	}
-	else if (g_ratio_2p === 0) {
-		ratioGlobal = Number(g_ratio_4p);
+	else if (g_ratio_2p === "no data") {
+		ratioGlobal = Number(g_ratio_4p) + "%";
+		g_ratio_4p = g_ratio_4p.toFixed(2) + "%";
 	}
-	else if (g_ratio_4p === 0) {
-		ratioGlobal = Number(g_ratio_2p);
+	else if (g_ratio_4p === "no data") {
+		ratioGlobal = Number(g_ratio_2p) + "%";
+		g_ratio_2p = g_ratio_2p.toFixed(2) + "%";
 	}
 	else {
-		ratioGlobal = (Number(g_ratio_2p) + Number(g_ratio_4p)) / 2;
+		ratioGlobal = ((Number(g_ratio_2p) + Number(g_ratio_4p)) / 2).toFixed(2) + "%";
 	}
 
 	document.getElementById("collapse__myStats--global--played").textContent = g_games_2p + g_games_4p;
-	document.getElementById("collapse__myStats--global--wlrate").textContent = ratioGlobal.toFixed(2) + "%";
+	document.getElementById("collapse__myStats--global--wlrate").textContent = ratioGlobal;
 	document.getElementById("collapse__myStats--global--points").textContent = g_points_2p + g_points_4p;
 	document.getElementById("collapse__myStats--2player--played").textContent = g_games_2p;
-	document.getElementById("collapse__myStats--2player--wlrate").textContent = g_ratio_2p.toFixed(2) + "%";
+	document.getElementById("collapse__myStats--2player--wlrate").textContent = g_ratio_2p;
 	document.getElementById("collapse__myStats--2player--points").textContent = g_points_2p;
 	document.getElementById("collapse__myStats--4player--played").textContent = g_games_4p;
-	document.getElementById("collapse__myStats--4player--wlrate").textContent = g_ratio_4p.toFixed(2) + "%";
+	document.getElementById("collapse__myStats--4player--wlrate").textContent = g_ratio_4p;
 	document.getElementById("collapse__myStats--4player--points").textContent = g_points_4p;
-	// document.getElementById("collapse__myStats--tournament--best").textContent = ;
-	document.getElementById("collapse__myStats--tournament--matchwin").textContent = "%";
-	// document.getElementById("collapse__myStats--tournament--points").textContent = ;
+	document.getElementById("collapse__myStats--tournament--best").textContent = "no data";
+	document.getElementById("collapse__myStats--tournament--matchwin").textContent = "no data";
+	document.getElementById("collapse__myStats--tournament--points").textContent = "no data";
 };
 
 function listenerProfile() {
@@ -280,12 +282,12 @@ async function loadProfile() {
 		if (g_games_2p !== 0)
 			g_ratio_2p = Number(((data["player"].nb_games_2p_won / g_games_2p) * 100).toFixed(2));
 		else
-			g_ratio_2p = 0;
+			g_ratio_2p = "no data";
 		g_games_4p = data["player"].nb_games_4p;
 		if (g_games_4p !== 0)
 			g_ratio_4p = Number(((data["player"].nb_games_4p_won / g_games_4p) * 100).toFixed(2));
 		else
-			g_ratio_4p = 0;
+			g_ratio_4p = "no data";
 		g_points_2p = data["player"].nb_points_2p;
 		g_points_4p = data["player"].nb_points_4p;
 

@@ -22,7 +22,7 @@ export default function renderFourOnline() {
 			</div>
 			<div class="col-4 d-flex justify-content-center align-items-center">
 				<div id="button_container" class="position-absolute">
-					<button class="btn btn-primary" type="button" id="startGame4Online">Chercher une partie</button>
+					<button class="btn btn-danger" type="button" id="startGame4Online">Chercher une partie</button>
 				</div>
 				<div class="text-bg-success border border-black border-5">
 					<canvas id="board_four" width="650" height="650"></canvas>

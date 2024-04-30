@@ -21,7 +21,7 @@ export default function renderFourPlayers() {
 			</div>
 			<div class="col d-flex justify-content-center align-items-center">
 				<div class="position-absolute">
-					<button class="btn btn-primary" type="button" id="startGame4">Commencer la partie</button>
+					<button class="btn btn-danger" type="button" id="startGame4">Commencer la partie</button>
 				</div>
 				<div class="text-bg-success border border-black border-5">
 					<canvas id="board_four" width="650" height="650"></canvas>

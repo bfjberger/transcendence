@@ -19,8 +19,8 @@ export default function renderTwoPlayers() {
 				Joueur Gauche: W/S
 			</div>
 			<div class="col d-flex justify-content-center align-items-center">
-				<div class="position-absolute">
-					<button class="btn btn-primary" type="button" id="startGame2">Commencer la partie</button>
+				<div class="position-absolute" id="button_container">
+					<button class="btn btn-danger" type="button" id="startGame2">Commencer la partie</button>
 				</div>
 				<div class="text-bg-success border border-black border-5">
 					<canvas id="board_two" width="650" height="480"></canvas>

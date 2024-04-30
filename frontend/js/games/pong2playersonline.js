@@ -246,6 +246,14 @@ function render() {
 export function start() {
 	g_websocket = new WebSocket(wsurl);
 
+	// Remove the underline if it is already present
+	if (document.getElementById("two__online--left").classList.contains("text-decoration-underline")) {
+		document.getElementById("two__online--left").classList.remove("text-decoration-underline");
+	}
+	if (document.getElementById("two__online--right").classList.contains("text-decoration-underline")) {
+		document.getElementById("two__online--right").classList.remove("text-decoration-underline");
+	}
+
 	if (g_first_launch) {
 		initDisplay();
 		g_first_launch = false;

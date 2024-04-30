@@ -165,26 +165,44 @@ class PongGame2Players {
 
 	checkCollisions() {
 		// Ball and wall collision
-		if (this.ball.y + this.ball.radius > this.boardHeight || this.ball.y - this.ball.radius < 0) {
+		if (this.ball.y + this.ball.radius >= this.boardHeight || this.ball.y - this.ball.radius <= 0) {
 			this.ball.velocityY *= -1 * this.ballSpeedMultiplierY; // reverse ball direction
 			this.ball.velocityX *= this.ballSpeedMultiplierX;
 		}
+		if (this.ball.y - this.ball.radius <= 0) {
+			this.ball.y = this.ball.radius;
+		}
+		if (this.ball.y + this.ball.radius >= this.boardHeight) {
+			this.ball.y = this.boardHeight - this.ball.radius;
+		}
+
+		var middle_y, difference_in_y, reduction_factor, new_y_vel;
 		// Ball and paddle collision
-		if (this.ball.velocityX < 0) {
-			if (this.ball.x - this.ball.radius < this.player1.coords.x + default_paddle_width && this.ball.y > this.player1.coords.y &&
-					this.ball.y < this.player1.coords.y + default_paddle_height) {
-				this.ball.velocityX *= -1 * this.ballSpeedMultiplierX; // reverse ball direction
-				this.ball.velocityY *= this.ballSpeedMultiplierY;
+		if (this.ball.velocityX <= 0) {
+			if (this.ball.y <= this.player1.coords.y + default_paddle_height &&
+				this.ball.y >= this.player1.coords.y && this.ball.x > this.player1.coords.x &&
+				this.ball.x - this.ball.radius <= this.player1.coords.x + default_paddle_width / 2) {
+					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX; // reverse ball direction
+					middle_y = this.player1.coords.y + default_paddle_height / 2;
+					difference_in_y = middle_y - this.ball.y;
+					reduction_factor = default_paddle_height / 2;
+					new_y_vel = difference_in_y / reduction_factor;
+					this.ball.velocityY = -1 * new_y_vel;
 			}
 		}
-		else if (this.ball.velocityX > 0) {
-			if (this.ball.x + this.ball.radius > this.player2.coords.x && this.ball.y > this.player2.coords.y &&
-					this.ball.y < this.player2.coords.y + default_paddle_height) {
-				this.ball.velocityX *= -1 * this.ballSpeedMultiplierX; // reverse ball direction
-				this.ball.velocityY *= this.ballSpeedMultiplierY;
+		else {
+			if (this.ball.y <= this.player2.coords.y + default_paddle_height &&
+				this.ball.y >= this.player2.coords.y && this.ball.x > this.player2.coords.x &&
+				this.ball.x + this.ball.radius >= this.player2.coords.x - default_paddle_width / 2) {
+					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX; // reverse ball direction
+					middle_y = this.player2.coords.y + default_paddle_height / 2;
+					difference_in_y = middle_y - this.ball.y;
+					reduction_factor = default_paddle_height / 2;
+					new_y_vel = difference_in_y / reduction_factor;
+					this.ball.velocityY = -1 * new_y_vel;
 			}
 		}
-	}
+	};
 
 	draw() {
 		this.drawPlayer(this.player1);
@@ -264,9 +282,10 @@ class PongGame2Players {
 					this.context.fillStyle = winner.color;
 					this.context.font = "50px sans-serif";
 					const textWidth = this.context.measureText(winnerText).width;
-					const textX = this.boardWidth / 2 - textWidth / 2;
-					const textY = this.boardHeight / 2 + 15;
-					this.context.fillText(winnerText, textX, textY);
+					this.context.fillText(winnerText, (this.boardWidth - textWidth) / 2, this.boardHeight / 2);
+					document.getElementById("button_container").style.top = "55%";
+					document.getElementById("startGame2").innerHTML = "Rejouer ?";
+					document.getElementById("startGame2").classList.remove("d-none");
 				}
 				this.ball.velocityX = 0;
 				this.ball.velocityY = 0;

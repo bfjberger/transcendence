@@ -18,7 +18,7 @@ export default function renderTwoOnline() {
 			</div>
 			<div class="col d-flex justify-content-center align-items-center">
 				<div id="button_container" class="position-absolute">
-					<button class="btn btn-primary" type="button" id="startGame2Online">Chercher une partie</button>
+					<button class="btn btn-danger" type="button" id="startGame2Online">Chercher une partie</button>
 				</div>
 				<div class="text-bg-success border border-black border-5">
 					<canvas id="board_two" width="650" height="480"></canvas>
