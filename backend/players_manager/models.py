@@ -8,7 +8,7 @@ class Player(models.Model):
 		OFFLINE = "OFFLINE"
 		PLAYING = "PLAYING"
 	owner = models.OneToOneField('auth.User', related_name='Player', on_delete=models.CASCADE)
-	nickname = models.CharField(max_length=20, default="bob")
+	nickname = models.CharField(max_length=20)
 	nb_games_2p = models.IntegerField(default=0)
 	nb_games_2p_won = models.IntegerField(default=0)
 	nb_games_2p_lost = models.IntegerField(default=0)
