@@ -5,11 +5,17 @@ from rest_framework import status
 from rest_framework.decorators import action
 from .models import Tournament
 from players_manager.models import Player
-from .serializers import TournamentSerializer
+from .serializers import TournamentSerializer, PlayerInTournamentSerializer
 from players_manager.serializers import PlayerSerializer
 from django.contrib.auth.models import User
 from players_manager.serializers import UserSerializer, PlayerSerializer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+
+from rest_framework import permissions
+from rest_framework.views import APIView
+from rest_framework import serializers
+
+
 
 
 # Ok currently kinda working after checking the following error:
@@ -43,7 +49,10 @@ class TournamentViewSet(viewsets.ViewSet):
 			name = serializer.validated_data.get('name')
 			if Tournament.objects.filter(name=name).exists():
 				return Response({'detail': 'A tournament with this name already exists.'}, status=status.HTTP_400_BAD_REQUEST)
-			serializer.save()
+			# Set the owner of the tournament to the current user
+			player = Player.objects.get(owner=request.user)
+			serializer.save(owner=player)
+			print("Tournament created:", name)
 			return Response({'success': True})
 		else:
 			return Response({'success': False, 'errors': serializer.errors})
@@ -90,3 +99,12 @@ class PlayerViewSet(viewsets.ModelViewSet):
 		return Player.objects.filter(tournament=tournament)
 
 	serializer_class = PlayerSerializer
+
+class TournamentOnline(APIView):
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
+
+	def get(self, request):
+		user_data = request.user
+		serializer_data = PlayerInTournamentSerializer(user_data)
+		return Response(data=serializer_data.data, status=status.HTTP_200_OK)

@@ -225,7 +225,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 		# uuid.uuid4() generates a random UUID
 		# A UUID is a 128-bit number represented as a utf8 string of five hexadecimal fields separated by hyphens
 		user = self.scope['user']
-
 		if user.is_authenticated:
 			self.player = await sync_to_async(Player.objects.get)(owner=user)
 			self.player_id = self.player.id
