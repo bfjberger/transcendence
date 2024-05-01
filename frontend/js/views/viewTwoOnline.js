@@ -1,7 +1,5 @@
 export default function renderTwoOnline() {
-
 	return `
-
 		<div class="row">
 			<div class="col text-center fw-bold pt-3">
 				<h1>Pong mode 2 Joueurs en Ligne</h1>
@@ -10,7 +8,8 @@ export default function renderTwoOnline() {
 		<div class="row">
 			<div class="col-5"></div>
 			<div class="col-2">
-				<p id="template_text" class="text-center h4 my-2">Template text for later on</p>
+				<p id="infoElement" class="text-center h4 my-2">Template text for later on</p>
+				<div id="playerField">Players's info for later</div>
 			</div>
 			<div class="col-5"></div>
 		</div>
@@ -37,6 +36,5 @@ export default function renderTwoOnline() {
 			</div>
 			<div class="col-5"></div>
 		</div>
-
 	`;
-};
+}

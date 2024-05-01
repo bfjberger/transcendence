@@ -1,54 +1,10 @@
-// LA LOGIQUE DU JEU ICI
 import {Player} from './PlayerOnline.js';
 import {Ball} from './BallOnline.js';
 import * as constants from './Constants.js';
 import {g_socket, g_alias} from './tournamentRoom.js';
 
-/**
- * Currently the pong game is working with 2 different browsers.
- * The game logic is in pong_online/gamelogic.py
- * The requests are handled in pong_online/consumers.py and also the room logic are handled there
- * The path to the websockets is /ws/game/ and is in pong_online/routing.py (+ nginx configuration)
- *
- * TODO:[] Add a matchmaking placeholder
- *
- * !Bug: The ball is red
- */
-
 const wsurl = 'ws://' + window.location.host + '/ws/game/'; // link to websocket
 let ws; // websocket
-
-/**
- * What is a websocket?
- * A WebSocket is a communication protocol that makes it possible to establish a two-way communication channel between a server and a client.
- * In our case, the server is the Django server and the client is the browser.
- * The server can send messages to the client and the client can send messages to the server.
- * The pong game will be played in the browser, so the client will send messages to the server to update the game state.
- * And the server will send messages to the client to update the game state.
- */
-
-/**
- * Outline of the functions:
- * - start: starts the game and initializes the websocket connection
- * - initDisplay: initializes the canvas
- * - initArena: initializes the players and the ball
- * - handle_scores: handles the scores of the players
- * - display_winner: displays the winner of the game
- *
- * - handleKeyDown: handles the keydown event
- * - handleKeyUp: handles the keyup event
- * - initControls: initializes the controls
- *
- * - updateGameState: updates the game state
- *
- * - drawBall: draws the ball
- * - drawScoreAndLine: draws the score and the line
- * - animate: animates the game
- * - render: renders the game
- *
- * - listenerTwoPlayersOnline: listens for the start button click
- * - loadTwoPlayersOnline: loads the game
- */
 
 /* -------------------------------- Variables ------------------------------- */
 var game_running, player_one, player_two, ball, winning_text, startButton;
@@ -244,11 +200,6 @@ function render() {
 			let text_width = context.measureText(winning_text).width;
 			context.fillText(winning_text, (constants.WIN_WIDTH - text_width) / 2, constants.WIN_HEIGHT / 2);
 		}
-
-		// lower the div button container
-		button_container.style.top = "65%";
-		startButton.innerHTML = "Look for another game";
-		startButton.classList.remove("d-none");
 	}
 
 	// Draw the score and the line
@@ -296,9 +247,6 @@ export function start() {
 
 			// startButton.classList.add("d-none");
 			infoElement.innerHTML = "Found player! Game starting . . .";
-
-			document.getElementById("two__online--adversary").textContent = `${data.adversary}`;
-
 			game_running = true;
 			ball.get_update(constants.WIN_WIDTH / 2, constants.WIN_HEIGHT / 2, 1, 0, 0xffffff);
 			initControls();
@@ -353,14 +301,14 @@ export function startTournamentOnline() {
 
 const on_set_position = (arg) => {
 	initArena();
-	console.log('Setting position', arg);
+	// console.log('Setting position', arg);
 	position = null;
 	if (arg.players[0] === g_alias)
 		position = 'player_one';
 	if (arg.players[1] === g_alias)
 		position = 'player_two';
 
-	console.log('Position set to', position);
+	// console.log('Position set to', position);
 
 	if (infoElement === null) {
 		infoElement = document.getElementById("InfoElement");
@@ -377,9 +325,8 @@ const on_set_position = (arg) => {
 			clearInterval(interval);
 			infoElement.innerHTML = 'Go !';
 
-
 			if (arg.players[0] === g_alias)
-				g_socket.send(JSON.stringify({event: 'game_start'}))
+				g_socket.send(JSON.stringify({event: 'game_start'}));
 
 		}
 	}, 1000);
@@ -410,13 +357,12 @@ export { on_set_position, on_game_start, on_game_state, on_game_end }
 
 function listenerTwoPlayersOnline() {
 
-	document.getElementById("online__two--domicile").textContent = `${sessionStorage.getItem("nickname")}`;
-
 	document.getElementById("startGame2Online").addEventListener("click", e => {
 		e.preventDefault();
 
 		// hide the start button
 		document.getElementById("startGame2Online").classList.add("d-none");
+
 
 		startButton = document.getElementById("startGame2Online");
 		button_container = document.getElementById("button_container");

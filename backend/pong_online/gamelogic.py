@@ -100,6 +100,7 @@ class GameState:
 			self.handle_ball_collision(player_one, player_two)
 			self.x += self.x_vel
 			self.y += self.y_vel
+			# print("ball x: ", self.x, "  |  ball y: ", self.y)
 
 		async def reset(self):
 			self.color = 0xFFFFFF
@@ -159,6 +160,7 @@ class GameState:
 		self.players = [self.Player(1), self.Player(2)]
 		self.is_running = False
 		self.winning_score = 3
+		self.someone_won = None
 
 	async def set_player_movement(self, player_pos, is_moving, direction):
 		if player_pos == 'player_one' :
@@ -184,6 +186,7 @@ class GameState:
 
 		if self.players[0].score >= self.winning_score or self.players[1].score >= self.winning_score :
 			self.is_running = False
+			self.someone_won = True
 
 	async def update(self):
 		await self.players[0].move()
