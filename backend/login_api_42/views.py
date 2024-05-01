@@ -1,5 +1,7 @@
 import requests
 from django.core.files.base import ContentFile
+from django.utils.crypto import get_random_string
+
 from players_manager.models import Player
 from players_manager.serializers import DataSerializer
 
@@ -81,28 +83,35 @@ class Callback(APIView):
 
             user, created = User.objects.get_or_create(username=username,defaults={'email': email})
 
-            if created == True :
-                
-                user.set_password("zz11zz11")
-                user.save()
+            new_password = get_random_string(length=12)
+            user.set_password(new_password)
+            user.save()
 
+            if created == True :
                 img_resp = requests.get(avatar)
                 if img_resp.status_code != 200 :
                     print("\n\n\nimage pas downloaded\n\n\n")
 
                 player = Player(owner=user)
                 player.avatar.save(username+'.jpg', ContentFile(img_resp.content), save=False)
+                player.status = "ONLINE"
                 player.save()
 
-                user_auth = authenticate(username=username, password="zz11zz11")
-                login(request, user_auth)
+                user_auth = authenticate(username=username, password=new_password)
+                r = login(request, user_auth)
 
                 serializer_data = DataSerializer(user_auth)
                 return Response(data=serializer_data.data, status=status.HTTP_200_OK)
 
+            user_to_login = authenticate(username=username, password=new_password)
 
-            user_to_login = authenticate(username=username, password="zz11zz11")
-            login(request, user_to_login)
+
+            player = Player.objects.get(owner=user)
+            player.status = "ONLINE"
+            player.save()
+
+            r = login(request, user_to_login)
+
 
             serializer_data = DataSerializer(user_to_login)
             return Response(serializer_data.data, status=status.HTTP_200_OK)
