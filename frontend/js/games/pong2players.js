@@ -3,8 +3,6 @@ import Player, {
 	default_paddle_width,
 } from "./Player.js"; // Import the Player class from Player
 
-import router from "../logic/router.js" // Import the router for reload MIGHT LEAVE
-
 // Some of the constructor default values are overriden by the different set functions
 class PongGame2Players {
 	constructor(player1Name, player2Name) {
@@ -14,44 +12,24 @@ class PongGame2Players {
 		this.start = false;
 
 		// players
-		[this.playerVelocityY, this.paddleSpeed] = [0, 3]; // overriden by movePlayer()
+		[this.playerVelocityY, this.paddleSpeed] = [0, this.boardHeight / 100];
 		[this.player1, this.player2] = [new Player(player1Name, "orange", false), new Player(player2Name, "blue", false),];
 		this.keysPressed = {};
 
 		// ball
-		[this.ballRadius, this.ballSpeed] = [10, 2]; // overriden by setBall()
-		[this.ballSpeedMultiplierX, this.ballSpeedMultiplierY] = [1.1, 1.05]; // overriden by checkCollisions()
+		[this.ballRadius, this.ballSpeed] = [10, this.boardWidth / 250];
+		[this.ballSpeedMultiplierX, this.ballSpeedMultiplierY] = [1.1, 1.05];
 		this.ball = {};
 	}
 
 	init() {
 		this.setBoard();
 
-		// ask to press a key
-		// this.context.font = "15px sans-serif";
-		// this.context.fillText("Press space to start / Press escape to reload", this.board.width / 2 - 130, this.board.height / 2 + 15);
-
 		this.start = true;
 		requestAnimationFrame(this.update.bind(this));
 		document.addEventListener("keydown", this.pressKey.bind(this));
 		document.addEventListener("keydown", this.handleKeyPress.bind(this));
 		document.addEventListener("keyup", this.handleKeyPress.bind(this));
-	}
-
-	restartGame() {
-		// Reset player scores
-		this.player1.setScore(0);
-		this.player2.setScore(0);
-
-		// Reset player and ball positions
-		this.setPlayer();
-		this.setBall();
-
-		// Reset game start flag
-		this.start = false;
-
-		// Initialize the game again
-		this.init();
 	}
 
 	setBoard() {
@@ -69,14 +47,12 @@ class PongGame2Players {
 		this.player2.setCoords(this.boardWidth - this.player2.width - 10, this.boardHeight / 2 - this.player2.height / 2);
 
 		// set velocity
-		this.paddleSpeed = this.boardHeight / 100;
 		this.player1.speed = this.player2.speed = this.paddleSpeed;
 		this.player1.velocityY = this.player2.velocityY = 0;
 	}
 
 	setBall() {
 		this.ball.radius = this.ballRadius;
-		this.ballSpeed = this.boardWidth / 350;
 
 		// Position of the ball
 		this.ball.x = this.boardWidth / 2;
@@ -103,14 +79,8 @@ class PongGame2Players {
 	}
 
 	pressKey(e) {
-		// ' ' is the key for space
-		// if (e.key === " " && !this.start) {
-		// 	this.start = true;
-		// 	requestAnimationFrame(this.update.bind(this));
-		// }
 		if (e.key === "Escape") {
-			// router("twoplayers");
-			window.alert("Tu ne peux pas arrêter la partie.");
+			window.alert("Partie interrompue");
 		}
 	}
 
@@ -150,9 +120,9 @@ class PongGame2Players {
 	}
 
 	moveBall() {
-		this.ball.x += this.ball.velocityX * this.ballSpeed;
-		this.ball.y += this.ball.velocityY * this.ballSpeed;
 		this.checkCollisions();
+		this.ball.x += this.ball.velocityX;
+		this.ball.y += this.ball.velocityY;
 		if (this.ball.x - this.ball.radius < 0) {
 			this.player2.score++;
 			this.resetGame();
@@ -304,10 +274,12 @@ class PongGame2Players {
 var game;
 
 function start2PlayerGame(p1_name, p2_name) {
-	if (!game) {
-		game = new PongGame2Players(p1_name, p2_name);
-		game.init();
-	}
+
+	if (game)
+		document.getElementById("startGame2").classList.add("d-none");
+
+	game = new PongGame2Players(p1_name, p2_name);
+	game.init();
 }
 
 function listenerTwoPlayers() {

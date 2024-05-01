@@ -193,10 +193,10 @@ function updateStats() {
 	document.getElementById("collapse__myStats--global--wlrate").textContent = ratioGlobal;
 	document.getElementById("collapse__myStats--global--points").textContent = g_points_2p + g_points_4p;
 	document.getElementById("collapse__myStats--2player--played").textContent = g_games_2p;
-	document.getElementById("collapse__myStats--2player--wlrate").textContent = g_ratio_2p;
+	document.getElementById("collapse__myStats--2player--wlrate").textContent = g_ratio_2p + "%";
 	document.getElementById("collapse__myStats--2player--points").textContent = g_points_2p;
 	document.getElementById("collapse__myStats--4player--played").textContent = g_games_4p;
-	document.getElementById("collapse__myStats--4player--wlrate").textContent = g_ratio_4p;
+	document.getElementById("collapse__myStats--4player--wlrate").textContent = g_ratio_4p + "%";
 	document.getElementById("collapse__myStats--4player--points").textContent = g_points_4p;
 	document.getElementById("collapse__myStats--tournament--best").textContent = "no data";
 	document.getElementById("collapse__myStats--tournament--matchwin").textContent = "no data";

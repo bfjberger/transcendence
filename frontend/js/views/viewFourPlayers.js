@@ -11,12 +11,12 @@ export default function renderFourPlayers() {
 		<div class="row">
 			<div class="col-5"></div>
 			<div class="col-2 text-center h3 my-2" style="color: violet">
-				<p>Joueur Haut: N/M</p>
+				<p>Joueur Invité Haut: N/M</p>
 			</div>
 			<div class="col-5"></div>
 		</div>
 		<div class="row">
-			<div class="col text-end text-warning align-self-center h3">
+			<div class="col text-end text-warning align-self-center h3" id="four__local--left">
 				<p>Joueur Gauche: Q/A</p>
 			</div>
 			<div class="col d-flex justify-content-center align-items-center">
@@ -28,13 +28,13 @@ export default function renderFourPlayers() {
 				</div>
 			</div>
 			<div class="col text-start text-primary align-self-center h3">
-				<p>Joueur Droit: 9/6</p>
+				<p>Joueur Invité Droit: 9/6</p>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-5"></div>
 			<div class="col-2 text-center mt-3 h3" style="color: red">
-				<p>Joueur Bas: Flèche Gauche/Flèche Droite</p>
+				<p>Joueur Invité Bas: Flèche Gauche/Flèche Droite</p>
 			</div>
 			<div class="col-5"></div>
 		</div>

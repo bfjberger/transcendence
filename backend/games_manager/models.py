@@ -30,10 +30,7 @@ class TwoPlayersGame(models.Model):
 	def result(self, winner, score_1, score_2):
 		self.score_user1 = score_1
 		self.score_user2 = score_2
-		if (winner.owner == self.user1):
-			self.win_player = winner.owner
-		else:
-			self.win_player = winner.owner
+		self.win_player = winner.owner
 		self.date = timezone.now()
 		self.save()
 
@@ -53,26 +50,15 @@ class FourPlayersGame(models.Model):
 	def __str__(self):
 		return f"{self.user1} vs {self.user2} vs {self.user3} vs {self.user4}"
 
-	def create(self, player_1, player_2, player_3, player_4):
-		self.user1 = player_1.owner
-		self.user2 = player_2.owner
-		self.user3 = player_3.owner
-		self.user4 = player_4.owner
-		self.date = timezone.now()
-		self.save()
-
-	def result(self, winner, score_1, score_2, score_3, score_4):
-		self.score_user1 = score_1
-		self.score_user2 = score_2
-		self.score_user3 = score_3
-		self.score_user4 = score_4
-		if (winner.owner == self.user1):
-			self.win_player = winner.owner
-		elif (winner.owner == self.user2):
-			self.win_player = winner.owner
-		elif (winner.owner == self.user3):
-			self.win_player = winner.owner
-		else:
-			self.win_player = winner.owner
+	def result(self, winner, player_1, player_2, player_3, player_4):
+		self.user1 = player_1.player_model.owner
+		self.user2 = player_2.player_model.owner
+		self.user3 = player_3.player_model.owner
+		self.user4 = player_4.player_model.owner
+		self.score_user1 = player_1.score
+		self.score_user2 = player_2.score
+		self.score_user3 = player_3.score
+		self.score_user4 = player_4.score
+		self.win_player = winner.owner
 		self.date = timezone.now()
 		self.save()

@@ -4,8 +4,8 @@ from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import TwoPlayersGame
-from .serializers import TwoPlayersGameSerializer
+from .models import TwoPlayersGame, FourPlayersGame
+from .serializers import TwoPlayersGameSerializer, FourPlayersGameSerializer
 
 from django.db.models import Q
 
@@ -22,3 +22,12 @@ class CreateTwoPlayersGamesAPIView (CreateAPIView) :
 	permission_classes = [permissions.IsAuthenticated]
 	queryset = TwoPlayersGame.objects.all()
 	serializer_class = TwoPlayersGameSerializer
+
+
+class ListFourPlayersGamesAPIView (ListAPIView) :
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
+	serializer_class = FourPlayersGameSerializer
+
+	def get_queryset(self):
+		return FourPlayersGame.objects.filter(Q(user1 = self.request.user) | Q(user2 = self.request.user) | Q(user3 = self.request.user) | Q(user4 = self.request.user))

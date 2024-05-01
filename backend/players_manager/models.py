@@ -28,10 +28,11 @@ class Player(models.Model):
 		if game_type == '2p':
 			self.nb_games_2p += 1
 			self.nb_games_2p_won += 1
+			self.nb_points_2p += points
 		elif game_type == '4p':
 			self.nb_games_4p += 1
 			self.nb_games_4p_won += 1
-		self.nb_points_2p += points
+			self.nb_points_4p += points
 		self.score += 1
 		self.save()
 
@@ -39,25 +40,12 @@ class Player(models.Model):
 		if game_type == '2p':
 			self.nb_games_2p += 1
 			self.nb_games_2p_lost += 1
+			self.nb_points_2p += points
 		elif game_type == '4p':
 			self.nb_games_4p += 1
 			self.nb_games_4p_lost += 1
-		self.nb_points_2p += points
+			self.nb_points_4p += points
 		self.score -= 1
-		self.save()
-
-	def record_win_four(self, elo, points):
-		self.nb_games_4p += 1
-		self.nb_games_4p_won += 1
-		self.score += elo
-		self.nb_points_4p += points
-		self.save()
-
-	def record_loss_four(self, elo, points):
-		self.nb_games_4p += 1
-		self.nb_games_4p_lost += 1
-		self.score -= elo
-		self.nb_points_4p += points
 		self.save()
 
 	def print_records(self):

@@ -18,11 +18,11 @@ let g_websocket; // websocket
  * The server can send messages to the client and the client can send messages to the server.
  * The pong game will be played in the browser, so the client will send messages to the server to update the game state.
  * And the server will send messages to the client to update the game state.
- */
+*/
 
 /**
  * Outline of the functions:
- * - start: starts the game and initializes the websocket connection
+ * - sendMessageToServer: sends a message to the server
  * - initDisplay: initializes the canvas
  * - initArena: initializes the players and the ball
  * - handle_scores: handles the scores of the players
@@ -38,6 +38,12 @@ let g_websocket; // websocket
  * - drawScoreAndLine: draws the score and the line
  * - animate: animates the game
  * - render: renders the game
+ *
+ * - setPositionStyleUpdate: updates some content of the page when receiving the 'set_position' message
+ * - gameStartStyleUpdate: updates some content of the page when receiving the 'game_start' message
+ * - start: starts the game and initializes the websocket connection
+ *
+ * - Listeners for page reload and unload
  *
  * - listenerTwoPlayersOnline: listens for the start button click
  * - loadTwoPlayersOnline: loads the game
@@ -235,19 +241,46 @@ function render() {
 
 /* ---------------------------------- Main ---------------------------------- */
 
+function setPositionStyleUpdate(data) {
+
+	const instructions = document.getElementById("instructions");
+
+	if (g_position === "player_left") {
+		g_player_left.set_name(data.name);
+		g_left_container.classList.add("text-decoration-underline");
+		g_left_container.style.color = constants.PLAYER_LEFT_COLOR;
+		instructions.innerHTML = "Ton camp est à gauche";
+		instructions.style.color = constants.PLAYER_LEFT_COLOR;
+	}
+	else {
+		g_player_right.set_name(data.name);
+		g_right_container.classList.add("text-decoration-underline");
+		g_right_container.style.color = constants.PLAYER_RIGHT_COLOR;
+		instructions.innerHTML = "Ton camp est à droite";
+		instructions.style.color = constants.PLAYER_RIGHT_COLOR;
+	}
+};
+
+function gameStartStyleUpdate(data) {
+
+	g_player_right.set_name(data.player_right);
+	g_player_left.set_name(data.player_left);
+
+	g_left_container.textContent = g_player_left.name;
+	g_left_container.style.color = constants.PLAYER_LEFT_COLOR;
+	g_right_container.textContent = g_player_right.name;
+	g_right_container.style.color = constants.PLAYER_RIGHT_COLOR;
+};
+
 /**
  * Starts the game and initializes the WebSocket connection.
  */
 export function start() {
 	g_websocket = new WebSocket(wsurl);
 
-	// Remove the underline if it is already present
-	if (g_left_container.classList.contains("text-decoration-underline")) {
-		g_left_container.classList.remove("text-decoration-underline");
-	}
-	if (g_right_container.classList.contains("text-decoration-underline")) {
-		g_right_container.classList.remove("text-decoration-underline");
-	}
+	// Remove a possible underline from the player's name
+	g_left_container.classList.remove("text-decoration-underline");
+	g_right_container.classList.remove("text-decoration-underline");
 
 	if (g_first_launch) {
 		initDisplay();
@@ -273,20 +306,8 @@ export function start() {
 
 		if (data.type === 'set_position') {
 			g_position = data.position;
-			const instructions = document.getElementById("instructions");
-			if (g_position === "player_left") {
-				g_player_left.set_name(data.name);
-				g_left_container.classList.add("text-decoration-underline");
-				instructions.innerHTML = "Ton camp est à gauche";
-				instructions.style.color = constants.PLAYER_LEFT_COLOR;
-			}
-			else {
-				g_player_right.set_name(data.name);
-				g_right_container.classList.add("text-decoration-underline");
-				instructions.innerHTML = "Ton camp est à droite";
-				instructions.style.color = constants.PLAYER_RIGHT_COLOR;
-			}
 			console.log('I am at position', g_position);
+			setPositionStyleUpdate(data);
 		}
 
 		if (data.type === 'game_start') {
@@ -294,13 +315,7 @@ export function start() {
 
 			g_template_text.innerHTML = "Adversaire trouvé! La partie commence . . .";
 
-			g_player_right.set_name(data.player_right);
-			g_player_left.set_name(data.player_left);
-
-			g_left_container.textContent = g_player_left.name;
-			g_left_container.style.color = constants.PLAYER_LEFT_COLOR;
-			g_right_container.textContent = g_player_right.name;
-			g_right_container.style.color = constants.PLAYER_RIGHT_COLOR;
+			gameStartStyleUpdate(data);
 
 			g_game_running = true;
 			g_ball.get_update(constants.WIN_WIDTH / 2, constants.WIN_HEIGHT / 2, 1, 0, 0xffffff);
@@ -309,6 +324,12 @@ export function start() {
 
 		if (data.type === 'game_state') {
 			updateGameState(data);
+		}
+
+		if (data.type === 'player_disconnect') {
+			g_game_running = false;
+			console.log('Player ' + data.player_pos + ' disconnected');
+			g_websocket.close();
 		}
 
 		if (data.type === 'game_end') {

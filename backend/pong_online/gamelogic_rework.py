@@ -9,7 +9,7 @@ GAME_AREA_WIDTH = 650
 GAME_AREA_HEIGHT = 480
 PADDLE_WIDTH = 10
 PADDLE_HEIGHT = 70
-PLAYER_SPEED = 3
+PLAYER_SPEED = GAME_AREA_HEIGHT / 100
 PLAYER_START_POS_Y = (GAME_AREA_HEIGHT - PADDLE_HEIGHT) / 2
 MIN_START_ANGLE = math.pi - (math.pi / 9)
 MAX_START_ANGLE = math.pi + (math.pi / 9)
@@ -78,11 +78,9 @@ class GameState:
 			else:
 				return None
 		if self.is_running == False:
-			if (self.players['player_left'].score > self.players['player_right'].score and
-					self.players['player_left'].score >= self.winning_score):
+			if self.players['player_left'].score >= self.winning_score:
 				return "player_left"
-			elif (self.players['player_left'].score < self.players['player_right'].score and
-		 			self.players['player_right'].score >= self.winning_score):
+			elif self.players['player_right'].score >= self.winning_score:
 				return "player_right"
 			else:
 				return None
@@ -107,10 +105,10 @@ class GameState:
 		If the ball goes out of bounds on the right side, 'player_left' scores a point.
 		If either player reaches the winning score, stop the game.
 		"""
-		if self.ball.x <= 0 - (self.ball.radius / 2):
+		if self.ball.x - (self.ball.radius / 2) <= 0:
 			await self.players['player_right'].score_point()
 			await self.ball.reset()
-		elif self.ball.x >= GAME_AREA_WIDTH + (self.ball.radius / 2):
+		elif self.ball.x + (self.ball.radius / 2) >= GAME_AREA_WIDTH:
 			await self.players['player_left'].score_point()
 			await self.ball.reset()
 
@@ -144,7 +142,8 @@ class GameState:
 			await sync_to_async(loser.record_loss)('2p', self.players[loser_pos].score)
 		if winner_pos is not None and loser_pos is not None:
 			winner = self.players[winner_pos].player_model
-			await sync_to_async(self.game_history.result)(winner, self.players["player_left"].score, self.players["player_right"].score)
+			await sync_to_async(self.game_history.result)(winner, self.players["player_left"].score,
+															self.players["player_right"].score)
 
 	class Player:
 		"""
@@ -193,6 +192,8 @@ class GameState:
 
 			If the player is moving up, decrease the y-coordinate by the player speed.
 			If the player is moving down, increase the y-coordinate by the player speed.
+
+			Checks if the player is within the bounds of the game area before doing the move.
 			"""
 			if self.is_moving:
 				if self.vertical:
@@ -227,7 +228,7 @@ class GameState:
 			self.x = GAME_AREA_WIDTH / 2
 			self.y = random.randint(200, GAME_AREA_HEIGHT - 200)
 			self.radius = 10
-			self.speed = 2
+			self.speed = GAME_AREA_WIDTH / 250
 			self.color = "white"
 			self.speed_multiplier_x = 1.1
 			self.speed_multiplier_y = 1.05
@@ -262,8 +263,9 @@ class GameState:
 				self.y = GAME_AREA_HEIGHT - self.radius
 
 			if self.x_vel <= 0:
-				if (self.y <= player_left.y + PADDLE_HEIGHT and self.y >= player_left.y and self.x > player_left.x
-					and self.x - self.radius <= player_left.x + PADDLE_WIDTH / 2):
+				if (self.y <= player_left.y + PADDLE_HEIGHT and
+					self.y >= player_left.y and self.x > player_left.x and
+					self.x - self.radius <= player_left.x + PADDLE_WIDTH / 2):
 						self.x_vel *= -1 * self.speed_multiplier_x
 						middle_y = player_left.y + PADDLE_HEIGHT / 2
 						difference_in_y = middle_y - self.y
@@ -271,8 +273,9 @@ class GameState:
 						new_y_vel = difference_in_y / reduction_factor
 						self.y_vel = -1 * new_y_vel
 			else:
-				if (self.y <= player_right.y + PADDLE_HEIGHT and self.y >= player_right.y and self.x < player_right.x
-					and self.x + self.radius >= player_right.x - PADDLE_WIDTH / 2):
+				if (self.y <= player_right.y + PADDLE_HEIGHT and
+					self.y >= player_right.y and self.x < player_right.x and
+					self.x + self.radius >= player_right.x - PADDLE_WIDTH / 2):
 						self.x_vel *= -1 * self.speed_multiplier_x
 						middle_y = player_right.y + PADDLE_HEIGHT / 2
 						difference_in_y = middle_y - self.y
@@ -295,7 +298,7 @@ class GameState:
 
 		async def reset(self):
 			"""
-			Reset the ball to its initial position and velocity.
+			Reset the ball to a random position and velocity.
 			"""
 			self.x = GAME_AREA_WIDTH / 2
 			self.y = random.randint(200, GAME_AREA_HEIGHT - 200)

@@ -10,11 +10,11 @@ import * as constants from './Constants.js'
 */
 
 const wsurl = 'ws://' + window.location.host + '/ws/gameFour/'; // link to websocket
-let ws; // websocket
+let g_websocket; // websocket
 
 /**
  * Outline of the functions:
- * - startGame: starts the game and initializes the websocket connection
+ * - sendMessageToServer: sends a message to the server
  * - initDisplay: initializes the canvas
  * - initArena: initializes the players and the ball
  * - handle_scores: handles the scores of the players
@@ -30,6 +30,12 @@ let ws; // websocket
  * - drawScoreAndLine: draws the score and the line
  * - animate: animates the game
  * - render: renders the game
+ *
+ * - setPositionStyleUpdate: updates some content of the page when receiving the 'set_position' message
+ * - gameStartStyleUpdate: updates some content of the page when receiving the 'game_start' message
+ * - start: starts the game and initializes the websocket connection
+ *
+ * - Listeners for page reload and unload
  *
  * - listenerFourPlayersOnline: listens for the start button click
  * - loadFourPlayersOnline: loads the game
@@ -55,7 +61,7 @@ var g_board_winning_text;
 /* ------------------------------ Utils & Inits ----------------------------- */
 
 function sendMessageToServer(message) {
-	ws.send(JSON.stringify(message));
+	g_websocket.send(JSON.stringify(message));
 };
 
 function initDisplay() {
@@ -66,10 +72,10 @@ function initDisplay() {
 };
 
 function initArena() {
-	g_player_left = new Player(1, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_LEFT_COLOR, 4);
-	g_player_right = new Player(2, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_RIGHT_COLOR, 4);
-	g_player_top = new Player(3, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_TOP_COLOR);
-	g_player_bottom = new Player(4, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_BOTTOM_COLOR);
+	g_player_left = new Player("player_left", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_LEFT_COLOR);
+	g_player_right = new Player("player_right", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_RIGHT_COLOR);
+	g_player_top = new Player("player_top", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_TOP_COLOR);
+	g_player_bottom = new Player("player_bottom", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_BOTTOM_COLOR);
 	g_ball = new Ball(4);
 };
 
@@ -85,21 +91,21 @@ function handle_scores() {
 function display_winner(winning_player) {
 	g_ball.stop();
 
-	if (winning_player === 'player_one') {
+	if (winning_player === 'player_left') {
 		g_winner = g_player_left.name;
-		g_board_winning_text = g_winner + " a gagné!";
+		g_board_winning_text = g_player_left.name + " a gagné!";
 	}
-	else if (winning_player === 'player_two') {
+	else if (winning_player === 'player_right') {
 		g_winner = g_player_right.name;
-		g_board_winning_text = g_winner + " a gagné!";
+		g_board_winning_text = g_player_right.name + " a gagné!";
 	}
-	else if (winning_player === 'player_three') {
+	else if (winning_player === 'player_top') {
 		g_winner = g_player_top.name;
-		g_board_winning_text = g_winner + " a gagné!";
+		g_board_winning_text = g_player_top.name + " a gagné!";
 	}
-	else if (winning_player === 'player_four') {
+	else if (winning_player === 'player_bottom') {
 		g_winner = g_player_bottom.name;
-		g_board_winning_text = g_winner + " a gagné!";
+		g_board_winning_text = g_player_bottom.name + " a gagné!";
 	}
 };
 
@@ -107,34 +113,46 @@ function display_winner(winning_player) {
 
 function handleKeyDown(e) {
 	if (g_game_running) {
-		if (!g_keys[e.code] && (e.code == 'KeyW' || e.code == 'KeyS')) {
-			var up = false;
-			if (e.code == 'KeyW') {
-				up = true;
+		if (g_position === "player_left" || g_position === "player_right") {
+			if (!g_keys[e.code] && (e.code == 'KeyW' || e.code == 'KeyS')) {
+				var up = false;
+				if (e.code == 'KeyW') {
+					up = true;
+				}
+				g_keys[e.code] = true;
+				sendMessageToServer({type: 'set_player_movement', player: g_position, is_moving: true,
+										direction_v: up, direction_h: false});
 			}
-			g_keys[e.code] = true;
-			sendMessageToServer({type: 'set_player_movement', player: g_position, is_moving: true, direction_v: up});
 		}
-		if (!g_keys[e.code] && (e.code == 'KeyJ' || e.code == 'KeyK')) {
-			var left = false;
-			if (e.code == 'KeyJ') {
-				left = true;
+		else {
+			if (!g_keys[e.code] && (e.code == 'KeyJ' || e.code == 'KeyK')) {
+				var left = false;
+				if (e.code == 'KeyJ') {
+					left = true;
+				}
+				g_keys[e.code] = true;
+				sendMessageToServer({type: 'set_player_movement', player: g_position, is_moving: true,
+										direction_h: left, direction_v: false});
 			}
-			g_keys[e.code] = true;
-			sendMessageToServer({type: 'set_player_movement', player: g_position, is_moving: true, direction_h: left});
 		}
 	}
 };
 
 function handleKeyUp(e) {
 	if (g_game_running) {
-		if (e.code == 'KeyW' || e.code == 'KeyS') {
-			g_keys[e.code] = false;
-			sendMessageToServer({type: 'set_player_movement', player: g_position, is_moving: false, direction_v: 0});
+		if (g_position === "player_left" || g_position === "player_right") {
+			if (e.code == 'KeyW' || e.code == 'KeyS') {
+				g_keys[e.code] = false;
+				sendMessageToServer({type: 'set_player_movement', player: g_position, is_moving: false,
+										direction_v: 0, direction_h: false});
+			}
 		}
-		if (e.code == 'KeyJ' || e.code == 'KeyK') {
-			g_keys[e.code] = false;
-			sendMessageToServer({type: 'set_player_movement', player: g_position, is_moving: false, direction_h: 0});
+		else {
+			if (e.code == 'KeyJ' || e.code == 'KeyK') {
+				g_keys[e.code] = false;
+				sendMessageToServer({type: 'set_player_movement', player: g_position, is_moving: false,
+										direction_h: 0, direction_v: false});
+			}
 		}
 	}
 };
@@ -147,10 +165,11 @@ function initControls() {
 /* -------------------------------- GameState ------------------------------- */
 
 function updateGameState(data) {
-	g_player_left.y = data.player_one_pos_y;
-	g_player_right.y = data.player_two_pos_y;
-	g_player_top.x = data.player_three_pos_x;
-	g_player_bottom.x = data.player_four_pos_x;
+	g_player_left.y = data.player_left_y;
+	g_player_right.y = data.player_right_y;
+	g_player_top.x = data.player_top_x;
+	g_player_bottom.x = data.player_bottom_x;
+
 	g_ball.x = data.ball_x;
 	g_ball.y = data.ball_y;
 
@@ -158,22 +177,22 @@ function updateGameState(data) {
 		g_ball.setcolor(data.ball_color);
 	}
 
-	if (data.player_one_score != g_player_left.score) {
+	if (data.player_left_score != g_player_left.score) {
 		g_player_left.score += 1;
 		handle_scores();
 	}
 
-	if (data.player_two_score != g_player_right.score) {
+	if (data.player_right_score != g_player_right.score) {
 		g_player_right.score += 1;
 		handle_scores();
 	}
 
-	if (data.player_three_score != g_player_top.score) {
+	if (data.player_top_score != g_player_top.score) {
 		g_player_top.score += 1;
 		handle_scores();
 	}
 
-	if (data.player_four_score != g_player_bottom.score) {
+	if (data.player_bottom_score != g_player_bottom.score) {
 		g_player_bottom.score += 1;
 		handle_scores();
 	}
@@ -297,7 +316,7 @@ function setPositionStyleUpdate(data) {
 		g_player_top.set_name(data.name);
 		g_top_container.classList.add("text-decoration-underline");
 		g_top_container.style.color = constants.FOUR_PLAYER_TOP_COLOR;
-		instructions.innerHTML = "Ton camp est au sommet. Utilise les touches J et K pour bouger";
+		instructions.innerHTML = "Ton camp est en haut. Utilise les touches J et K pour bouger";
 		instructions.style.color = constants.FOUR_PLAYER_TOP_COLOR;
 	}
 	else if (g_position === "player_bottom") {
@@ -330,21 +349,13 @@ function gameStartStyleUpdate(data) {
  * Starts the game and initializes the WebSocket connection.
  */
 export function startGame() {
-	ws = new WebSocket(wsurl);
+	g_websocket = new WebSocket(wsurl);
 
-	// Remove the underline if it is already present
-	if (g_top_container.classList.contains("text-decoration-underline")) {
-		g_top_container.classList.remove("text-decoration-underline");
-	}
-	if (g_bottom_container.classList.contains("text-decoration-underline")) {
-		g_bottom_container.classList.remove("text-decoration-underline");
-	}
-	if (g_left_container.classList.contains("text-decoration-underline")) {
-		g_left_container.classList.remove("text-decoration-underline");
-	}
-	if (g_right_container.classList.contains("text-decoration-underline")) {
-		g_right_container.classList.remove("text-decoration-underline");
-	}
+	// Remove a possible underline from the player's name
+	g_top_container.classList.remove("text-decoration-underline");
+	g_bottom_container.classList.remove("text-decoration-underline");
+	g_left_container.classList.remove("text-decoration-underline");
+	g_right_container.classList.remove("text-decoration-underline");
 
 	if (g_first_launch) {
 		initDisplay();
@@ -353,11 +364,11 @@ export function startGame() {
 
 	initArena();
 
-	ws.onopen = () => {
+	g_websocket.onopen = () => {
 		console.log('Websocket connected');
 	}
 
-	ws.onmessage = (e) => {
+	g_websocket.onmessage = (e) => {
 		/**
 		 * Possible types: set_position, game_start, game_state, game_end
 		 *
@@ -382,7 +393,7 @@ export function startGame() {
 			gameStartStyleUpdate(data);
 
 			g_game_running = true;
-			g_ball.get_update(constants.WIN_WIDTH / 2, constants.FOUR_WIN_HEIGHT / 2, 1, 0, 0xffffff);
+			g_ball.get_update(constants.WIN_WIDTH / 2, constants.FOUR_WIN_HEIGHT / 2, 1, 0, "white");
 			initControls();
 		}
 
@@ -390,15 +401,21 @@ export function startGame() {
 			updateGameState(data);
 		}
 
+		if (data.type === 'player_disconnect') {
+			g_game_running = false;
+			console.log('Player ' + data.player_pos + ' disconnected');
+			g_websocket.close();
+		}
+
 		if (data.type === 'game_end') {
 			g_game_running = false;
 			console.log('Game over');
 			display_winner(data.winner);
-			ws.close();
+			g_websocket.close();
 		}
 	};
 
-	ws.onclose = () => {
+	g_websocket.onclose = () => {
 		console.log('Websocket closed');
 	}
 

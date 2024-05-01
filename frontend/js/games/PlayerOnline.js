@@ -8,21 +8,21 @@ export class Player {
 				if (game_mode == 2)
 					this.y = (constants.WIN_HEIGHT - constants.PADDLE_HEIGHT) / 2;
 				else
-					this.y = (constants.FOUR_WIN_HEIGHT - constants.PADDLE_HEIGHT) / 2;
+					this.y = (constants.FOUR_WIN_HEIGHT / 2 - constants.PADDLE_HEIGHT / 2);
 				break;
 			case "player_right":
 				this.x = constants.WIN_WIDTH - constants.PADDLE_WIDTH - 10;
 				if (game_mode == 2)
 					this.y = (constants.WIN_HEIGHT - constants.PADDLE_HEIGHT) / 2;
 				else
-					this.y = (constants.FOUR_WIN_HEIGHT - constants.PADDLE_HEIGHT) / 2;
+					this.y = (constants.FOUR_WIN_HEIGHT / 2) - (constants.PADDLE_HEIGHT / 2);
 				break;
 			case "player_top":
-				this.x = (constants.WIN_WIDTH - constants.PADDLE_HEIGHT) / 2;
+				this.x = (constants.WIN_WIDTH / 2) - (constants.PADDLE_HEIGHT / 2);
 				this.y = 10;
 				break;
 			case "player_bottom":
-				this.x = (constants.WIN_WIDTH - constants.PADDLE_HEIGHT) / 2;
+				this.x = (constants.WIN_WIDTH / 2) - (constants.PADDLE_HEIGHT / 2);
 				this.y = constants.FOUR_WIN_HEIGHT - constants.PADDLE_WIDTH - 10;
 				break;
 		}

@@ -72,7 +72,7 @@ function listenerGameHistory() {
 								${game.score_user1}
 							</div>
 						</div>
-						<div class="col mt-2">VS</div>
+						<div class="col mt-2 align-self-center">VS</div>
 						<div class="col mt-2">
 							<div class="d-inline" id="game__historyFour--${game_index}--two">
 								${game.user2.username}
@@ -80,7 +80,7 @@ function listenerGameHistory() {
 								${game.score_user2}
 							</div>
 						</div>
-						<div class="col mt-2">VS</div>
+						<div class="col mt-2 align-self-center">VS</div>
 						<div class="col mt-2">
 							<div class="d-inline" id="game__historyFour--${game_index}--three">
 								${game.user3.username}
@@ -88,7 +88,7 @@ function listenerGameHistory() {
 								${game.score_user3}
 							</div>
 						</div>
-						<div class="col mt-2">VS</div>
+						<div class="col mt-2 align-self-center">VS</div>
 						<div class="col mt-2">
 							<div class="d-inline" id="game__historyFour--${game_index}--four">
 								${game.user4.username}
@@ -97,7 +97,7 @@ function listenerGameHistory() {
 							</div>
 						</div>
 						<div class="mb-2" id="game__historyFour--${game_index}--date">
-							Le ${date[0]} à ${date[1]}
+							Le ${date[0]} à ${date[1].split(".")[0]}
 						</div>
 					</div>
 				`;
@@ -146,18 +146,17 @@ async function loadGameHistory() {
 
 		const response = await fetch(hostnameport + '/api/gamehistory/', init);
 
-		if (response.status === 403 || !response.ok) {
+		if (!response.ok) {
 			const text = await response.text();
 			throw new Error(text);
 		}
 		else if (response.status === 200) {
 			data_2_json = await response.json();
 
-			/*
 			try {
 				const responseFour = await fetch(hostnameport + '/api/gamehistoryfour/', init);
 
-				if (responseFour.status === 403 || !responseFour.ok) {
+				if (!responseFour.ok) {
 					const error = await responseFour.text();
 					throw new Error(error);
 				}
@@ -167,7 +166,6 @@ async function loadGameHistory() {
 			} catch (e) {
 				console.error(e);
 			}
-			*/
 		}
 		return 1;
 	} catch (e) {
