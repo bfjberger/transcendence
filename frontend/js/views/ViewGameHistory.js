@@ -13,6 +13,7 @@ export default function renderGameHistory() {
 		<div class="text-center row border-bottom border-primary">
 			<h1>Historique des parties 4 Joueurs jouée(s) : </h1>
 			<div id="game__historyFour--main">
+			</div>
 		</div>
 
 	`;

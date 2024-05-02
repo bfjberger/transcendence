@@ -56,3 +56,13 @@
 .collapse__myStats--color--context {
 	color: rgb(186, 119, 199);
 }
+
+#game_historyTwoMain {
+	overflow-y: auto;
+	height: 400px;
+}
+
+#game_historyFourMain {
+	overflow-y: auto;
+	height: 400px;
+}

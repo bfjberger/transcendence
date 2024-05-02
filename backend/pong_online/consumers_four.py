@@ -198,6 +198,8 @@ class RoomConsumerFour(AsyncWebsocketConsumer):
 		self.room_name = self.manager.room_available()
 		self.game_state_obj = self.manager.rooms.get(self.room_name)
 		player = await sync_to_async(Player.objects.get)(owner=user)
+		player.status = "PLAYING"
+		await sync_to_async(player.save)()
 
 		if len(self.game_state_obj.players) == 0:
 			self.position = 'player_left'
