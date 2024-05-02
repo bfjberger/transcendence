@@ -149,9 +149,13 @@ class GameStateFour:
 		if winner_pos is not None:
 			winner = self.players[winner_pos].player_model
 			await sync_to_async(winner.record_win)('4p', self.players[winner_pos].score)
+			winner.status = "ONLINE"
+			await sync_to_async(winner.save)()
 			for loser_pos in losers_pos:
 				loser = self.players[loser_pos].player_model
 				await sync_to_async(loser.record_loss)('4p', self.players[loser_pos].score)
+				loser.status = "ONLINE"
+				await sync_to_async(loser.save)()
 		if winner_pos is not None and loser_pos is not None:
 			winner = self.players[winner_pos].player_model
 			if winner != "Not enough players":
