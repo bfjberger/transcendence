@@ -17,43 +17,109 @@
 		integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 	</head>
 	<body>
-		<div class="container-fluid bg-primary-subtle">
-			<div class="row">
-				<header class="navbar">
-					<div class="col-md-1 d-flex justify-content-center">
-						<button class="btn btn-outline-secondary nav__link" id="navbar__btn--home" type="button" value="index">
-							<img src="/frontend/img/42_logo.svg" alt="logo 42" width="42" height="30"/>
-						</button>
+		<div id="topbar" class="container-fluid text-white">
+			<header class="navbar">
+				<div class="col-md-2 d-flex justify-content-center">
+					<button class="btn btn-outline-secondary nav__link" id="navbar__btn--home" type="button" value="index">
+						<img src="/frontend/img/42_logo.svg" alt="logo 42" width="42" height="30"/>
+					</button>
+				</div>
+				<div class="col-md-8"></div>
+				<div class="col-md-2">
+					<div>
+						<span>
+							<span id="topbar__profile" href="profile">
+								<span id="topbar__profile--username"></span>
+								<img src="" alt="" id="topbar__profile--avatar" class="rounded-circle" width="30" height="30">
+							</span>
+							|
+							<span id="topbar__logout">
+								Logout
+							</span>
+						</span>
 					</div>
-					<div class="col-md-10"></div>
-					<div class="col-md-1 text-end pe-3">
-						<div class="dropdown">
-							<button class="btn btn-outline-secondary" id="navbar__btn--user" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-								<span id="navbar__btn--text" class="pe-1"></span>
-								<img src="/frontend/img/person-circle-Bootstrap.svg" alt="temp avatar" id="navbar__btn--avatar" width="30" height="30" class="rounded-circle"/>
-							</button>
-							<ul class="dropdown-menu animate slideIn">
-								<li>
-									<button class="btn text-primary dropdown-item nav__link" type="button" value="profile">
+				</div>
+			</header>
+		</div>
+		<div id="menu" class="container border-bottom">
+			<span class="row">
+				<table>
+					<tbody>
+						<tr>
+							<td>
+								<div class="col-2 dropdown menu__item">
+									<span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+										1 v 1
+									</span>
+									<ul class="dropdown-menu">
+										<li>
+											<a href="twoplayer">Local</a>
+										</li>
+										<li>
+											<a href="twoplayeronline">En ligne</a>
+										</li>
+										<li>
+											<a href="twoplayeria">Entrainement (IA)</a>
+										</li>
+									</ul>
+								</div>
+								<div class="col-2 dropdown menu__item">
+									<span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+										Multi Joueurs à 4
+									</span>
+									<ul class="dropdown-menu">
+										<li>
+											<a href="fourplayer">Local</a>
+										</li>
+										<li>
+											<a href="fourplayeronline">En ligne</a>
+										</li>
+									</ul>
+								</div>
+								<div class="col-2 dropdown menu__item">
+									<span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+										Tournoi
+									</span>
+									<ul class="dropdown-menu">
+										<li>
+											<a href="tournament">Local</a>
+										</li>
+										<li>
+											<a href="tournamentonline">En ligne</a>
+										</li>
+									</ul>
+								</div>
+								<div class="col-2">
+									<a href="friend">Amis</a>
+								</div>
+							</td>
+							<td>
+								<div class="col-4 offset-2 dropdown menu__item">
+									<span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"">
 										Profile
-									</button>
-								</li>
-								<li>
-									<button class="btn text-danger dropdown-item" type="button" id="logout">
-										logout
-										<img src="/frontend/img/box-arrow-left.svg" alt="logout" width="15" height="15">
-									</button>
-								</li>
-							</ul>
-						</div>
-					</div>
-				</header>
-			</div>
+									</span>
+									<ul class="dropdown-menu">
+										<li>
+											<a href="gamehistory">Historique des parties</a>
+										</li>
+										<li>
+											<a href="stats">Statistiques</a>
+										</li>
+										<li>
+											<a href="changeinfo">Modifier mes informations</a>
+										</li>
+									</ul>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</span>
 		</div>
 		<div class="container-fluid">
 			<div class="row">
 				<!-- SIDEBAR -->
-				<div class="col-auto px-1 text-bg-secondary" id="sidebar-left">
+				<div class="col-auto px-1 bg-dark-subtle" id="sidebar-left">
 					<div class="d-flex align-items-center flex-column px-3 pt-2 min-vh-100" >
 						<ul class="nav nav-pills flex-column">
 							<li class="nav-item">

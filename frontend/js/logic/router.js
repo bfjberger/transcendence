@@ -172,9 +172,9 @@ export default async function router(value) {
 	if (await page.load() === 1) {
 		document.getElementById("main__content").innerHTML = page.view();
 
-		document.getElementById("navbar__btn--text").textContent = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
-		document.getElementById("navbar__btn--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
-		document.getElementById("navbar__btn--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
+		document.getElementById("topbar__profile--username").textContent = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
+		document.getElementById("topbar__profile--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
+		document.getElementById("topbar__profile--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
 
 		document.title = page.title;
 
@@ -209,9 +209,9 @@ window.addEventListener("popstate", async (e) => {
 	if (await page.load() === 1) {
 		document.getElementById("main__content").innerHTML = page.view();
 
-		document.getElementById("navbar__btn--text").textContent = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
-		document.getElementById("navbar__btn--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
-		document.getElementById("navbar__btn--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
+		document.getElementById("topbar__profile--username").textContent = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
+		document.getElementById("topbar__profile--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
+		document.getElementById("topbar__profile--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
 
 		document.title = page.title;
 
@@ -235,9 +235,9 @@ window.onload = async function() {
 			if (await routes[route].load() === 1) {
 				document.getElementById('main__content').innerHTML = routes[route].view();  // Render the HTML content for the page
 
-				document.getElementById("navbar__btn--text").textContent = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
-				document.getElementById("navbar__btn--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
-				document.getElementById("navbar__btn--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
+				document.getElementById("topbar__profile--username").textContent = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
+				document.getElementById("topbar__profile--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
+				document.getElementById("topbar__profile--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
 
 				document.title = routes[route].title;
 
@@ -295,14 +295,14 @@ async function load42Profile(code)
 
 			body: JSON.stringify({code: code})
 		};
-		
+
 
 		const response = await fetch(hostnameport + '/api/call_back/', init);
 
 		if (response.status == 200)
 		{
 			const data = await response.json()
-			
+
 			console.log("username " + data["username"])
 			console.log("avatar " + data["player"].avatar)
 			console.log("nickname " + data["player"].nickname)
@@ -316,8 +316,8 @@ async function load42Profile(code)
 			document.querySelectorAll(".nav__link").forEach(btn => {
 				btn.removeAttribute("disabled");
 			});
-			document.getElementById("navbar__btn--user").removeAttribute("disabled");
-			document.getElementById("logout").removeAttribute("disabled");
+			document.getElementById("topbar__profile--username").removeAttribute("disabled");
+			document.getElementById("topbar__logout").removeAttribute("disabled");
 
 
 
@@ -354,7 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		loadIndex();
 	}
 
-	document.getElementById("logout").addEventListener("click", (e) => {
+	document.getElementById("topbar__logout").addEventListener("click", (e) => {
 		e.preventDefault();
 		handleLogout();
 	});
