@@ -334,7 +334,7 @@ async function loadTwoPlayersOnline() {
 	};
 
 	try {
-		let hostnameport = "http://" + window.location.host;
+		let hostnameport = "https://" + window.location.host;
 
 		const response = await fetch(hostnameport + '/api/twoplayeronline/', init);
 

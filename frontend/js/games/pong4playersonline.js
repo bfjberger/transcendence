@@ -426,7 +426,7 @@ async function loadFourPlayersOnline() {
 	};
 
 	try {
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
 
 		const response = await fetch(hostnameport + '/api/fourplayeronline/', init);
 

@@ -140,7 +140,7 @@ async function handleLogout() {
 
 	try {
 
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
 
 		const response = await fetch(hostnameport + '/api/logout/', init);
 
@@ -183,7 +183,10 @@ export default async function router(value) {
 		page.listener();
 	}
 	else
+	{
+		console.log("page.load n a pas renvoyé 1");
 		router("login");
+	}
 };
 
 /**
@@ -259,7 +262,7 @@ async function loadIndex() {
 
 	try {
 
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
 
 		const response = await fetch(hostnameport + '/api/index/');
 
@@ -282,7 +285,7 @@ function called when the user try to login with 42 app
 async function load42Profile(code)
 {
 	try {
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
 
 		const init = {
 			method: 'POST',

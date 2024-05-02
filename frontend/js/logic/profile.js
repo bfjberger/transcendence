@@ -28,7 +28,7 @@ async function updateNickname(nicknameForm) {
 	};
 
 	try {
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
 
 		const response = await fetch(hostnameport + '/api/profile/', init);
 
@@ -81,7 +81,7 @@ async function updatePassword(passwordForm) {
 
 	try {
 
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
 
 		const response = await fetch(hostnameport + '/api/profile/', init);
 
@@ -123,7 +123,7 @@ async function updateAvatar(avatarForm) {
 
 	try {
 
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
 
 		const response = await fetch(hostnameport + '/api/updateavatar/', init);
 
@@ -252,7 +252,7 @@ async function loadProfile() {
 
 	try {
 
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
 
 		const response = await fetch(hostnameport + '/api/profile/', init);
 

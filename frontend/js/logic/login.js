@@ -20,7 +20,9 @@ async function connectUser(loginForm) {
 
 	try {
 
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
+
+		console.log("connectUser : " + hostnameport)
 
 		const response = await fetch(hostnameport + '/api/login/', init); // will use another URL
 
@@ -35,7 +37,7 @@ async function connectUser(loginForm) {
 
 			const data = await response.json();
 
-			console.log("data = ", data)
+			console.log("data du user qui veut se connecter = ", data)
 
 			sessionStorage.setItem("username", data["username"]);
 			sessionStorage.setItem("avatar", data["player"].avatar);
@@ -81,7 +83,7 @@ async function createUser(createAccountForm) {
 	};
 
 	try {
-		let hostnameport = "http://" + window.location.host;
+		let hostnameport = "https://" + window.location.host;
 
 		const response = await fetch(hostnameport + '/api/register/', init);
 
@@ -107,13 +109,11 @@ async function createUser(createAccountForm) {
 	}
 };
 
-
-
 async function connectUser42() {
 
 	try {
 
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
 
 		const response = await fetch(hostnameport + '/api/accounts/');
 
@@ -192,7 +192,7 @@ async function loadLogin() {
 
 	try {
 
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
 
 		const response = await fetch(hostnameport + '/api/index/');
 

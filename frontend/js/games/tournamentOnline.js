@@ -36,7 +36,7 @@ function createTournament() {
 
 function loadTournaments() {
 
-	let hostnameport = "http://" + window.location.host
+	let hostnameport = "https://" + window.location.host
 
 	fetch('/api/tournaments/load_tournaments/') 
 		.then(response => response.json())

@@ -23,8 +23,13 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ") # 127.0.0.1 et 10.11.1.2
-CSRF_TRUSTED_ORIGINS = ["http://localhost:7890", "http://10.11.1.2:7890", "http://10.12.8.4:7890"]
-CSRF_ALLOWED_ORIGINS = ["http://localhost:7890", "http://10.11.1.2:7890", "http://10.12.8.4:7890"]
+CSRF_TRUSTED_ORIGINS = ["https://localhost", "http://localhost"]
+CSRF_ALLOWED_ORIGINS = ["https://localhost", "http://localhost"]
+
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_DOMAIN = "localhost"
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -158,7 +163,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # CORS_ALLOWED_ORIGINS = [
-#     'http://localhost:7890',
+#     'http://localhost:80',
 # ]
 
 ASGI_APPLICATION = 'bck_django.asgi.application'
@@ -180,8 +185,8 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-LOGIN_REDIRECT_URL = 'http://localhost:7890'
-LOGOUT_REDIRECT_URL = 'http://localhost:7890'
+LOGIN_REDIRECT_URL = 'https://localhost'
+LOGOUT_REDIRECT_URL = 'https://localhost'
 
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

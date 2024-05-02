@@ -59,6 +59,7 @@ class LoginView(APIView):
 			serializer.is_valid(raise_exception=True)
 		except serializers.ValidationError:
 			return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+		
 		user = serializer.validated_data['user']
 		login(request, user)
 
