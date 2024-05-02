@@ -1,6 +1,7 @@
 import { 
 	loadContent,
 	loadContent2,
+	leaveRoomName,
 } from "./tournamentOnline.js";
 
 import { renderTournamentOnline } from "../views/viewTournament.js";
@@ -156,7 +157,8 @@ function set_g_tournament_name() {
 			if (!g_data || !g_data.tournaments || !g_data.tournaments[0].name) {
 				throw new Error('g_data or g_data.tournaments or g_data.tournaments[0].name is not defined');
 			}
-			g_tournament_name = g_data.tournaments[0].name;
+			// g_tournament_name = g_data.tournaments[0].name;
+			// let's say the tournament_name in the loader
 			resolve(g_tournament_name);
 		} catch (error) {
 			reject(error);
@@ -252,9 +254,18 @@ function add_start_btn_listener() {
 /* ------------------------------- Page listener ---------------------------- */
 
 function listenerTournamentRoom() {
+	const navbarItems = document.querySelectorAll('.nav__link');
+	navbarItems.forEach(item => {
+		item.addEventListener('click', () => {
+			if (g_socket instanceof WebSocket && g_socket.readyState === WebSocket.OPEN) {
+				g_socket.close();
+				leaveRoomName(g_tournament_name);
+			}
+		});
+	});
 }
 
-async function loadTournamentRoom() {
+async function loadTournamentRoom(tournament_name) {
 	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 	
 
@@ -286,6 +297,10 @@ async function loadTournamentRoom() {
 		// console.log("g_data: ", g_data);
 		// !!! Attention, the tournament index may cause an error, would later be better to only allow 1 tournament in player's list
 		console.log("g_data.tournaments[0].name: ", g_data.tournaments[0].name);
+		// tournament_name
+		console.log("tournament_name: ", tournament_name);
+		g_tournament_name = tournament_name;
+
 		load_create_online();
 
 		return 1;
