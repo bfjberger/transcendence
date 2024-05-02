@@ -374,7 +374,7 @@ async function loadFourPlayers() {
 
 	try {
 
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
 
 		const response = await fetch(hostnameport + '/api/fourplayer/', init);
 

@@ -46,7 +46,7 @@ async function delete_friend(username) {
 	};
 
 	try {
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
 
 		const response = await fetch(hostnameport + '/api/friends/delete/', init);
 
@@ -83,7 +83,7 @@ async function patch_friend_accept(username) {
 	};
 
 	try {
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
 		const response = await fetch(hostnameport + '/api/friends/accept/', init);
 
 		if (response.status != 200)
@@ -158,7 +158,7 @@ async function post_friend(form_post_friend) {
 	};
 
 	try {
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
 
 		const response = await fetch(hostnameport + '/api/friends/create/', init);
 
@@ -190,7 +190,7 @@ async function loadFriends() {
 	};
 
 	try {
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
 		const response_list_initiated = await fetch(hostnameport + '/api/friends/?type=initiated', init);
 		const response_list_received = await fetch(hostnameport + '/api/friends/?type=received', init)
 		const response_list_initiated_accepted = await fetch(hostnameport + '/api/friends/?type=initiated_accpeted', init)

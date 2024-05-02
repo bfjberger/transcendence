@@ -297,7 +297,7 @@ async function loadTwoPlayers() {
 
 	try {
 
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
 
 		const response = await fetch(hostnameport +'/api/twoplayer/', init);
 

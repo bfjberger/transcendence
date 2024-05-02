@@ -9,7 +9,7 @@ import * as constants from './Constants.js'
  *
 */
 
-const wsurl = 'ws://' + window.location.host + '/ws/gameFour/'; // link to websocket
+const wsurl = 'wss://' + window.location.host + '/wss/gameFour/'; // link to websocket
 let g_websocket; // websocket
 
 /**
@@ -462,7 +462,7 @@ async function loadFourPlayersOnline() {
 	};
 
 	try {
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
 
 		const response = await fetch(hostnameport + '/api/fourplayeronline/', init);
 

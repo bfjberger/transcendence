@@ -9,7 +9,7 @@ import {g_socket, g_alias} from './tournamentRoom.js';
  * TODO:[] Add a matchmaking placeholder
  */
 
-const wsurl = 'ws://' + window.location.host + '/ws/gameTwo/'; // link to websocket
+const wsurl = 'wss://' + window.location.host + '/wss/gameTwo/'; // link to websocket
 let g_websocket; // websocket
 
 /**
@@ -392,7 +392,7 @@ async function loadTwoPlayersOnline() {
 	};
 
 	try {
-		let hostnameport = "http://" + window.location.host;
+		let hostnameport = "https://" + window.location.host;
 
 		const response = await fetch(hostnameport + '/api/twoplayeronline/', init);
 

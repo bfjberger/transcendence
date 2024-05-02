@@ -8,7 +8,8 @@ services:
       dockerfile: Dockerfile.nginx
     restart: unless-stopped
     ports:
-      - 7890:80
+      - 80:80
+      - 443:443
     networks:
       - ft_transcendance
     volumes:

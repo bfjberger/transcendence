@@ -52,7 +52,7 @@ function createTournament() {
 	const visibility = document.querySelector('input[name="visibility"]:checked').value;
 	const password = document.getElementById('password').value;
 	
-	let hostnameport = "http://" + window.location.host
+	let hostnameport = "https://" + window.location.host
 
 
 	fetch('/api/tournaments/', {
@@ -81,7 +81,7 @@ function createTournament() {
 // Function to list all tournaments
 function loadTournaments() {
 
-	let hostnameport = "http://" + window.location.host;
+	let hostnameport = "https://" + window.location.host
 
 	fetch('/api/tournaments/load_tournaments/') 
 		.then(response => response.json())
