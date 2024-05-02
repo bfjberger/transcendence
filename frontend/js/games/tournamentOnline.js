@@ -134,13 +134,13 @@ function joinRoom(tournamentName) {
 		.then(response => {
 			if (response.ok) {
 				// Handle success response
-				console.log('Successfully joined tournament');
 				tournament_name = tournamentName;
+				console.log('Successfully joined tournament: ', tournament_name);
 				loadContent(renderTournamentRoom, 'main__content');
 				handleRoom.listenerTournamentRoom();
-				handleRoom.loadTournamentRoom();
-				listPlayersInRoom();
-				listenerRoom();
+				handleRoom.loadTournamentRoom(tournament_name);
+				// listPlayersInRoom();
+				// listenerRoom();
 			} else {
 				// Handle error response
 				console.error('Failed to join tournament');
@@ -176,6 +176,32 @@ function leaveRoom() {
 			console.error('Error:', error);
 		});
 }
+
+export function leaveRoomName(tournamentName) {
+	fetch(`/api/tournaments/${tournamentName}/leave_tournament/`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': getCookie('csrftoken') // Ensure to include CSRF token
+		},
+	})
+		.then(response => {
+			if (response.ok) {
+				// Handle success response
+				console.log('Successfully left tournament: ', tournamentName);
+				loadContent(renderTournamentOnline, 'main__content');
+				listenerTournamentOnline();
+			} else {
+				// Handle error response
+				console.error('Failed to leave tournament');
+				console.error(response);
+			}
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
+}
+
 
 function listenerRoom() {
 	const leaveRoomButton = document.getElementById('leave-room-button');

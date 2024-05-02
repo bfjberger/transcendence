@@ -91,20 +91,9 @@ export function renderTournamentRoom() {
 	return `
 			<div id="tournament-room">
 				<h1 id="tournament-name"></h1>
-
-				<div id="players-list">
-					<!-- List of players will be displayed here -->
-				</div>
-				<br>
-				<div id="lobby-container">
-					<!-- Lobby container will be displayed here -->
-				</div>
-				<p id="infoElement"></p>
-				<div id="playerField"></div>
-
-				<button id="start-tournament-button">Start Tournament</button>
-				<button id="leave-room-button">Leave Room</button>
 			</div>
+
+			<br>
 			<div id="infoElement"></div>
 			<div id="playerField"></div>
 			<div class="row">
