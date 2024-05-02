@@ -1,7 +1,51 @@
 import { renderTournamentRoom } from '../views/viewTournament.js';
 import { renderTournamentOnline } from '../views/viewTournament.js';
+import { renderTournamentLobby } from '../views/viewTournament.js';
+
+import handleRoom from './tournamentRoom.js';
+
+// TODO: Need to think about what ui elements to add
+// TODO: Change the logic of the room creation / joining maybe it would be better to invite ?
+
+// Function to load content into an element
+export function loadContent(viewFunction, elementId) {
+	try {
+		const htmlContent = viewFunction();
+		document.getElementById(elementId).innerHTML = htmlContent;
+		// Need to attach existing event listeners ?
+	} catch (error) {
+		console.error("Error loading content: ", error);
+	}
+}
+
+export function loadContent2(viewFunction, elementId) {
+    return new Promise((resolve, reject) => {
+        try {
+            const htmlContent = viewFunction();
+            document.getElementById(elementId).innerHTML = htmlContent;
+            resolve();
+        } catch (error) {
+            console.error("Error loading content: ", error);
+            reject(error);
+        }
+    });
+}
+
+
+export function loadContentWithListener(viewFunction, elementId, listenerFunction) {
+	try {
+		const htmlContent = viewFunction();
+		document.getElementById(elementId).innerHTML = htmlContent;
+		listenerFunction();
+	} catch (error) {
+		console.error("Error loading content: ", error);
+	}
+}
+
+/* -------------------------------------------------------------------------- */
 
 let tournament_name = '';
+let g_data = {};
 
 function createTournament() {
 	const name = document.getElementById('name').value;
@@ -34,9 +78,10 @@ function createTournament() {
 		});
 }
 
+// Function to list all tournaments
 function loadTournaments() {
 
-	let hostnameport = "http://" + window.location.host
+	let hostnameport = "http://" + window.location.host;
 
 	fetch('/api/tournaments/load_tournaments/') 
 		.then(response => response.json())
@@ -61,7 +106,7 @@ function loadTournaments() {
 				joinButton.addEventListener('click', (function(tournament, passwordInput) {
 					return function() {
 						// Handle join button click
-						console.log('Joining tournament:', tournament.name, 'with password:', passwordInput.value);
+						// console.log('Joining tournament:', tournament.name, 'with password:', passwordInput.value);
 						joinRoom(tournament.name);
 					};
 				})(tournament, passwordInput));
@@ -78,36 +123,6 @@ function loadTournaments() {
 		});
 }
 
-
-// function joinRoom(tournamentName) {
-// 	fetch(`/api/tournaments/join_tournament/`, {
-// 		method: 'POST',
-// 		headers: {
-// 			'Content-Type': 'application/json',
-// 			'X-CSRFToken': getCookie('csrftoken') // Ensure to include CSRF token
-// 		},
-// 		body: JSON.stringify({"name": tournamentName}),
-// 	})
-// 		.then(response => {
-// 			if (response.ok) {
-// 				// Handle success response
-// 				console.log('Successfully joined tournament');
-// 				tournament_name = tournamentName;
-// 				document.getElementById('main__content').innerHTML = renderTournamentRoom();
-// 				loadRoom();
-// 				listenerRoom();
-
-// 			} else {
-// 				// Handle error response
-// 				console.error('Failed to join tournament');
-// 				console.error(response);
-// 			}
-// 		})
-// 		.catch(error => {
-// 			console.error('Error:', error);
-// 		});
-// }
-
 function joinRoom(tournamentName) {
 	fetch(`/api/tournaments/${tournamentName}/join_tournament/`, {
 		method: 'POST',
@@ -119,11 +134,13 @@ function joinRoom(tournamentName) {
 		.then(response => {
 			if (response.ok) {
 				// Handle success response
-				console.log('Successfully joined tournament');
 				tournament_name = tournamentName;
-				document.getElementById('main__content').innerHTML = renderTournamentRoom();
-				loadRoom();
-				listenerRoom();
+				console.log('Successfully joined tournament: ', tournament_name);
+				loadContent(renderTournamentRoom, 'main__content');
+				handleRoom.listenerTournamentRoom();
+				handleRoom.loadTournamentRoom(tournament_name);
+				// listPlayersInRoom();
+				// listenerRoom();
 			} else {
 				// Handle error response
 				console.error('Failed to join tournament');
@@ -134,32 +151,6 @@ function joinRoom(tournamentName) {
 			console.error('Error:', error);
 		});
 }
-
-// function leaveRoom() {
-// 	fetch('/api/tournaments/leave_tournament/', {
-// 		method: 'POST',
-// 		headers: {
-// 			'Content-Type': 'application/json',
-// 			'X-CSRFToken': getCookie('csrftoken') // Ensure to include CSRF token
-// 		},
-// 		body: JSON.stringify({"name": tournament_name}),
-// 	})
-// 		.then(response => {
-// 			if (response.ok) {
-// 				// Handle success response
-// 				console.log('Successfully left tournament');
-// 				document.getElementById('main__content').innerHTML = renderTournamentOnline();
-// 				listenerTournamentOnline();
-// 			} else {
-// 				// Handle error response
-// 				console.error('Failed to leave tournament');
-// 				console.error(response);
-// 			}
-// 		})
-// 		.catch(error => {
-// 			console.error('Error:', error);
-// 		});
-// }
 
 function leaveRoom() {
 	fetch(`/api/tournaments/${tournament_name}/leave_tournament/`, {
@@ -173,7 +164,7 @@ function leaveRoom() {
 			if (response.ok) {
 				// Handle success response
 				console.log('Successfully left tournament');
-				document.getElementById('main__content').innerHTML = renderTournamentOnline();
+				loadContent(renderTournamentOnline, 'main__content');
 				listenerTournamentOnline();
 			} else {
 				// Handle error response
@@ -185,6 +176,32 @@ function leaveRoom() {
 			console.error('Error:', error);
 		});
 }
+
+export function leaveRoomName(tournamentName) {
+	fetch(`/api/tournaments/${tournamentName}/leave_tournament/`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': getCookie('csrftoken') // Ensure to include CSRF token
+		},
+	})
+		.then(response => {
+			if (response.ok) {
+				// Handle success response
+				console.log('Successfully left tournament: ', tournamentName);
+				loadContent(renderTournamentOnline, 'main__content');
+				listenerTournamentOnline();
+			} else {
+				// Handle error response
+				console.error('Failed to leave tournament');
+				console.error(response);
+			}
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
+}
+
 
 function listenerRoom() {
 	const leaveRoomButton = document.getElementById('leave-room-button');
@@ -201,11 +218,14 @@ function listenerRoom() {
 
 }
 
-function loadRoom() {
+//!!! Need to rework this function, adjust the router maybe to work with it
+// Function to list all players in the room
+function listPlayersInRoom() {
 	let divRoom = document.getElementById('tournament-room');
 	let tournamentName = document.getElementById('tournament-name');
 	let playersList = document.getElementById('players-list');
 
+	// console.log('Loading room:', tournament_name);
 	fetch(`/api/tournaments/${tournament_name}/load_players/`) 
 		.then(response => response.json())
 		.then(players => {
@@ -224,12 +244,6 @@ function loadRoom() {
 
 }
 
-
-
-
-
-
-
 /* ---------------------------------- Utils --------------------------------- */
 
 // Function to get CSRF token from cookies
@@ -247,16 +261,6 @@ function getCookie(name) {
 	}
 	return cookieValue;
 }
-
-
-
-
-
-
-
-
-
-
 
 /* ------------ Listener and loader for the tournamentOnline page ----------- */
 
@@ -282,20 +286,24 @@ async function loadTournamentOnline() {
 		}
 	};
 
-	// try {
-	// 	const response = await fetch('http://localhost:7890/api/tournamentOnline/', init); //! Change this to the correct URL
+	try {
+		const response = await fetch(`http://${window.location.host}/api/tournamentOnline/`, init); //! Change this to the correct URL
 
-	// 	if (response.status === 403) {
-	// 		const text = await response.text();
-	// 		throw new Error(text);
-	// 	}
+		if (!response.ok) {
+			const text = await response.text();
+			throw new Error(text);
+		}
 
-	// 	return 1;
-	// } catch (e) {
-	// 	console.error("loadTournamentOnline: " + e);
-	// 	return 0;
-	// }
-	return 1; // Added for testing
+		const data = await response.json();
+		g_data = data;
+		// console.log("g_data: ", g_data);
+		console.log("g_data.username: ", g_data.username);
+
+		return 1;
+	} catch (e) {
+		console.error("loadTournamentOnline: " + e);
+		return 0;
+	}
 };
 
 export default {

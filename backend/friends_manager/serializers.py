@@ -20,3 +20,8 @@ class FriendSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Friend
 		fields = ["user_initiated","user_received","accept"]
+
+class FriendSerializerPOST(serializers.ModelSerializer):
+	class Meta:
+		model = Friend
+		fields = '__all__'

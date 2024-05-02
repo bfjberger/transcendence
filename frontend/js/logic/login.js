@@ -35,6 +35,8 @@ async function connectUser(loginForm) {
 
 			const data = await response.json();
 
+			console.log("data = ", data)
+
 			sessionStorage.setItem("username", data["username"]);
 			sessionStorage.setItem("avatar", data["player"].avatar);
 			sessionStorage.setItem("nickname", data["player"].nickname);
@@ -105,40 +107,7 @@ async function createUser(createAccountForm) {
 	}
 };
 
-async function waitFor42() {
 
-	try {
-
-		let hostnameport = "http://" + window.location.host
-
-		const response = await fetch(hostnameport + '/api/call_back/');
-
-		if (!response.ok) {
-			throw new Error(`HTTP error, status = ${response.status}`);
-		}
-
-		const data = await response.json();
-		console.log(data);
-
-		// const interval = setInterval(async () => {
-		// 	const response = await fetch('http://localhost:7890/api/accounts/');
-
-		// 	if (!response.ok) {
-		// 		throw new Error(`HTTP error, status = ${response.status}`);
-		// 	}
-
-		// 	let data = await response.json();
-		// 	console.log(data);
-
-		// 	if (data["username"]) {
-		// 		clearInterval(interval);
-		// 		window.location.href = "http://localhost:7890/index/";
-		// 	}
-		// }, 1000);
-	} catch (e) {
-		console.error("waitFor42: ", e);
-	}
-};
 
 async function connectUser42() {
 
@@ -153,10 +122,10 @@ async function connectUser42() {
 		}
 
 		const address = await response.json()
-		console.log(address);
+		console.log("Voici l'adresse : " + address);
 
 		window.location.href = address;
-		waitFor42();
+		// waitFor42();
 	} catch (e) {
 		console.error("Error 42: ", e);
 	}

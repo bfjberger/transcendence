@@ -1,6 +1,9 @@
 import requests
 from django.core.files.base import ContentFile
+from django.utils.crypto import get_random_string
+
 from players_manager.models import Player
+from players_manager.serializers import DataSerializer
 
 from django.shortcuts import redirect
 from django.contrib.auth import login
@@ -18,6 +21,8 @@ from django.core.files.base import ContentFile
 from players_manager.serializers import PlayerSerializer
 from players_manager.models import Player
 
+from django.contrib.auth import authenticate
+
 
 from django.core.files import File
 from urllib.request import urlopen
@@ -30,29 +35,24 @@ class Accounts_view(APIView) :
     def get(self, request):
         # Step 1: Redirect user to 42 authorization URL
         authorization_url = 'https://api.intra.42.fr/oauth/authorize' #by def, url where you can loggin ('https://api.intra.42.fr/oauth/authorize')
-        redirect_uri = 'http://127.0.0.1:7890/api/call_back/'  # Change to your callback URL
+        redirect_uri = 'http://localhost:7890/'  # Change to your callback URL
         params = {
             'client_id': settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'],
             'redirect_uri': redirect_uri,
             'response_type': 'code',
             # Add any additional scopes your app requires
-            'scope': "public profile"
+            'scope': "public"
         }
         auth_url = '{}?{}'.format(authorization_url, urlencode(params))
-
-        # print("auth_url", auth_url)
 
         return Response(auth_url, status=status.HTTP_200_OK)
 
 class Callback(APIView):
 
-    def get(self, request):
+    def post(self, request):
         # Step 2: Receive authorization code and exchange for access token
-
-
-        code = request.GET.get('code')
-
-        redirect_uri = 'http://127.0.0.1:7890/profile/'  # Change to your callback URL
+        code = request.data["code"]
+        redirect_uri = 'http://localhost:7890/'
         token_url = 'https://api.intra.42.fr/oauth/token'
         data = {
             'client_id': settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'],
@@ -63,57 +63,96 @@ class Callback(APIView):
             'scope': "public profile"
 
         }
+
         response = requests.post(token_url, data=data)
         token_data = response.json()
 
         # Step 3: Use access token to access 42 API
         access_token = token_data.get('access_token')
+
         # Now you can use the access_token to make requests to the 42 API
-
-
         # Make a request to the 42 API to retrieve user details
         response = requests.get('https://api.intra.42.fr/v2/me', headers={'Authorization': f'Bearer {access_token}'})
 
-
         if response.status_code == 200:
             user_data = response.json()
-            # return JsonResponse(user_data)
 
-            # maintenat je dois remplir dans la base les infos du user
             username = user_data.get('login')
             avatar = user_data.get('image')["link"]
             email = user_data.get('email')
 
-            print("\n\n\n", avatar, "\n")
-
-
-            # check if user exists, if not it creates it
             user, created = User.objects.get_or_create(username=username,defaults={'email': email})
 
+            new_password = get_random_string(length=12)
+            user.set_password(new_password)
+            user.save()
+
             if created == True :
-
                 img_resp = requests.get(avatar)
-
                 if img_resp.status_code != 200 :
                     print("\n\n\nimage pas downloaded\n\n\n")
 
-                # img_response = urlopen("https://cdn.intra.42.fr/users/a3eca96cd935a5060ab7df17749561d1/bberger.jpg")
-
                 player = Player(owner=user)
                 player.avatar.save(username+'.jpg', ContentFile(img_resp.content), save=False)
+                player.status = "ONLINE"
                 player.save()
 
-                player_serializer = PlayerSerializer(data=player)
+                user_auth = authenticate(username=username, password=new_password)
+                r = login(request, user_auth)
 
-                if player_serializer.is_valid() :
-                    player_serializer.save()
-                    login(request, user)
-                else :
-                    print("Eh ba non c est pas si simple que ça\n\n\n\n")
-                    print("player_serializer.errors", player_serializer.errors)
+                serializer_data = DataSerializer(user_auth)
+                return Response(data=serializer_data.data, status=status.HTTP_200_OK)
+
+            user_to_login = authenticate(username=username, password=new_password)
 
 
-            return Response(player_serializer.data, status=status.HTTP_200_OK)
+            player = Player.objects.get(owner=user)
+            player.status = "ONLINE"
+            player.save()
+
+            r = login(request, user_to_login)
+
+
+            serializer_data = DataSerializer(user_to_login)
+            return Response(serializer_data.data, status=status.HTTP_200_OK)
+
+        return Response ("Error from API 42", status=status.HTTP_401_UNAUTHORIZED)
+
+
+# class LoginSerializer(serializers.Serializer):
+#     username = serializers.CharField(label="username")
+#     password = serializers.CharField(label="password")
+
+#     def validate(self, attrs):
+#         user = authenticate(request=self.context.get('request'),username=attrs['username'],password=attrs['password'])
+
+#         if not user:
+#             raise serializers.ValidationError("Incorrect Credentials")
+#         else:
+#             attrs['user'] = user
+#             return attrs
+
+# class LoginView(APIView):
+# 	permission_classes = (permissions.AllowAny,)
+
+# 	def post(self, request, format=None):
+# 		try:
+# 			serializer = LoginSerializer(data=request.data, context = {'request': request})
+# 			serializer.is_valid(raise_exception=True)
+# 		except serializers.ValidationError:
+# 			return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+# 		user = serializer.validated_data['user']
+# 		login(request, user)
+
+# 		player = Player.objects.get(owner=user)
+# 		player.status = "ONLINE"
+# 		player.save()
+
+# 		user_data = self.request.user
+# 		serializer_data = DataSerializer(user_data)
+# 		return Response(data=serializer_data.data, status=status.HTTP_202_ACCEPTED)
+
+
 
             # # Check if the user already exists in your database
             # try:

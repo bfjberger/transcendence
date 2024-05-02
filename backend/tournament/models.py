@@ -13,7 +13,7 @@ class Tournament(models.Model):
 	visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES)
 	password = models.CharField(max_length=100, blank=True, null=True)  # Only required for private tournaments
 	players = models.ManyToManyField(Player, related_name='tournaments')
-	# Add other fields as needed
+	owner = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='owned_tournaments', null=True, blank=True)
 	
 	def __str__(self):
 		return self.name
@@ -29,3 +29,8 @@ class Tournament(models.Model):
 
 	def get_players(self):
 		return self.players.all()
+	
+	# print players in the instance of the tournament
+	def print_players(self):
+		for player in self.players.all():
+			print(player)

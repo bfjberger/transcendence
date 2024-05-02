@@ -306,6 +306,7 @@ class GameState:
 			self.handle_collision(player_left, player_right)
 			self.x += self.x_vel
 			self.y += self.y_vel
+			# print("ball x: ", self.x, "  |  ball y: ", self.y)
 
 		async def reset(self):
 			"""

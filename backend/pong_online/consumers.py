@@ -133,7 +133,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
 		The accept() method accepts the WebSocket connection and is necessary.
 		"""
 		user = self.scope['user']
-
 		if user.is_authenticated:
 			await self.accept()
 			await self.handle_new_connection(user)
