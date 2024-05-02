@@ -14,7 +14,7 @@ import * as constants from './Constants.js';
  * !Bug: The ball is red
  */
 
-const wsurl = 'ws://' + window.location.host + '/ws/game/'; // link to websocket
+const wsurl = 'wss://' + window.location.host + '/wss/game/'; // link to websocket
 let ws; // websocket
 
 /**

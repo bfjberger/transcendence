@@ -12,7 +12,7 @@ import * as constants from './Constants.js'
  *
 */
 
-const wsurl = 'ws://' + window.location.host + '/ws/gameFour/'; // link to websocket
+const wsurl = 'wss://' + window.location.host + '/wss/gameFour/'; // link to websocket
 let ws; // websocket
 
 /**

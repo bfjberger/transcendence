@@ -8,7 +8,7 @@ function createTournament() {
 	const visibility = document.querySelector('input[name="visibility"]:checked').value;
 	const password = document.getElementById('password').value;
 	
-	let hostnameport = "http://" + window.location.host
+	let hostnameport = "https://" + window.location.host
 
 
 	fetch('/api/tournaments/', {
