@@ -13,11 +13,13 @@ function listenerGameHistory() {
 		gameHistoryTwo.appendChild(gameHistoryEntry);
 	}
 	else {
-		data_2_json.forEach((game, game_index) => {
+		for (const [game_index, game] of data_2_json.reverse().entries()) {
+			if (game_index == 10)
+				break;
 			gameHistoryEntry = document.createElement('div');
 			const date = game.date.replace("Z", "").split("T");
 			gameHistoryEntry.innerHTML = `
-					<div class="row border-top border-bottom border-success" id="game__historyTwo--${game_index}">
+					<div class="row border-top border-warning" id="game__historyTwo--${game_index}">
 						<div class="col mt-2">
 							<div class="d-inline" id="game__historyTwo--${game_index}--left">
 								${game.user1.username}
@@ -34,11 +36,11 @@ function listenerGameHistory() {
 							</div>
 						</div>
 						<div class="mb-2" id="game__historyTwo--${game_index}--date">
-							Le ${date[0]} à ${date[1]}
+							Le ${date[0]} à ${date[1].split(".")[0]}
 						</div>
 					</div>
 				`;
-			gameHistoryTwo.appendChild(gameHistoryEntry);
+			gameHistoryTwo.appendChild(gameHistoryEntry, gameHistoryTwo.firstChild);
 			if (game.win_player.username == game.user1.username) {
 				document.getElementById(`game__historyTwo--${game_index}--left`).classList.add("bg-success-subtle");
 				document.getElementById(`game__historyTwo--${game_index}--right`).classList.add("bg-danger-subtle");
@@ -47,7 +49,7 @@ function listenerGameHistory() {
 				document.getElementById(`game__historyTwo--${game_index}--left`).classList.add("bg-danger-subtle");
 				document.getElementById(`game__historyTwo--${game_index}--right`).classList.add("bg-success-subtle");
 			}
-		});
+		};
 	}
 
 	if (data_4_json == undefined || data_4_json == null || data_4_json.length == 0) {
@@ -56,11 +58,13 @@ function listenerGameHistory() {
 		gameHistoryFour.appendChild(gameHistoryEntry);
 	}
 	else {
-		data_4_json.forEach((game, game_index) => {
+		for (const [game_index, game] of data_4_json.reverse().entries()) {
+			if (game_index == 10)
+				break;
 			gameHistoryEntry = document.createElement('div');
 			const date = game.date.replace("Z", "").split("T");
 			gameHistoryEntry.innerHTML = `
-					<div class="row border-top border-bottom border-success" id="game__historyFour--${game_index}">
+					<div class="row border-top border-primary" id="game__historyFour--${game_index}">
 						<div class="col mt-2">
 							<div class="d-inline" id="game__historyFour--${game_index}--one">
 								${game.user1.username}
@@ -68,7 +72,7 @@ function listenerGameHistory() {
 								${game.score_user1}
 							</div>
 						</div>
-						<div class="col mt-2">VS</div>
+						<div class="col mt-2 align-self-center">VS</div>
 						<div class="col mt-2">
 							<div class="d-inline" id="game__historyFour--${game_index}--two">
 								${game.user2.username}
@@ -76,7 +80,7 @@ function listenerGameHistory() {
 								${game.score_user2}
 							</div>
 						</div>
-						<div class="col mt-2">VS</div>
+						<div class="col mt-2 align-self-center">VS</div>
 						<div class="col mt-2">
 							<div class="d-inline" id="game__historyFour--${game_index}--three">
 								${game.user3.username}
@@ -84,7 +88,7 @@ function listenerGameHistory() {
 								${game.score_user3}
 							</div>
 						</div>
-						<div class="col mt-2">VS</div>
+						<div class="col mt-2 align-self-center">VS</div>
 						<div class="col mt-2">
 							<div class="d-inline" id="game__historyFour--${game_index}--four">
 								${game.user4.username}
@@ -93,11 +97,11 @@ function listenerGameHistory() {
 							</div>
 						</div>
 						<div class="mb-2" id="game__historyFour--${game_index}--date">
-							Le ${date[0]} à ${date[1]}
+							Le ${date[0]} à ${date[1].split(".")[0]}
 						</div>
 					</div>
 				`;
-			gameHistoryFour.appendChild(gameHistoryEntry);
+			gameHistoryFour.appendChild(gameHistoryEntry, gameHistoryFour.firstChild);
 			if (game.win_player.username == game.user1.username) {
 				document.getElementById(`game__historyFour--${game_index}--one`).classList.add("bg-success-subtle");
 				document.getElementById(`game__historyFour--${game_index}--two`).classList.add("bg-danger-subtle");
@@ -122,7 +126,7 @@ function listenerGameHistory() {
 				document.getElementById(`game__historyFour--${game_index}--three`).classList.add("bg-danger-subtle");
 				document.getElementById(`game__historyFour--${game_index}--four`).classList.add("bg-success-subtle");
 			}
-		});
+		};
 	}
 };
 
@@ -142,18 +146,17 @@ async function loadGameHistory() {
 
 		const response = await fetch(hostnameport + '/api/gamehistory/', init);
 
-		if (response.status === 403 || !response.ok) {
+		if (!response.ok) {
 			const text = await response.text();
 			throw new Error(text);
 		}
 		else if (response.status === 200) {
 			data_2_json = await response.json();
 
-			/*
 			try {
 				const responseFour = await fetch(hostnameport + '/api/gamehistoryfour/', init);
 
-				if (responseFour.status === 403 || !responseFour.ok) {
+				if (!responseFour.ok) {
 					const error = await responseFour.text();
 					throw new Error(error);
 				}
@@ -163,7 +166,6 @@ async function loadGameHistory() {
 			} catch (e) {
 				console.error(e);
 			}
-			*/
 		}
 		return 1;
 	} catch (e) {

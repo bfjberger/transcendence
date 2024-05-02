@@ -12,22 +12,24 @@ then
     echo "PostgreSQL started"
 fi
 
-pip install Pillow
-
-pip install djangorestframework
-
-pip install requests
-
-python -m pip install django-cors-headers
-
-pip install django-allauth
-
 cd /usr/backend/
 
 python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser --noinput
 python3 manage.py collectstatic --noinput
+
+pip freeze > requirements.txt
+
+# script to create admin player
+python manage.py shell <<EOF
+from django.contrib.auth.models import User
+from players_manager.models import Player
+admin_user = User.objects.get(username='admin')
+if not Player.objects.filter(owner=admin_user).exists():
+    Player.objects.create(owner=admin_user, nickname=admin_user.username)
+EOF
+
 python manage.py runserver 0.0.0.0:8000
 echo "\n\n\n\n\n\n hello"
 # exec daphne -u /usr/backend/daphne.sock bck_django.asgi:application

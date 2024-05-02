@@ -23,10 +23,11 @@ from django.conf import settings
 from rest_framework import routers
 
 from players_manager.views import LoginView, ProfileView, RegisterAction, IndexAction, TwoPlayers, FourPlayers, Tournament, LogoutView, ProfileUpdateAvatarView
+from tournament.views import TournamentOnline
 
 from login_api_42.views import Accounts_view, Callback
 
-from games_manager.views import ListTwoPlayersGamesAPIView, CreateTwoPlayersGamesAPIView
+from games_manager.views import ListTwoPlayersGamesAPIView, CreateTwoPlayersGamesAPIView, ListFourPlayersGamesAPIView
 
 from tournament.views import TournamentViewSet, PlayerViewSet
 
@@ -78,6 +79,7 @@ urlpatterns = [
 
     path('api/gamehistory/', ListTwoPlayersGamesAPIView.as_view()),
     path('api/gametwoplayercreate/', CreateTwoPlayersGamesAPIView.as_view()),
+    path('api/gamehistoryfour/', ListFourPlayersGamesAPIView.as_view()),
 
     path('api/call_back/', Callback.as_view(), name='callback'),
     path('api/accounts/', Accounts_view.as_view(), name='accounts'),
@@ -88,6 +90,8 @@ urlpatterns = [
 
     path('api/twoplayeronline/', TwoPlayersOnlineView.as_view()),
     path('api/fourplayeronline/', FourPlayersOnlineView.as_view()),
+	
+    path('api/tournamentOnline/', TournamentOnline.as_view()),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

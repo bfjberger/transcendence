@@ -1,653 +1,435 @@
 import json
-import uuid
 import asyncio
 
 from channels.generic.websocket import AsyncWebsocketConsumer
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
-from .gamelogic_four import GameState
-from django.contrib.auth.models import User
-from players_manager.models import Player
+
 from asgiref.sync import sync_to_async
 
-tick_rate = 60
-tick_duration = 1 / tick_rate
+from players_manager.models import Player
 
-class GameManager:
+from .gamelogic_four import GameStateFour
+
+TICK_RATE = 60
+TICK_DURATION = 1 / TICK_RATE
+
+class RoomManagerFour:
 	"""
-	Class representing a game manager that handles game rooms and players.
+	Manages the online game rooms, connections, deconnections,
+	redirects the message received from the front to the right room and
+	dispatches the message sent by a room to the front.
 
 	Attributes:
-		game_rooms (dict): A dictionary containing the game rooms and their data.
+		rooms (dict): A dictionary with the room names as keys and GameState objects as values.
 
 	Methods:
-		find_or_create_game_room(): Finds an available game room or creates a new one.
-		add_player_to_room(room_name, player_id): Adds a player to a game room.
-		remove_player_from_room(room_name, player_id): Removes a player from a game room.
-		players_in_room(room_name): Returns a list of players in a game room.
-		room_len(room_name): Returns the number of players in a game room.
-		display_all_rooms(): Displays information about all game rooms.
+		room_available(): Return the name of the first available room or create one.
+		create_room(room_name): Create a new online game room with the given name.
+		delete_room(room_name): Delete the online game room with the given name.
+		save_room(room_name, winner, losers): Call the GameState method responsible for saving the room
 	"""
-
 	def __init__(self):
-		self.game_rooms = {}
+		self.rooms = {}
 
-	def find_or_create_game_room(self):
+	def room_available(self):
 		"""
-		Finds an available game room or creates a new one.
+		Return the name of the first available room or create one.
 
 		Returns:
-			str: The name of the game room.
+			str: The name of the first available room or the name of one newly created room.
 		"""
-		print('checking for available room ...')
-		for room, data in self.game_rooms.items():
-			if len(data['players']) < 4:
-				print('Room available')
-				return room
-		print('no available room, creating one...')
-		new_room = f"room_{len(self.game_rooms) + 1}"
-		self.game_rooms[new_room] = {
-			'players': [],
-			'game_state': GameState()
-		}
-		print(new_room, 'created')
-		return new_room
+		for room_name in self.rooms:
+			if len(self.rooms[room_name].players) < 4:
+				return room_name
+		new_room_name = f"room_{len(self.rooms) + 1}"
+		self.create_room(new_room_name)
+		return new_room_name
 
-	def add_player_to_room(self, room_name, player_id):
+	def create_room(self, room_name):
 		"""
-		Adds a player to a game room.
+		Create a new online game room with the given name.
 
 		Args:
-			room_name (str): The name of the game room.
-			player_id (str): The ID of the player.
-
-		Returns:
-			None
+			room_name (str): The name of the room to create.
 		"""
-		if room_name in self.game_rooms:
-			if len(self.game_rooms[room_name]['players']) < 4:
-				print('---PLAYER :', player_id, 'IS JOINING', room_name)
-				self.game_rooms[room_name]['players'].append(player_id)
+		self.rooms[room_name] = GameStateFour(room_name)
 
-	def remove_player_from_room(self, room_name, player_id):
+	def delete_room(self, room_name):
 		"""
-		Removes a player from a game room.
+		Delete the online game room with the given name.
 
 		Args:
-			room_name (str): The name of the game room.
-			player_id (str): The ID of the player.
-
-		Returns:
-			bool: True if the player was successfully removed and the room is now empty, False otherwise.
+			room_name (str): The name of the room to delete.
 		"""
-		if room_name in self.game_rooms:
-			if player_id in self.game_rooms[room_name]['players']:
-				print('---PLAYER :', player_id, 'REMOVED FROM', room_name)
-				self.game_rooms[room_name]['players'].remove(player_id)
-				if self.room_len(room_name) == 0:
-					del self.game_rooms[room_name]
-					return True
-		return False
+		if room_name in self.rooms.keys():
+			del self.rooms[room_name]
 
-	def players_in_room(self, room_name):
+	async def save_room(self, room_name, winner, losers):
 		"""
-		Returns a list of players in a game room.
+		Save the online game room with the given name.
+
+		If the room_name is not in the rooms dictionary,
+		it means that it's the second time we call this function and the room was already saved and deleted.
 
 		Args:
-			room_name (str): The name of the game room.
-
-		Returns:
-			list: A list of player IDs in the game room.
+			room_name (str): The name of the room to save.
+			winner (str): The position of the winning player.
+			losers (list): List with the positions of the losing players.
 		"""
-		if room_name in self.game_rooms:
-			return self.game_rooms[room_name]['players']
-		return []
+		if room_name in self.rooms.keys():
+			await self.rooms[room_name].record_game_result(winner, losers)
+			if len(self.rooms[room_name].players) == 0:
+				self.delete_room(room_name)
 
-	def room_len(self, room_name):
-		"""
-		Returns the number of players in a game room.
-
-		Args:
-			room_name (str): The name of the game room.
-
-		Returns:
-			int: The number of players in the game room.
-		"""
-		if room_name in self.game_rooms:
-			return len(self.game_rooms[room_name]['players'])
-		return 0
-
-	def display_all_rooms(self):
-		"""
-		Displays information about all game rooms.
-
-		Returns:
-			None
-		"""
-		for room, data in self.game_rooms.items():
-			players = ', '.join(data['players'])
-			print('-----GAME MANAGER------', f"Room: {room}, Players: {players}")
-
-
-def get_player_id(nickname = None):
-		if (nickname == None):
-			return uuid.uuid4()
-		player = Player.objects.get(nickname=nickname)
-		return player.id
-
-
-class GameConsumerFour(AsyncWebsocketConsumer):
+class RoomConsumerFour(AsyncWebsocketConsumer):
 	"""
-	Represents a consumer for handling game-related WebSocket connections.
+	Represents an online game room.
 
 	Attributes:
-		game_manager (GameManager): An instance of the GameManager class.
-		game_room (str): The ID of the game room the consumer is connected to.
-		game (GameState): The current game state.
-		update_lock (asyncio.Lock): A lock used to synchronize game updates.
+		manager (RoomManagerFour): The room manager object that manages the room.
+		game_state_obj (GameState): The game state object for the room.
+		room_name (str): The name of the room.
+		update_lock (asyncio.Lock): A lock to prevent concurrent updates to the game state.
+
+	The messages will be sent to the room group, which is a group of channels that have been added to the same group.
+	The 3 send_game_* methods will send a message to the room group using channel_layer.group_send,
+	this function call will trigger the corresponding method in the RoomConsumer class:
+	game_* that uses the send() method inherited from AsyncWebsocketConsumer,
+	the content of the event argument is what was passed in the send_game_* corresponding method.
 
 	Methods:
-		get_player_id_in_room(room_name, player_position): Returns the ID of a player in a game room based on their position.
-		get_winner(): Returns the ID of the player whose score is equal to the winning score.
-		get_losers(): Returns the IDs of the players who are not the winner.
-		record_game_result(winner_id, losers_ids): Records the result of a game won by a player to the database.
+		connect(): Connect to the websocket. Overload.
+		disconnect(close_code): Disconnect from the websocket. Overload.
+		receive(text_data): Receive a message from the websocket, redispatch to the destination room. Overload.
 
-		connect(): Called when a WebSocket connection is established.
-		disconnect(close_code): Called when a WebSocket connection is closed.
+		handle_new_connection(user): Handle a connection to the websocket that was accepted.
+		start_game(): Start the game in the room.
+		end_game(): End the game in the room.
 
-		join_game(): Joins the game room and assigns a position to the player.
-		receive(text_data): Called when a message is received from the WebSocket connection.
+		get_update_lock(): Get the update lock for the room.
+		game_loop(): The game loop for the room.
 
-		game_start(event): Sends a game start event to the WebSocket connection.
-		player_key_down(event): Sends a player key down event to the WebSocket connection.
-		player_key_up(event): Sends a player key up event to the WebSocket connection.
-		ball_update(event): Sends a ball update event to the WebSocket connection.
-		game_state(event): Sends the current game state to the WebSocket connection.
-		game_end(event): Sends a game end event to the WebSocket connection.
+		game_start(event): Send the 'game start' message to the WebSocket connection.
+		game_state(event): Send the 'game state' message to the WebSocket connection.
+		player_disconnect(event): Send the 'player disconnect' message to the WebSocket connection.
+		game_end(event): Send the 'game end' message to the WebSocket connection.
 
-		get_update_lock(): Returns the update lock for synchronizing game updates.
-		send_game_state(): Sends the current game state to all connected clients.
-		send_game_end(winner): Sends a game end event to all connected clients.
-		send_game_end_player_left(player): Sends a game end event to all connected clients when a player leaves the game.
-
-		end_game(winner): Ends the game and sends a game end event to all connected clients.
-		game_loop(): The main game loop that updates the game state and sends updates to clients.
+		send_game_start(): Prepare and send the 'game start' message to the channel layer group.
+		send_game_state(): Prepare and send the 'game state' message to the channel layer group.
+		send_game_end(winner): Prepare and send the 'game end' message to the channel layer group.
 	"""
-	game_manager = GameManager()
-	game_room = None
-	game = None
+	manager = RoomManagerFour()
+	game_state_obj = None
+	room_name = None
 	update_lock = None
-
-	def get_player_id_in_room(self, room_name, player_position):
-		"""
-		Returns the ID of a player in a game room based on their position.
-
-		Args:
-			room_name (str): The name of the game room.
-			player_position (str): The position of the player in the room.
-
-		Returns:
-			str: The ID of the player in the specified position.
-			None: if the room does not exist or the player is not in the room.
-		"""
-		if room_name in self.game_manager.game_rooms:
-			if len(self.game_manager.game_rooms[room_name]['players']) == 4:
-				if player_position == 'player_one':
-					return self.game_manager.game_rooms[room_name]['players'][0]
-				elif player_position == 'player_two':
-					return self.game_manager.game_rooms[room_name]['players'][1]
-				elif player_position == 'player_three':
-					return self.game_manager.game_rooms[room_name]['players'][2]
-				elif player_position == 'player_four':
-					return self.game_manager.game_rooms[room_name]['players'][3]
-		return None
-
-	def get_winner(self):
-		"""
-		Returns the ID of the player whose score is equal to the winning score.
-
-		Returns:
-			str: The ID of the winning player.
-			None: if no player has reached the winning score.
-		"""
-		if self.game.players[0].score >= self.game.winning_score:
-			return self.get_player_id_in_room(self.game_room, 'player_one')
-		elif self.game.players[1].score >= self.game.winning_score:
-			return self.get_player_id_in_room(self.game_room, 'player_two')
-		elif self.game.players[2].score >= self.game.winning_score:
-			return self.get_player_id_in_room(self.game_room, 'player_three')
-		elif self.game.players[3].score >= self.game.winning_score:
-			return self.get_player_id_in_room(self.game_room, 'player_four')
-		return None
-
-	def get_losers(self, winner_id):
-		"""
-		Returns the IDs of the players who lost the game in a list.
-
-		Args:
-			winner_id (str): The ID of the player who won the game.
-
-		Returns:
-			list: A list of player IDs who lost the game.
-			None: if no player has reached the winning score.
-		"""
-		losers = []
-		if self.game.players[0] == winner_id:
-			losers.append(self.get_player_id_in_room(self.game_room, 'player_two'))
-			losers.append(self.get_player_id_in_room(self.game_room, 'player_three'))
-			losers.append(self.get_player_id_in_room(self.game_room, 'player_four'))
-			return losers
-		elif self.game.players[1] == winner_id:
-			losers.append(self.get_player_id_in_room(self.game_room, 'player_one'))
-			losers.append(self.get_player_id_in_room(self.game_room, 'player_three'))
-			losers.append(self.get_player_id_in_room(self.game_room, 'player_four'))
-			return losers
-		elif self.game.players[2] == winner_id:
-			losers.append(self.get_player_id_in_room(self.game_room, 'player_one'))
-			losers.append(self.get_player_id_in_room(self.game_room, 'player_two'))
-			losers.append(self.get_player_id_in_room(self.game_room, 'player_four'))
-			return losers
-		elif self.game.players[3] == winner_id:
-			losers.append(self.get_player_id_in_room(self.game_room, 'player_one'))
-			losers.append(self.get_player_id_in_room(self.game_room, 'player_two'))
-			losers.append(self.get_player_id_in_room(self.game_room, 'player_three'))
-			return losers
-		return None
-
-	async def record_game_result(self, winner_id, losers_ids):
-		"""
-		Records the result of a game won by a player by updating the players' records on the database.
-
-		Args:
-			winner_id (str): The ID of the player who won the game.
-			losers_ids (list): A list of player IDs who lost the game.
-
-		Returns:
-			None
-		"""
-		winner = await sync_to_async(Player.objects.get)(id=winner_id)
-		await sync_to_async(winner.record_win_four)(elo=10, points=self.game.players[winner_id].score)
-		for loser_id in losers_ids:
-			loser = await sync_to_async(Player.objects.get)(id=loser_id)
-			await sync_to_async(loser.record_loss_four)(elo=10, points=self.game.players[loser_id].score)
-		# winner.print_records()
-		# loser.print_records()
 
 	async def connect(self):
 		"""
-		Connects the player to the WebSocket and assigns a unique player ID.
+		Connect to the websocket.
+		Overload of the connect method from the AsyncWebsocketConsumer class.
 
-		Args:
-			None
-
-		Returns:
-			None
+		Get the user object from the scope, i.e. the user that is connecting.
+		Check if the user is authenticated.
+		The accept() method accepts the WebSocket connection and is necessary.
 		"""
-		# uuid.uuid4() generates a random UUID
-		# A UUID is a 128-bit number represented as a utf8 string of five hexadecimal fields separated by hyphens
 		user = self.scope['user']
 
 		if user.is_authenticated:
-			self.player = await sync_to_async(Player.objects.get)(owner=user)
-			self.player_id = self.player.id
-			# self.player_id = user.username
-
-		# self.player_id = str(uuid.uuid4())
-
-		await self.accept()
-		await self.join_game()
+			await self.accept()
+			await self.handle_new_connection(user)
+		else:
+			await self.close()
 
 	async def disconnect(self, close_code):
 		"""
-		Disconnects the player from the game room and removes them from the room.
+		Disconnect from the websocket.
+		Overload of the disconnect method from the AsyncWebsocketConsumer class.
+
+		Send a message to the room group to inform the other players that a player has disconnected.
 
 		Args:
-			close_code (int): The close code for the WebSocket connection.
-
-		Returns:
-			None
+			close_code (int): The code indicating the reason for the disconnection.
 		"""
-		if hasattr(self, 'game_room'):
-			room_removed = self.game_manager.remove_player_from_room(self.game_room, self.player_id)
-			if room_removed:
-				await self.channel_layer.group_send(
-					self.game_room,
-					{
-						'type': 'player_left',
-						'player': self.position,
-					})
-				await self.channel_layer.group_discard(self.game_room, self.channel_name)
-				self.game_room = None
-
-	async def join_game(self):
-		"""
-		Joins the game by finding or creating a game room, adding the player to the room,
-		setting the player's position, and starting the game if the room is full.
-
-		Args:
-			None
-
-		Returns:
-			None
-		"""
-		self.game_room = self.game_manager.find_or_create_game_room()
-		self.game_manager.add_player_to_room(self.game_room, self.player_id)
-		self.game = self.game_manager.game_rooms[self.game_room]['game_state']
-
-		if self.game_manager.room_len(self.game_room) == 1:
-			self.position = 1
-			await self.send(text_data=json.dumps({
-				'type':'set_position',
-				'value':'player_one'
-			}))
-		elif self.game_manager.room_len(self.game_room) == 2:
-			self.position = 2
-			await self.send(text_data=json.dumps({
-				'type':'set_position',
-				'value':'player_two'
-			}))
-		elif self.game_manager.room_len(self.game_room) == 3:
-			self.position = 3
-			await self.send(text_data=json.dumps({
-				'type':'set_position',
-				'value':'player_three'
-			}))
-		elif self.game_manager.room_len(self.game_room) == 4:
-			self.position = 4
-			await self.send(text_data=json.dumps({
-				'type':'set_position',
-				'value':'player_four'
-			}))
-
-		await self.channel_layer.group_add(
-			self.game_room, self.channel_name
-		)
-
-		if len(self.game_manager.players_in_room(self.game_room)) == 4:
-			self.game.is_running = True
-			await self.channel_layer.group_send(
-				self.game_room,
-				{
-					'type': 'game_start',
-				}
-			)
-			print('#GAMECONSUMER# Room', self.game_room, 'full, can start game')
-			self.game.ball.x_vel = self.game.ball.speed
-			asyncio.create_task(self.game_loop())
+		await self.channel_layer.group_send(self.room_name,
+			{
+				'type': 'player_disconnect',
+				'player_name': self.game_state_obj.players[self.position].player_model.nickname
+			})
 
 	async def receive(self, text_data):
 		"""
-		Receives a message from the WebSocket connection and processes it.
+		Receive a message from the websocket.
+		Overload of the receive method from the AsyncWebsocketConsumer class.
+
+		Depending on the type of the message, dispatch the message to the right method.
+
+		For the player_disconnect message, if there is only one player left in the room, it means that we
+		already sent the game_end message and the room was saved and deleted.
+		Otherwise, we send the game_end message with the position of the winning player, i.e. the one who did not leave.
 
 		Args:
-			text_data (str): The message received from the WebSocket connection.
-
-		Returns:
-			None
+			text_data (str): The message received from the websocket.
 		"""
 		data = json.loads(text_data)
-		data_type = data.get("type", "")
-		data_value = data.get("value", "")
-		if data_type == 'player_key_down' and data_value == 'W':
-			await self.game.set_player_movement(data.get("player", ""), True, data.get("direction"), None)
-		if data_type == 'player_key_down' and data_value == 'J':
-			await self.game.set_player_movement(data.get("player", ""), True, None, data.get("direction"))
-		if data_type == 'player_key_up':
-			await self.game.set_player_movement(data.get("player", ""), False, False, None)
-		if data_type == 'player_left':
-			if self.game.is_running == True:
-				print('PLAYER', data.get("player", ""), 'LEFT')
-				await self.end_game_player_left(data.get("player", ""))
+		type = data['type']
+		if type == 'set_player_movement':
+			await self.game_state_obj.set_player_movement(data['player'], data['is_moving'],
+												 			data['direction_v'], data['direction_h'])
+		elif type == 'player_disconnect':
+			if len(self.game_state_obj.players) < 4	:
+				self.manager.delete_room(self.room_name)
 
-# ------------------------- HANDLING CHANNEL MESSAGES ------------------------ #
+	async def handle_new_connection(self, user):
+		"""
+		Handle a connection to the websocket that was accepted.
+
+		Get the name of the room where the user will connect.
+		Get the GameState instance of the room.
+		Get the Player instance of the user.
+
+		Depending on the room, set the position of the player in the GameState instance and send it to the client.
+
+		Add the current connection to the channel group layer of the room.
+
+		Starts the game if there are four players in the room.
+
+		Args:
+			user (User): The user object representing the player that connected.
+		"""
+		self.room_name = self.manager.room_available()
+		self.game_state_obj = self.manager.rooms.get(self.room_name)
+		player = await sync_to_async(Player.objects.get)(owner=user)
+
+		if len(self.game_state_obj.players) == 0:
+			self.position = 'player_left'
+			self.game_state_obj.add_player_to_dict(self.position, player)
+			await self.send(text_data=json.dumps({
+				'type': 'set_position',
+				'position': self.position,
+				'name': player.nickname
+			}))
+		elif len(self.game_state_obj.players) == 1:
+			self.position = 'player_right'
+			self.game_state_obj.add_player_to_dict(self.position, player)
+			await self.send(text_data=json.dumps({
+				'type': 'set_position',
+				'position': self.position,
+				'name': player.nickname
+			}))
+		elif len(self.game_state_obj.players) == 2:
+			self.position = 'player_top'
+			self.game_state_obj.add_player_to_dict(self.position, player)
+			await self.send(text_data=json.dumps({
+				'type': 'set_position',
+				'position': self.position,
+				'name': player.nickname
+			}))
+		elif len(self.game_state_obj.players) == 3:
+			self.position = 'player_bottom'
+			self.game_state_obj.add_player_to_dict(self.position, player)
+			await self.send(text_data=json.dumps({
+				'type': 'set_position',
+				'position': self.position,
+				'name': player.nickname
+			}))
+
+		await self.channel_layer.group_add(self.room_name, self.channel_name)
+
+		if len(self.game_state_obj.players) == 4:
+			await self.start_game()
+
+	async def start_game(self):
+		"""
+		Start the game in the room.
+		Send the 'game_start' message to the room group.
+		Create a new game history object in the database.
+		Start the game loop.
+		"""
+		self.game_state_obj.is_running = True
+		await self.send_game_start()
+		asyncio.create_task(self.game_loop())
+
+	async def end_game(self, winner):
+		"""
+		End the game in the room.
+
+		Save the room in the database with the winner and the loser.
+		There are different handling depending on the winner.
+
+		Args:
+			winner (str): The position of the winning player.
+		"""
+		self.game_state_obj.is_running = False
+		if winner == 'player_left':
+			losers = ['player_right', 'player_top', 'player_bottom']
+			await self.manager.save_room(self.room_name, winner, losers)
+			await self.send_game_end(winner)
+		elif winner == 'player_right':
+			losers = ['player_left', 'player_top', 'player_bottom']
+			await self.manager.save_room(self.room_name, winner, losers)
+			await self.send_game_end(winner)
+		elif winner == 'player_top':
+			losers = ['player_left', 'player_right', 'player_bottom']
+			await self.manager.save_room(self.room_name, winner, losers)
+			await self.send_game_end(winner)
+		elif winner == 'player_bottom':
+			losers = ['player_left', 'player_right', 'player_top']
+			await self.manager.save_room(self.room_name, winner, losers)
+			await self.send_game_end(winner)
+		else:
+			winner = await self.game_state_obj.get_winner_pos()
+			if winner == "Not enough players":
+				# do not save the game in the database if there is no winner
+				await self.send_game_end("No winner")
+			else:
+				losers = [pos for pos in self.game_state_obj.players if pos != winner]
+				await self.manager.save_room(self.room_name, winner, losers)
+				await self.send_game_end(winner)
+
+	async def get_update_lock(self):
+		"""
+		Get the update lock for the room.
+
+		A lock is a synchronization primitive that can be used to limit access to a shared resource.
+		Like a semaphore, a lock is a counter that is used to control access to a shared resource.
+		A lock is in one of two states: locked or unlocked.
+		"""
+		if self.update_lock is None:
+			self.update_lock = asyncio.Lock()
+		return self.update_lock
+
+	async def game_loop(self):
+		"""
+		The game loop for the room.
+		Will update the players and the ball positions and send the game state to the clients.
+		"""
+		async with await self.get_update_lock():
+			while self.game_state_obj.is_running == True:
+				await self.game_state_obj.update()
+				await self.send_game_state()
+				await asyncio.sleep(TICK_DURATION)
+			await self.end_game(None)
+
 	async def game_start(self, event):
 		"""
-		Sends a game start message to the WebSocket connection.
+		Sends the 'game start' message to the WebSocket connection.
+		The content of the message is the names of the players in the game room.
 
 		Args:
-			event (dict): The event data.
-
-		Returns:
-			None
+			event (dict): The event data received from the channel layer.
 		"""
 		await self.send(text_data=json.dumps({
-			'type':'game_start'
-		}))
-
-	async def player_key_down(self, event):
-		"""
-		Sends a player key down message to the WebSocket connection.
-
-		Args:
-			event (dict): The event data.
-
-		Returns:
-			None
-		"""
-		await self.send(text_data=json.dumps({
-			'type': event.get('type'),
-			'player': event.get('position'),
-			'key': event.get('value')
-		}))
-
-	async def player_key_up(self, event):
-		"""
-		Sends a player key up message to the WebSocket connection.
-
-		Args:
-			event (dict): The event data.
-
-		Returns:
-			None
-		"""
-		await self.send(text_data=json.dumps({
-			'type': event.get('type'),
-			'player': event.get('position'),
-			'key': event.get('value')
-		}))
-
-	async def ball_update(self, event):
-		"""
-		Sends a ball update message to the WebSocket connection.
-
-		Args:
-			event (dict): The event data.
-
-		Returns:
-			None
-		"""
-		await self.send(text_data=json.dumps({
-			'type': event.get('ball_update'),
-			'player': event.get('position'),
-			'key': event.get('value')
+			'type': event['type'],
+			'player_left': event['player_left'],
+			'player_right': event['player_right'],
+			'player_top': event['player_top'],
+			'player_bottom': event['player_bottom']
 		}))
 
 	async def game_state(self, event):
 		"""
-		Sends the current game state to the WebSocket connection.
+		Sends the 'game state' message to the WebSocket connection.
+		The content of the message is the game state:
+			- the players positions and scores
+			- the ball position, velocity and color
 
 		Args:
-			event (dict): The event data.
-
-		Returns:
-			None
+			event (dict): The event data received from the channel layer.
 		"""
 		await self.send(text_data=json.dumps({
-			'type': event.get('type'),
-			'player_one_pos_y': event.get('player_one_pos_y'),
-			'player_two_pos_y': event.get('player_two_pos_y'),
-			'player_three_pos_x': event.get('player_three_pos_x'),
-			'player_four_pos_x': event.get('player_four_pos_x'),
-			'player_one_score': event.get('player_one_score'),
-			'player_two_score': event.get('player_two_score'),
-			'player_three_score': event.get('player_three_score'),
-			'player_four_score': event.get('player_four_score'),
-			'ball_x': event.get('ball_x'),
-			'ball_y': event.get('ball_y'),
-			'ball_x_vel': event.get('ball_x_vel'),
-			'ball_y_vel': event.get('ball_y_vel'),
-			'ball_color': event.get('ball_color'),
+			'type': event['type'],
+			'player_left_y': event['player_left_y'],
+			'player_right_y': event['player_right_y'],
+			'player_top_x': event['player_top_x'],
+			'player_bottom_x': event['player_bottom_x'],
+			'player_left_score': event['player_left_score'],
+			'player_right_score': event['player_right_score'],
+			'player_top_score': event['player_top_score'],
+			'player_bottom_score': event['player_bottom_score'],
+			'ball_x': event['ball_x'],
+			'ball_y': event['ball_y'],
+			'ball_x_vel': event['ball_x_vel'],
+			'ball_y_vel': event['ball_y_vel'],
+			'ball_color': event['ball_color']
 		}))
+
+	async def player_disconnect(self, event):
+		"""
+		Sends the 'player disconnect' message to the WebSocket connection.
+		The content of the message is the name of the player that disconnected.
+
+		Args:
+			event (dict): The event data received from the channel layer.
+		"""
+		await self.send(text_data=json.dumps({
+			'type': event['type'],
+			'player_name': event['player_name']
+		}))
+		self.channel_layer.group_discard(self.room_name, self.channel_name)
 
 	async def game_end(self, event):
 		"""
-		Sends a game end message to the WebSocket connection.
+		Sends the 'game end' message to the WebSocket connection.
+		The content of the message is the position of the winning player.
 
 		Args:
-			event (dict): The event data.
-
-		Returns:
-			None
+			event (dict): The event data received from the channel layer.
 		"""
 		await self.send(text_data=json.dumps({
-			'type': event.get('type'),
-			'winner': event.get('winner'),
+			'type': event['type'],
+			'winner': event['winner']
 		}))
-		await self.channel_layer.group_discard(
-			self.game_room, self.channel_name
-		)
 
-# ------------------------------- END HANDLERS ------------------------------- #
-
-	async def get_update_lock(self):
-			"""
-			Returns the update lock for the consumer.
-
-			If the update lock is not yet initialized, it creates a new asyncio.Lock object and assigns it to the update_lock attribute.
-
-			What is a lock ?
-			A lock is a synchronization primitive that can be used to limit access to a shared resource.
-			Like a semaphore, a lock is a counter that is used to control access to a shared resource.
-			A lock is in one of two states: locked or unlocked.
-
-			Args:
-				None
-
-			Returns:
-				asyncio.Lock: The update lock for the consumer.
-			"""
-			if self.update_lock is None:
-				self.update_lock = asyncio.Lock()
-			return self.update_lock
+	async def send_game_start(self):
+		"""
+		Send the game start message to all connected clients.
+		The message contains the names of the players in the game room.
+		"""
+		await self.channel_layer.group_send(self.room_name,
+			{
+				'type': 'game_start',
+				'player_left': self.game_state_obj.players['player_left'].player_model.nickname,
+				'player_right': self.game_state_obj.players['player_right'].player_model.nickname,
+				'player_top': self.game_state_obj.players['player_top'].player_model.nickname,
+				'player_bottom': self.game_state_obj.players['player_bottom'].player_model.nickname
+			})
 
 	async def send_game_state(self):
 		"""
-		Sends the current game state to all connected clients.
-
-		Args:
-			None
-
-		Returns:
-			None
+		Send the game state to all connected clients.
+		The message contains:
+			- the type of the message
+			- the game state:
+				- the ball position, velocity and color
+				- the players positions and scores
 		"""
-		await self.channel_layer.group_send(
-			self.game_room,
+		await self.channel_layer.group_send(self.room_name,
 			{
 				'type': 'game_state',
-				'player_one_pos_y': self.game.players[0].y,
-				'player_two_pos_y': self.game.players[1].y,
-				'player_three_pos_x': self.game.players[2].x,
-				'player_four_pos_x': self.game.players[3].x,
-				'player_one_score': self.game.players[0].score,
-				'player_two_score': self.game.players[1].score,
-				'player_three_pos_y': self.game.players[2].score,
-				'player_four_pos_y': self.game.players[3].score,
-				'ball_x': self.game.ball.x,
-				'ball_y': self.game.ball.y,
-				'ball_x_vel': self.game.ball.x_vel,
-				'ball_y_vel': self.game.ball.y_vel,
-				'ball_color': self.game.ball.color,
-			}
-		)
+				'player_left_y': self.game_state_obj.players['player_left'].y,
+				'player_right_y': self.game_state_obj.players['player_right'].y,
+				'player_top_x': self.game_state_obj.players['player_top'].x,
+				'player_bottom_x': self.game_state_obj.players['player_bottom'].x,
+				'player_left_score': self.game_state_obj.players['player_left'].score,
+				'player_right_score': self.game_state_obj.players['player_right'].score,
+				'player_top_score': self.game_state_obj.players['player_top'].score,
+				'player_bottom_score': self.game_state_obj.players['player_bottom'].score,
+				'ball_x': self.game_state_obj.ball.x,
+				'ball_y': self.game_state_obj.ball.y,
+				'ball_x_vel': self.game_state_obj.ball.x_vel,
+				'ball_y_vel': self.game_state_obj.ball.y_vel,
+				'ball_color': self.game_state_obj.ball.color,
+			})
 
 	async def send_game_end(self, winner):
 		"""
-		Sends a game end message to all connected clients.
+		Send the game end message to all connected clients with the winner position.
 
 		Args:
-			winner (str): The ID of the player who won.
-
-		Returns:
-			None
+			winner (str): The position of the winning player.
 		"""
-		await self.channel_layer.group_send(self.game_room,
-		{
-			'type': 'game_end',
-			'winner': winner,
-		})
-
-	async def send_game_end_player_left(self, player):
-		"""
-		Sends a game end message to all connected clients when a player leaves the game.
-
-		Args:
-			player (str): The ID of the player who left the game.
-
-		Returns:
-			None
-		"""
-		await self.channel_layer.group_send(self.game_room,
-		{
-			'type': 'game_end_left',
-			'player_left': player,
-		})
-
-	async def end_game(self, winner):
-		"""
-		Ends the game and sends the game end message to the clients.
-
-		Args:
-			winner: The winner of the game. If None, the winner will be determined based on the scores.
-
-		Returns:
-			None
-		"""
-		self.game.is_running = False
-		winner_id = self.get_winner()
-		losers_ids = self.get_losers(winner_id)
-		await self.record_game_result(winner_id, losers_ids)
-		if not winner:
-			game_winner = None
-			if self.game.players[0].score >= self.game.winning_score:
-				game_winner = 'player_one'
-			elif self.game.players[1].score >= self.game.winning_score:
-				game_winner = 'player_two'
-			elif self.game.players[2].score >= self.game.winning_score:
-				game_winner = 'player_three'
-			elif self.game.players[3].score >= self.game.winning_score:
-				game_winner = 'player_four'
-			await self.send_game_end(game_winner)
-		else:
-			await self.send_game_end(winner)
-
-	async def end_game_player_left(self, player):
-		"""
-		Ends the game when a player leaves the game.
-		Sends the game end message to the clients.
-
-		Args:
-			player: The player who left the game.
-
-		Returns:
-			None
-		"""
-		self.game.is_running = False
-		await self.send_game_end_player_left(player)
-
-	async def game_loop(self):
-		"""
-		The main game loop that updates the game state and sends updates to clients.
-
-		Args:
-			None
-
-		Returns:
-			None
-		"""
-		async with await self.get_update_lock():
-			print(self.game_manager.players_in_room(self.game_room))
-			while self.game.is_running == True:
-				await self.game.update()
-				await self.send_game_state()
-				await asyncio.sleep(tick_duration)
-			await self.end_game(None)
+		await self.channel_layer.group_send(self.room_name,
+			{
+				'type': 'game_end',
+				'winner': winner
+			})
+		self.channel_layer.group_discard(self.room_name, self.channel_name)

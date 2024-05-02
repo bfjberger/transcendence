@@ -15,6 +15,7 @@ from channels.auth import AuthMiddlewareStack
 from django.core.asgi import get_asgi_application
 
 from pong_online.routing import websocket_urlpatterns
+from tournament.routing import tournament_websocket_urlpatterns
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bck_django.settings')
 
@@ -22,6 +23,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bck_django.settings')
 application = ProtocolTypeRouter(
 	{
 		"http": get_asgi_application(),
-		"websocket": AuthMiddlewareStack(URLRouter(websocket_urlpatterns)),
+		"websocket": AuthMiddlewareStack(
+			URLRouter(websocket_urlpatterns + tournament_websocket_urlpatterns)
+			),
 	}
 )

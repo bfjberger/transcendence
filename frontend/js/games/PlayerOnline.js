@@ -3,26 +3,26 @@ import * as constants from './Constants.js';
 export class Player {
 	constructor(side, width, height, color, game_mode) {
 		switch (side) {
-			case 1:
+			case "player_left":
 				this.x = 10;
 				if (game_mode == 2)
 					this.y = (constants.WIN_HEIGHT - constants.PADDLE_HEIGHT) / 2;
 				else
-					this.y = (constants.FOUR_WIN_HEIGHT - constants.PADDLE_HEIGHT) / 2;
+					this.y = (constants.FOUR_WIN_HEIGHT / 2 - constants.PADDLE_HEIGHT / 2);
 				break;
-			case 2:
+			case "player_right":
 				this.x = constants.WIN_WIDTH - constants.PADDLE_WIDTH - 10;
 				if (game_mode == 2)
 					this.y = (constants.WIN_HEIGHT - constants.PADDLE_HEIGHT) / 2;
 				else
-					this.y = (constants.FOUR_WIN_HEIGHT - constants.PADDLE_HEIGHT) / 2;
+					this.y = (constants.FOUR_WIN_HEIGHT / 2) - (constants.PADDLE_HEIGHT / 2);
 				break;
-			case 3:
-				this.x = (constants.WIN_WIDTH - constants.PADDLE_HEIGHT) / 2;
+			case "player_top":
+				this.x = (constants.WIN_WIDTH / 2) - (constants.PADDLE_HEIGHT / 2);
 				this.y = 10;
 				break;
-			case 4:
-				this.x = (constants.WIN_WIDTH - constants.PADDLE_HEIGHT) / 2;
+			case "player_bottom":
+				this.x = (constants.WIN_WIDTH / 2) - (constants.PADDLE_HEIGHT / 2);
 				this.y = constants.FOUR_WIN_HEIGHT - constants.PADDLE_WIDTH - 10;
 				break;
 		}
@@ -30,6 +30,11 @@ export class Player {
 		this.height = height;
 		this.color = color;
 		this.score = 0;
+		this.name = "";
+	}
+
+	set_name(name) {
+		this.name = name;
 	}
 
 	/*

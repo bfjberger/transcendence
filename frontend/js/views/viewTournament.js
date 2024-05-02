@@ -89,19 +89,47 @@ export function renderTournamentOnline() {
 
 export function renderTournamentRoom() {
 	return `
-		<div id="tournament-room">
-		<h1 id="tournament-name"></h1>
-		
-		<div id="players-list">
-			<!-- List of players will be displayed here -->
+			<div id="tournament-room">
+				<h1 id="tournament-name"></h1>
+			</div>
+
+			<br>
+			<div id="infoElement"></div>
+			<div id="playerField"></div>
+			<div class="row">
+				<div class="col d-flex justify-content-center align-items-center">
+					<div class="text-bg-success border border-black border-5">
+						<canvas id="board_two" width="650" height="480"></canvas>
+					</div>
+				</div>
+			</div>
+		`
+}
+
+/* ------------------------------- Components ------------------------------- */
+
+export function renderTournamentLobby() {
+	return `
+		<div>
+			TOURNAMENT LOBBY
+			<div id='lobby-container'/>
 		</div>
-		
-		<button id="start-tournament-button">Start Tournament</button>
-		<button id="leave-room-button">Leave Room</button>`
+	`
+}
+
+export function renderPlayground() {
+	return `
+		<div id="playground">
+			<h1>Tournament</h1>
+			test
+		</div>
+	`
 }
 
 export default {
 	renderTournament,
 	renderTournamentOnline,
+	// Components
 	renderTournamentRoom,
+	renderTournamentLobby
 }
