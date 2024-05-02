@@ -5,17 +5,14 @@ export let default_paddle_height = 70;
 let default_paddle_speed = 3;
 
 class Player {
-	constructor(name, color, pos) {
+	constructor(name, color, side) {
 		this.name = name;
 		this.score = 0;
-		this.pos = ""; // 'left' or 'right'
-		this.hasWon = false;
-		this.wins = 0;
-		if (!pos) {
+		if (!side) { // for players left and right
 			this.width = default_paddle_width;
 			this.height = default_paddle_height;
 		}
-		else {
+		else { // for players top and bottom
 			this.width = default_paddle_height;
 			this.height = default_paddle_width;
 		}
@@ -24,82 +21,9 @@ class Player {
 		this.color = color;
 	}
 
-	getScore() {
-		return this.score;
-	}
-
-	getName() {
-		return this.name;
-	}
-
-	getPos() {
-		return this.pos;
-	}
-
-	getHasWon() {
-		return this.hasWon;
-	}
-
-	getWins() {
-		return this.wins;
-	}
-
-	getWidth() {
-		return this.width;
-	}
-
-	getHeight() {
-		return this.height;
-	}
-
-	getSpeed() {
-		return this.speed;
-	}
-
-	getCoords() {
-		return this.coords;
-	}
-
-	getColor() {
-		return this.color;
-	}
-
-	setName(name) {
-		this.name = name;
-	}
-
-	setScore(score) {
-		this.score = score;
-	}
-
-	// updateScore(pts) {
-	// 	this.score += pts;
-	// }
-
-	setPos(pos) {
-		this.pos = pos;
-	}
-
-	setHasWon(hasWon) {
-		this.hasWon = hasWon;
-	}
-
-	setWins(wins) {
-		this.wins = wins;
-	}
-
-	setPaddle(width, height) {
-		this.width = width;
-		this.height = height;
-	}
-
 	setCoords(x, y) {
 		this.coords.x = x;
 		this.coords.y = y;
-	}
-
-	setSpeed(speed) {
-		this.speed = speed;
 	}
 }
 

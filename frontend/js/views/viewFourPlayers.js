@@ -6,7 +6,7 @@ export default function renderFourPlayers() {
 			<div class="col text-center fw-bold pt-3">
 				<h1>Pong mode 4 Joueurs</h1>
 			</div>
-			<p id="template_text" class="text-center h4 my-2">Template text for later on</p>
+			<p id="template_text" class="text-center h2 my-2"></p>
 		</div>
 		<div class="row">
 			<div class="col-5"></div>
@@ -20,8 +20,8 @@ export default function renderFourPlayers() {
 				<p>Joueur Gauche: Q/A</p>
 			</div>
 			<div class="col d-flex justify-content-center align-items-center">
-				<div class="position-absolute" id="button_container">
-					<button class="btn btn-danger" type="button" id="startGame4">Commencer la partie</button>
+				<div class="position-absolute">
+					<button class="btn btn-danger" type="button" id="startGame4">Commencer une partie</button>
 				</div>
 				<div class="text-bg-success border border-black border-5">
 					<canvas id="board_four" width="650" height="650"></canvas>

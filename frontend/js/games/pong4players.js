@@ -3,7 +3,9 @@ import Player, {
 	default_paddle_width,
 } from "./Player.js"; // Import the Player class from Player
 
-import * as constants from "./Constants.js";
+var g_game;
+var g_startButton;
+var g_template_text;
 
 class PongGame4Players {
 	constructor(player_left_name, player_right_name, player_top_name, player_bottom_name) {
@@ -14,10 +16,14 @@ class PongGame4Players {
 
 		// players
 		[this.playerVelocityY, this.paddleSpeed] = [0, this.boardHeight / 100]; // overriden by movePlayer()
-		[this.player_left, this.player_right, this.player_top, this.player_bottom] = [new Player(player_left_name, "orange", false),
-			new Player(player_right_name, "blue", false),
-			new Player(player_top_name, "violet", true),
-			new Player(player_bottom_name, "red", true),];
+		[this.player_left, this.player_right, this.player_top, this.player_bottom] =
+			[
+				new Player(player_left_name, "orange", false),
+				new Player(player_right_name, "blue", false),
+				new Player(player_top_name, "violet", true),
+				new Player(player_bottom_name, "red", true)
+			];
+		this.winner = null;
 		this.keysPressed = {};
 
 		// ball
@@ -48,10 +54,12 @@ class PongGame4Players {
 
 	setPlayer() {
 		// set players position
-		this.player_left.setCoords(10, this.boardHeight / 2 - this.player_left.height / 2);
-		this.player_right.setCoords(this.boardWidth - this.player_right.width - 10, this.boardHeight / 2 - this.player_right.height / 2);
+		this.player_left.setCoords(10, (this.boardHeight - this.player_left.height) / 2);
+		this.player_right.setCoords(this.boardWidth - this.player_right.width - 10,
+										(this.boardHeight - this.player_right.height) / 2);
 		this.player_top.setCoords(this.boardWidth / 2 - this.player_top.width / 2, 10);
-		this.player_bottom.setCoords(this.boardWidth / 2 - this.player_bottom.width / 2, this.boardHeight - this.player_bottom.height - 10);
+		this.player_bottom.setCoords(this.boardWidth / 2 - this.player_bottom.width / 2,
+										this.boardHeight - this.player_bottom.height - 10);
 
 		// set velocity
 		this.player_left.speed = this.player_right.speed = this.player_top.speed = this.player_bottom.speed = this.paddleSpeed;
@@ -273,102 +281,81 @@ class PongGame4Players {
 
 		this.context.font = "20px sans-serif";
 		this.context.fillStyle = "black";
-		this.context.fillText(this.player_left.getScore(), 10, this.boardHeight / 2);
-		this.context.fillText(this.player_right.getScore(), this.boardWidth - 20, this.boardHeight / 2);
-		this.context.fillText(this.player_top.getScore(), this.boardWidth / 2, 20);
-		this.context.fillText(this.player_bottom.getScore(), this.boardWidth / 2, this.boardHeight - 20);
+		this.context.fillText(this.player_left.score, 10, this.boardHeight / 2);
+		this.context.fillText(this.player_right.score, this.boardWidth - 20, this.boardHeight / 2);
+		this.context.fillText(this.player_top.score, this.boardWidth / 2, 20);
+		this.context.fillText(this.player_bottom.score, this.boardWidth / 2, this.boardHeight - 20);
 	}
 
 	gameOver() {
-		return new Promise((resolve) => {
-		const checkGameOver = () => {
-			if (this.player_left.getScore() === 3 || this.player_right.getScore() === 3 || this.player_top.getScore() === 3 || this.player_bottom.getScore() === 3) {
-				let winner;
+		if (this.player_left.score === 3 || this.player_right.score === 3 ||
+			this.player_top.score === 3 || this.player_bottom.score === 3) {
 
-				if (this.player_left.getScore() === 3) {
-					winner = this.player_left;
-				}
-				else if (this.player_right.getScore() === 3) {
-					winner = this.player_right;
-				}
-				else if (this.player_top.getScore() === 3) {
-					winner = this.player_top;
-				}
-				else if (this.player_bottom.getScore() === 3) {
-					winner = this.player_bottom;
-				}
-
-				if (winner.getHasWon() === false) {
-					winner.setWins(winner.getWins() + 1);
-					winner.setHasWon(true);
-				}
-
-				resolve(winner);
+			if (this.player_left.score === 3) {
+				this.winner = this.player_left;
 			}
-			else {
-				setTimeout(checkGameOver, 1000); // Check every second
+			else if (this.player_right.score === 3) {
+				this.winner = this.player_right;
 			}
-		};
-		checkGameOver();
-		});
-	}
+			else if (this.player_top.score === 3) {
+				this.winner = this.player_top;
+			}
+			else if (this.player_bottom.score === 3) {
+				this.winner = this.player_bottom;
+			}
+			this.start = false;
+		}
+	};
 
 	resetGame() {
 		// reset the position, velocity and color of the ball
 		this.setBall();
 		// reset the last player who touched the ball
 		this.lastPlayerTouched = null;
-	}
+	};
 
 	update() {
 		this.context.clearRect(0, 0, this.boardWidth, this.boardHeight);
 		this.movePlayer();
 		this.moveBall();
 		this.draw();
-		let winner = this.gameOver();
-		winner.then((winner) => {
-			if (winner) {
-				let winnerText = winner.getName() + " à gagné !!";
-				this.context.fillStyle = winner.color;
-				this.context.font = "50px sans-serif";
-				const textWidth = this.context.measureText(winnerText).width;
-				const textX = this.boardWidth / 2 - textWidth / 2;
-				const textY = this.boardHeight / 2 + 15;
-				this.context.fillText(winnerText, textX, textY);
-				this.ball.velocityX = 0;
-				this.ball.velocityY = 0;
-				document.getElementById("button_container").style.top = "75%";
-				document.getElementById("startGame4").innerHTML = "Rejouer ?";
-				document.getElementById("startGame4").classList.remove("d-none");
-			}
-			else {
-				requestAnimationFrame(this.update.bind(this));
-			}
-		});
-		requestAnimationFrame(this.update.bind(this));
-	}
-}
-
-var game;
+		this.gameOver();
+		if (this.winner != null) {
+			this.ball.velocityX = 0;
+			this.ball.velocityY = 0;
+			g_template_text.textContent = this.winner.name + " a gagné !!";
+			g_template_text.style.color = this.winner.color;
+			g_startButton.classList.remove("d-none");
+		}
+		else {
+			requestAnimationFrame(this.update.bind(this));
+		}
+	};
+};
 
 function start4PlayerGame(p1_name, p2_name, p3_name, p4_name) {
 
-	if (game)
-		document.getElementById("startGame4").classList.add("d-none");
+	if (g_game != undefined)
+		g_game = null;
 
-	game = new PongGame4Players(p1_name, p2_name, p3_name, p4_name);
-	game.init();
+	g_game = new PongGame4Players(p1_name, p2_name, p3_name, p4_name);
+	g_game.init();
 }
 
 function listenerFourPlayers() {
 
+	g_startButton = document.getElementById("startGame4");
+	g_template_text = document.getElementById("template_text");
+
 	document.getElementById("four__local--left").textContent = `${sessionStorage.getItem("nickname")}: Q/A`;
 
-	document.getElementById("startGame4").addEventListener("click", e => {
+	g_startButton.addEventListener("click", e => {
 		e.preventDefault();
 
-		// hide the start button
-		document.getElementById("startGame4").classList.add("d-none");
+		// hide the start button and reset some placeholder text
+		g_startButton.classList.add("d-none");
+		g_template_text.textContent = "";
+		g_template_text.style.color = "";
 
 		start4PlayerGame(sessionStorage.getItem("nickname"), "Invité Droit", "Invité Haut", "Inivité Bas");
 	});

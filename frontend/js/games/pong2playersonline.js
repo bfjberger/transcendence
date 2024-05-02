@@ -57,7 +57,7 @@ let g_first_launch = true;
 var g_game_running = false;
 var g_winner = null;
 var g_player_left, g_player_right;
-var g_template_text, g_button_container, g_startButton;
+var g_template_text, g_startButton;
 var g_left_container, g_right_container;
 const g_keys = {};
 
@@ -80,8 +80,10 @@ function initDisplay() {
 };
 
 function initArena() {
-	g_player_left = new Player("player_left", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_LEFT_COLOR, 2);
-	g_player_right = new Player("player_right", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_RIGHT_COLOR, 2);
+	g_player_left = new Player("player_left", constants.PADDLE_WIDTH,
+								constants.PADDLE_HEIGHT, constants.PLAYER_LEFT_COLOR, 2);
+	g_player_right = new Player("player_right", constants.PADDLE_WIDTH,
+								constants.PADDLE_HEIGHT, constants.PLAYER_RIGHT_COLOR, 2);
 	g_ball = new Ball(2);
 };
 
@@ -96,12 +98,12 @@ function display_winner(winning_player) {
 	g_ball.stop();
 
 	if (winning_player === 'player_left') {
-		g_winner = g_player_left.name;
-		g_board_winning_text = g_player_left.name + " a gagné!";
+		g_winner = g_player_left;
+		g_board_winning_text = g_winner.name + " a gagné!";
 	}
 	else {
-		g_winner = g_player_right.name;
-		g_board_winning_text = g_player_right.name + " a gagné!";
+		g_winner = g_player_right;
+		g_board_winning_text = g_winner.name + " a gagné!";
 	}
 };
 
@@ -218,19 +220,8 @@ function render() {
 	}
 	else {
 		if (g_winner !== null) {
-			if (g_winner === g_player_left.name) {
-				g_context.fillStyle = g_player_left.color;
-			}
-			else {
-				g_context.fillStyle = g_player_right.color;
-			}
-			g_context.font = "50px sans-serif";
-			let text_width = g_context.measureText(g_board_winning_text).width;
-			g_context.fillText(g_board_winning_text, (constants.WIN_WIDTH - text_width) / 2, constants.WIN_HEIGHT / 2);
-
-			// lower the div button container
-			g_button_container.style.top = "65%";
-			g_startButton.innerHTML = "Chercher une autre partie";
+			g_template_text.textContent = g_board_winning_text;
+			g_template_text.style.color = g_winner.color;
 			g_startButton.classList.remove("d-none");
 		}
 	}
@@ -249,14 +240,14 @@ function setPositionStyleUpdate(data) {
 		g_player_left.set_name(data.name);
 		g_left_container.classList.add("text-decoration-underline");
 		g_left_container.style.color = constants.PLAYER_LEFT_COLOR;
-		instructions.innerHTML = "Ton camp est à gauche";
+		instructions.textContent = "Ton camp est à gauche";
 		instructions.style.color = constants.PLAYER_LEFT_COLOR;
 	}
 	else {
 		g_player_right.set_name(data.name);
 		g_right_container.classList.add("text-decoration-underline");
 		g_right_container.style.color = constants.PLAYER_RIGHT_COLOR;
-		instructions.innerHTML = "Ton camp est à droite";
+		instructions.textContent = "Ton camp est à droite";
 		instructions.style.color = constants.PLAYER_RIGHT_COLOR;
 	}
 };
@@ -313,7 +304,7 @@ export function start() {
 		if (data.type === 'game_start') {
 			console.log('Starting game . . .');
 
-			g_template_text.innerHTML = "Adversaire trouvé! La partie commence . . .";
+			g_template_text.textContent = "Adversaire trouvé! La partie commence . . .";
 
 			gameStartStyleUpdate(data);
 
@@ -328,7 +319,9 @@ export function start() {
 
 		if (data.type === 'player_disconnect') {
 			g_game_running = false;
-			console.log('Player ' + data.player_pos + ' disconnected');
+			g_template_text.style.color = "black";
+			g_template_text.textContent = data.player_name + " a quitté la partie (rageux). Tu gagne cette partie.";
+			g_startButton.classList.remove("d-none");
 			g_websocket.close();
 		}
 
@@ -370,7 +363,6 @@ window.addEventListener('beforeunload', handlePageReload);
 function listenerTwoPlayersOnline() {
 
 	g_startButton = document.getElementById("startGame2Online");
-	g_button_container = document.getElementById("button_container");
 	g_template_text = document.getElementById("template_text");
 	g_left_container = document.getElementById("two__online--left");
 	g_right_container = document.getElementById("two__online--right");
@@ -378,9 +370,10 @@ function listenerTwoPlayersOnline() {
 	g_startButton.addEventListener("click", e => {
 		e.preventDefault();
 
+		// hide the start button and reset some placeholder text
 		g_startButton.classList.add("d-none");
-
-		g_template_text.innerHTML = "En attente d'un adversaire";
+		g_template_text.textContent = "En attente d'un adversaire";
+		g_template_text.style.color = "";
 
 		start();
 	});
@@ -412,8 +405,6 @@ async function loadTwoPlayersOnline() {
 		console.error("loadTwoPlayers: " + e);
 		return 0;
 	}
-
-	return 1; // Added to get the game for now instead of the try catch block
 };
 
 export default {

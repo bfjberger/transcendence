@@ -49,7 +49,7 @@ let g_first_launch = true;
 var g_game_running = false;
 var g_winner = null;
 var g_player_left, g_player_right, g_player_top, g_player_bottom;
-var g_template_text, g_button_container, g_startButton;
+var g_template_text, g_startButton, g_instructions;
 var g_left_container, g_right_container, g_top_container, g_bottom_container;
 const g_keys = {};
 
@@ -72,10 +72,14 @@ function initDisplay() {
 };
 
 function initArena() {
-	g_player_left = new Player("player_left", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_LEFT_COLOR);
-	g_player_right = new Player("player_right", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_RIGHT_COLOR);
-	g_player_top = new Player("player_top", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_TOP_COLOR);
-	g_player_bottom = new Player("player_bottom", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_BOTTOM_COLOR);
+	g_player_left = new Player("player_left", constants.PADDLE_WIDTH,
+								constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_LEFT_COLOR);
+	g_player_right = new Player("player_right", constants.PADDLE_WIDTH,
+								constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_RIGHT_COLOR);
+	g_player_top = new Player("player_top", constants.PADDLE_WIDTH,
+								constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_TOP_COLOR);
+	g_player_bottom = new Player("player_bottom", constants.PADDLE_WIDTH,
+								constants.PADDLE_HEIGHT, constants.FOUR_PLAYER_BOTTOM_COLOR);
 	g_ball = new Ball(4);
 };
 
@@ -92,21 +96,18 @@ function display_winner(winning_player) {
 	g_ball.stop();
 
 	if (winning_player === 'player_left') {
-		g_winner = g_player_left.name;
-		g_board_winning_text = g_player_left.name + " a gagné!";
+		g_winner = g_player_left;
 	}
 	else if (winning_player === 'player_right') {
-		g_winner = g_player_right.name;
-		g_board_winning_text = g_player_right.name + " a gagné!";
+		g_winner = g_player_right;
 	}
 	else if (winning_player === 'player_top') {
-		g_winner = g_player_top.name;
-		g_board_winning_text = g_player_top.name + " a gagné!";
+		g_winner = g_player_top;
 	}
 	else if (winning_player === 'player_bottom') {
-		g_winner = g_player_bottom.name;
-		g_board_winning_text = g_player_bottom.name + " a gagné!";
+		g_winner = g_player_bottom;
 	}
+	g_board_winning_text = g_winner.name + " a gagné!";
 };
 
 /* -------------------------------- Controls -------------------------------- */
@@ -265,25 +266,10 @@ function render() {
 	}
 	else {
 		if (g_winner !== null) {
-			if (g_winner === g_player_left.name) {
-				g_context.fillStyle = g_player_left.color;
-			}
-			else if (g_winner === g_player_right.name) {
-				g_context.fillStyle = g_player_right.color;
-			}
-			else if (g_winner === g_player_top.name) {
-				g_context.fillStyle = g_player_top.color;
-			}
-			else if (g_winner === g_player_bottom.name) {
-				g_context.fillStyle = g_player_bottom.color;
-			}
-			g_context.font = "50px sans-serif";
-			let text_width = g_context.measureText(g_board_winning_text).width;
-			g_context.fillText(g_board_winning_text, (constants.WIN_WIDTH - text_width) / 2, constants.FOUR_WIN_HEIGHT / 2);
-
-			// lower the div button container
-			g_button_container.style.top = "65%";
-			g_startButton.innerHTML = "Chercher une autre partie";
+			g_instructions.textContent = "";
+			g_instructions.style.color = "";
+			g_template_text.textContent = g_board_winning_text;
+			g_template_text.style.color = g_winner.color;
 			g_startButton.classList.remove("d-none");
 		}
 	}
@@ -296,35 +282,33 @@ function render() {
 
 function setPositionStyleUpdate(data) {
 
-	const instructions = document.getElementById("instructions");
-
 	if (g_position === "player_left") {
 		g_player_left.set_name(data.name);
 		g_left_container.classList.add("text-decoration-underline");
 		g_left_container.style.color = constants.FOUR_PLAYER_LEFT_COLOR;
-		instructions.innerHTML = "Ton camp est à gauche. Utilise les touches W et S pour bouger";
-		instructions.style.color = constants.FOUR_PLAYER_LEFT_COLOR;
+		g_instructions.textContent = "Ton camp est à gauche. Utilise les touches W et S pour bouger";
+		g_instructions.style.color = constants.FOUR_PLAYER_LEFT_COLOR;
 	}
 	else if (g_position === "player_right") {
 		g_player_right.set_name(data.name);
 		g_right_container.classList.add("text-decoration-underline");
 		g_right_container.style.color = constants.FOUR_PLAYER_RIGHT_COLOR;
-		instructions.innerHTML = "Ton camp est à droite. Utilise les touches W et S pour bouger";
-		instructions.style.color = constants.FOUR_PLAYER_RIGHT_COLOR;
+		g_instructions.textContent = "Ton camp est à droite. Utilise les touches W et S pour bouger";
+		g_instructions.style.color = constants.FOUR_PLAYER_RIGHT_COLOR;
 	}
 	else if (g_position === "player_top") {
 		g_player_top.set_name(data.name);
 		g_top_container.classList.add("text-decoration-underline");
 		g_top_container.style.color = constants.FOUR_PLAYER_TOP_COLOR;
-		instructions.innerHTML = "Ton camp est en haut. Utilise les touches J et K pour bouger";
-		instructions.style.color = constants.FOUR_PLAYER_TOP_COLOR;
+		g_instructions.textContent = "Ton camp est en haut. Utilise les touches J et K pour bouger";
+		g_instructions.style.color = constants.FOUR_PLAYER_TOP_COLOR;
 	}
 	else if (g_position === "player_bottom") {
 		g_player_bottom.set_name(data.name);
 		g_bottom_container.classList.add("text-decoration-underline");
 		g_bottom_container.style.color = constants.FOUR_PLAYER_BOTTOM_COLOR;
-		instructions.innerHTML = "Ton camp est en bas. Utilise les touches J et K pour bouger";
-		instructions.style.color = constants.FOUR_PLAYER_BOTTOM_COLOR;
+		g_instructions.textContent = "Ton camp est en bas. Utilise les touches J et K pour bouger";
+		g_instructions.style.color = constants.FOUR_PLAYER_BOTTOM_COLOR;
 	}
 };
 
@@ -388,7 +372,7 @@ export function startGame() {
 		if (data.type === 'game_start') {
 			console.log('Starting game . . .');
 
-			g_template_text.innerHTML = "Adversaire trouvé! La partie commence . . .";
+			g_template_text.textContent = "Adversaires trouvés! La partie commence . . .";
 
 			gameStartStyleUpdate(data);
 
@@ -403,7 +387,9 @@ export function startGame() {
 
 		if (data.type === 'player_disconnect') {
 			g_game_running = false;
-			console.log('Player ' + data.player_pos + ' disconnected');
+			g_template_text.style.color = "black";
+			g_template_text.textContent = data.player_name + " a quitté la partie (rageux). La partie est terminée.";
+			g_startButton.classList.remove("d-none");
 			g_websocket.close();
 		}
 
@@ -446,7 +432,7 @@ function listenerFourPlayersOnline() {
 
 	g_startButton = document.getElementById("startGame4Online");
 	g_template_text = document.getElementById("template_text");
-	g_button_container = document.getElementById("button_container");
+	g_instructions = document.getElementById("instructions");
 	g_left_container = document.getElementById("four__online--left");
 	g_right_container = document.getElementById("four__online--right");
 	g_top_container = document.getElementById("four__online--top");
@@ -455,12 +441,12 @@ function listenerFourPlayersOnline() {
 	g_startButton.addEventListener("click", e => {
 		e.preventDefault();
 
+		// hide the start button and reset some placeholder text
 		g_startButton.classList.add("d-none");
-
-		g_template_text.innerHTML = "En attente d'autres joueurs. . .";
+		g_template_text.textContent = "En attente d'autres joueurs. . .";
+		g_template_text.style.color = "";
 
 		startGame();
-
 	});
 };
 

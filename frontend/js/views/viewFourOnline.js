@@ -6,7 +6,7 @@ export default function renderFourOnline() {
 			<div class="col text-center fw-bold pt-3">
 				<h1>Pong mode 4 Joueurs en Ligne</h1>
 			</div>
-			<p id="template_text" class="text-center h4 my-2"></p>
+			<p id="template_text" class="text-center h2 my-2"></p>
 			<p id="instructions" class="text-center h4 my-2"></p>
 		</div>
 		<div class="row">
@@ -19,7 +19,7 @@ export default function renderFourOnline() {
 			<div class="col-4 text-end text-primary align-self-center h3" id="four__online--left">
 			</div>
 			<div class="col-4 d-flex justify-content-center align-items-center">
-				<div id="button_container" class="position-absolute">
+				<div class="position-absolute">
 					<button class="btn btn-danger" type="button" id="startGame4Online">Chercher une partie</button>
 				</div>
 				<div class="text-bg-success border border-black border-5">

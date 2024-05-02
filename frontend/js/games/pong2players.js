@@ -3,9 +3,13 @@ import Player, {
 	default_paddle_width,
 } from "./Player.js"; // Import the Player class from Player
 
+var g_game;
+var g_startButton;
+var g_template_text;
+
 // Some of the constructor default values are overriden by the different set functions
 class PongGame2Players {
-	constructor(player1Name, player2Name) {
+	constructor(player_leftName, player_rightName) {
 		// board
 		[this.boardWidth, this.boardHeight] = [650, 480];
 		[this.board, this.context] = [null, null]; // defined in setBoard()
@@ -13,7 +17,9 @@ class PongGame2Players {
 
 		// players
 		[this.playerVelocityY, this.paddleSpeed] = [0, this.boardHeight / 100];
-		[this.player1, this.player2] = [new Player(player1Name, "orange", false), new Player(player2Name, "blue", false),];
+		[this.player_left, this.player_right] = [new Player(player_leftName, "orange", false),
+												new Player(player_rightName, "blue", false)];
+		this.winner = null;
 		this.keysPressed = {};
 
 		// ball
@@ -43,12 +49,13 @@ class PongGame2Players {
 
 	setPlayer() {
 		//set players position
-		this.player1.setCoords(10, this.boardHeight / 2 - this.player1.height / 2);
-		this.player2.setCoords(this.boardWidth - this.player2.width - 10, this.boardHeight / 2 - this.player2.height / 2);
+		this.player_left.setCoords(10, (this.boardHeight - this.player_left.height) / 2);
+		this.player_right.setCoords(this.boardWidth - this.player_right.width - 10,
+									(this.boardHeight - this.player_right.height) / 2);
 
 		// set velocity
-		this.player1.speed = this.player2.speed = this.paddleSpeed;
-		this.player1.velocityY = this.player2.velocityY = 0;
+		this.player_left.speed = this.player_right.speed = this.paddleSpeed;
+		this.player_left.velocityY = this.player_right.velocityY = 0;
 	}
 
 	setBall() {
@@ -69,9 +76,9 @@ class PongGame2Players {
 		this.ball.velocityY = Math.sin(randomAngle) * this.ballSpeed;
 
 		// DEBUG
-		if (this.player1.getName().substr(0, 4) === "test" && this.player2.getName().substr(0, 4) === "test") {
-			this.player1.setCoords(10, 10);
-			this.player2.setCoords(this.boardWidth - this.player2.width - 10, 10);
+		if (this.player_left.name.substr(0, 4) === "test" && this.player_right.name.substr(0, 4) === "test") {
+			this.player_left.setCoords(10, 10);
+			this.player_right.setCoords(this.boardWidth - this.player_right.width - 10, 10);
 			this.ball.y = this.boardHeight / 2;
 			this.ball.velocityX = 180 * this.ballSpeed * -1; // player 1 gagne (gauche)
 			// this.ball.velocityX = 180 * this.ballSpeed; // player 2 gagne (droite)
@@ -90,28 +97,28 @@ class PongGame2Players {
 
 	movePlayer() {
 		if (this.keysPressed["w"]) {
-			this.player1.velocityY = -this.paddleSpeed;
+			this.player_left.velocityY = -this.paddleSpeed;
 		}
 		else if (this.keysPressed["s"]) {
-			this.player1.velocityY = this.paddleSpeed;
+			this.player_left.velocityY = this.paddleSpeed;
 		}
 		else {
-			this.player1.velocityY = 0;
+			this.player_left.velocityY = 0;
 		}
 		if (this.keysPressed["o"]) {
-			this.player2.velocityY = -this.paddleSpeed;
+			this.player_right.velocityY = -this.paddleSpeed;
 		}
 		else if (this.keysPressed["l"]) {
-			this.player2.velocityY = this.paddleSpeed;
+			this.player_right.velocityY = this.paddleSpeed;
 		}
 		else {
-			this.player2.velocityY = 0;
+			this.player_right.velocityY = 0;
 		}
-		if (!this.outOfBounds(this.player1.coords.y + this.player1.velocityY)) {
-			this.player1.coords.y += this.player1.velocityY;
+		if (!this.outOfBounds(this.player_left.coords.y + this.player_left.velocityY)) {
+			this.player_left.coords.y += this.player_left.velocityY;
 		}
-		if (!this.outOfBounds(this.player2.coords.y + this.player2.velocityY)) {
-			this.player2.coords.y += this.player2.velocityY;
+		if (!this.outOfBounds(this.player_right.coords.y + this.player_right.velocityY)) {
+			this.player_right.coords.y += this.player_right.velocityY;
 		}
 	}
 
@@ -124,11 +131,11 @@ class PongGame2Players {
 		this.ball.x += this.ball.velocityX;
 		this.ball.y += this.ball.velocityY;
 		if (this.ball.x - this.ball.radius < 0) {
-			this.player2.score++;
+			this.player_right.score++;
 			this.resetGame();
 		}
 		if (this.ball.x + this.ball.radius > this.boardWidth) {
-			this.player1.score++;
+			this.player_left.score++;
 			this.resetGame();
 		}
 	}
@@ -148,24 +155,24 @@ class PongGame2Players {
 
 		var middle_y, difference_in_y, reduction_factor, new_y_vel;
 		// Ball and paddle collision
-		if (this.ball.velocityX <= 0) {
-			if (this.ball.y <= this.player1.coords.y + default_paddle_height &&
-				this.ball.y >= this.player1.coords.y && this.ball.x > this.player1.coords.x &&
-				this.ball.x - this.ball.radius <= this.player1.coords.x + default_paddle_width / 2) {
+		if (this.ball.velocityX < 0) {
+			if (this.ball.y <= this.player_left.coords.y + default_paddle_height &&
+				this.ball.y >= this.player_left.coords.y && this.ball.x > this.player_left.coords.x &&
+				this.ball.x - this.ball.radius <= this.player_left.coords.x + default_paddle_width) {
 					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX; // reverse ball direction
-					middle_y = this.player1.coords.y + default_paddle_height / 2;
+					middle_y = this.player_left.coords.y + default_paddle_height / 2;
 					difference_in_y = middle_y - this.ball.y;
 					reduction_factor = default_paddle_height / 2;
 					new_y_vel = difference_in_y / reduction_factor;
 					this.ball.velocityY = -1 * new_y_vel;
 			}
 		}
-		else {
-			if (this.ball.y <= this.player2.coords.y + default_paddle_height &&
-				this.ball.y >= this.player2.coords.y && this.ball.x > this.player2.coords.x &&
-				this.ball.x + this.ball.radius >= this.player2.coords.x - default_paddle_width / 2) {
+		else if (this.ball.velocityX > 0) {
+			if (this.ball.y <= this.player_right.coords.y + default_paddle_height &&
+				this.ball.y >= this.player_right.coords.y && this.ball.x < this.player_right.coords.x &&
+				this.ball.x + this.ball.radius >= this.player_right.coords.x) {
 					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX; // reverse ball direction
-					middle_y = this.player2.coords.y + default_paddle_height / 2;
+					middle_y = this.player_right.coords.y + default_paddle_height / 2;
 					difference_in_y = middle_y - this.ball.y;
 					reduction_factor = default_paddle_height / 2;
 					new_y_vel = difference_in_y / reduction_factor;
@@ -175,8 +182,8 @@ class PongGame2Players {
 	};
 
 	draw() {
-		this.drawPlayer(this.player1);
-		this.drawPlayer(this.player2);
+		this.drawPlayer(this.player_left);
+		this.drawPlayer(this.player_right);
 		if (this.start)
 			this.drawBall("white");
 		this.drawScoreAndLine();
@@ -209,88 +216,69 @@ class PongGame2Players {
 
 		this.context.font = "50px sans-serif";
 		this.context.fillStyle = "white";
-		this.context.fillText(this.player1.getScore(), this.boardWidth / 2 - 50, 50);
-		this.context.fillText(this.player2.getScore(), this.boardWidth / 2 + 25, 50);
+		this.context.fillText(this.player_left.score, this.boardWidth / 2 - 50, 50);
+		this.context.fillText(this.player_right.score, this.boardWidth / 2 + 25, 50);
 	}
 
 	gameOver() {
-		return new Promise((resolve) => {
-			const checkGameOver = () => {
-				if (this.player1.getScore() === 3 || this.player2.getScore() === 3) {
-					let winner = this.player1.getScore() === 3 ? this.player1 : this.player2;
-
-					if (winner.getHasWon() === false) {
-						winner.setWins(winner.getWins() + 1);
-						winner.setHasWon(true);
-						this.start = false;
-					}
-					resolve(winner);
-				}
-				else {
-					setTimeout(checkGameOver, 1000); // Check every second
-				}
-			};
-			checkGameOver();
-		});
-	}
+		if (this.player_left.score === 3 || this.player_right.score === 3) {
+			this.winner = this.player_left.score === 3 ? this.player_left : this.player_right;
+			this.start = false;
+		}
+	};
 
 	resetGame() {
 		// reset the position and velocity of the ball
 		this.setBall();
-	}
+	};
 
 	update() {
 		this.context.clearRect(0, 0, this.boardWidth, this.boardHeight);
 		this.movePlayer();
 		this.moveBall();
 		this.draw();
-		let winner = this.gameOver();
-		winner.then((winner) => {
-			if (winner) {
-				if (window.location.pathname === "/twoplayers/") {
-					let winnerText = winner.getName() + " a gagné !!";
-					this.context.fillStyle = winner.color;
-					this.context.font = "50px sans-serif";
-					const textWidth = this.context.measureText(winnerText).width;
-					this.context.fillText(winnerText, (this.boardWidth - textWidth) / 2, this.boardHeight / 2);
-					document.getElementById("button_container").style.top = "55%";
-					document.getElementById("startGame2").innerHTML = "Rejouer ?";
-					document.getElementById("startGame2").classList.remove("d-none");
-				}
-				this.ball.velocityX = 0;
-				this.ball.velocityY = 0;
-				if (window.location.pathname === "/tournament/") {
-					this.context.reset();
-				}
+		this.gameOver();
+		if (this.winner != null) {
+			if (window.location.pathname === "/twoplayers/") {
+				g_template_text.textContent = this.winner.name + " a gagné !!";
+				g_template_text.style.color = this.winner.color;
+				g_startButton.classList.remove("d-none");
 			}
-			else {
-				requestAnimationFrame(this.update.bind(this));
+			this.ball.velocityX = 0;
+			this.ball.velocityY = 0;
+			if (window.location.pathname === "/tournament/") {
+				this.context.reset();
 			}
-		});
-		requestAnimationFrame(this.update.bind(this));
-	}
-}
-
-var game;
+		}
+		else {
+			requestAnimationFrame(this.update.bind(this));
+		}
+	};
+};
 
 function start2PlayerGame(p1_name, p2_name) {
 
-	if (game)
-		document.getElementById("startGame2").classList.add("d-none");
+	if (g_game != undefined)
+		g_game = null;
 
-	game = new PongGame2Players(p1_name, p2_name);
-	game.init();
+	g_game = new PongGame2Players(p1_name, p2_name);
+	g_game.init();
 }
 
 function listenerTwoPlayers() {
 
+	g_startButton = document.getElementById("startGame2");
+	g_template_text = document.getElementById("template_text");
+
 	document.getElementById("two__local--left").textContent = `${sessionStorage.getItem("nickname")}: W/S`;
 
-	document.getElementById("startGame2").addEventListener("click", e => {
+	g_startButton.addEventListener("click", e => {
 		e.preventDefault();
 
-		// hide the start button
-		document.getElementById("startGame2").classList.add("d-none");
+		// hide the start button and reset some placeholder text
+		g_startButton.classList.add("d-none");
+		g_template_text.textContent = "";
+		g_template_text.style.color = "";
 
 		start2PlayerGame(sessionStorage.getItem("nickname"), "Joueur Invité");
 	});
