@@ -1,22 +1,11 @@
 import * as constants from './Constants.js';
 
-function intToHexColor(value) {
-	if (value[0] == "#") {
-		return value;
-	}
-    // Convert the integer value to hexadecimal format
-    var hexValue = value.toString(16);
-    // Pad the string with zeros if necessary to ensure it has 6 digits
-    var hexColor = '#' + hexValue.padStart(6, '0');
-    return hexColor;
-}
-
 export class Ball {
 	constructor(game_mode) {
 		this.speed = constants.BALL_SPEED
 		this.x_vel = 0;
 		this.y_vel = 0;
-		this.color = 0xFFFFFF;
+		this.color = "white";
 		this.x = constants.WIN_WIDTH / 2;
 		if (game_mode == 2)
 			this.y = constants.WIN_HEIGHT / 2;
@@ -27,9 +16,6 @@ export class Ball {
 	}
 
 	setcolor(color) {
-		if (color[0] != "#") {
-			color = intToHexColor(color);
-		}
 		this.color = color;
 	}
 

@@ -23,8 +23,8 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ") # 127.0.0.1 et 10.11.1.2
-CSRF_TRUSTED_ORIGINS = ["http://localhost:7890", "http://10.11.1.2:7890", "http://10.12.8.4:7890"]
-CSRF_ALLOWED_ORIGINS = ["http://localhost:7890", "http://10.11.1.2:7890", "http://10.12.8.4:7890"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:7890", "http://10.11.1.2:7890", "http://10.12.8.4:7890", "http://10.12.7.3:7890"]
+CSRF_ALLOWED_ORIGINS = ["http://localhost:7890", "http://10.11.1.2:7890", "http://10.12.8.4:7890", "http://10.12.7.3:7890"]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -188,3 +188,5 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 MEDIA_URL = ""
 MEDIA_ROOT = os.path.join(BASE_DIR, "")
+
+TIME_ZONE = 'Europe/Zurich'
