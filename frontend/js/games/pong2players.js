@@ -232,7 +232,7 @@ class PongGame2Players {
 		this.setBall();
 	};
 
-	update() {
+	async update() {
 		this.context.clearRect(0, 0, this.boardWidth, this.boardHeight);
 		this.movePlayer();
 		this.moveBall();
@@ -243,6 +243,7 @@ class PongGame2Players {
 				g_template_text.textContent = this.winner.name + " a gagné !!";
 				g_template_text.style.color = this.winner.color;
 				g_startButton.classList.remove("d-none");
+				await updateStatus();
 			}
 			this.ball.velocityX = 0;
 			this.ball.velocityY = 0;
@@ -254,6 +255,50 @@ class PongGame2Players {
 			requestAnimationFrame(this.update.bind(this));
 		}
 	};
+};
+
+/*
+	Event listener for reload
+*/
+window.addEventListener('unload', async function() {
+	await updateStatus();
+});
+
+async function handlePageReload() {
+	await updateStatus();
+};
+
+window.addEventListener('beforeunload', handlePageReload);
+
+async function updateStatus() {
+
+	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+
+	const init = {
+		method: 'PATCH',
+		headers: {
+			'Content-Type': 'applications/json',
+			'X-CSRFToken': csrftoken,
+		}
+	};
+
+	try {
+		let hostnameport = "https://" + window.location.host;
+
+		const response = await fetch(hostnameport + '/api/changestatus/', init);
+
+		if (!response.ok) {
+			const error_text = await response.text();
+			throw new Error(error_text);
+		}
+
+		if (response.status === 200) {
+			const data = await response.json();
+		}
+
+	} catch (e) {
+		console.error(e);
+	}
 };
 
 function start2PlayerGame(p1_name, p2_name) {
@@ -280,6 +325,7 @@ function listenerTwoPlayers() {
 		g_template_text.textContent = "";
 		g_template_text.style.color = "";
 
+		updateStatus();
 		start2PlayerGame(sessionStorage.getItem("nickname"), "Joueur Invité");
 	});
 };

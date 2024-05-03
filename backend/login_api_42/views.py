@@ -95,6 +95,7 @@ class Callback(APIView):
                 player = Player(owner=user)
                 player.avatar.save(username+'.jpg', ContentFile(img_resp.content), save=False)
                 player.status = "ONLINE"
+                player.nickname = username
                 player.save()
 
                 user_auth = authenticate(username=username, password=new_password)
@@ -108,6 +109,7 @@ class Callback(APIView):
 
             player = Player.objects.get(owner=user)
             player.status = "ONLINE"
+            player.nickname = username
             player.save()
 
             r = login(request, user_to_login)

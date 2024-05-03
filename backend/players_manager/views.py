@@ -59,7 +59,7 @@ class LoginView(APIView):
 			serializer.is_valid(raise_exception=True)
 		except serializers.ValidationError:
 			return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
-		
+
 		user = serializer.validated_data['user']
 		login(request, user)
 
@@ -169,3 +169,21 @@ class Tournament(APIView):
 		serializer_player = PlayerSerializer(player)
 		serializer_user = UserSerializer(self.request.user)
 		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
+
+class UpdateStatus(APIView):
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
+
+	def patch(self, request):
+		try :
+			player = Player.objects.get(owner=self.request.user)
+		except :
+			return Response(None, status=status.HTTP_400_BAD_REQUEST)
+
+		if player.status == "PLAYING":
+			player.status = "ONLINE"
+		elif player.status == "ONLINE":
+			player.status = "PLAYING"
+		player.save()
+		serializer_player = PlayerSerializer(player)
+		return Response(data=serializer_player.data, status=status.HTTP_200_OK)
