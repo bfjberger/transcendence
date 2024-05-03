@@ -36,6 +36,8 @@ from pong_online.views import TwoPlayersOnlineView, FourPlayersOnlineView
 
 from friends_manager.views import ListFriendAPIView, CreateFriendAPIView, AcceptFriendAPIView, DeleteFriendAPIView
 
+
+from pong_IA.views import Pong_IAView
 # from players_manager.views import PlayerViewSet
 # from players_manager.views import AdminPlayerViewSet
 # from friends_manager.views import FriendViewSet
@@ -92,6 +94,11 @@ urlpatterns = [
     path('api/fourplayeronline/', FourPlayersOnlineView.as_view()),
 	
     path('api/tournamentOnline/', TournamentOnline.as_view()),
+		
+    path('api/pong_IA/', Pong_IAView.as_view()),
+
+
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

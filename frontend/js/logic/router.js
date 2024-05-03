@@ -14,6 +14,7 @@ import renderPong_IA from "../views/viewPong_IA.js"
 import handleFriends from "./friends.js"
 import handleLogin from "./login.js"
 import handleProfile from "./profile.js"
+import handleGameHistory from "./gamehistory.js"
 import handleTournament from "../games/tournament.js"
 import handleTournamentOnline from "../games/tournamentOnline.js"
 import handleTournamentRoom from "../games/tournamentRoom.js"
@@ -21,12 +22,11 @@ import handleTwoPlayers from "../games/pong2players.js"
 import handleFourPlayers from "../games/pong4players.js"
 import handleTwoPlayersOnline from "../games/pong2playersonline.js"
 import handleFourPlayersOnline from "../games/pong4playersonline.js"
-import handleGameHistory from "./gamehistory.js"
-import handlePong_IA from "./games/pog_IA.js"
+import handlePong_IA from "../games/pong_IA.js"
 
 // Cas particulier pour index
 import handleIndex from "./index.js"
-import renderPong_IA from "../views/viewPong_IA.js"
+
 
 /**
  * Routes object
