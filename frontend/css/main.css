@@ -55,6 +55,10 @@
 	cursor: pointer;
 }
 
+#sidebar-left, #sidebar-right {
+	background-color: #6C7878;
+}
+
 #footer {
 	background-color: teal;
 	margin-left: auto;

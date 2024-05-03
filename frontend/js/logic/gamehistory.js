@@ -26,24 +26,24 @@ function fillHistoryTwo() {
 		gameHistoryEntry.className = "row border-top border-warning";
 		const date = game.date.replace("Z", "").split("T");
 		gameHistoryEntry.innerHTML = `
-					<div class="col mt-2">
-						<div class="d-inline" id="game__historyTwo--${game_index}--left">
-							${game.user1.username}
-							<br>
-							${game.score_user1}
-						</div>
+				<div class="col mt-2">
+					<div class="d-inline" id="game__historyTwo--${game_index}--left">
+						${game.user1.username}
+						<br>
+						${game.score_user1}
 					</div>
-					<div class="col mt-2 align-self-center">VS</div>
-					<div class="col mt-2">
-						<div class="d-inline" id="game__historyTwo--${game_index}--right">
-							${game.user2.username}
-							<br>
-							${game.score_user2}
-						</div>
+				</div>
+				<div class="col mt-2 align-self-center">VS</div>
+				<div class="col mt-2">
+					<div class="d-inline" id="game__historyTwo--${game_index}--right">
+						${game.user2.username}
+						<br>
+						${game.score_user2}
 					</div>
-					<div class="mb-2" id="game__historyTwo--${game_index}--date">
-						Le ${date[0]} à ${date[1].split(".")[0]}
-					</div>
+				</div>
+				<div class="mb-2" id="game__historyTwo--${game_index}--date">
+					Le ${date[0]} à ${date[1].split(".")[0]}
+				</div>
 			`;
 		g_game_history_two.appendChild(gameHistoryEntry);
 		if (game.win_player.username == game.user1.username) {
@@ -80,40 +80,40 @@ function fillHistoryFour() {
 		gameHistoryEntry.className = "row border-top border-primary";
 		const date = game.date.replace("Z", "").split("T");
 		gameHistoryEntry.innerHTML = `
-					<div class="col mt-2">
-						<div class="d-inline" id="game__historyFour--${game_index}--one">
-							${game.user1.username}
-							<br>
-							${game.score_user1}
-						</div>
+				<div class="col mt-2">
+					<div class="d-inline" id="game__historyFour--${game_index}--one">
+						${game.user1.username}
+						<br>
+						${game.score_user1}
 					</div>
-					<div class="col mt-2 align-self-center">VS</div>
-					<div class="col mt-2">
-						<div class="d-inline" id="game__historyFour--${game_index}--two">
-							${game.user2.username}
-							<br>
-							${game.score_user2}
-						</div>
+				</div>
+				<div class="col mt-2 align-self-center">VS</div>
+				<div class="col mt-2">
+					<div class="d-inline" id="game__historyFour--${game_index}--two">
+						${game.user2.username}
+						<br>
+						${game.score_user2}
 					</div>
-					<div class="col mt-2 align-self-center">VS</div>
-					<div class="col mt-2">
-						<div class="d-inline" id="game__historyFour--${game_index}--three">
-							${game.user3.username}
-							<br>
-							${game.score_user3}
-						</div>
+				</div>
+				<div class="col mt-2 align-self-center">VS</div>
+				<div class="col mt-2">
+					<div class="d-inline" id="game__historyFour--${game_index}--three">
+						${game.user3.username}
+						<br>
+						${game.score_user3}
 					</div>
-					<div class="col mt-2 align-self-center">VS</div>
-					<div class="col mt-2">
-						<div class="d-inline" id="game__historyFour--${game_index}--four">
-							${game.user4.username}
-							<br>
-							${game.score_user4}
-						</div>
+				</div>
+				<div class="col mt-2 align-self-center">VS</div>
+				<div class="col mt-2">
+					<div class="d-inline" id="game__historyFour--${game_index}--four">
+						${game.user4.username}
+						<br>
+						${game.score_user4}
 					</div>
-					<div class="mb-2" id="game__historyFour--${game_index}--date">
-						Le ${date[0]} à ${date[1].split(".")[0]}
-					</div>
+				</div>
+				<div class="mb-2" id="game__historyFour--${game_index}--date">
+					Le ${date[0]} à ${date[1].split(".")[0]}
+				</div>
 			`;
 		g_game_history_four.appendChild(gameHistoryEntry);
 		if (game.win_player.username == game.user1.username) {

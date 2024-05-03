@@ -1,10 +1,12 @@
+import router from "./router.js"
+
 var csrftoken;
 
 async function updateNickname(nicknameForm) {
 
 	const msgElement = document.getElementById("form__update--nickname--msg");
 
-	// remove a potential error message from the field
+	// remove a potential error message from the placeholder
 	msgElement.textContent = "";
 	msgElement.classList.remove("text-danger");
 	msgElement.classList.remove("text-info");
@@ -38,7 +40,7 @@ async function updateNickname(nicknameForm) {
 
 			sessionStorage.setItem("nickname", data.nickname);
 
-			msgElement.textContent = "Your nickname was successfully updated.";
+			msgElement.textContent = "Ton nouveau nickname à été sauvegardé.";
 			msgElement.classList.remove("text-danger");
 			msgElement.classList.add("text-info");
 
@@ -54,7 +56,7 @@ async function updatePassword(passwordForm) {
 
 	const msgElement = document.getElementById("form__update--password--msg");
 
-	// remove a potential error message from the field
+	// remove a potential error message from the placeholder
 	msgElement.textContent = "";
 	msgElement.classList.remove("text-danger");
 	msgElement.classList.remove("text-info");
@@ -62,7 +64,7 @@ async function updatePassword(passwordForm) {
 	const input = passwordForm.elements;
 
 	if (input.password_one.value !== input.password_two.value) {
-		msgElement.textContent = "The passwords are not the same";
+		msgElement.textContent = "Les mots de passes doivent être similaires.";
 		msgElement.classList.add("text-danger");
 		return;
 	}
@@ -91,7 +93,7 @@ async function updatePassword(passwordForm) {
 		if (response.status === 200) {
 			const data = await response.json();
 
-			msgElement.textContent = "Your password was successfully updated.";
+			msgElement.textContent = "Ton nouveau mot de passe à été sauvegardé.";
 			msgElement.classList.remove("text-danger");
 			msgElement.classList.add("text-info");
 		}
@@ -104,7 +106,7 @@ async function updateAvatar() {
 
 	const msgElement = document.getElementById("form__update--avatar--msg");
 
-	// remove a potential error message from the field
+	// remove a potential error message from the placeholder
 	msgElement.textContent = "";
 	msgElement.classList.remove("text-danger");
 	msgElement.classList.remove("text-info");
@@ -138,7 +140,7 @@ async function updateAvatar() {
 
 			sessionStorage.setItem("avatar", data.avatar);
 
-			msgElement.textContent = "Your avatar was successfully updated.";
+			msgElement.textContent = "Ton nouvel avatar à été sauvegardé.";
 			msgElement.classList.remove("text-danger");
 			msgElement.classList.add("text-info");
 
@@ -160,7 +162,7 @@ async function deleteAccount() {
 	try {
 		// const response = await fetch('', init);
 
-		window.alert("Your account was sucessfully erased from our memory.");
+		window.alert("Non supporté.");
 
 		router("login");
 	} catch (e) {

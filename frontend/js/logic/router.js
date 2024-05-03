@@ -3,7 +3,6 @@ import renderFourPlayers from "../views/viewFourPlayers.js"
 import renderFourOnline from "../views/viewFourOnline.js"
 import renderFriends from "../views/viewFriends.js"
 import renderLogin from "../views/viewLogin.js"
-import renderProfile from "../views/viewProfile.js"
 import renderTournament from "../views/viewTournament.js"
 import renderTwoPlayers from "../views/viewTwoPlayers.js"
 import renderTwoOnline from "../views/viewTwoOnline.js"
@@ -14,7 +13,6 @@ import renderUpdateInfo from "../views/viewUpdateInfo.js"
 // Importe le script de chaque page qui gere le load et listener
 import handleFriends from "./friends.js"
 import handleLogin from "./login.js"
-import handleProfile from "./profile.js"
 import handleGameHistory from "./gamehistory.js"
 import handleStats from "./stats.js"
 import handleUpdateInfo from "./updateinfo.js"
@@ -60,13 +58,6 @@ const routes = {
 		view: renderLogin,
 		load: handleLogin.loadLogin,
 		listener: handleLogin.listenerLogin
-	},
-	"profile": {
-		title: "Profile",
-		path: "/profile/",
-		view: renderProfile,
-		load: handleProfile.loadProfile,
-		listener: handleProfile.listenerProfile
 	},
 	"tournament": {
 		title: "Tournoi Local",

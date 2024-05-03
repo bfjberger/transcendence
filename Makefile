@@ -34,6 +34,6 @@ clean: down
 	docker system prune -af
 
 fclean: down
-	docker-compose ${PATH_DOCKER_COMPOSE} -p ${NAME} down -v
+	docker-compose down -v
 
 .PHONY: clean fclean clear
