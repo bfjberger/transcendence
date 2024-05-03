@@ -31,11 +31,12 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from io import BytesIO
 
 class Accounts_view(APIView) :
+    permission_classes = (permissions.AllowAny,)
 
     def get(self, request):
         # Step 1: Redirect user to 42 authorization URL
         authorization_url = 'https://api.intra.42.fr/oauth/authorize' #by def, url where you can loggin ('https://api.intra.42.fr/oauth/authorize')
-        redirect_uri = 'http://localhost:7890/'  # Change to your callback URL
+        redirect_uri = 'https://localhost/'  # Change to your callback URL
         params = {
             'client_id': settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'],
             'redirect_uri': redirect_uri,
@@ -48,11 +49,11 @@ class Accounts_view(APIView) :
         return Response(auth_url, status=status.HTTP_200_OK)
 
 class Callback(APIView):
-
+    permission_classes = (permissions.AllowAny,)
     def post(self, request):
         # Step 2: Receive authorization code and exchange for access token
         code = request.data["code"]
-        redirect_uri = 'http://localhost:7890/'
+        redirect_uri = 'https://localhost/'
         token_url = 'https://api.intra.42.fr/oauth/token'
         data = {
             'client_id': settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'],
@@ -95,6 +96,7 @@ class Callback(APIView):
                 player = Player(owner=user)
                 player.avatar.save(username+'.jpg', ContentFile(img_resp.content), save=False)
                 player.status = "ONLINE"
+                player.nickname = username
                 player.save()
 
                 user_auth = authenticate(username=username, password=new_password)
@@ -108,6 +110,7 @@ class Callback(APIView):
 
             player = Player.objects.get(owner=user)
             player.status = "ONLINE"
+            player.nickname = username
             player.save()
 
             r = login(request, user_to_login)
@@ -119,58 +122,4 @@ class Callback(APIView):
         return Response ("Error from API 42", status=status.HTTP_401_UNAUTHORIZED)
 
 
-# class LoginSerializer(serializers.Serializer):
-#     username = serializers.CharField(label="username")
-#     password = serializers.CharField(label="password")
 
-#     def validate(self, attrs):
-#         user = authenticate(request=self.context.get('request'),username=attrs['username'],password=attrs['password'])
-
-#         if not user:
-#             raise serializers.ValidationError("Incorrect Credentials")
-#         else:
-#             attrs['user'] = user
-#             return attrs
-
-# class LoginView(APIView):
-# 	permission_classes = (permissions.AllowAny,)
-
-# 	def post(self, request, format=None):
-# 		try:
-# 			serializer = LoginSerializer(data=request.data, context = {'request': request})
-# 			serializer.is_valid(raise_exception=True)
-# 		except serializers.ValidationError:
-# 			return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
-# 		user = serializer.validated_data['user']
-# 		login(request, user)
-
-# 		player = Player.objects.get(owner=user)
-# 		player.status = "ONLINE"
-# 		player.save()
-
-# 		user_data = self.request.user
-# 		serializer_data = DataSerializer(user_data)
-# 		return Response(data=serializer_data.data, status=status.HTTP_202_ACCEPTED)
-
-
-
-            # # Check if the user already exists in your database
-            # try:
-            #     #  Assuming the current user is authenticated
-            #     user = request.user
-            #     Player.avatar = avatar
-            #     # Save the changes
-            #     user.save()
-            #     player.save()
-            #     # Log in the user
-            #     login(request, user)
-            #     # Assuming you have a custom User model named Player
-            #     # User, created = User.objects.get_or_create(username=username, defaults={'avatar': xxxxxx})
-            #     return redirect('login')  # Redirect to the home page after successful login
-            # except Player.DoesNotExist:
-            #     # Handle the case where the Player object does not exist for the user
-            #     return HttpResponse('Player profile not found', status=404)
-        # else:
-            # Handle the case where the request to the 42 API fails
-            # You might want to display an error message or redirect to a different page
-            #  return redirect('/api/accounts/')  # Redirect to the accounts page with an error message

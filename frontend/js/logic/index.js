@@ -10,12 +10,15 @@ function listenerIndex() {
 
 };
 
-async function loadIndex() {
-
+async function loadIndex()
+{
+	console.log("hello from load index")
 	try {
-		let hostnameport = "http://" + window.location.host
+		let hostnameport = "https://" + window.location.host
 
 		const response = await fetch(hostnameport + '/api/index/');
+
+		console.log("response de api dans load index : ", response.status)
 
 		if (response.status === 202) {
 

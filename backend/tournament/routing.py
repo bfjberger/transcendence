@@ -3,5 +3,5 @@ from . import views
 from . import consumers
 
 tournament_websocket_urlpatterns = [
-	re_path(r'ws/tournament/(?P<tournament_name>\w+)/$', consumers.TournamentConsumer.as_asgi()),
+	re_path(r'wss/tournament/(?P<tournament_name>\w+)/$', consumers.TournamentConsumer.as_asgi()),
 ]

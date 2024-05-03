@@ -23,8 +23,13 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ") # 127.0.0.1 et 10.11.1.2
-CSRF_TRUSTED_ORIGINS = ["http://localhost:7890", "http://10.11.1.2:7890", "http://10.12.8.4:7890"]
-CSRF_ALLOWED_ORIGINS = ["http://localhost:7890", "http://10.11.1.2:7890", "http://10.12.8.4:7890"]
+CSRF_TRUSTED_ORIGINS = ["https://localhost", "http://localhost"]
+CSRF_ALLOWED_ORIGINS = ["https://localhost", "http://localhost"]
+
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_DOMAIN = "localhost"
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -46,16 +51,11 @@ INSTALLED_APPS = [
     'players_manager',
     'allauth',
     'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.oauth2',
     'pong_online',
     'games_manager',
 	'tournament',
     'friends_manager',
-#    'friends_manager',
-#    'two_players_games_manager',
-#    'tournaments_manager',
-#    'four_players_games_manager',
+
 ]
 
 MIDDLEWARE = [
@@ -158,7 +158,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # CORS_ALLOWED_ORIGINS = [
-#     'http://localhost:7890',
+#     'http://localhost:80',
 # ]
 
 ASGI_APPLICATION = 'bck_django.asgi.application'
@@ -180,11 +180,13 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-LOGIN_REDIRECT_URL = 'http://localhost:7890'
-LOGOUT_REDIRECT_URL = 'http://localhost:7890'
+LOGIN_REDIRECT_URL = 'https://localhost'
+LOGOUT_REDIRECT_URL = 'https://localhost'
 
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 MEDIA_URL = ""
 MEDIA_ROOT = os.path.join(BASE_DIR, "")
+
+TIME_ZONE = 'Europe/Zurich'
