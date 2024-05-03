@@ -3,6 +3,7 @@ env/
 daphne.sock
 daphne.sock.lock
 staticfiles/
+.env
 
 # Ignore all avatars except the default one
 backend/avatars/*
