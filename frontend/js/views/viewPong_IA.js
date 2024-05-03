@@ -17,7 +17,7 @@ export default function renderPong_IA() {
 	<div class="col d-flex justify-content-center align-items-center">
 
 		<div class="position-absolute">
-			<button class="btn btn-danger" type="button" id="startGame2Online">Commencer la partie</button>
+			<button class="btn btn-danger" type="button" id="startGame_IA">Commencer la partie</button>
 		</div>
 
 		<div class="text-bg-success border border-black border-5">
