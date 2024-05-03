@@ -37,7 +37,6 @@ class ListFriendAPIView(ListAPIView):
 			for o in initiated_accepted :
 				player_received = Player.objects.filter(owner=o.user_received.id).first()
 				result.append({"username" : o.user_received.username, "status" : player_received.status})
-			print(result, "\n\n\n")
 			return Response(result, status=status.HTTP_200_OK)
 		elif param == "received_accepted" :
 			received_accepted = Friend.objects.filter(user_received = self.request.user.id , accept = True)
@@ -45,7 +44,6 @@ class ListFriendAPIView(ListAPIView):
 			for o in received_accepted :
 				player_initiated = Player.objects.filter(owner=o.user_initiated.id).first()
 				result.append({"username" : o.user_initiated.username, "status" : player_initiated.status})
-			print(result, "\n\n\n")
 			return Response(result, status=status.HTTP_200_OK)
 
 class CreateFriendAPIView(APIView):
@@ -113,7 +111,6 @@ class DeleteFriendAPIView(APIView):
 		relation_to_delete = Friend.objects.filter(user_initiated = former_friend , user_received = self.request.user).first()
 
 		if not relation_to_delete :
-			print("Je rentre", self.request.user, " " ,former_friend)
 			relation_to_delete = Friend.objects.filter(user_initiated = self.request.user , user_received = former_friend).first()
 
 		if not relation_to_delete :
