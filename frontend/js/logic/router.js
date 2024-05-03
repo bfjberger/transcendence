@@ -8,6 +8,7 @@ import renderTournament from "../views/viewTournament.js"
 import renderTwoPlayers from "../views/viewTwoPlayers.js"
 import renderTwoOnline from "../views/viewTwoOnline.js"
 import renderGameHistory from "../views/ViewGameHistory.js"
+import renderPong_IA from "../views/viewPong_IA.js"
 
 // Importe le script de chaque page qui gere le load et listener
 import handleFriends from "./friends.js"
@@ -21,6 +22,7 @@ import handleFourPlayers from "../games/pong4players.js"
 import handleTwoPlayersOnline from "../games/pong2playersonline.js"
 import handleFourPlayersOnline from "../games/pong4playersonline.js"
 import handleGameHistory from "./gamehistory.js"
+import handlePong_IA from "./games/pog_IA.js"
 
 // Cas particulier pour index
 import handleIndex from "./index.js"
@@ -120,6 +122,13 @@ const routes = {
 		view: renderFourOnline,
 		load: handleFourPlayersOnline.loadFourPlayersOnline,
 		listener: handleFourPlayersOnline.listenerFourPlayersOnline
+	},
+	"pong_IA": {
+		title: "1 Joueur contre l'IA",
+		path: "/pong_IA/",
+		view: renderPong_IA,
+		load: handlePong_IA.loadPong_IA,
+		listener: handlePong_IA.listenerPong_IA
 	},
 };
 

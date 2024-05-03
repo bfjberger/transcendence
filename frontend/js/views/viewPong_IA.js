@@ -2,7 +2,7 @@ export default function renderPong_IA() {
 	return `
 		<div class="row">
 			<div class="col text-center fw-bold pt-3">
-				<h1>Pong mode 2 Joueurs en Ligne</h1>
+				<h1>Pong contre l'IA</h1>
 			</div>
 			<p id="template_text" class="text-center h2 my-2"></p>
 			<p id="instructions" class="text-center h4 my-2"></p>
