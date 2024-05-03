@@ -3,7 +3,7 @@ import {Ball} from './BallOnline.js';
 import * as constants from './Constants.js';
 import {g_socket, g_alias} from './tournamentRoom.js';
 
-const wsurl = 'ws://' + window.location.host + '/ws/game/'; // link to websocket
+const wsurl = 'wss://' + window.location.host + '/wss/game/'; // link to websocket
 let ws; // websocket
 
 /* -------------------------------- Variables ------------------------------- */
@@ -32,11 +32,6 @@ function intToHexColor(value) {
     return hexColor;
 }
 
-function sendMessageToServer(message) {
-	ws.send(JSON.stringify(message));
-
-}
-
 function initDisplay() {
 	board = document.getElementById("board_two");
 	context = board.getContext("2d");
@@ -45,8 +40,8 @@ function initDisplay() {
 }
 
 function initArena() {
-	player_one = new Player(1, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_1_COLOR, 2);
-	player_two = new Player(2, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_2_COLOR, 2);
+	player_one = new Player("player_left", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_LEFT_COLOR, 2);
+	player_two = new Player("player_right", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_RIGHT_COLOR, 2);
 	ball = new Ball(2);
 	// console.log("Ball color: ", ball.color);
 }
@@ -71,28 +66,6 @@ function display_winner(winning_player) {
 
 /* -------------------------------- Controls -------------------------------- */
 
-function handleKeyDown(e) {
-	if (game_running) {
-		if (!keys[e.code] && (e.code == 'KeyW' || e.code == 'KeyS')) {
-			var up = false;
-			if (e.code == 'KeyW') {
-				up = true;
-			}
-			keys[e.code] = true;
-			sendMessageToServer({type: 'player_key_down', player: position, direction: up});
-		}
-	}
-}
-
-function handleKeyUp(e) {
-	if (game_running) {
-		if (e.code == 'KeyW' || e.code == 'KeyS') {
-			keys[e.code] = false;
-			sendMessageToServer({type: 'player_key_up', player: position});
-		}
-	}
-}
-
 let g_pressed = false;
 
 const t_handleKeyDown = (e) => {
@@ -115,11 +88,6 @@ const t_handleKeyUp = (e) => {
 		g_pressed = false;
 		g_socket.send(JSON.stringify({event: 'player_key_up', player: position}));
 	}
-}
-
-function initControls() {
-	window.addEventListener('keydown', handleKeyDown);
-	window.addEventListener('keyup', handleKeyUp);
 }
 
 /* -------------------------------- GameState ------------------------------- */
@@ -207,74 +175,6 @@ function render() {
 
 }
 
-/* ---------------------------------- Main ---------------------------------- */
-
-/**
- * Starts the game and initializes the WebSocket connection.
- */
-export function start() {
-	ws = new WebSocket(wsurl);
-
-	if (first_launch) {
-		initDisplay();
-		first_launch = false;
-	}
-
-	initArena();
-
-	ws.onopen = () => {
-		console.log('Websocket connected');
-	}
-
-	ws.onmessage = (e) => {
-		/**
-		 * Possible types: set_position, game_start, game_state, game_end
-		 *
-		 * set_position: the server sends the position of the player
-		 * game_start: the server sends a message to start the game
-		 * game_state: the server sends the game state (positions of the players and the ball)
-		 * game_end: the server sends a message to end the game
-		 */
-		const data = JSON.parse(e.data);
-
-		if (data.type === 'set_position') {
-			position = data.value;
-			console.log('I am at position', position);
-		}
-
-		if (data.type === 'game_start') {
-			console.log('Starting game . . .');
-
-			// startButton.classList.add("d-none");
-			infoElement.innerHTML = "Found player! Game starting . . .";
-			game_running = true;
-			ball.get_update(constants.WIN_WIDTH / 2, constants.WIN_HEIGHT / 2, 1, 0, 0xffffff);
-			initControls();
-		}
-
-		if (data.type === 'game_state') {
-			updateGameState(data);
-		}
-
-		if (data.type === 'game_end') {
-			game_running = false;
-			console.log('Game over');
-			display_winner(data.winner);
-			ws.close();
-		}
-	};
-
-	ws.onclose = () => {
-		console.log('Websocket closed');
-	}
-
-	if (id !== null) {
-		cancelAnimationFrame(id);
-	}
-
-	animate();
-}
-
 /* ----------------------------- Main Tournament ---------------------------- */
 
 export function startTournamentOnline() {
@@ -352,71 +252,3 @@ const on_game_end = (arg) => {
 }
 
 export { on_set_position, on_game_start, on_game_state, on_game_end }
-
-/* -------------------------- Login Event Listeners ------------------------- */
-
-function listenerTwoPlayersOnline() {
-
-	document.getElementById("startGame2Online").addEventListener("click", e => {
-		e.preventDefault();
-
-		// hide the start button
-		document.getElementById("startGame2Online").classList.add("d-none");
-
-
-		startButton = document.getElementById("startGame2Online");
-		button_container = document.getElementById("button_container");
-
-		infoElement = document.getElementById("infoElement");
-		infoElement.innerHTML = "Waiting for other player";
-
-		start();
-	});
-};
-
-async function loadTwoPlayersOnline() {
-
-	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
-
-	const init = {
-		headers: {
-			'Content-Type': 'application/json',
-			'X-CSRFToken': csrftoken,
-		}
-	};
-
-	try {
-		let hostnameport = "http://" + window.location.host;
-
-		const response = await fetch(hostnameport + '/api/twoplayeronline/', init);
-
-		if (response.status === 403) {
-			const text = await response.text();
-			throw new Error(text);
-		}
-
-		return 1;
-	} catch (e) {
-		console.error("loadTwoPlayers: " + e);
-		return 0;
-	}
-};
-
-/* ------------------------ Leaving or reloading game ----------------------- */
-
-window.addEventListener('unload', function() {
-	if (ws)
-		sendMessageToServer({type: 'player_left', player: position})
-})
-
-function handlePageReload() {
-	if (ws)
-		sendMessageToServer({type: 'player_left', player: position})
-}
-
-window.addEventListener('beforeunload', handlePageReload);
-
-export default {
-	listenerTwoPlayersOnline,
-	loadTwoPlayersOnline
-};

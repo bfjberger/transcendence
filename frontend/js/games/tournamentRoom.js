@@ -10,7 +10,6 @@ import { renderTournamentLobby } from "../views/viewTournament.js";
 import { renderPlayground } from "../views/viewTournament.js";
 
 import {
-	start,
 	startTournamentOnline,
 	on_set_position,
 	on_game_start,
@@ -25,7 +24,7 @@ import {
 
 /* ----------------------------------- VAR ---------------------------------- */
 
-const base_wsurl = `ws://${window.location.host}/ws/tournament/`;
+const base_wsurl = `wss://${window.location.host}/wss/tournament/`;
 
 let g_socket = {};
 let g_tournament_name = '';
@@ -285,8 +284,8 @@ async function loadTournamentRoom(tournament_name) {
 	};
 	
 	try {
-		const response = await fetch('http://localhost:7890/api/tournamentOnline/', init); //! Change this to the correct URL
-		
+		// const response = await fetch(`https://${window.location.host}/api/tournamentOnline/`, init);
+		const response = await fetch('/api/tournamentOnline/', init);
 		if (!response.ok) {
 			const text = await response.text();
 			throw new Error(text);
