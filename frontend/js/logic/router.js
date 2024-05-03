@@ -24,6 +24,7 @@ import handleGameHistory from "./gamehistory.js"
 
 // Cas particulier pour index
 import handleIndex from "./index.js"
+import renderPong_IA from "../views/viewPong_IA.js"
 
 /**
  * Routes object
