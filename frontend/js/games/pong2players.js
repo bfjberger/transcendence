@@ -300,11 +300,13 @@ async function loadTwoPlayers() {
 		let hostnameport = "https://" + window.location.host
 
 		const response = await fetch(hostnameport +'/api/twoplayer/', init);
-
-		if (response.status === 403) {
+		
+		if (response.status != 200) {
 			const text = await response.text();
 			throw new Error(text);
 		}
+
+
 
 		return 1;
 	} catch (e) {
