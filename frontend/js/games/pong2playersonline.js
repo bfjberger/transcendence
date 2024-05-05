@@ -58,7 +58,7 @@ let g_first_launch = true;
 var g_game_running = false;
 var g_winner = null;
 var g_player_left, g_player_right;
-var g_template_text, g_startButton;
+var g_template_text, g_instructions, g_startButton;
 var g_left_container, g_right_container;
 const g_keys = {};
 
@@ -235,21 +235,19 @@ function render() {
 
 function setPositionStyleUpdate(data) {
 
-	const instructions = document.getElementById("instructions");
-
 	if (g_position === "player_left") {
 		g_player_left.set_name(data.name);
 		g_left_container.classList.add("text-decoration-underline");
 		g_left_container.style.color = constants.PLAYER_LEFT_COLOR;
-		instructions.textContent = "Ton camp est à gauche";
-		instructions.style.color = constants.PLAYER_LEFT_COLOR;
+		g_instructions.textContent = "Ton camp est à gauche";
+		g_instructions.style.color = constants.PLAYER_LEFT_COLOR;
 	}
 	else {
 		g_player_right.set_name(data.name);
 		g_right_container.classList.add("text-decoration-underline");
 		g_right_container.style.color = constants.PLAYER_RIGHT_COLOR;
-		instructions.textContent = "Ton camp est à droite";
-		instructions.style.color = constants.PLAYER_RIGHT_COLOR;
+		g_instructions.textContent = "Ton camp est à droite";
+		g_instructions.style.color = constants.PLAYER_RIGHT_COLOR;
 	}
 };
 
@@ -328,7 +326,7 @@ export function start() {
 
 		if (data.type === 'game_end') {
 			g_game_running = false;
-			console.log('Game over');
+			console.log('Game over ' + data.winner);
 			display_winner(data.winner);
 			g_websocket.close();
 		}
@@ -349,12 +347,12 @@ export function start() {
 
 window.addEventListener('unload', function() {
 	if (g_websocket)
-		sendMessageToServer({type: 'player_disconnect', player_pos: g_position})
+		sendMessageToServer({type: 'player_disconnect', player_pos: g_position});
 });
 
 function handlePageReload() {
 	if (g_websocket)
-		sendMessageToServer({type: 'player_disconnect', player_pos: g_position})
+		sendMessageToServer({type: 'player_disconnect', player_pos: g_position});
 };
 
 window.addEventListener('beforeunload', handlePageReload);
@@ -365,8 +363,15 @@ function listenerTwoPlayersOnline() {
 
 	g_startButton = document.getElementById("startGame2Online");
 	g_template_text = document.getElementById("template_text");
+	g_instructions = document.getElementById("instructions");
 	g_left_container = document.getElementById("two__online--left");
 	g_right_container = document.getElementById("two__online--right");
+
+	// Reset the content and color of placeholder text
+	g_template_text.textContent = "";
+	g_template_text.style.color = "";
+	g_instructions.textContent = "";
+	g_instructions.style.color = "";
 
 	g_startButton.addEventListener("click", e => {
 		e.preventDefault();

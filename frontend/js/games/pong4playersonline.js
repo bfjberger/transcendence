@@ -416,12 +416,12 @@ export function startGame() {
 
 window.addEventListener('unload', function() {
 	if (g_websocket)
-		sendMessageToServer({type: 'player_disconnect', player_pos: g_position})
+		sendMessageToServer({type: 'player_disconnect', player_pos: g_position});
 });
 
 function handlePageReload() {
 	if (g_websocket)
-		sendMessageToServer({type: 'player_disconnect', player_pos: g_position})
+		sendMessageToServer({type: 'player_disconnect', player_pos: g_position});
 };
 
 window.addEventListener('beforeunload', handlePageReload);
@@ -437,6 +437,12 @@ function listenerFourPlayersOnline() {
 	g_right_container = document.getElementById("four__online--right");
 	g_top_container = document.getElementById("four__online--top");
 	g_bottom_container = document.getElementById("four__online--bottom");
+
+	// Reset the content and color of placeholder text
+	g_template_text.textContent = "";
+	g_template_text.style.color = "";
+	g_instructions.textContent = "";
+	g_instructions.style.color = "";
 
 	g_startButton.addEventListener("click", e => {
 		e.preventDefault();

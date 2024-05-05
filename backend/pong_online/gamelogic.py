@@ -22,6 +22,7 @@ class GameState:
 		room_name (str): The name of the room where the game is taking place.
 		ball (Ball): The ball object in the game.
 		players (dict): A dictionary with the player positions as keys and Player objects as values.
+		winner (str): The position of the player who won the game either by having the winning score or by deconnection
 		is_running (bool): Indicates whether the game is currently running.
 		winning_score (int): The score required to win the game.
 		game_history (TwoPlayersGame): The game history object to record the results of the games.
@@ -39,6 +40,7 @@ class GameState:
 		self.room_name = name
 		self.ball = self.Ball()
 		self.players = {}
+		self.winner = None
 		self.is_running = False
 		self.winning_score = 3
 		self.game_history = TwoPlayersGame()
@@ -61,6 +63,15 @@ class GameState:
 			player_pos (str): position of the player ('player_left' or 'player_right')
 		"""
 		del self.players[player_pos]
+
+	async def set_winner(self, winner_pos):
+		"""
+		Set the winner attribute to the position passed as arguments
+
+		Args:
+			winner_pos (str): position of the player who won ('player_left' or 'player_right')
+		"""
+		self.winner = winner_pos
 
 	async def get_winner_pos(self):
 		"""
