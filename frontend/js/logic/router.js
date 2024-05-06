@@ -257,6 +257,12 @@ async function load42Profile(code)
 
 			// router("index");
 		}
+
+		if (response.status == 401) {
+			const data = await response.json();
+
+			window.alert(data);
+		}
 		else {
 			throw new Error(`HTTP error, status = ${response.status}`);
 		}

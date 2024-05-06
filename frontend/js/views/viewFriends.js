@@ -7,8 +7,8 @@ export default function renderFriends() {
 			<form id="form__add--friend">
 				<div id="form__add--friend--msg" class="h5"></div>
 				<div class="text-primary h4">
-					Username
-					<input type="text" class="input__field" id="form__add--friend--input" maxlength="20" name="username">
+					Username:
+					<input type="text" class="input__field ms-2" id="form__add--friend--input" maxlength="20" name="username">
 				</div>
 				<button class="btn btn-outline-success m-2 py-2 h4" type="submit">
 					Demander

@@ -402,7 +402,7 @@ function listenerFourPlayers() {
 		g_template_text.textContent = "";
 		g_template_text.style.color = "";
 
-		updateStatus();
+		// updateStatus();
 		start4PlayerGame(sessionStorage.getItem("nickname"), "Invité Droit", "Invité Haut", "Inivité Bas");
 	});
 };

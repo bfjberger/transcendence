@@ -325,7 +325,7 @@ function listenerTwoPlayers() {
 		g_template_text.textContent = "";
 		g_template_text.style.color = "";
 
-		updateStatus();
+		// updateStatus();
 		start2PlayerGame(sessionStorage.getItem("nickname"), "Joueur Invité");
 	});
 };

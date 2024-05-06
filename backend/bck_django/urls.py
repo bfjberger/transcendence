@@ -22,7 +22,7 @@ from django.conf import settings
 
 from rest_framework import routers
 
-from players_manager.views import LoginView, ProfileView, RegisterAction, IndexAction, TwoPlayers, FourPlayers, Tournament, LogoutView, ProfileUpdateAvatarView, UpdateStatus
+from players_manager.views import LoginView, ProfileView, RegisterAction, IndexAction, TwoPlayers, FourPlayers, Tournament, LogoutView, ProfileUpdateAvatarView
 from tournament.views import TournamentOnline
 
 from login_api_42.views import Accounts_view, Callback
@@ -93,7 +93,7 @@ urlpatterns = [
 
     path('api/tournamentOnline/', TournamentOnline.as_view()),
 
-    path('api/changestatus/', UpdateStatus.as_view()),
+    # path('api/changestatus/', UpdateStatus.as_view()),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
