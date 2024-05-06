@@ -90,8 +90,10 @@ urlpatterns = [
 
     path('api/twoplayeronline/', TwoPlayersOnlineView.as_view()),
     path('api/fourplayeronline/', FourPlayersOnlineView.as_view()),
-	
+
     path('api/tournamentOnline/', TournamentOnline.as_view()),
+
+    # path('api/changestatus/', UpdateStatus.as_view()),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

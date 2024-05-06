@@ -74,6 +74,12 @@ function sendMessageToServer(message) {
 };
 
 function initDisplay() {
+
+	if (g_board != null) {
+		g_board = null;
+		g_context = null;
+	}
+
 	g_board = document.getElementById("board_two");
 	g_context = g_board.getContext("2d");
 	g_board.width = constants.WIN_WIDTH;
@@ -322,6 +328,7 @@ export function start() {
 			g_template_text.textContent = data.player_name + " a quitté la partie (rageux). Tu gagne cette partie.";
 			g_startButton.classList.remove("d-none");
 			g_websocket.close();
+			g_context.reset();
 		}
 
 		if (data.type === 'game_end') {
@@ -329,15 +336,18 @@ export function start() {
 			console.log('Game over ' + data.winner);
 			display_winner(data.winner);
 			g_websocket.close();
+			g_context.reset();
 		}
 	};
 
 	g_websocket.onclose = () => {
 		console.log('Websocket closed');
+		g_context.reset();
 	}
 
 	if (g_id !== null) {
 		cancelAnimationFrame(g_id);
+		g_context.reset();
 	}
 
 	animate();
