@@ -5,7 +5,7 @@ from django.contrib import admin
 from .models import Tournament
 
 class TournamentAdmin(admin.ModelAdmin):
-	list_display = ("name", "visibility", "password", "players_list")
+	list_display = ("name", "players_list")
 
 	def players_list(self, obj):
 		return ", ".join([str(player.id) for player in obj.players.all()])

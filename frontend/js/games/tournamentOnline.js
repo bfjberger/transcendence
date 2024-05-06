@@ -93,26 +93,18 @@ function loadTournaments() {
 				const tournamentItem = document.createElement('div');
 				tournamentItem.textContent = tournament.name;
 
-				// Create password input
-				const passwordInput = document.createElement('input');
-				passwordInput.type = 'password';
-				passwordInput.placeholder = 'Enter password';
-
 				// Create join button
 				const joinButton = document.createElement('button');
 				joinButton.textContent = 'Join';
 
 				// Use a closure to associate the button with the tournament
-				joinButton.addEventListener('click', (function(tournament, passwordInput) {
+				joinButton.addEventListener('click', (function(tournament) {
 					return function() {
-						// Handle join button click
-						// console.log('Joining tournament:', tournament.name, 'with password:', passwordInput.value);
 						joinRoom(tournament.name);
 					};
-				})(tournament, passwordInput));
+				})(tournament));
 
 				// Append elements to tournament item
-				tournamentItem.appendChild(passwordInput);
 				tournamentItem.appendChild(joinButton);
 
 				tournamentList.appendChild(tournamentItem);
