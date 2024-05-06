@@ -5,7 +5,7 @@ import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 from .models import Tournament
-from pong_online.gamelogic import GameState
+from .gamelogic_tournament import GameState
 from players_manager.models import Player
 
 tick_rate = 60

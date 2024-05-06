@@ -51,16 +51,11 @@ INSTALLED_APPS = [
     'players_manager',
     'allauth',
     'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.oauth2',
     'pong_online',
     'games_manager',
 	'tournament',
     'friends_manager',
-#    'friends_manager',
-#    'two_players_games_manager',
-#    'tournaments_manager',
-#    'four_players_games_manager',
+
 ]
 
 MIDDLEWARE = [

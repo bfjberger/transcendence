@@ -287,7 +287,8 @@ async function loadTournamentOnline() {
 	};
 
 	try {
-		const response = await fetch(`http://${window.location.host}/api/tournamentOnline/`, init); //! Change this to the correct URL
+		// const response = await fetch(`https://${window.location.host}/api/tournamentOnline/`, init); //! Change this to the correct URL
+		const response = await fetch('/api/tournamentOnline/', init);
 
 		if (!response.ok) {
 			const text = await response.text();

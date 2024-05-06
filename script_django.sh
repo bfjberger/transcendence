@@ -25,7 +25,7 @@ pip freeze > requirements.txt
 python manage.py shell <<EOF
 from django.contrib.auth.models import User
 from players_manager.models import Player
-admin_user = User.objects.get(username='admin')
+admin_user = User.objects.get(username='$DJANGO_SUPERUSER_USERNAME')
 if not Player.objects.filter(owner=admin_user).exists():
     Player.objects.create(owner=admin_user, nickname=admin_user.username)
 EOF

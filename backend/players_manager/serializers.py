@@ -71,12 +71,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username', 'email', 'password')
 
-# class UpdateSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Player
-#         fields = ("avatar")
-
-#     def update(self, instance, validated_data):
 
 
 class AvatarSerializer(serializers.ModelSerializer):
