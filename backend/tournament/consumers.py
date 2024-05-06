@@ -11,7 +11,7 @@ from players_manager.models import Player
 tick_rate = 60
 tick_duration = 1 / tick_rate
 
-players_size_max = 4
+players_size_max = 8
 
 TournamentStage = {
 	"LOBBY": "LOBBY",
@@ -165,59 +165,23 @@ class TournamentManager():
 		elif room['state'] == TournamentStage["QUARTER_FINALS4"]:
 			players = [room['aliases'][6], room['aliases'][7]]
 		elif room['state'] == TournamentStage["DEMI_FINALS1"]:
-			# check for the first 2 matches winners
 			players = []
 			for i in range(players_size_max//2):
 				if room['players_state'][i] == PlayerState["WINNER"]:
 					players.append(room['aliases'][i])
-			# players = [room['aliases'][0], room['aliases'][1]]
 		elif room['state'] == TournamentStage["DEMI_FINALS2"]:
-			# check for the last 2 matches winners
 			players = []
 			for i in range(players_size_max//2):
-				if room['players_state'][i + 2] == PlayerState["WINNER"]:
-					players.append(room['aliases'][i + 2])
-			# players = [room['aliases'][2], room['aliases'][3]]
+				if room['players_state'][i + 4] == PlayerState["WINNER"]:
+					players.append(room['aliases'][i + 4])
+
 		elif room['state'] == TournamentStage["FINALS"]:
 			players = []
 			for i in range(players_size_max):
 				if room['players_state'][i] == PlayerState["WINNER"]:
 					players.append(room['aliases'][i])
 		return players
-	
-	# def next_turn(self, room_name, winnerIdx, loserIdx):
-	# 	room = self.get_room(room_name)
-	# 	if not room or room['state'] == TournamentStage["FINALS"]:
-	# 		return False
 
-	# 	if room['state'] == TournamentStage["QUARTER_FINALS1"]:
-	# 		room['players_state'][winnerIdx] = PlayerState["WINNER"]
-	# 		room['players_state'][loserIdx] = PlayerState["LOSER"]
-	# 		room['state'] = TournamentStage["QUARTER_FINALS2"]
-	# 	elif room['state'] == TournamentStage["QUARTER_FINALS2"]:
-	# 		room['players_state'][winnerIdx + 2] = PlayerState["WINNER"]
-	# 		room['players_state'][loserIdx + 2] = PlayerState["LOSER"]
-	# 		room['state'] = TournamentStage["QUARTER_FINALS3"]
-	# 	elif room['state'] == TournamentStage["QUARTER_FINALS3"]:
-	# 		room['players_state'][winnerIdx + 4] = PlayerState["WINNER"]
-	# 		room['players_state'][loserIdx + 4] = PlayerState["LOSER"]
-	# 		room['state'] = TournamentStage["QUARTER_FINALS4"]
-	# 	elif room['state'] == TournamentStage["QUARTER_FINALS4"]:
-	# 		room['players_state'][winnerIdx + 6] = PlayerState["WINNER"]
-	# 		room['players_state'][loserIdx + 6] = PlayerState["LOSER"]
-	# 		room['state'] = TournamentStage["DEMI_FINALS1"]
-	# 	elif room['state'] == TournamentStage["DEMI_FINALS1"]:
-	# 		room['players_state'][winnerIdx] = PlayerState["WINNER"]
-	# 		room['players_state'][loserIdx] = PlayerState["LOSER"]
-	# 		room['state'] = TournamentStage["DEMI_FINALS2"]
-	# 	elif room['state'] == TournamentStage["DEMI_FINALS2"]:
-	# 		room['players_state'][winnerIdx + 2] = PlayerState["WINNER"]
-	# 		room['players_state'][loserIdx + 2] = PlayerState["LOSER"]
-	# 		room['state'] = TournamentStage["FINALS"]
-		
-	# 	room['game_state'] = GameState()
-	# 	return True
- 
 	def next_turn(self, room_name, winnerIdx, loserIdx):
 		room = self.get_room(room_name)
 		if not room or room['state'] == TournamentStage["FINALS"]:
@@ -239,14 +203,40 @@ class TournamentManager():
 			room['players_state'][winnerIdx + 6] = PlayerState["WINNER"]
 			room['players_state'][loserIdx + 6] = PlayerState["LOSER"]
 			room['state'] = TournamentStage["DEMI_FINALS1"]
-			room['winners'] = [i for i in range(8) if room['players_state'][i] == PlayerState["WINNER"]]
+			winners_quarter = []
+			for i in range(players_size_max):
+				if room['players_state'][i] == PlayerState["WINNER"]:
+					winners_quarter.append(i)
+			room['winners_quarter'] = winners_quarter
 		elif room['state'] == TournamentStage["DEMI_FINALS1"]:
-			room['players_state'][room['winners'][winnerIdx]] = PlayerState["WINNER"]
-			room['players_state'][room['winners'][loserIdx]] = PlayerState["LOSER"]
+			winnerIdx = room['winners_quarter'][winnerIdx]
+			loserIdx = room['winners_quarter'][loserIdx]
+			room['players_state'][winnerIdx] = PlayerState["WINNER"]
+			room['players_state'][loserIdx] = PlayerState["LOSER"]
+
+			winners_demi = []
+			winners_demi.append(winnerIdx)
+			room['winners_demi'] = winners_demi
 			room['state'] = TournamentStage["DEMI_FINALS2"]
+
 		elif room['state'] == TournamentStage["DEMI_FINALS2"]:
-			room['players_state'][room['winners'][winnerIdx + 2]] = PlayerState["WINNER"]
-			room['players_state'][room['winners'][loserIdx + 2]] = PlayerState["LOSER"]
+			winnerIdx = room['winners_quarter'][winnerIdx + 2]
+			loserIdx = room['winners_quarter'][loserIdx + 2]
+			room['players_state'][winnerIdx] = PlayerState["WINNER"]
+			room['players_state'][loserIdx] = PlayerState["LOSER"]
+
+			winners_demi = room['winners_demi']
+			winners_demi.append(winnerIdx)
+			room['winners_demi'] = winners_demi
+
+			# print winners_demi
+			print(f'room["winners_demi"] = {room["winners_demi"]}')
+
+			# reset all the players state to loser apart from the winners_demi
+			for i in range(players_size_max):
+				if i not in winners_demi:
+					room['players_state'][i] = PlayerState["LOSER"]
+					print(f'room["players_state"][{i}] = {room["players_state"][i]}')
 			room['state'] = TournamentStage["FINALS"]
 
 		room['game_state'] = GameState()
@@ -491,10 +481,14 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				'type': 'game_start',
 				'arg': {
 					'player1': players[0],
-					'player2': players[1] #!!!!! might be empty careful may need to send players[0]
+					'player2': players[1]
 				}
 			}
 		)
+		if len(players) == 2:
+			print("Player1: ", players[0] + " Player2: ", players[1])
+		else:
+			print("Error: ", players)
 
 	async def game_start(self, event):
 		await self.send(text_data=json.dumps({
