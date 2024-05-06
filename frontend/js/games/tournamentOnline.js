@@ -49,8 +49,8 @@ let g_data = {};
 
 function createTournament() {
 	const name = document.getElementById('name').value;
-	const visibility = document.querySelector('input[name="visibility"]:checked').value;
-	const password = document.getElementById('password').value;
+	// const visibility = document.querySelector('input[name="visibility"]:checked').value;
+	// const password = document.getElementById('password').value;
 	
 	let hostnameport = "https://" + window.location.host
 
@@ -61,7 +61,7 @@ function createTournament() {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken') // Ensure to include CSRF token
 		},
-		body: JSON.stringify({ name, visibility, password })
+		body: JSON.stringify({ name })
 	})
 		.then(response => {
 			if (response.ok) {
