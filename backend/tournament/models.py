@@ -4,14 +4,7 @@ from players_manager.models import Player
 # Create your models here.
 
 class Tournament(models.Model):
-	VISIBILITY_CHOICES = (
-		('public', 'Public'),
-		('private', 'Private'),
-	)
-	
 	name = models.CharField(max_length=100)
-	visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES)
-	password = models.CharField(max_length=100, blank=True, null=True)  # Only required for private tournaments
 	players = models.ManyToManyField(Player, related_name='tournaments')
 	owner = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='owned_tournaments', null=True, blank=True)
 	
