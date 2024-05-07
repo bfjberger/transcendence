@@ -45,11 +45,11 @@ async function connectUser(loginForm) {
 
 			document.querySelector("div.modal-backdrop.fade.show").remove();
 
-			document.querySelectorAll(".nav__link").forEach(btn => {
+			document.querySelectorAll(".dropdown-item").forEach(btn => {
 				btn.removeAttribute("disabled");
 			});
-			document.getElementById("navbar__btn--user").removeAttribute("disabled");
-			document.getElementById("logout").removeAttribute("disabled");
+			document.getElementById("topbar__profile--username").removeAttribute("disabled");
+			document.getElementById("topbar__logout").removeAttribute("disabled");
 
 			router("index");
 		}
@@ -184,11 +184,11 @@ function listenerLogin() {
 
 async function loadLogin() {
 
-	document.querySelectorAll(".nav__link").forEach(btn => {
+	document.querySelectorAll(".dropdown-item").forEach(btn => {
 		btn.setAttribute("disabled", true);
 	});
-	document.getElementById("navbar__btn--user").setAttribute("disabled", true);
-	document.getElementById("logout").setAttribute("disabled", true);
+	document.getElementById("topbar__profile--username").setAttribute("disabled", true);
+	document.getElementById("topbar__logout").setAttribute("disabled", true);
 
 	try {
 
@@ -198,11 +198,11 @@ async function loadLogin() {
 
 		if (response.status === 202) {
 
-			document.querySelectorAll(".nav__link").forEach(btn => {
+			document.querySelectorAll(".dropdown-item").forEach(btn => {
 				btn.removeAttribute("disabled");
 			});
-			document.getElementById("navbar__btn--user").removeAttribute("disabled");
-			document.getElementById("logout").removeAttribute("disabled");
+			document.getElementById("topbar__profile--username").removeAttribute("disabled");
+			document.getElementById("topbar__logout").removeAttribute("disabled");
 
 			router("index");
 		}

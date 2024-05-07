@@ -1,25 +1,11 @@
-.navbar {
-	min-height: 55px;
-}
-
 .dropdown-menu {
-	left: unset !important;
-	right: 0px !important;
-}
-
-#sidebar-left, #sidebar-right {
-	width: 230px;
-}
-
-#board_two {
-	max-width: 650px;
-	max-height: 480px;
+	left: 0px !important;
 }
 
 /* Animation for the dropdown */
 @media (min-width: 768px) {
 	.animate {
-		animation-duration: 0.3s;
+		animation-duration: 1s;
 		animation-fill-mode: both;
 	}
 }
@@ -45,15 +31,60 @@
 	animation-name: slideIn;
 }
 
-.collapse__myStats--color--title {
+#topbar {
+	background-color: teal;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 1em 10px;
+}
+
+#topbar__home:hover {
+	background: rgba(255, 255, 255, 0.05);
+}
+
+#topbar__logout {
+	cursor: pointer;
+}
+
+#menu {
+	vertical-align: middle;
+	margin-left: auto;
+	margin-right: auto;
+	color: black;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+#sidebar-left, #sidebar-right {
+	background-color: #6C7878;
+}
+
+#footer {
+	background-color: teal;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 1em 10px;
+}
+
+#game__historyTwo--holder, #game__historyFour--holder {
+	display: flex;
+	flex-direction: row;
+}
+
+#game__historyTwo--main, #game__historyFour--main {
+	overflow-y: scroll;
+	height: 400px;
+}
+
+.stats__color--title {
 	color: rgb(86, 146, 65);
 }
 
-.collapse__myStats--color--stats {
+.stats__color--stats {
 	color: rgb(44, 202, 175);
 }
 
-.collapse__myStats--color--context {
+.stats__color--context {
 	color: rgb(186, 119, 199);
 }
 

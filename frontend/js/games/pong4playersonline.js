@@ -65,6 +65,12 @@ function sendMessageToServer(message) {
 };
 
 function initDisplay() {
+
+	if (g_board != null) {
+		g_board = null;
+		g_context.reset();
+	}
+
 	g_board = document.getElementById("board_four");
 	g_context = g_board.getContext("2d");
 	g_board.width = constants.WIN_WIDTH;

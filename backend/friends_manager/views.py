@@ -22,7 +22,7 @@ class ListFriendAPIView(ListAPIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]
 	serializer_class = FriendSerializer
-	
+
 	def get(self, request):
 		param = self.request.query_params.get('type')
 		if param == "initiated" :
@@ -55,10 +55,10 @@ class CreateFriendAPIView(APIView):
 		try :
 			user_received = User.objects.get(username=request.data['username'])
 		except User.DoesNotExist:
-			return Response("Ce membre n'existe pas", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+			return Response("Ce membre n'existe pas.", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
 		if user_received.id == self.request.user.id :
-			return Response("Vous ne pouvez pas vous demander vous même en ami", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+			return Response("Vous ne pouvez pas vous demander vous même en ami.", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
 		new_relation_data = {"user_initiated" : self.request.user.id, "user_received" : user_received.id, "accept" : False}
 
@@ -67,10 +67,10 @@ class CreateFriendAPIView(APIView):
 		if serializer_new_relation.is_valid():
 			relation1_already_exists = Friend.objects.filter(user_initiated=new_relation_data["user_initiated"], user_received=new_relation_data["user_received"])
 			if relation1_already_exists :
-				return Response("La lien d'amitié existe déjà.", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+				return Response("Le lien d'amitié existe déjà.", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 			relation2_already_exists = Friend.objects.filter(user_initiated=new_relation_data["user_received"], user_received=new_relation_data["user_initiated"])
 			if relation2_already_exists :
-				return Response("Vous êtes déjà ami", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+				return Response("Vous êtes déjà ami.", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 			serializer_new_relation.save()
 			return Response("Demande envoyée", status=status.HTTP_201_CREATED)
 
@@ -115,7 +115,5 @@ class DeleteFriendAPIView(APIView):
 
 		if not relation_to_delete :
 			return Response("Aucun lien d'amitié trouvé", status=status.HTTP_400_BAD_REQUEST)
-		relation_to_delete.delete()		
+		relation_to_delete.delete()
 		return Response ("Lien d'amitié supprimé", status=status.HTTP_200_OK)
-
-

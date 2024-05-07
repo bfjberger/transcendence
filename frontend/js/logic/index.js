@@ -1,8 +1,18 @@
 function renderIndex() {
 	return `
 
-		Bienvenue, ceci est la page principale.
-
+		<div class="d-flex align-items-center">
+			Bienvenue, ceci est la page principale.
+			<div>
+				<img src="https://c.tenor.com/5UrSnlHPuXkAAAAC/tenor.gif">
+			</div>
+			<div>
+				<img src="https://c.tenor.com/8Y4tlL5MQFEAAAAC/tenor.gif">
+			</div>
+			<div>
+				<img src="https://static.hitek.fr/img/actualite/ill_m/1435480913/darkvador.webp">
+			</div>
+		</div>
 	`;
 };
 
@@ -14,7 +24,7 @@ async function loadIndex()
 {
 	console.log("hello from load index")
 	try {
-		let hostnameport = "https://" + window.location.host
+		let hostnameport = "https://" + window.location.host;
 
 		const response = await fetch(hostnameport + '/api/index/');
 
