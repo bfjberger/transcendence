@@ -92,7 +92,7 @@ class LogoutView(APIView):
 class ProfileView(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]
-	serializer_class = PlayerSerializer
+	# serializer_class = PlayerSerializer
 
 	def get(self, request):
 		user_data = self.request.user
@@ -101,7 +101,7 @@ class ProfileView(APIView):
 
 	# @transaction.atomic
 	# @method_decorator()
-	@method_decorator(csrf_exempt, name='dispatch')
+	# @method_decorator(csrf_exempt, name='dispatch')
 	def patch(self, request):
 		try :
 			player = Player.objects.get(owner=self.request.user)
@@ -170,20 +170,30 @@ class Tournament(APIView):
 		serializer_user = UserSerializer(self.request.user)
 		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
 
-# class UpdateStatus(APIView):
-# 	authentication_classes = [SessionAuthentication, BasicAuthentication]
-# 	permission_classes = [permissions.IsAuthenticated]
 
-# 	def patch(self, request):
-# 		try :
-# 			player = Player.objects.get(owner=self.request.user)
-# 		except :
-# 			return Response(None, status=status.HTTP_400_BAD_REQUEST)
+class Statistiques(APIView):
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
 
-# 		if player.status == "PLAYING":
-# 			player.status = "ONLINE"
-# 		elif player.status == "ONLINE":
-# 			player.status = "PLAYING"
-# 		player.save()
-# 		serializer_player = PlayerSerializer(player)
-# 		return Response(data=serializer_player.data, status=status.HTTP_200_OK)
+	def get(self, request):
+		serializer_data = DataSerializer(self.request.user)
+		return Response(data=serializer_data.data, status=status.HTTP_200_OK)
+
+
+class UpdateStatus(APIView):
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
+
+	def patch(self, request):
+		try :
+			player = Player.objects.get(owner=self.request.user)
+		except :
+			return Response(None, status=status.HTTP_400_BAD_REQUEST)
+
+		if player.status == "PLAYING":
+			player.status = "ONLINE"
+		elif player.status == "ONLINE":
+			player.status = "PLAYING"
+		player.save()
+		serializer_player = PlayerSerializer(player)
+		return Response(data=serializer_player.data, status=status.HTTP_200_OK)

@@ -50,7 +50,7 @@ var g_game_running = false;
 var g_winner = null;
 var g_player_left, g_player_right, g_player_top, g_player_bottom;
 var g_template_text, g_startButton, g_instructions;
-var g_left_container, g_right_container, g_top_container, g_bottom_container;
+var g_left_name, g_right_name, g_top_name, g_bottom_name;
 const g_keys = {};
 
 // Boards
@@ -96,6 +96,11 @@ function handle_scores() {
 	g_context.fillText(g_player_right.score, constants.WIN_WIDTH - 20, constants.FOUR_WIN_HEIGHT / 2);
 	g_context.fillText(g_player_top.score, constants.WIN_WIDTH / 2, 20);
 	g_context.fillText(g_player_bottom.score, constants.WIN_WIDTH / 2, constants.FOUR_WIN_HEIGHT - 20);
+
+	document.getElementById("four__online--top--score").textContent = g_player_top.score;
+	document.getElementById("four__online--left--score").textContent = g_player_left.score;
+	document.getElementById("four__online--right--score").textContent = g_player_right.score;
+	document.getElementById("four__online--bottom--score").textContent = g_player_bottom.score;
 };
 
 function display_winner(winning_player) {
@@ -239,13 +244,11 @@ function drawScoreAndLine() {
 	g_context.stroke();
 	g_context.setLineDash([]);
 
-	// Draw the scores
-	g_context.font = "20px sans-serif";
-	g_context.fillStyle = "black";
-	g_context.fillText(g_player_left.score, 10, constants.FOUR_WIN_HEIGHT / 2);
-	g_context.fillText(g_player_right.score, constants.WIN_WIDTH - 20, constants.FOUR_WIN_HEIGHT / 2);
-	g_context.fillText(g_player_top.score, constants.WIN_WIDTH / 2, 20);
-	g_context.fillText(g_player_bottom.score, constants.WIN_WIDTH / 2, constants.FOUR_WIN_HEIGHT - 20);
+	// Change the scores on the page
+	document.getElementById("four__online--top--score").textContent = g_player_top.score;
+	document.getElementById("four__online--left--score").textContent = g_player_left.score;
+	document.getElementById("four__online--right--score").textContent = g_player_right.score;
+	document.getElementById("four__online--bottom--score").textContent = g_player_bottom.score;
 };
 
 function animate() {
@@ -290,29 +293,25 @@ function setPositionStyleUpdate(data) {
 
 	if (g_position === "player_left") {
 		g_player_left.set_name(data.name);
-		g_left_container.classList.add("text-decoration-underline");
-		g_left_container.style.color = constants.FOUR_PLAYER_LEFT_COLOR;
+		g_left_name.classList.add("text-decoration-underline");
 		g_instructions.textContent = "Ton camp est à gauche. Utilise les touches W et S pour bouger";
 		g_instructions.style.color = constants.FOUR_PLAYER_LEFT_COLOR;
 	}
 	else if (g_position === "player_right") {
 		g_player_right.set_name(data.name);
-		g_right_container.classList.add("text-decoration-underline");
-		g_right_container.style.color = constants.FOUR_PLAYER_RIGHT_COLOR;
+		g_right_name.classList.add("text-decoration-underline");
 		g_instructions.textContent = "Ton camp est à droite. Utilise les touches W et S pour bouger";
 		g_instructions.style.color = constants.FOUR_PLAYER_RIGHT_COLOR;
 	}
 	else if (g_position === "player_top") {
 		g_player_top.set_name(data.name);
-		g_top_container.classList.add("text-decoration-underline");
-		g_top_container.style.color = constants.FOUR_PLAYER_TOP_COLOR;
+		g_top_name.classList.add("text-decoration-underline");
 		g_instructions.textContent = "Ton camp est en haut. Utilise les touches J et K pour bouger";
 		g_instructions.style.color = constants.FOUR_PLAYER_TOP_COLOR;
 	}
 	else if (g_position === "player_bottom") {
 		g_player_bottom.set_name(data.name);
-		g_bottom_container.classList.add("text-decoration-underline");
-		g_bottom_container.style.color = constants.FOUR_PLAYER_BOTTOM_COLOR;
+		g_bottom_name.classList.add("text-decoration-underline");
 		g_instructions.textContent = "Ton camp est en bas. Utilise les touches J et K pour bouger";
 		g_instructions.style.color = constants.FOUR_PLAYER_BOTTOM_COLOR;
 	}
@@ -325,14 +324,10 @@ function gameStartStyleUpdate(data) {
 	g_player_top.set_name(data.player_top);
 	g_player_bottom.set_name(data.player_bottom);
 
-	g_left_container.textContent = g_player_left.name;
-	g_left_container.style.color = constants.FOUR_PLAYER_LEFT_COLOR;
-	g_right_container.textContent = g_player_right.name;
-	g_right_container.style.color = constants.FOUR_PLAYER_RIGHT_COLOR;
-	g_top_container.textContent = g_player_top.name;
-	g_top_container.style.color = constants.FOUR_PLAYER_TOP_COLOR;
-	g_bottom_container.textContent = g_player_bottom.name;
-	g_bottom_container.style.color = constants.FOUR_PLAYER_BOTTOM_COLOR;
+	g_left_name.textContent = g_player_left.name;
+	g_right_name.textContent = g_player_right.name;
+	g_top_name.textContent = g_player_top.name;
+	g_bottom_name.textContent = g_player_bottom.name;
 };
 
 /**
@@ -342,10 +337,10 @@ export function startGame() {
 	g_websocket = new WebSocket(wsurl);
 
 	// Remove a possible underline from the player's name
-	g_top_container.classList.remove("text-decoration-underline");
-	g_bottom_container.classList.remove("text-decoration-underline");
-	g_left_container.classList.remove("text-decoration-underline");
-	g_right_container.classList.remove("text-decoration-underline");
+	g_top_name.classList.remove("text-decoration-underline");
+	g_bottom_name.classList.remove("text-decoration-underline");
+	g_left_name.classList.remove("text-decoration-underline");
+	g_right_name.classList.remove("text-decoration-underline");
 
 	if (g_first_launch) {
 		initDisplay();
@@ -375,6 +370,24 @@ export function startGame() {
 			setPositionStyleUpdate(data);
 		}
 
+		if (data.type === 'ready') {
+
+			let count = 0;
+			let interval = setInterval(() => {
+				count++;
+
+				document.getElementById("canvas--text").textContent = "La partie commence dans " + (5 - count);
+
+				if (count === 5) {
+					clearInterval(interval);
+					document.getElementById("canvas--text").textContent = "";
+
+					if (g_position === "player_left")
+						g_websocket.send(JSON.stringify({type: 'start_game'}));
+				}
+			}, 1000);
+		}
+
 		if (data.type === 'game_start') {
 			console.log('Starting game . . .');
 
@@ -394,7 +407,7 @@ export function startGame() {
 		if (data.type === 'player_disconnect') {
 			g_game_running = false;
 			g_template_text.style.color = "black";
-			g_template_text.textContent = data.player_name + " a quitté la partie (rageux). La partie est terminée.";
+			g_template_text.textContent = data.player_name + " a quitté la partie. La partie est terminée.";
 			g_startButton.classList.remove("d-none");
 			g_websocket.close();
 		}
@@ -420,6 +433,7 @@ export function startGame() {
 
 /* ------------------------ Leaving or reloading game ----------------------- */
 
+/*
 window.addEventListener('unload', function() {
 	if (g_websocket)
 		sendMessageToServer({type: 'player_disconnect', player_pos: g_position});
@@ -431,6 +445,7 @@ function handlePageReload() {
 };
 
 window.addEventListener('beforeunload', handlePageReload);
+*/
 
 /* ----------------------------- Event Listeners ---------------------------- */
 
@@ -439,10 +454,10 @@ function listenerFourPlayersOnline() {
 	g_startButton = document.getElementById("startGame4Online");
 	g_template_text = document.getElementById("template_text");
 	g_instructions = document.getElementById("instructions");
-	g_left_container = document.getElementById("four__online--left");
-	g_right_container = document.getElementById("four__online--right");
-	g_top_container = document.getElementById("four__online--top");
-	g_bottom_container = document.getElementById("four__online--bottom");
+	g_left_name = document.getElementById("four__online--left--name");
+	g_right_name = document.getElementById("four__online--right--name");
+	g_top_name = document.getElementById("four__online--top--name");
+	g_bottom_name = document.getElementById("four__online--bottom--name");
 
 	// Reset the content and color of placeholder text
 	g_template_text.textContent = "";
@@ -457,8 +472,21 @@ function listenerFourPlayersOnline() {
 		g_startButton.classList.add("d-none");
 		g_template_text.textContent = "En attente d'autres joueurs. . .";
 		g_template_text.style.color = "";
+		g_left_name.textContent = "";
+		g_right_name.textContent = "";
+		g_top_name.textContent = "";
+		g_bottom_name.textContent = "";
 
 		startGame();
+	});
+
+	const navbarItems = document.querySelectorAll('.nav__item');
+	navbarItems.forEach(item => {
+		item.addEventListener('click', () => {
+			if (g_websocket instanceof WebSocket && g_websocket.readyState === WebSocket.OPEN) {
+				g_websocket.close();
+			}
+		});
 	});
 };
 

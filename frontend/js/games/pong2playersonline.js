@@ -306,10 +306,26 @@ export function start() {
 			setPositionStyleUpdate(data);
 		}
 
+		if (data.type === 'ready') {
+
+			let count = 0;
+			let interval = setInterval(() => {
+				count++;
+
+				document.getElementById("canvas--text").textContent = "La partie commence dans " + (5 - count);
+
+				if (count === 5) {
+					clearInterval(interval);
+					document.getElementById("canvas--text").textContent = "";
+
+					if (g_position === "player_left")
+						g_websocket.send(JSON.stringify({type: 'start_game'}));
+				}
+			}, 1000);
+		}
+
 		if (data.type === 'game_start') {
 			console.log('Starting game . . .');
-
-			g_template_text.textContent = "Adversaire trouvé! La partie commence . . .";
 
 			gameStartStyleUpdate(data);
 
@@ -325,7 +341,7 @@ export function start() {
 		if (data.type === 'player_disconnect') {
 			g_game_running = false;
 			g_template_text.style.color = "black";
-			g_template_text.textContent = data.player_name + " a quitté la partie (rageux). Tu gagne cette partie.";
+			g_template_text.textContent = data.player_name + " a quitté la partie. Tu gagne cette partie.";
 			g_startButton.classList.remove("d-none");
 			g_websocket.close();
 			g_context.reset();
@@ -355,6 +371,7 @@ export function start() {
 
 /* ------------------------ Leaving or reloading game ----------------------- */
 
+/*
 window.addEventListener('unload', function() {
 	if (g_websocket)
 		sendMessageToServer({type: 'player_disconnect', player_pos: g_position});
@@ -366,6 +383,7 @@ function handlePageReload() {
 };
 
 window.addEventListener('beforeunload', handlePageReload);
+*/
 
 /* ----------------------------- Event Listeners ---------------------------- */
 
@@ -392,6 +410,15 @@ function listenerTwoPlayersOnline() {
 		g_template_text.style.color = "";
 
 		start();
+	});
+
+	const navbarItems = document.querySelectorAll('.nav__item');
+	navbarItems.forEach(item => {
+		item.addEventListener('click', () => {
+			if (g_websocket instanceof WebSocket && g_websocket.readyState === WebSocket.OPEN) {
+				g_websocket.close();
+			}
+		});
 	});
 };
 

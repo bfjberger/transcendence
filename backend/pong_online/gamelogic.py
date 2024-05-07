@@ -40,7 +40,6 @@ class GameState:
 		self.room_name = name
 		self.ball = self.Ball()
 		self.players = {}
-		self.winner = None
 		self.is_running = False
 		self.winning_score = 3
 		self.game_history = TwoPlayersGame()
@@ -63,15 +62,6 @@ class GameState:
 			player_pos (str): position of the player ('player_left' or 'player_right')
 		"""
 		del self.players[player_pos]
-
-	async def set_winner(self, winner_pos):
-		"""
-		Set the winner attribute to the position passed as arguments
-
-		Args:
-			winner_pos (str): position of the player who won ('player_left' or 'player_right')
-		"""
-		self.winner = winner_pos
 
 	async def get_winner_pos(self):
 		"""

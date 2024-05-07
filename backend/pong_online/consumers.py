@@ -78,8 +78,6 @@ class RoomManager:
 		"""
 		if room_name in self.rooms.keys():
 			await self.rooms[room_name].record_game_result(winner, loser)
-			if len(self.rooms[room_name].players) == 1:
-				self.delete_room(room_name)
 
 class RoomConsumer(AsyncWebsocketConsumer):
 	"""
@@ -149,11 +147,12 @@ class RoomConsumer(AsyncWebsocketConsumer):
 		Args:
 			close_code (int): The code indicating the reason for the disconnection.
 		"""
-		await self.send(self.room_name,
+		await self.channel_layer.group_send(self.room_name,
 			{
 				'type': 'player_disconnect',
 				'player_name': self.game_state_obj.players[self.position].player_model.nickname
 			})
+		await self.end_game(self.position)
 
 	async def receive(self, text_data):
 		"""
@@ -173,15 +172,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
 		type = data['type']
 		if type == 'set_player_movement':
 			await self.game_state_obj.set_player_movement(data['player'], data['is_moving'], data['direction_v'])
-		elif type == 'player_disconnect':
-			if len(self.game_state_obj.players) == 1:
-				self.manager.delete_room(self.room_name)
-			if data["player_pos"] == 'player_left':
-				await self.game_state_obj.set_winner("player_right")
-				await self.end_game('player_right')
-			elif data["player_pos"] == 'player_right':
-				await self.game_state_obj.set_winner("player_left")
-				await self.end_game('player_left')
+		if type == 'start_game':
+			await self.start_game()
 
 	async def handle_new_connection(self, user):
 		"""
@@ -200,7 +192,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
 		Args:
 			user (User): The user object representing the player that connected.
 		"""
-		print("\n", len(self.manager.rooms), "\n")
 		self.room_name = self.manager.room_available()
 		self.game_state_obj = self.manager.rooms.get(self.room_name)
 		player = await sync_to_async(Player.objects.get)(owner=user)
@@ -227,7 +218,10 @@ class RoomConsumer(AsyncWebsocketConsumer):
 		await self.channel_layer.group_add(self.room_name, self.channel_name)
 
 		if len(self.game_state_obj.players) == 2:
-			await self.start_game()
+			await self.channel_layer.group_send(self.room_name,
+				{
+					'type': 'ready',
+				})
 
 	async def start_game(self):
 		"""
@@ -257,21 +251,20 @@ class RoomConsumer(AsyncWebsocketConsumer):
 		Otherwise, we get the winner position and the loser position and save the game in the database.
 		"""
 		self.game_state_obj.is_running = False
-		if winner == 'player_left':
-			await self.manager.save_room(self.room_name, winner, "player_right")
-			self.game_state_obj.remove_player_from_dict("player_left")
-			await self.send_game_end(winner)
-		elif winner == 'player_right':
-			await self.manager.save_room(self.room_name, winner, "player_left")
-			self.game_state_obj.remove_player_from_dict("player_right")
-			await self.send_game_end(winner)
-		else:
-			winner = await self.game_state_obj.get_winner_pos()
-			if winner is None:
-				winner = self.game_state_obj.winner
-			loser = "player_left" if winner == "player_right" else "player_right"
-			await self.manager.save_room(self.room_name, winner, loser)
-			await self.send_game_end(winner)
+		if len(self.game_state_obj.players) == 2:
+			if winner == 'player_left':
+				await self.manager.save_room(self.room_name, winner, "player_right")
+				await self.send_game_end(winner)
+			elif winner == 'player_right':
+				await self.manager.save_room(self.room_name, winner, "player_left")
+				await self.send_game_end(winner)
+			else:
+				winner = await self.game_state_obj.get_winner_pos()
+				loser = "player_left" if winner == "player_right" else "player_right"
+				await self.manager.save_room(self.room_name, winner, loser)
+				await self.send_game_end(winner)
+				self.manager.delete_room(self.room_name)
+		if len(self.game_state_obj.players) == 1:
 			self.manager.delete_room(self.room_name)
 
 	async def get_update_lock(self):
@@ -348,6 +341,18 @@ class RoomConsumer(AsyncWebsocketConsumer):
 			'player_name': event['player_name']
 		}))
 		self.channel_layer.group_discard(self.room_name, self.channel_name)
+
+	async def ready(self, event):
+		"""
+		Sends the 'ready' message to the WebSocket connection.
+		It serves only as an event to start a countdown on the front.
+
+		Args:
+			event (dict): The event data received from the channel layer.
+		"""
+		await self.send(text_data=json.dumps({
+			'type': event['type']
+		}))
 
 	async def game_end(self, event):
 		"""

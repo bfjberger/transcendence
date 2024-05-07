@@ -57,7 +57,7 @@ async function loadStats() {
 
 		let hostnameport = "https://" + window.location.host
 
-		const response = await fetch(hostnameport + '/api/profile/', init);
+		const response = await fetch(hostnameport + '/api/stats/', init);
 
 		if (!response.ok) {
 			const text = await response.text();

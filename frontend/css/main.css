@@ -87,3 +87,7 @@
 .stats__color--context {
 	color: rgb(186, 119, 199);
 }
+
+#canvas--text {
+	color: black;
+}

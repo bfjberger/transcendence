@@ -44,7 +44,23 @@ class PongGame2Players {
 		this.context = this.board.getContext("2d");
 
 		this.setPlayer();
-		this.setBall();
+		this.countdown();
+	}
+
+	countdown() {
+		let count = 0;
+		let interval = setInterval(() => {
+			count++;
+
+			document.getElementById("canvas--text").textContent = "La partie commence dans " + (5 - count);
+
+			if (count === 5) {
+				clearInterval(interval);
+				document.getElementById("canvas--text").textContent = "";
+
+				this.setBall();
+			}
+		}, 1000);
 	}
 
 	setPlayer() {
@@ -153,7 +169,7 @@ class PongGame2Players {
 			this.ball.y = this.boardHeight - this.ball.radius;
 		}
 
-		var middle_y, difference_in_y, reduction_factor, new_y_vel;
+		var middle_y, difference_in_y, new_y_vel, reduction_factor;
 		// Ball and paddle collision
 		if (this.ball.velocityX < 0) {
 			if (this.ball.y <= this.player_left.coords.y + default_paddle_height &&
@@ -261,11 +277,15 @@ class PongGame2Players {
 	Event listener for reload
 */
 window.addEventListener('unload', async function() {
-	await updateStatus();
+	if (window.location.pathname === "/fourplayers/" || window.location.pathname === "/twoplayers/") {
+		await updateStatus();
+	}
 });
 
 async function handlePageReload() {
-	await updateStatus();
+	if (window.location.pathname === "/fourplayers/" || window.location.pathname === "/twoplayers/") {
+		await updateStatus();
+	}
 };
 
 window.addEventListener('beforeunload', handlePageReload);
@@ -325,7 +345,7 @@ function listenerTwoPlayers() {
 		g_template_text.textContent = "";
 		g_template_text.style.color = "";
 
-		// updateStatus();
+		updateStatus();
 		start2PlayerGame(sessionStorage.getItem("nickname"), "Joueur Invité");
 	});
 };
