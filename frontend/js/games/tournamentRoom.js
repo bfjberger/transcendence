@@ -253,7 +253,7 @@ function add_start_btn_listener() {
 /* ------------------------------- Page listener ---------------------------- */
 
 function listenerTournamentRoom() {
-	const navbarItems = document.querySelectorAll('.nav__link');
+	const navbarItems = document.querySelectorAll('.nav__item');
 	navbarItems.forEach(item => {
 		item.addEventListener('click', () => {
 			if (g_socket instanceof WebSocket && g_socket.readyState === WebSocket.OPEN) {
