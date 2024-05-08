@@ -222,7 +222,7 @@ function render() {
 	g_context.fillRect(g_player_right.x, g_player_right.y, g_player_right.width, g_player_right.height);
 
 	// Draw the ball
-	if (!g_ball.stop_flag) {
+	if (!g_ball.stop_flag && g_game_running) {
 		drawBall(g_ball.x, g_ball.y, g_ball.radius, g_ball.color);
 	}
 	else {
@@ -268,10 +268,23 @@ function gameStartStyleUpdate(data) {
 	g_right_container.style.color = constants.PLAYER_RIGHT_COLOR;
 };
 
+function resetVarStyle() {
+	g_player_left = null;
+	g_player_right = null;
+	g_websocket = null;
+	g_template_text.style.color = "";
+	g_winner = null;
+	g_board = null;
+	g_context = null;
+}
+
 /**
  * Starts the game and initializes the WebSocket connection.
  */
 export function start() {
+	if (g_websocket != undefined)
+		resetVarStyle();
+
 	g_websocket = new WebSocket(wsurl);
 
 	// Remove a possible underline from the player's name
@@ -308,6 +321,9 @@ export function start() {
 
 		if (data.type === 'ready') {
 
+			g_template_text.textContent = "Adversaire trouvé ...";
+			gameStartStyleUpdate(data);
+
 			let count = 0;
 			let interval = setInterval(() => {
 				count++;
@@ -318,7 +334,7 @@ export function start() {
 					clearInterval(interval);
 					document.getElementById("canvas--text").textContent = "";
 
-					if (g_position === "player_left")
+					if (g_position === "player_left" && g_websocket.readyState == 1)
 						g_websocket.send(JSON.stringify({type: 'start_game'}));
 				}
 			}, 1000);
@@ -327,7 +343,7 @@ export function start() {
 		if (data.type === 'game_start') {
 			console.log('Starting game . . .');
 
-			gameStartStyleUpdate(data);
+			g_template_text.textContent = "C'est parti !";
 
 			g_game_running = true;
 			g_ball.get_update(constants.WIN_WIDTH / 2, constants.WIN_HEIGHT / 2, 1, 0, 0xffffff);
@@ -344,7 +360,11 @@ export function start() {
 			g_template_text.textContent = data.player_name + " a quitté la partie. Tu gagne cette partie.";
 			g_startButton.classList.remove("d-none");
 			g_websocket.close();
-			g_context.reset();
+			g_board = null;
+			g_context = null;;
+			setTimeout(() => {
+				cancelAnimationFrame(g_id);
+			}, 500);
 		}
 
 		if (data.type === 'game_end') {
@@ -352,18 +372,28 @@ export function start() {
 			console.log('Game over ' + data.winner);
 			display_winner(data.winner);
 			g_websocket.close();
-			g_context.reset();
+			g_board = null;
+			g_context = null;;
+			setTimeout(() => {
+				cancelAnimationFrame(g_id);
+			}, 500);
 		}
 	};
 
 	g_websocket.onclose = () => {
 		console.log('Websocket closed');
-		g_context.reset();
+		g_board = null;
+		g_context = null;
+		setTimeout(() => {
+			cancelAnimationFrame(g_id);
+		}, 500);
+		return;
 	}
 
 	if (g_id !== null) {
 		cancelAnimationFrame(g_id);
-		g_context.reset();
+		g_board = null;
+		g_context = null;;
 	}
 
 	animate();
@@ -371,19 +401,12 @@ export function start() {
 
 /* ------------------------ Leaving or reloading game ----------------------- */
 
-/*
-window.addEventListener('unload', function() {
-	if (g_websocket)
-		sendMessageToServer({type: 'player_disconnect', player_pos: g_position});
-});
-
 function handlePageReload() {
-	if (g_websocket)
-		sendMessageToServer({type: 'player_disconnect', player_pos: g_position});
+	cancelAnimationFrame(g_id);
+	resetVarStyle();
 };
 
 window.addEventListener('beforeunload', handlePageReload);
-*/
 
 /* ----------------------------- Event Listeners ---------------------------- */
 
@@ -418,6 +441,8 @@ function listenerTwoPlayersOnline() {
 		item.addEventListener('click', () => {
 			if (g_websocket instanceof WebSocket && g_websocket.readyState === WebSocket.OPEN) {
 				g_websocket.close();
+				cancelAnimationFrame(g_id);
+				resetVarStyle();
 			}
 		});
 	});

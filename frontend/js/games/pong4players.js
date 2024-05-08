@@ -314,7 +314,7 @@ class PongGame4Players {
 		this.context.setLineDash([5, 15]); // set the line to be a dashed line
 		this.context.moveTo(this.boardWidth / 2, 0);
 		this.context.lineTo(this.boardWidth / 2, this.boardHeight);
-		this.context.strokeStyle = "white";
+		this.context.strokeStyle = "lightrgray";
 		this.context.stroke();
 		this.context.setLineDash([]); // reset the line to be solid for other drawings
 
@@ -322,7 +322,7 @@ class PongGame4Players {
 		this.context.setLineDash([5, 15]); // set the line to be a dashed line
 		this.context.moveTo(0, this.boardHeight / 2);
 		this.context.lineTo(this.boardWidth, this.boardHeight / 2);
-		this.context.strokeStyle = "white";
+		this.context.strokeStyle = "lightrgray";
 		this.context.stroke();
 		this.context.setLineDash([]); // reset the line to be solid for other drawings
 

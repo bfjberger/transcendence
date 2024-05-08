@@ -173,9 +173,9 @@ class RoomConsumerFour(AsyncWebsocketConsumer):
 		if type == 'set_player_movement':
 			await self.game_state_obj.set_player_movement(data['player'], data['is_moving'],
 												 			data['direction_v'], data['direction_h'])
-		elif type == 'player_disconnect':
-			if len(self.game_state_obj.players) < 4	:
-				self.manager.delete_room(self.room_name)
+		# elif type == 'player_disconnect':
+		# 	if len(self.game_state_obj.players) < 4	:
+		# 		self.manager.delete_room(self.room_name)
 		elif type == 'start_game':
 			await self.start_game()
 
@@ -379,13 +379,17 @@ class RoomConsumerFour(AsyncWebsocketConsumer):
 	async def ready(self, event):
 		"""
 		Sends the 'ready' message to the WebSocket connection.
-		It serves only as an event to start a countdown on the front.
+		It serves only as an event to start a countdown on the front and to provide the name of the players.
 
 		Args:
 			event (dict): The event data received from the channel layer.
 		"""
 		await self.send(text_data=json.dumps({
-			'type': event['type']
+			'type': event['type'],
+			'player_left': self.game_state_obj.players['player_left'].player_model.nickname,
+			'player_right': self.game_state_obj.players['player_right'].player_model.nickname,
+			'player_top': self.game_state_obj.players['player_top'].player_model.nickname,
+			'player_bottom': self.game_state_obj.players['player_bottom'].player_model.nickname
 		}))
 
 	async def game_end(self, event):
