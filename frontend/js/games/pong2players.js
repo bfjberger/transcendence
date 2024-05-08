@@ -7,6 +7,8 @@ var g_game;
 var g_startButton;
 var g_template_text;
 
+var g_player_status;
+
 // Some of the constructor default values are overriden by the different set functions
 class PongGame2Players {
 	constructor(player_leftName, player_rightName) {
@@ -29,9 +31,10 @@ class PongGame2Players {
 	}
 
 	init() {
+		this.start = true;
+
 		this.setBoard();
 
-		this.start = true;
 		requestAnimationFrame(this.update.bind(this));
 		document.addEventListener("keydown", this.pressKey.bind(this));
 		document.addEventListener("keydown", this.handleKeyPress.bind(this));
@@ -50,6 +53,9 @@ class PongGame2Players {
 	countdown() {
 		let count = 0;
 		let interval = setInterval(() => {
+			if (this.start === false)
+				return;
+
 			count++;
 
 			document.getElementById("canvas--text").textContent = "La partie commence dans " + (5 - count);
@@ -249,26 +255,28 @@ class PongGame2Players {
 	};
 
 	async update() {
-		this.context.clearRect(0, 0, this.boardWidth, this.boardHeight);
-		this.movePlayer();
-		this.moveBall();
-		this.draw();
-		this.gameOver();
-		if (this.winner != null) {
-			if (window.location.pathname === "/twoplayers/") {
-				g_template_text.textContent = this.winner.name + " a gagné !!";
-				g_template_text.style.color = this.winner.color;
-				g_startButton.classList.remove("d-none");
-				await updateStatus();
+		if (this.start) {
+			this.context.clearRect(0, 0, this.boardWidth, this.boardHeight);
+			this.movePlayer();
+			this.moveBall();
+			this.draw();
+			this.gameOver();
+			if (this.winner != null) {
+				if (window.location.pathname === "/twoplayers/") {
+					g_template_text.textContent = this.winner.name + " a gagné !!";
+					g_template_text.style.color = this.winner.color;
+					g_startButton.classList.remove("d-none");
+					await updateStatus();
+				}
+				this.ball.velocityX = 0;
+				this.ball.velocityY = 0;
+				if (window.location.pathname === "/tournament/") {
+					this.context.reset();
+				}
 			}
-			this.ball.velocityX = 0;
-			this.ball.velocityY = 0;
-			if (window.location.pathname === "/tournament/") {
-				this.context.reset();
+			else {
+				requestAnimationFrame(this.update.bind(this));
 			}
-		}
-		else {
-			requestAnimationFrame(this.update.bind(this));
 		}
 	};
 };
@@ -276,15 +284,11 @@ class PongGame2Players {
 /*
 	Event listener for reload
 */
-window.addEventListener('unload', async function() {
-	if (window.location.pathname === "/fourplayers/" || window.location.pathname === "/twoplayers/") {
-		await updateStatus();
-	}
-});
-
-async function handlePageReload() {
-	if (window.location.pathname === "/fourplayers/" || window.location.pathname === "/twoplayers/") {
-		await updateStatus();
+function handlePageReload() {
+	if (window.location.pathname === "/twoplayers/") {
+		if (g_player_status === "PLAYING") {
+			updateStatus();
+		}
 	}
 };
 
@@ -314,6 +318,8 @@ async function updateStatus() {
 
 		if (response.status === 200) {
 			const data = await response.json();
+
+			g_player_status = data.status;
 		}
 
 	} catch (e) {
@@ -348,6 +354,19 @@ function listenerTwoPlayers() {
 		updateStatus();
 		start2PlayerGame(sessionStorage.getItem("nickname"), "Joueur Invité");
 	});
+
+	// Listen for a button from the menu bar being clicked
+	const navbarItems = document.querySelectorAll('.nav__item');
+	navbarItems.forEach(item => {
+		item.addEventListener('click', () => {
+			if (g_game != undefined) {
+				g_game.context.reset();
+				g_game.start = false;
+				g_game = null;
+				updateStatus();
+			}
+		});
+	});
 };
 
 async function loadTwoPlayers() {
@@ -367,9 +386,15 @@ async function loadTwoPlayers() {
 
 		const response = await fetch(hostnameport +'/api/twoplayer/', init);
 
-		if (response.status === 403) {
+		if (!response.ok) {
 			const text = await response.text();
 			throw new Error(text);
+		}
+
+		if (response.status === 200) {
+			const data = await response.json();
+
+			g_player_status = data['player'].status;
 		}
 
 		return 1;

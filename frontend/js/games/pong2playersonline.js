@@ -148,8 +148,8 @@ function handleKeyUp(e) {
 };
 
 function initControls() {
-	window.addEventListener('keydown', handleKeyDown);
-	window.addEventListener('keyup', handleKeyUp);
+	document.addEventListener('keydown', handleKeyDown);
+	document.addEventListener('keyup', handleKeyUp);
 };
 
 /* -------------------------------- GameState ------------------------------- */
@@ -412,6 +412,7 @@ function listenerTwoPlayersOnline() {
 		start();
 	});
 
+	// Listen for a button from the menu bar being clicked
 	const navbarItems = document.querySelectorAll('.nav__item');
 	navbarItems.forEach(item => {
 		item.addEventListener('click', () => {

@@ -9,6 +9,8 @@ var g_game;
 var g_startButton;
 var g_template_text;
 
+var g_player_status;
+
 class PongGame4Players {
 	constructor(player_left_name, player_right_name, player_top_name, player_bottom_name) {
 		// board
@@ -36,9 +38,10 @@ class PongGame4Players {
 	}
 
 	init() {
+		this.start = true;
+
 		this.setBoard();
 
-		this.start = true;
 		requestAnimationFrame(this.update.bind(this));
 		document.addEventListener("keydown", this.pressKey.bind(this));
 		document.addEventListener("keydown", this.handleKeyPress.bind(this));
@@ -57,6 +60,9 @@ class PongGame4Players {
 	countdown() {
 		let count = 0;
 		let interval = setInterval(() => {
+			if (this.start === false)
+				return;
+
 			count++;
 
 			document.getElementById("canvas--text").textContent = "La partie commence dans " + (5 - count);
@@ -355,21 +361,23 @@ class PongGame4Players {
 	};
 
 	async update() {
-		this.context.clearRect(0, 0, this.boardWidth, this.boardHeight);
-		this.movePlayer();
-		this.moveBall();
-		this.draw();
-		this.gameOver();
-		if (this.winner != null) {
-			this.ball.velocityX = 0;
-			this.ball.velocityY = 0;
-			g_template_text.textContent = this.winner.name + " a gagné !!";
-			g_template_text.style.color = this.winner.color;
-			g_startButton.classList.remove("d-none");
-			await updateStatus();
-		}
-		else {
-			requestAnimationFrame(this.update.bind(this));
+		if (this.start) {
+			this.context.clearRect(0, 0, this.boardWidth, this.boardHeight);
+			this.movePlayer();
+			this.moveBall();
+			this.draw();
+			this.gameOver();
+			if (this.winner != null) {
+				this.ball.velocityX = 0;
+				this.ball.velocityY = 0;
+				g_template_text.textContent = this.winner.name + " a gagné !!";
+				g_template_text.style.color = this.winner.color;
+				g_startButton.classList.remove("d-none");
+				await updateStatus();
+			}
+			else {
+				requestAnimationFrame(this.update.bind(this));
+			}
 		}
 	};
 };
@@ -377,15 +385,11 @@ class PongGame4Players {
 /*
 	Event listener for reload
 */
-window.addEventListener('unload', async function() {
-	if (window.location.pathname === "/fourplayers/" || window.location.pathname === "/twoplayers/") {
-		await updateStatus();
-	}
-});
-
-async function handlePageReload() {
-	if (window.location.pathname === "/fourplayers/" || window.location.pathname === "/twoplayers/") {
-		await updateStatus();
+function handlePageReload() {
+	if (window.location.pathname === "/fourplayers/") {
+		if (g_player_status === "PLAYING") {
+			updateStatus();
+		}
 	}
 };
 
@@ -415,6 +419,8 @@ async function updateStatus() {
 
 		if (response.status === 200) {
 			const data = await response.json();
+
+			g_player_status = data.status;
 		}
 
 	} catch (e) {
@@ -448,6 +454,19 @@ function listenerFourPlayers() {
 
 		updateStatus();
 		start4PlayerGame(sessionStorage.getItem("nickname"), "Invité Droit", "Invité Haut", "Inivité Bas");
+	});
+
+	// Listen for a button from the menu bar being clicked
+	const navbarItems = document.querySelectorAll('.nav__item');
+	navbarItems.forEach(item => {
+		item.addEventListener('click', () => {
+			if (g_game != undefined) {
+				g_game.context.reset();
+				g_game.start = false;
+				g_game = null;
+				updateStatus();
+			}
+		});
 	});
 };
 

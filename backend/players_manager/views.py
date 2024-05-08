@@ -141,10 +141,8 @@ class TwoPlayers(APIView):
 	serializer_class = PlayerSerializer
 
 	def get(self, request):
-		player = Player.objects.get(owner=self.request.user)
-		serializer_player = PlayerSerializer(player)
-		serializer_user = UserSerializer(self.request.user)
-		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
+		serializer_data = DataSerializer(self.request.user)
+		return Response(data=serializer_data.data, status=status.HTTP_200_OK)
 
 
 class FourPlayers(APIView):
@@ -153,10 +151,8 @@ class FourPlayers(APIView):
 	serializer_class = PlayerSerializer
 
 	def get(self, request):
-		player = Player.objects.get(owner=self.request.user)
-		serializer_player = PlayerSerializer(player)
-		serializer_user = UserSerializer(self.request.user)
-		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
+		serializer_data = DataSerializer(self.request.user)
+		return Response(data=serializer_data.data, status=status.HTTP_200_OK)
 
 
 class Tournament(APIView):
