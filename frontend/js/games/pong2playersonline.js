@@ -58,7 +58,7 @@ let g_first_launch = true;
 var g_game_running = false;
 var g_winner = null;
 var g_player_left, g_player_right;
-var g_template_text, g_startButton;
+var g_template_text, g_instructions, g_startButton;
 var g_left_container, g_right_container;
 const g_keys = {};
 
@@ -148,8 +148,8 @@ function handleKeyUp(e) {
 };
 
 function initControls() {
-	window.addEventListener('keydown', handleKeyDown);
-	window.addEventListener('keyup', handleKeyUp);
+	document.addEventListener('keydown', handleKeyDown);
+	document.addEventListener('keyup', handleKeyUp);
 };
 
 /* -------------------------------- GameState ------------------------------- */
@@ -241,21 +241,19 @@ function render() {
 
 function setPositionStyleUpdate(data) {
 
-	const instructions = document.getElementById("instructions");
-
 	if (g_position === "player_left") {
 		g_player_left.set_name(data.name);
 		g_left_container.classList.add("text-decoration-underline");
 		g_left_container.style.color = constants.PLAYER_LEFT_COLOR;
-		instructions.textContent = "Ton camp est à gauche";
-		instructions.style.color = constants.PLAYER_LEFT_COLOR;
+		g_instructions.textContent = "Ton camp est à gauche";
+		g_instructions.style.color = constants.PLAYER_LEFT_COLOR;
 	}
 	else {
 		g_player_right.set_name(data.name);
 		g_right_container.classList.add("text-decoration-underline");
 		g_right_container.style.color = constants.PLAYER_RIGHT_COLOR;
-		instructions.textContent = "Ton camp est à droite";
-		instructions.style.color = constants.PLAYER_RIGHT_COLOR;
+		g_instructions.textContent = "Ton camp est à droite";
+		g_instructions.style.color = constants.PLAYER_RIGHT_COLOR;
 	}
 };
 
@@ -308,10 +306,26 @@ export function start() {
 			setPositionStyleUpdate(data);
 		}
 
+		if (data.type === 'ready') {
+
+			let count = 0;
+			let interval = setInterval(() => {
+				count++;
+
+				document.getElementById("canvas--text").textContent = "La partie commence dans " + (5 - count);
+
+				if (count === 5) {
+					clearInterval(interval);
+					document.getElementById("canvas--text").textContent = "";
+
+					if (g_position === "player_left")
+						g_websocket.send(JSON.stringify({type: 'start_game'}));
+				}
+			}, 1000);
+		}
+
 		if (data.type === 'game_start') {
 			console.log('Starting game . . .');
-
-			g_template_text.textContent = "Adversaire trouvé! La partie commence . . .";
 
 			gameStartStyleUpdate(data);
 
@@ -327,7 +341,7 @@ export function start() {
 		if (data.type === 'player_disconnect') {
 			g_game_running = false;
 			g_template_text.style.color = "black";
-			g_template_text.textContent = data.player_name + " a quitté la partie (rageux). Tu gagne cette partie.";
+			g_template_text.textContent = data.player_name + " a quitté la partie. Tu gagne cette partie.";
 			g_startButton.classList.remove("d-none");
 			g_websocket.close();
 			g_context.reset();
@@ -335,7 +349,7 @@ export function start() {
 
 		if (data.type === 'game_end') {
 			g_game_running = false;
-			console.log('Game over');
+			console.log('Game over ' + data.winner);
 			display_winner(data.winner);
 			g_websocket.close();
 			g_context.reset();
@@ -357,17 +371,19 @@ export function start() {
 
 /* ------------------------ Leaving or reloading game ----------------------- */
 
+/*
 window.addEventListener('unload', function() {
 	if (g_websocket)
-		sendMessageToServer({type: 'player_disconnect', player_pos: g_position})
+		sendMessageToServer({type: 'player_disconnect', player_pos: g_position});
 });
 
 function handlePageReload() {
 	if (g_websocket)
-		sendMessageToServer({type: 'player_disconnect', player_pos: g_position})
+		sendMessageToServer({type: 'player_disconnect', player_pos: g_position});
 };
 
 window.addEventListener('beforeunload', handlePageReload);
+*/
 
 /* ----------------------------- Event Listeners ---------------------------- */
 
@@ -375,8 +391,15 @@ function listenerTwoPlayersOnline() {
 
 	g_startButton = document.getElementById("startGame2Online");
 	g_template_text = document.getElementById("template_text");
+	g_instructions = document.getElementById("instructions");
 	g_left_container = document.getElementById("two__online--left");
 	g_right_container = document.getElementById("two__online--right");
+
+	// Reset the content and color of placeholder text
+	g_template_text.textContent = "";
+	g_template_text.style.color = "";
+	g_instructions.textContent = "";
+	g_instructions.style.color = "";
 
 	g_startButton.addEventListener("click", e => {
 		e.preventDefault();
@@ -387,6 +410,16 @@ function listenerTwoPlayersOnline() {
 		g_template_text.style.color = "";
 
 		start();
+	});
+
+	// Listen for a button from the menu bar being clicked
+	const navbarItems = document.querySelectorAll('.nav__item');
+	navbarItems.forEach(item => {
+		item.addEventListener('click', () => {
+			if (g_websocket instanceof WebSocket && g_websocket.readyState === WebSocket.OPEN) {
+				g_websocket.close();
+			}
+		});
 	});
 };
 
