@@ -1,7 +1,7 @@
 import {Player} from './PlayerOnline.js';
 import {Ball} from './BallOnline.js';
 import * as constants from './Constants.js';
-import {g_socket, g_alias} from './tournamentRoom.js';
+import {g_socket, g_nickname} from './tournamentRoom.js';
 
 /**
  * The path to the websockets is /ws/gameTwo/ and is in pong_online/routing.py (+ nginx configuration)

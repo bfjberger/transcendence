@@ -56,6 +56,12 @@ class TournamentViewSet(viewsets.ViewSet):
 			return Response({'success': True})
 		else:
 			return Response({'success': False, 'errors': serializer.errors})
+		
+	@action(detail=True, methods=['delete'])
+	def delete_tournament(self, request, pk=None):
+		tournament = self.get_object()
+		tournament.delete()
+		return Response({'success': True})
  
 	@action(detail=True, methods=['post'])
 	def join_tournament(self, request, pk=None):
