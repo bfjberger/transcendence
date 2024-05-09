@@ -8,7 +8,7 @@ export default function renderTwoOnline() {
 			<p id="instructions" class="text-center h4 my-2"></p>
 		</div>
 		<div class="row">
-			<div class="col text-end align-self-center h3" id="two__online--left">
+			<div id="two__online--left" class="col text-end align-self-center h3" style="color: blue">
 			</div>
 			<div class="col d-flex justify-content-center align-items-center">
 				<div class="position-absolute">
@@ -20,7 +20,7 @@ export default function renderTwoOnline() {
 					<canvas id="board_two" width="650" height="480"></canvas>
 				</div>
 			</div>
-			<div class="col text-start align-self-center h3" id="two__online--right">
+			<div id="two__online--right" class="col text-start align-self-center h3" style="color: orange">
 			</div>
 		</div>
 		<div class="row">

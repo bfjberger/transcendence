@@ -430,7 +430,7 @@ async function updateStatus() {
 
 function start4PlayerGame(p1_name, p2_name, p3_name, p4_name) {
 
-	if (g_game != undefined)
+	if (g_game)
 		g_game = null;
 
 	g_game = new PongGame4Players(p1_name, p2_name, p3_name, p4_name);
@@ -460,7 +460,7 @@ function listenerFourPlayers() {
 	const navbarItems = document.querySelectorAll('.nav__item');
 	navbarItems.forEach(item => {
 		item.addEventListener('click', () => {
-			if (g_game != undefined) {
+			if (g_game) {
 				g_game.context.reset();
 				g_game.start = false;
 				g_game = null;
