@@ -210,7 +210,7 @@ function listenerRoom() {
 
 }
 
-//!!! Need to rework this function, adjust the router maybe to work with it
+//!!! Not used
 // Function to list all players in the room
 function listPlayersInRoom() {
 	let divRoom = document.getElementById('tournament-room');

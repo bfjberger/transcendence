@@ -35,14 +35,14 @@ class TournamentManager():
 	def __init__(self):
 		self.rooms = {}
 
-	def create_or_join_room(self, room_name, player, alias):
+	def create_or_join_room(self, room_name, player, nickname):
 		"""
 		Creates a new room or adds a player to an existing room
 
 		Args:
 			room_name (str): The name of the room
 			player (str): The player's name
-			alias (str): The player's alias
+			nickname (str): The player's nickname
 		
 		Returns:
 			bool: True if the player was added to the room, False otherwise
@@ -61,7 +61,7 @@ class TournamentManager():
 				'owner': player,
 				'players': [player],
 				'players_list': [player],
-				'aliases': [alias],
+				'nicknames': [nickname],
 				'players_state': [PlayerState["PENDING"]],
 				'rounds': {},
 				'winners': [],
@@ -76,7 +76,7 @@ class TournamentManager():
 				return False
 			current_room['players'].append(player)
 			current_room['players_list'].append(player)
-			current_room['aliases'].append(alias)
+			current_room['nicknames'].append(nickname)
 			current_room['players_state'].append(PlayerState["PENDING"])
 			self.rooms[room_name] = current_room
 		
@@ -100,7 +100,7 @@ class TournamentManager():
 			index = current_room['players'].index(player)
 			current_room['players'].pop(index)
 			current_room['players_list'].pop(index)
-			current_room['aliases'].pop(index)
+			current_room['nicknames'].pop(index)
 
 			if len(current_room['players']) == 0:
 				print(f'DELETING room {room_name}')
@@ -164,13 +164,6 @@ class TournamentManager():
 
 		if len(room['players']) <= 1 and len(room['winners']) <= 1:
 			return False
-		# elif len(room['players']) <= 1:
-		# 	room['players'] = room['winners']
-		# 	room['winners'] = []
-		# 	room['round_number'] += 1
-		# 	room['rounds'][f"Round {room['round_number']}"] = []
-		# elif room['round_number'] == 1:
-		# 	room['rounds'][f"Round {room['round_number']}"] = []
 
 		round_number = room.get('round_number', 1)
 		winners = []
@@ -207,7 +200,6 @@ class TournamentManager():
 
 		return True
 
-
 	def get_player_index(self, room_name, player):
 		try:
 			return self.get_room(room_name)['players'].index(player)
@@ -220,18 +212,19 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def connect(self):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
+		self.tournament = await sync_to_async(Tournament.objects.get)(name=tournament_name)
 		player = self.scope['user'].username
 		# player_obj = Player.objects.get(owner=self.scope['user'])
 		player_obj = await sync_to_async(Player.objects.get)(owner=self.scope['user'])
-		# alias = player_obj.nickname
-		alias = player
+		# nickname = player_obj.nickname
+		nickname = player
 
 		await self.channel_layer.group_add(
 			tournament_name,
 			self.channel_name
 		)
 
-		if self.tournament_manager.create_or_join_room(tournament_name, player, alias):
+		if self.tournament_manager.create_or_join_room(tournament_name, player, nickname):
 			await self.accept()
 		else:
 			await self.close()
@@ -243,8 +236,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		player = self.scope['user'].username
 		# player_obj = Player.objects.get(owner=self.scope['user'])
 		player_obj = await sync_to_async(Player.objects.get)(owner=self.scope['user'])
-		# alias = player_obj.nickname
-		alias = player
+		# nickname = player_obj.nickname
+		nickname = player
 		room = self.tournament_manager.get_room(tournament_name)
 
 		if room:
@@ -290,6 +283,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				await self.on_player_key_down(data)
 			elif event == 'player_key_up':
 				await self.on_player_key_up(data)
+			elif event == 'tournament_end':
+				await self.send_tournament_end("Tournament ended")
 			else:
 				print(f'Unknown event: {event}')
 		else:
@@ -554,3 +549,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		else:
 			self.tournament_manager.remove_room(tournament_name)
 			await self.send_tournament_end("Tournament ended")
+
+			# Delete the tournament from the database
+			await sync_to_async(self.tournament.delete)()
