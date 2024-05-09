@@ -151,25 +151,6 @@ async function updateAvatar() {
 	}
 };
 
-async function deleteAccount() {
-
-	const init = {
-		headers: {
-			'X-CSRFToken': csrftoken,
-		},
-	};
-
-	try {
-		// const response = await fetch('', init);
-
-		window.alert("Non supporté.");
-
-		router("login");
-	} catch (e) {
-		console.error(e);
-	}
-};
-
 function listenerUpdateInfo() {
 
 	document.getElementById("update__avatar--big").src = sessionStorage.getItem("avatar") !== null ?
@@ -181,7 +162,6 @@ function listenerUpdateInfo() {
 	const nicknameForm = document.getElementById("form__update--nickname");
 	const passwordForm = document.getElementById("form__update--password");
 	const avatarForm = document.getElementById("form__update--avatar");
-	const deleteAccountBtn = document.getElementById("form__update--delete--account--btn");
 
 	nicknameForm.addEventListener("submit", e => {
 		e.preventDefault();
@@ -199,12 +179,6 @@ function listenerUpdateInfo() {
 		e.preventDefault();
 
 		updateAvatar();
-	});
-
-	deleteAccountBtn.addEventListener("click", e => {
-		e.preventDefault();
-
-		deleteAccount();
 	});
 };
 

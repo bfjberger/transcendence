@@ -200,7 +200,6 @@ class TournamentManager():
 
 		return True
 
-
 	def get_player_index(self, room_name, player):
 		try:
 			return self.get_room(room_name)['players'].index(player)

@@ -66,10 +66,5 @@ export default function renderUpdateInfo() {
 			</div>
 		</div>
 		<hr>
-		<div class="text-center py-4">
-			<button class="btn btn-outline-danger" type="button" id="form__update--delete--account--btn">
-				Supprimer mon compte
-			</button>
-		</div>
 	`;
 };

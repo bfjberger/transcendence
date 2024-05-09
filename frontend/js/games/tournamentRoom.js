@@ -36,7 +36,7 @@ export { g_nickname, g_socket };
 // To replace the current div that shows players later on
 const create_player_div = (player, nickname, is_owner) => {
 	const div = document.createElement('div');
-	
+
 	if (is_owner) {
 		div.classList.add('owner');
 	}
@@ -156,7 +156,7 @@ const load_create_online = () => {
 	.then(connect_socket)
 	.catch(console.error)
 }
-				
+
 
 
 const load_playground = () => {
@@ -267,7 +267,7 @@ function listenerTournamentRoom() {
 
 async function loadTournamentRoom(tournament_name) {
 	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
-	
+
 
 	window.startTournamentOnline = startTournamentOnline;
 	window.tournamentEvents = {
@@ -283,7 +283,7 @@ async function loadTournamentRoom(tournament_name) {
 			'X-CSRFToken': csrftoken,
 		}
 	};
-	
+
 	try {
 		// const response = await fetch(`https://${window.location.host}/api/tournamentOnline/`, init);
 		const response = await fetch('/api/tournamentOnline/', init);
@@ -291,7 +291,7 @@ async function loadTournamentRoom(tournament_name) {
 			const text = await response.text();
 			throw new Error(text);
 		}
-		
+
 		const data = await response.json();
 		g_data = data;
 		g_tournament_name = tournament_name;
