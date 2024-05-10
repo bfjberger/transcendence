@@ -13,6 +13,8 @@ let playerField;
 
 var position = null;
 var id = null;
+var MAX_TIMER = 60;
+var g_timer = MAX_TIMER;
 let first_launch = true;
 const keys = {};
 
@@ -105,7 +107,7 @@ function updateGameState(data) {
 		player_two.score += 1;
 		handle_scores('player_two');
 	}
-
+	g_timer = MAX_TIMER - Math.floor(data.game_time);
 	ball.get_update(data.ball_x, data.ball_y, data.ball_x_vel, data.ball_y_vel, data.ball_color);
 }
 
@@ -144,6 +146,11 @@ function animate() {
 
 function render() {
 	context.clearRect(0, 0, constants.WIN_WIDTH, constants.WIN_HEIGHT);
+
+	// Draw the timer
+	context.fillStyle = "white";
+	context.font = "50px sans-serif";
+	context.fillText(g_timer, constants.WIN_WIDTH / 2 - 25, 100);
 
 	// Draw the players
 	context.fillStyle = player_one.color;

@@ -48,6 +48,9 @@ class TournamentViewSet(viewsets.ViewSet):
 
 		if Tournament.objects.count() >= MAX_TOURNAMENTS:
 			return HttpResponseBadRequest('Maximum number of tournaments reached')
+		# Check if there is a space in the name
+		if ' ' in request.data['name']:
+			return Response({'success': False, 'detail': 'Tournament name should not contain spaces.'}, status=status.HTTP_400_BAD_REQUEST)
 		serializer = TournamentSerializer(data=request.data)
 		if serializer.is_valid():
 			name = serializer.validated_data.get('name')
@@ -56,6 +59,7 @@ class TournamentViewSet(viewsets.ViewSet):
 			# Check for special characters in the name
 			if not name.isalnum():
 				return Response({'detail': 'Tournament name should only contain alphanumeric characters.'}, status=status.HTTP_400_BAD_REQUEST)
+
 			# Set the owner of the tournament to the current user
 			player = Player.objects.get(owner=request.user)
 			serializer.save(owner=player)
