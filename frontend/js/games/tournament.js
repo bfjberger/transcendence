@@ -1,5 +1,3 @@
-// tournament.js
-
 import bracketGraph from "./bracket.js";
 import Player from "./Player.js"; // Import the Player class from Player
 import { PongGame2Players } from "./pong2players.js"; // Import the PongGame2Players class from pong2players
@@ -33,7 +31,7 @@ class Tournament {
 		// Top team bottom team, top score, bottom score, top winner, bottom winner
 		for (let i = 0; i < numPlayers; i += 2) {
 			if (players[i] instanceof Player && players[i + 1] instanceof Player)
-				roundPairings.push({topTeam: players[i].getName(), bottomTeam: players[i + 1].getName(), topScore: "", bottomScore: "",topWinner: false, bottomWinner: false,});
+				roundPairings.push({topTeam: players[i].name, bottomTeam: players[i + 1].name, topScore: "", bottomScore: "",topWinner: false, bottomWinner: false,});
 			else
 				roundPairings.push({topTeam: players[i], bottomTeam: players[i + 1], topScore: "", bottomScore: "", topWinner: false,bottomWinner: false,});
 		}
@@ -83,22 +81,22 @@ class Tournament {
 			}
 			for (let j = round.length - 1; j >= 0; j--) {
 				let match = round[j];
-				if (match.topTeam === winner.getName() || match.bottomTeam === winner.getName()) {
+				if (match.topTeam === winner.name || match.bottomTeam === winner.name) {
 					// console.log('Match:', match);
-					// match.winner = winner.getName();
-					if (match.topTeam === winner.getName()) {
+					// match.winner = winner.name;
+					if (match.topTeam === winner.name) {
 						match.topWinner = true;
 						// if the next match is undefined, then the winner of this match will be the top team
 						if (i < this.rounds.length - 1) {
 							let nextMatchIndex = Math.floor(j / 2);
 							if (this.rounds[i + 1][nextMatchIndex].topTeam === "") {
-								console.log("Setting top team at rounds[", i + 1, "][", nextMatchIndex, "] to", winner.getName());
-								this.rounds[i + 1][nextMatchIndex].topTeam = winner.getName();
+								console.log("Setting top team at rounds[", i + 1, "][", nextMatchIndex, "] to", winner.name);
+								this.rounds[i + 1][nextMatchIndex].topTeam = winner.name;
 							}
 							else {
-								console.log("Setting bottom team at rounds[", i + 1, "][", nextMatchIndex, "] to", winner.getName());
+								console.log("Setting bottom team at rounds[", i + 1, "][", nextMatchIndex, "] to", winner.name);
 								this.rounds[i + 1][nextMatchIndex].bottomTeam =
-								winner.getName();
+								winner.name;
 							}
 						}
 					}
@@ -107,13 +105,13 @@ class Tournament {
 						if (i < this.rounds.length - 1) {
 							let nextMatchIndex = Math.floor(j / 2);
 							if (this.rounds[i + 1][nextMatchIndex].topTeam === "") {
-								this.rounds[i + 1][nextMatchIndex].topTeam = winner.getName();
-								console.log("Setting top team at rounds[", i + 1, "][", nextMatchIndex, "] to", winner.getName());
+								this.rounds[i + 1][nextMatchIndex].topTeam = winner.name;
+								console.log("Setting top team at rounds[", i + 1, "][", nextMatchIndex, "] to", winner.name);
 							}
 							else {
-								console.log("Setting bottom team at rounds[", i + 1, "][", nextMatchIndex, "] to", winner.getName());
+								console.log("Setting bottom team at rounds[", i + 1, "][", nextMatchIndex, "] to", winner.name);
 								this.rounds[i + 1][nextMatchIndex].bottomTeam =
-								winner.getName();
+								winner.name;
 							}
 						}
 					}
@@ -127,13 +125,13 @@ class Tournament {
 
 	duplicateNickname() {
 		for (let i = 0; i < this.players.length; i++) {
-			let tmp = this.players[i].getName();
+			let tmp = this.players[i].name;
 			for (let j = 0; j < this.players.length; j++) {
 				if (j === i)
 					continue;
 				if (tmp == "test") // DEBUG
 					continue;
-				if (tmp === this.players[j].getName())
+				if (tmp === this.players[j].name)
 					return 0;
 			}
 		}
@@ -142,7 +140,7 @@ class Tournament {
 
 	startTournament() {
 		for (let i = 1; i <= 8; i++) {
-			let playerName = document.getElementById("player" + i).value;
+			let playerName = document.getElementById("tournament__player--" + i).value;
 			if (playerName) {
 				let player = new Player(playerName, "white", 1);
 				this.players.push(player);
@@ -158,7 +156,7 @@ class Tournament {
 			this.players = [];
 			return;
 		}
-		document.getElementById("players").style.display = "none";
+		document.getElementById("tournament__players--main").style.display = "none";
 		this.randomizePlayers();
 		this.rounds = this.generateFirstRound(this.players);
 		this.populateRoundsWithUndefined(1);
@@ -189,13 +187,13 @@ class Tournament {
 			// 	await new Promise((resolve) => setTimeout(resolve, 3000)); // Wait for 3 seconds before starting the next match
 			// }
 		}
-		return winner.getName();
+		return winner.name;
 	}
 
 	async playSingleMatch(player1, player2) {
 		let game;
 		if (player1 instanceof Player && player2 instanceof Player)
-			game = new PongGame2Players(player1.getName(), player2.getName());
+			game = new PongGame2Players(player1.name, player2.name);
 		else
 			game = new PongGame2Players(player1, player2);
 		document.getElementById("startGame2").addEventListener("click", e => {
@@ -220,7 +218,7 @@ class Tournament {
 		let match = this.matches.shift();
 		if (match[0] instanceof Player && match[1] instanceof Player){
 			// document.getElementById("next_match").innerHTML = "<h3>Prochain match: " + " vs " + "</h3>";
-			document.getElementById("current_match").innerHTML = "<h3>Match actuel: " + match[0].getName() + " vs " + match[1].getName() + "</h3>";
+			document.getElementById("current_match").innerHTML = "<h3>Match actuel: " + match[0].name + " vs " + match[1].name + "</h3>";
 		}
 		else {
 			// document.getElementById("next_match").innerHTML = "<h3>Prochain match: " + " vs " + "</h3>";
@@ -242,6 +240,8 @@ function rempliTestDebug() {
 }
 
 function listenerTournament() {
+
+	document.getElementById("tournament__player--1").value = sessionStorage.getItem("nickname");
 
 	document.getElementById("startTournament").addEventListener("click", e => {
 
@@ -287,7 +287,7 @@ async function loadTournament() {
 
 	try {
 		let hostnameport = "https://" + window.location.host
-		
+
 		const response = await fetch(hostnameport + '/api/tournament/', init);
 
 		if (response.status === 403) {

@@ -49,9 +49,9 @@ let g_data = {};
 
 function createTournament() {
 	const name = document.getElementById('name').value;
-	const visibility = document.querySelector('input[name="visibility"]:checked').value;
-	const password = document.getElementById('password').value;
-	
+	// const visibility = document.querySelector('input[name="visibility"]:checked').value;
+	// const password = document.getElementById('password').value;
+
 	let hostnameport = "https://" + window.location.host
 
 
@@ -61,7 +61,7 @@ function createTournament() {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken') // Ensure to include CSRF token
 		},
-		body: JSON.stringify({ name, visibility, password })
+		body: JSON.stringify({ name })
 	})
 		.then(response => {
 			if (response.ok) {
@@ -83,39 +83,55 @@ function loadTournaments() {
 
 	let hostnameport = "https://" + window.location.host
 
-	fetch('/api/tournaments/load_tournaments/') 
+	fetch('/api/tournaments/load_tournaments/')
 		.then(response => response.json())
 		.then(data => {
 			const tournamentList = document.getElementById('tournament-list');
 			tournamentList.innerHTML = ''; // Clear existing list
-			
+
+			var tournamentItem;
+
 			data.forEach(tournament => {
+				/*
 				const tournamentItem = document.createElement('div');
 				tournamentItem.textContent = tournament.name;
-
-				// Create password input
-				const passwordInput = document.createElement('input');
-				passwordInput.type = 'password';
-				passwordInput.placeholder = 'Enter password';
 
 				// Create join button
 				const joinButton = document.createElement('button');
 				joinButton.textContent = 'Join';
 
 				// Use a closure to associate the button with the tournament
-				joinButton.addEventListener('click', (function(tournament, passwordInput) {
+				joinButton.addEventListener('click', (function(tournament) {
 					return function() {
-						// Handle join button click
-						// console.log('Joining tournament:', tournament.name, 'with password:', passwordInput.value);
 						joinRoom(tournament.name);
 					};
-				})(tournament, passwordInput));
+				})(tournament));
 
 				// Append elements to tournament item
-				tournamentItem.appendChild(passwordInput);
 				tournamentItem.appendChild(joinButton);
-
+				*/
+				tournamentItem = document.createElement('div');
+				tournamentItem.className = "row text-center";
+				tournamentItem.innerHTML = `
+						<span class="col">${tournament.name}</span>
+						<button id="join__${tournament.name}" class="col btn btn-success w-auto">Rejoindre</button>
+						`;
 				tournamentList.appendChild(tournamentItem);
+
+				document.getElementById(`join__${tournament.name}`).addEventListener("click", (function(tournament) {
+					return function() {
+						joinRoom(tournament.name);
+					}
+				})(tournament));
+
+				// const tournamentItemBtn = tournamentItem.getElementsByTagName("button")[0];
+				// console.log(tournamentItemBtn);
+				// tournamentItemBtn.addEventListener("click", (function(tournament) {
+				// 	return function() {
+				// 		joinRoom(tournament.name);
+				// 	}
+				// })(tournament));
+
 			});
 		})
 		.catch(error => {
@@ -226,7 +242,7 @@ function listPlayersInRoom() {
 	let playersList = document.getElementById('players-list');
 
 	// console.log('Loading room:', tournament_name);
-	fetch(`/api/tournaments/${tournament_name}/load_players/`) 
+	fetch(`/api/tournaments/${tournament_name}/load_players/`)
 		.then(response => response.json())
 		.then(players => {
 			tournamentName.textContent = tournament_name;

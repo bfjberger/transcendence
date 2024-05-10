@@ -3,55 +3,55 @@ function renderTournament() {
 	return `
 
 		<div class="row">
-			<div class="col text-center fw-bold pt-3">
-				<h1>Tournament</h1>
+			<div class="col text-center pt-3 mb-0 h1">
+				<p class="my-0">Tournoi</p>
 			</div>
 		</div>
-		<div class="row" id="players">
-			<div class="col text-center fw-bold pt-3">
-				<h3>Entrez les noms des joueurs</h3>
+		<div id="tournament__players--main" class="row">
+			<div class="col text-center pt-3 h3">
+				<p>Entrez les noms des joueurs</p>
 			</div>
 			<div class="player d-flex justify-content-center pt-1">
-				<input type="text" class="form-control w-auto" id="player1" placeholder="Joueur 1" aria-label="Joueur 1" value="a"/>
+				<input type="text" id="tournament__player--1" class="form-control w-auto" placeholder="Joueur 1" value="a"/>
 			</div>
 			<div class="player d-flex justify-content-center pt-1">
-				<input type="text" class="form-control w-auto" id="player2" placeholder="Joueur 2" aria-label="Joueur 2" value="b"/>
+				<input type="text" id="tournament__player--2" class="form-control w-auto" placeholder="Joueur 2" value="b"/>
 			</div>
 			<div class="player d-flex justify-content-center pt-1">
-				<input type="text" class="form-control w-auto" id="player3" placeholder="Joueur 3" aria-label="Joueur 3" value="c"/>
+				<input type="text" id="tournament__player--3" class="form-control w-auto" placeholder="Joueur 3" value="c"/>
 			</div>
 			<div class="player d-flex justify-content-center pt-1">
-				<input type="text" class="form-control w-auto" id="player4" placeholder="Joueur 4" aria-label="Joueur 4" value="d"/>
+				<input type="text" id="tournament__player--4" class="form-control w-auto" placeholder="Joueur 4" value="d"/>
 			</div>
 			<div class="player d-flex justify-content-center pt-1">
-				<input type="text" class="form-control w-auto" id="player5" placeholder="Joueur 5" aria-label="Joueur 5" value="e"/>
+				<input type="text" id="tournament__player--5" class="form-control w-auto" placeholder="Joueur 5" value="e"/>
 			</div>
 			<div class="player d-flex justify-content-center pt-1">
-				<input type="text" class="form-control w-auto" id="player6" placeholder="Joueur 6" aria-label="Joueur 6" value="f"/>
+				<input type="text" id="tournament__player--6" class="form-control w-auto" placeholder="Joueur 6" value="f"/>
 			</div>
 			<div class="player d-flex justify-content-center pt-1">
-				<input type="text" class="form-control w-auto" id="player7" placeholder="Joueur 7" aria-label="Joueur 7" value="g"/>
+				<input type="text" id="tournament__player--7" class="form-control w-auto" placeholder="Joueur 7" value="g"/>
 			</div>
 			<div class="player d-flex justify-content-center pt-1">
-				<input type="text" class="form-control w-auto" id="player8" placeholder="Joueur 8" aria-label="Joueur 8" value="h"/>
+				<input type="text" id="tournament__player--8" class="form-control w-auto" placeholder="Joueur 8" value="h"/>
 			</div>
 			<div class="d-flex justify-content-center pt-2">
-				<button class="btn btn-info" id="startTournament">Démarrer le tournoi</button>
+				<button id="startTournament" class="btn btn-info">Démarrer le tournoi local</button>
 			</div>
 			<div class="d-flex justify-content-center pt-2">
-				<button class="btn btn-info" id="DEBUGstartTournament">DEBUG TOURNOI RAPIDE</button>
+				<button id="DEBUGstartTournament" class="btn btn-info">DEBUG TOURNOI RAPIDE</button>
 			</div>
 		</div>
-		<div class="row" id="title">
-			<div class="col-5 d-flex justify-content-left" id="next_match"></div>
-			<div class="col-2 d-flex justify-content-center" id="current_match"></div>
+		<div id="title" class="row">
+			<div id="next_match" class="col-5 d-flex justify-content-left"></div>
+			<div id="current_match" class="col-2 d-flex justify-content-center"></div>
 			<div class="col-5"></div>
 		</div>
 		<div class="row">
 			<div class="col"></div>
 			<div class="col d-flex justify-content-center align-items-center">
 				<div class="position-absolute d-none">
-					<button class="btn btn-primary" type="button" id="startGame2">Start the game</button>
+					<button type="button" id="startGame2" class="btn btn-primary">Start the game</button>
 				</div>
 				<div class="text-bg-success border border-black border-5 d-none">
 					<canvas id="board_two" width="650" height="480"></canvas>
@@ -59,31 +59,32 @@ function renderTournament() {
 			</div>
 			<div class="col"></div>
 		</div>
-		<div class="row" id="bracketContainer"></div>
+		<div id="bracketContainer" class="row"></div>
 
 	`;
 };
 
 export function renderTournamentOnline() {
 	return `
-		<div id="create-tournament-form">
-		<label for="name">Tournament Name:</label>
-		<input type="text" id="name" name="name" required><br>
-		
-		<input type="radio" id="public" name="visibility" value="public" checked>
-		<label for="public">Public</label><br>
-		
-		<input type="radio" id="private" name="visibility" value="private">
-		<label for="private">Private</label><br>
-		
-		<input type="password" id="password" name="password" placeholder="Password (if private)"><br>
-		
-		<button id="create-tournament-button">Create Tournament</button>
-	</div>
-	
-	<div id="tournament-list">
-		<!-- List of tournaments will be displayed here -->
-	</div>
+		<div id="create-tournament-form" class="row">
+			<div class="col text-center pt-3 h3">
+				<p class="mb-1">Créer un Tournoi</p>
+			</div>
+			<div class="text-center pt-1">
+				<label for="name">Nom du tournoi:</label>
+				<input type="text" id="name" name="name" class="w-auto" required>
+			</div>
+			<div class="text-center pt-3">
+				<button id="create-tournament-button" class="btn btn-info">Créer un tournoi en ligne</button>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col text-center pt-3 h3">
+				<p class="mb-1">Rejoindre un tournoi existant</p>
+			</div>
+			<div id="tournament-list"></div>
+		</div>
 	`;
 }
 

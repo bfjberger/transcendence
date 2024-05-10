@@ -1,4 +1,4 @@
-import { 
+import {
 	loadContent,
 	loadContent2,
 	leaveRoomName,
@@ -39,7 +39,7 @@ export { g_alias, g_socket };
 // To replace the current div that shows players later on
 const create_player_div = (player, alias, is_owner) => {
 	const div = document.createElement('div');
-	
+
 	if (is_owner) {
 		div.classList.add('owner');
 	}
@@ -54,7 +54,7 @@ const create_player_div = (player, alias, is_owner) => {
 const create_owner_btns = () => {
 	const div = document.createElement('div');
 	div.innerHTML = `
-		<button id="start-btn">START</button>
+		<button id="start-btn" class="btn btn-warning">START</button>
 	`
 	return div;
 }
@@ -181,7 +181,7 @@ const load_create_online = () => {
 	.then(connect_socket)
 	.catch(console.error)
 }
-				
+
 
 
 const load_playground = () => {
@@ -253,7 +253,7 @@ function add_start_btn_listener() {
 /* ------------------------------- Page listener ---------------------------- */
 
 function listenerTournamentRoom() {
-	const navbarItems = document.querySelectorAll('.nav__link');
+	const navbarItems = document.querySelectorAll('.nav__item');
 	navbarItems.forEach(item => {
 		item.addEventListener('click', () => {
 			if (g_socket instanceof WebSocket && g_socket.readyState === WebSocket.OPEN) {
@@ -266,7 +266,7 @@ function listenerTournamentRoom() {
 
 async function loadTournamentRoom(tournament_name) {
 	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
-	
+
 
 	window.startTournamentOnline = startTournamentOnline;
 	window.tournamentEvents = {
@@ -282,7 +282,7 @@ async function loadTournamentRoom(tournament_name) {
 			'X-CSRFToken': csrftoken,
 		}
 	};
-	
+
 	try {
 		// const response = await fetch(`https://${window.location.host}/api/tournamentOnline/`, init);
 		const response = await fetch('/api/tournamentOnline/', init);
@@ -290,7 +290,7 @@ async function loadTournamentRoom(tournament_name) {
 			const text = await response.text();
 			throw new Error(text);
 		}
-		
+
 		const data = await response.json();
 		g_data = data;
 		// console.log("g_data: ", g_data);
