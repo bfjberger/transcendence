@@ -12,7 +12,7 @@ export default function renderFourOnline() {
 		<div class="row">
 			<div class="col-5"></div>
 			<div class="col-2 text-center h3 mt-2" style="color: violet">
-			<p id="four__online--top--name" class="my-0"></p>
+				<p id="four__online--top--name" class="my-0"></p>
 				<p id="four__online--top--score" class="my-0"></p>
 			</div>
 			<div class="col-5"></div>

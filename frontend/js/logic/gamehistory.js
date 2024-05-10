@@ -14,7 +14,9 @@ var g_game_history_four;
 	At each iteration it will create a new 'div' element and
 	fill the template of a game entry with the information from the 'game' variable.
 
-	We change the background color of the user's placeholder depending on the winner of the game.
+	Change the background color of the user's placeholder depending on the winner of the game.
+
+	Add an underline to identify the current user.
 */
 function fillHistoryTwo() {
 
@@ -54,6 +56,12 @@ function fillHistoryTwo() {
 			document.getElementById(`game__historyTwo--${game_index}--left`).classList.add("bg-danger-subtle");
 			document.getElementById(`game__historyTwo--${game_index}--right`).classList.add("bg-success-subtle");
 		}
+		if (game.user1.username == sessionStorage.getItem("username")) {
+			document.getElementById(`game__historyTwo--${game_index}--left`).style.textDecoration = "underline";
+		}
+		else {
+			document.getElementById(`game__historyTwo--${game_index}--right`).style.textDecoration = "underline";
+		}
 	};
 };
 
@@ -68,7 +76,9 @@ function fillHistoryTwo() {
 	At each iteration it will create a new 'div' element and
 	fill the template of a game entry with the information from the 'game' variable.
 
-	We change the background color of the user's placeholder depending on the winner of the game.
+	Change the background color of the user's placeholder depending on the winner of the game.
+
+	Add an underline to identify the current user.
 */
 function fillHistoryFour() {
 
@@ -139,6 +149,18 @@ function fillHistoryFour() {
 			document.getElementById(`game__historyFour--${game_index}--two`).classList.add("bg-danger-subtle");
 			document.getElementById(`game__historyFour--${game_index}--three`).classList.add("bg-danger-subtle");
 			document.getElementById(`game__historyFour--${game_index}--four`).classList.add("bg-success-subtle");
+		}
+		if (game.user1.username == sessionStorage.getItem("username")) {
+			document.getElementById(`game__historyFour--${game_index}--one`).style.textDecoration = "underline";
+		}
+		else if (game.user2.username == sessionStorage.getItem("username")) {
+			document.getElementById(`game__historyFour--${game_index}--two`).style.textDecoration = "underline";
+		}
+		else if (game.user3.username == sessionStorage.getItem("username")) {
+			document.getElementById(`game__historyFour--${game_index}--three`).style.textDecoration = "underline";
+		}
+		else if (game.user4.user1 == sessionStorage.getItem("username")) {
+			document.getElementById(`game__historyFour--${game_index}--four`).style.textDecoration = "underline";
 		}
 	};
 };

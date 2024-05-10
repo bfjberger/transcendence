@@ -23,6 +23,8 @@ function listenerStats() {
 	}
 	else {
 		ratioGlobal = ((Number(g_ratio_2p) + Number(g_ratio_4p)) / 2).toFixed(2) + "%";
+		g_ratio_2p = g_ratio_2p + "%";
+		g_ratio_4p = g_ratio_4p + "%";
 	}
 
 	document.getElementById("stats__global--played").textContent = g_games_2p + g_games_4p;
