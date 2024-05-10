@@ -49,8 +49,8 @@ let g_data = {};
 
 function createTournament() {
 	const name = document.getElementById('name').value;
-	// const visibility = document.querySelector('input[name="visibility"]:checked').value;
-	// const password = document.getElementById('password').value;
+	const visibility = document.querySelector('input[name="visibility"]:checked').value;
+	const password = document.getElementById('password').value;
 
 	let hostnameport = "https://" + window.location.host
 
@@ -234,7 +234,7 @@ function listenerRoom() {
 
 }
 
-//!!! Need to rework this function, adjust the router maybe to work with it
+//!!! Not used
 // Function to list all players in the room
 function listPlayersInRoom() {
 	let divRoom = document.getElementById('tournament-room');

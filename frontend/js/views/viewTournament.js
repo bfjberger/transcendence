@@ -66,25 +66,24 @@ function renderTournament() {
 
 export function renderTournamentOnline() {
 	return `
-		<div id="create-tournament-form" class="row">
-			<div class="col text-center pt-3 h3">
-				<p class="mb-1">Créer un Tournoi</p>
-			</div>
-			<div class="text-center pt-1">
-				<label for="name">Nom du tournoi:</label>
-				<input type="text" id="name" name="name" class="w-auto" required>
-			</div>
-			<div class="text-center pt-3">
-				<button id="create-tournament-button" class="btn btn-info">Créer un tournoi en ligne</button>
-			</div>
-		</div>
+		<div id="create-tournament-form">
+		<label for="name">Tournament Name:</label>
+		<input type="text" id="name" name="name" required><br>
 
-		<div class="row">
-			<div class="col text-center pt-3 h3">
-				<p class="mb-1">Rejoindre un tournoi existant</p>
-			</div>
-			<div id="tournament-list"></div>
-		</div>
+		<input type="radio" id="public" name="visibility" value="public" checked>
+		<label for="public">Public</label><br>
+
+		<input type="radio" id="private" name="visibility" value="private">
+		<label for="private">Private</label><br>
+
+		<input type="password" id="password" name="password" placeholder="Password (if private)"><br>
+
+		<button id="create-tournament-button">Create Tournament</button>
+	</div>
+
+	<div id="tournament-list">
+		<!-- List of tournaments will be displayed here -->
+	</div>
 	`;
 }
 

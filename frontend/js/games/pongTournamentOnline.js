@@ -1,7 +1,7 @@
 import {Player} from './PlayerOnline.js';
 import {Ball} from './BallOnline.js';
 import * as constants from './Constants.js';
-import {g_socket, g_alias} from './tournamentRoom.js';
+import {g_socket, g_nickname} from './tournamentRoom.js';
 
 const wsurl = 'wss://' + window.location.host + '/wss/game/'; // link to websocket
 let ws; // websocket
@@ -43,7 +43,6 @@ function initArena() {
 	player_one = new Player("player_left", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_LEFT_COLOR, 2);
 	player_two = new Player("player_right", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_RIGHT_COLOR, 2);
 	ball = new Ball(2);
-	// console.log("Ball color: ", ball.color);
 }
 
 function handle_scores(player) {
@@ -56,12 +55,7 @@ function handle_scores(player) {
 function display_winner(winning_player) {
 	ball.stop();
 
-	if (winning_player === 'player_one') {
-		winning_text = "Player 1 wins!";
-	}
-	else {
-		winning_text = "Player 2 wins!";
-	}
+	winning_text = winning_player + ' has won the game!';
 }
 
 /* -------------------------------- Controls -------------------------------- */
@@ -203,9 +197,9 @@ const on_set_position = (arg) => {
 	initArena();
 	// console.log('Setting position', arg);
 	position = null;
-	if (arg.players[0] === g_alias)
+	if (arg.players[0] === g_nickname)
 		position = 'player_one';
-	if (arg.players[1] === g_alias)
+	if (arg.players[1] === g_nickname)
 		position = 'player_two';
 
 	// console.log('Position set to', position);
@@ -225,7 +219,7 @@ const on_set_position = (arg) => {
 			clearInterval(interval);
 			infoElement.innerHTML = 'Go !';
 
-			if (arg.players[0] === g_alias)
+			if (arg.players[0] === g_nickname)
 				g_socket.send(JSON.stringify({event: 'game_start'}));
 
 		}

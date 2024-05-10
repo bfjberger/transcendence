@@ -4,10 +4,6 @@ import {
 	leaveRoomName,
 } from "./tournamentOnline.js";
 
-import { renderTournamentOnline } from "../views/viewTournament.js";
-import { renderTournamentRoom } from "../views/viewTournament.js";
-import { renderTournamentLobby } from "../views/viewTournament.js";
-import { renderPlayground } from "../views/viewTournament.js";
 
 import {
 	startTournamentOnline,
@@ -17,11 +13,6 @@ import {
 	on_game_end,
 } from "./pongTournamentOnline.js";
 
-/**
- * TODO:[] Debug the websocket connection
- * TODO:[] Need to add the game
- */
-
 /* ----------------------------------- VAR ---------------------------------- */
 
 const base_wsurl = `wss://${window.location.host}/wss/tournament/`;
@@ -29,15 +20,15 @@ const base_wsurl = `wss://${window.location.host}/wss/tournament/`;
 let g_socket = {};
 let g_tournament_name = '';
 let g_username = '';
-let g_alias = '';
+let g_nickname = '';
 let g_data = {};
 
-export { g_alias, g_socket };
+export { g_nickname, g_socket };
 
 /* ----------------------------------- UI ----------------------------------- */
 
 // To replace the current div that shows players later on
-const create_player_div = (player, alias, is_owner) => {
+const create_player_div = (player, nickname, is_owner) => {
 	const div = document.createElement('div');
 
 	if (is_owner) {
@@ -45,7 +36,7 @@ const create_player_div = (player, alias, is_owner) => {
 	}
 	div.innerHTML = `
 		<h3>PLAYER: ${player}</h3>
-		<div>ALIAS: ${alias}</div>
+		<div>NICKNAME: ${nickname}</div>
 	`
 	return div;
 }
@@ -55,6 +46,7 @@ const create_owner_btns = () => {
 	const div = document.createElement('div');
 	div.innerHTML = `
 		<button id="start-btn" class="btn btn-warning">START</button>
+		<button id="delete-btn">DELETE</button>
 	`
 	return div;
 }
@@ -69,12 +61,12 @@ const update_lobby_ui = (room) => {
 	lobby_container.innerHTML = '';
 	room.players.forEach((player, i) => {
 		const is_owner = player === room.owner;
-		lobby_container.appendChild(create_player_div(player, room.aliases[i], is_owner));
+		lobby_container.appendChild(create_player_div(player, room.nicknames[i], is_owner));
 	})
 
 	if (room.owner === g_username) {
 		lobby_container.appendChild(create_owner_btns());
-		add_start_btn_listener();
+		add_start_and_delete_buttons_listeners();
 	}
 }
 
@@ -82,12 +74,10 @@ const update_lobby_ui = (room) => {
 
 const on_message = (msg) => {
 	let handler = on_message_handlers.filter((e) => msg.type === e.type)
-	// handler = on_message_handlers.filter((e) => msg.type === e.type)
 	handler[0]?.handler(msg.arg);
 }
 
 const on_players_update = (arg) => {
-	// console.log('on_players_update', arg);
 	update_lobby_ui(arg);
 }
 
@@ -100,8 +90,6 @@ const on_load_playground = (arg) => {
 	load_playground().then(() => {
 		g_socket.send(JSON.stringify({ event: 'tournament_start' }));
 	});
-	// load_playground();
-	// g_socket.send(JSON.stringify({ event: 'tournament_start' }));
 }
 
 const on_tournament_start = (arg) => {
@@ -127,14 +115,6 @@ let on_message_handlers = [
 
 /* ------------------------------- Page loader ------------------------------ */
 
-// need to add handlers for load playgrounds events
-
-// function set_g_username() {
-// 	g_username = g_data.username;
-// 	// g_alias = g_data.player.nickname;
-// 	g_alias = g_username;
-// }
-
 function set_g_username() {
     return new Promise((resolve, reject) => {
         try {
@@ -142,7 +122,7 @@ function set_g_username() {
                 throw new Error('g_data or g_data.username is not defined');
             }
             g_username = g_data.username;
-            g_alias = g_username;
+            g_nickname = g_username;
             resolve();
         } catch (error) {
             reject(error);
@@ -156,23 +136,12 @@ function set_g_tournament_name() {
 			if (!g_data || !g_data.tournaments || !g_data.tournaments[0].name) {
 				throw new Error('g_data or g_data.tournaments or g_data.tournaments[0].name is not defined');
 			}
-			// g_tournament_name = g_data.tournaments[0].name;
-			// let's say the tournament_name in the loader
 			resolve(g_tournament_name);
 		} catch (error) {
 			reject(error);
 		}
 	});
 }
-
-// function load_create_online() {
-// 	loadContent(renderTournamentLobby, 'tournament-room'); // !!! To change with another function
-// 	set_g_username();
-// 	// console.log("g_username: ", g_username);
-// 	// console.log("g_alias: ", g_alias);
-// 	g_tournament_name = g_data.tournaments[0].name;
-// 	connect_socket(g_tournament_name);
-// }
 
 const load_create_online = () => {
 	return loadContent2(renderTournamentLobby, 'tournament-room')
@@ -194,15 +163,6 @@ const load_playground = () => {
 	return loadContent2(renderPlayground, 'tournament-room');
 }
 
-// const load_playground = () => {
-// 	on_message_handlers = [...on_message_handlers,
-// 		{ type: 'set_position', handler: window.tournamentEvents.on_set_position },
-// 		{ type: 'game_start', handler: window.tournamentEvents.on_game_start },
-// 		{ type: 'game_state', handler: window.tournamentEvents.on_game_state },
-// 		{ type: 'game_end', handler: window.tournamentEvents.on_game_end },
-// 	];
-// 	loadContent(renderPlayground, 'tournament-room');
-// }
 
 /* -------------------------- Server communication -------------------------- */
 
@@ -224,7 +184,6 @@ const connect_socket = (tournament_name) => {
 
 	g_socket.onclose = function(event) {
 		console.log('Socket closed: ', event);
-		// loadContent(renderTournamentOnline, 'main__content'); // maybe not ?
 	}
 
 	const on_page_change = () => {
@@ -236,8 +195,9 @@ const connect_socket = (tournament_name) => {
 	window.addEventListener('page_change', on_page_change)
 }
 
+/* ----------------------- Start and Delete Tournament ---------------------- */
+
 const start_online_tournament = () => {
-    // console.log('start_online_tournament');
     if (g_socket instanceof WebSocket && g_socket.readyState === WebSocket.OPEN) {
         g_socket.send(JSON.stringify({ event: 'load_playground' }));
     } else {
@@ -245,9 +205,44 @@ const start_online_tournament = () => {
     }
 }
 
-function add_start_btn_listener() {
+function delete_room_name(tournament_name) {
+	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+	const init = {
+		method: 'DELETE',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrftoken,
+		}
+	};
+	fetch(`/api/tournaments/${tournament_name}/delete_tournament/`, init)
+		.then(response => {
+			if (response.ok) {
+				console.log('Room deleted');
+			} else {
+				console.error('Room not deleted');
+			}
+		})
+		.catch(error => {
+			console.error('Room not deleted: ', error);
+		});
+}
+
+const delete_online_tournament = () => {
+	if (g_socket instanceof WebSocket && g_socket.readyState === WebSocket.OPEN) {
+		g_socket.send(JSON.stringify({ event: 'tournament_end' }));
+	} else {
+		console.error('Cannot send message: WebSocket is not open');
+	}
+	delete_room_name(g_tournament_name);
+	router("tournament_online");
+
+}
+
+function add_start_and_delete_buttons_listeners() {
 	const start_btn = document.getElementById('start-btn');
+	const delete_btn = document.getElementById('delete-btn');
 	start_btn.addEventListener('click', start_online_tournament);
+	delete_btn.addEventListener('click', delete_online_tournament);
 }
 
 /* ------------------------------- Page listener ---------------------------- */
@@ -293,11 +288,6 @@ async function loadTournamentRoom(tournament_name) {
 
 		const data = await response.json();
 		g_data = data;
-		// console.log("g_data: ", g_data);
-		// !!! Attention, the tournament index may cause an error, would later be better to only allow 1 tournament in player's list
-		console.log("g_data.tournaments[0].name: ", g_data.tournaments[0].name);
-		// tournament_name
-		console.log("tournament_name: ", tournament_name);
 		g_tournament_name = tournament_name;
 
 		load_create_online();

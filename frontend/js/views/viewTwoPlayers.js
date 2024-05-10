@@ -4,7 +4,7 @@ export default function renderTwoPlayers() {
 
 		<div class="row">
 			<div class="col text-center fw-bold pt-3">
-				<h1>Pong mode 2 Joueurs</h1>
+				<h1>Pong 1v1 Local</h1>
 			</div>
 		</div>
 		<div class="row">
@@ -21,6 +21,8 @@ export default function renderTwoPlayers() {
 			<div class="col d-flex justify-content-center align-items-center">
 				<div class="position-absolute">
 					<button class="btn btn-danger" type="button" id="startGame2">Commencer une partie</button>
+				</div>
+				<div id="canvas--text" class="position-absolute h2">
 				</div>
 				<div class="text-bg-success border border-black border-5">
 					<canvas id="board_two" width="650" height="480"></canvas>

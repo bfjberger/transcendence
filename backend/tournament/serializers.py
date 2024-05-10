@@ -12,7 +12,7 @@ class TournamentSerializer(serializers.ModelSerializer):
 	players = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 	class Meta:
 		model = Tournament
-		fields = ['id', 'name', 'visibility', 'players', 'owner']
+		fields = ['id', 'name', 'players', 'owner']
 
 class PlayerInTournamentSerializer(serializers.ModelSerializer):
 	

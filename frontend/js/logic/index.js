@@ -3,14 +3,17 @@ function renderIndex() {
 
 		<div class="d-flex align-items-center">
 			Bienvenue, ceci est la page principale.
-			<div>
-				<img src="https://c.tenor.com/5UrSnlHPuXkAAAAC/tenor.gif">
+			<div class="row">
+				<img src="https://c.tenor.com/5UrSnlHPuXkAAAAC/tenor.gif" height="300" width="300">
+				<img src="https://c.tenor.com/8Y4tlL5MQFEAAAAC/tenor.gif" height="300" width="300">
+				<img src="https://static.hitek.fr/img/actualite/ill_m/1435480913/darkvador.webp" height="300" width="300">
+				<img src="https://cdn.ferrari.com/cms/network/media/img/resize/631b55bb9ba7b26ce62de2e7?" height="300" width="300">
 			</div>
-			<div>
-				<img src="https://c.tenor.com/8Y4tlL5MQFEAAAAC/tenor.gif">
+			<div class="row">
 			</div>
-			<div>
-				<img src="https://static.hitek.fr/img/actualite/ill_m/1435480913/darkvador.webp">
+			<div class="row">
+			</div>
+			<div class="row">
 			</div>
 		</div>
 	`;
@@ -20,12 +23,15 @@ function listenerIndex() {
 
 };
 
-async function loadIndex() {
-
+async function loadIndex()
+{
+	console.log("hello from load index")
 	try {
 		let hostnameport = "https://" + window.location.host;
 
 		const response = await fetch(hostnameport + '/api/index/');
+
+		console.log("response de api dans load index : ", response.status)
 
 		if (response.status === 202) {
 
