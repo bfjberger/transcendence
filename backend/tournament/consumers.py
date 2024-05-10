@@ -9,7 +9,7 @@ from .gamelogic_tournament import GameState
 import random
 from players_manager.models import Player
 
-TIMER = 5
+TIMER = 60
 tick_rate = 60
 tick_duration = 1 / tick_rate
 
