@@ -345,13 +345,15 @@ class RoomConsumer(AsyncWebsocketConsumer):
 	async def ready(self, event):
 		"""
 		Sends the 'ready' message to the WebSocket connection.
-		It serves only as an event to start a countdown on the front.
+		It serves only as an event to start a countdown on the front and to provide the name of the players.
 
 		Args:
 			event (dict): The event data received from the channel layer.
 		"""
 		await self.send(text_data=json.dumps({
-			'type': event['type']
+			'type': event['type'],
+			'player_left': self.game_state_obj.players['player_left'].player_model.nickname,
+			'player_right': self.game_state_obj.players['player_right'].player_model.nickname,
 		}))
 
 	async def game_end(self, event):

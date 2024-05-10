@@ -4,7 +4,7 @@ import { renderTournamentLobby } from "../views/viewTournament.js";
 import { renderPlayground } from "../views/viewTournament.js";
 import { router } from "../logic/router.js";
 
-import { 
+import {
 	loadContent,
 	loadContent2,
 	leaveRoomName,
@@ -241,7 +241,7 @@ const delete_online_tournament = () => {
 	}
 	delete_room_name(g_tournament_name);
 	router("tournament_online");
-	
+
 }
 
 function add_start_and_delete_buttons_listeners() {
