@@ -1,7 +1,7 @@
 import {Player} from './PlayerOnline.js';
 import {Ball} from './BallOnline.js';
 import * as constants from './Constants.js';
-import {g_socket, g_alias} from './tournamentRoom.js';
+import {g_socket, g_nickname} from './tournamentRoom.js';
 
 const wsurl = 'wss://' + window.location.host + '/wss/gameTwo/'; // link to websocket
 

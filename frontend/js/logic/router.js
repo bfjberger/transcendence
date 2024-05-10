@@ -73,13 +73,6 @@ const routes = {
 		load: handleTournamentOnline.loadTournamentOnline,
 		listener: handleTournamentOnline.listenerTournamentOnline
 	},
-	"tournament_online_room": {
-		title: "TournamentRoom",
-		path: "/tournamentRoom/",
-		view: renderTournament.renderTournamentRoom,
-		load: handleTournamentRoom.loadTournamentRoom,
-		listener: handleTournamentRoom.listenerTournamentRoom
-	},
 	"twoplayers": {
 		title: "2 Joueurs Local",
 		path: "/twoplayers/",
@@ -374,3 +367,5 @@ document.addEventListener("DOMContentLoaded", () => {
 		})
 	});
 });
+
+export { router }

@@ -340,6 +340,7 @@ class PongGame4PlayersOnline {
 			this.ball.stop();
 			g_template_text.style.color = "black";
 			g_template_text.textContent = data.player_name + " a quitté la partie. La partie est terminée.";
+			g_template_text.textContent = data.player_name + " a quitté la partie. La partie est terminée.";
 			g_startButton.classList.remove("d-none");
 			this.websocket.close();
 		}
