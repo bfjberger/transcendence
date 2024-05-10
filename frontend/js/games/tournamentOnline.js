@@ -110,28 +110,28 @@ function loadTournaments() {
 				// Append elements to tournament item
 				tournamentItem.appendChild(joinButton);
 				*/
-				tournamentItem = document.createElement('div');
+				tournamentItem = document.createElement('ul');
 				tournamentItem.className = "row text-center";
+				tournamentItem.style.listStyleType = "none";
 				tournamentItem.innerHTML = `
-						<span class="col">${tournament.name}</span>
-						<button id="join__${tournament.name}" class="col btn btn-success w-auto">Rejoindre</button>
-						`;
+						<li>
+							${tournament.name}
+							<button id="join__${tournament.name}" class="btn btn-success ms-3">Rejoindre</button>
+						</li>
+					`;
 				tournamentList.appendChild(tournamentItem);
 
+				// ? why use the closure ?
 				document.getElementById(`join__${tournament.name}`).addEventListener("click", (function(tournament) {
 					return function() {
 						joinRoom(tournament.name);
 					}
 				})(tournament));
 
-				// const tournamentItemBtn = tournamentItem.getElementsByTagName("button")[0];
-				// console.log(tournamentItemBtn);
-				// tournamentItemBtn.addEventListener("click", (function(tournament) {
-				// 	return function() {
-				// 		joinRoom(tournament.name);
-				// 	}
-				// })(tournament));
-
+				// document.getElementById(`join__${tournament.name}`).addEventListener("click", (e) => {
+				// 	e.preventDefault();
+				// 	joinRoom(tournament.name);
+				// });
 			});
 		})
 		.catch(error => {
@@ -281,6 +281,7 @@ function getCookie(name) {
 /* ------------ Listener and loader for the tournamentOnline page ----------- */
 
 function listenerTournamentOnline() {
+
 	const button_create_tournament = document.getElementById('create-tournament-button');
 	button_create_tournament.addEventListener('click', (event) => {
 		event.preventDefault();

@@ -96,15 +96,6 @@ class PongGame2Players {
 		// Velocity of the ball
 		this.ball.velocityX = (Math.cos(randomAngle) * this.ballSpeed) * direction;
 		this.ball.velocityY = Math.sin(randomAngle) * this.ballSpeed;
-
-		// DEBUG
-		if (this.player_left.name.substr(0, 4) === "test" && this.player_right.name.substr(0, 4) === "test") {
-			this.player_left.setCoords(10, 10);
-			this.player_right.setCoords(this.boardWidth - this.player_right.width - 10, 10);
-			this.ball.y = this.boardHeight / 2;
-			this.ball.velocityX = 180 * this.ballSpeed * -1; // player 1 gagne (gauche)
-			// this.ball.velocityX = 180 * this.ballSpeed; // player 2 gagne (droite)
-		}
 	}
 
 	pressKey(e) {
@@ -242,7 +233,7 @@ class PongGame2Players {
 		this.context.fillText(this.player_right.score, this.boardWidth / 2 + 25, 50);
 	}
 
-	gameOver() {
+	async gameOver() {
 		if (this.player_left.score === 3 || this.player_right.score === 3) {
 			this.winner = this.player_left.score === 3 ? this.player_left : this.player_right;
 			this.start = false;
@@ -271,7 +262,7 @@ class PongGame2Players {
 				this.ball.velocityX = 0;
 				this.ball.velocityY = 0;
 				if (window.location.pathname === "/tournament/") {
-					this.context.reset();
+					return this.winner;
 				}
 			}
 			else {
@@ -281,18 +272,7 @@ class PongGame2Players {
 	};
 };
 
-/*
-	Event listener for reload
-*/
-function handlePageReload() {
-	if (window.location.pathname === "/twoplayers/") {
-		if (g_player_status === "PLAYING") {
-			updateStatus();
-		}
-	}
-};
-
-window.addEventListener('beforeunload', handlePageReload);
+/* ---------------------------------- Utils --------------------------------- */
 
 async function updateStatus() {
 
@@ -334,7 +314,21 @@ function start2PlayerGame(p1_name, p2_name) {
 
 	g_game = new PongGame2Players(p1_name, p2_name);
 	g_game.init();
-}
+};
+
+/* --------------------------- Listener for reload -------------------------- */
+
+function handlePageReload() {
+	if (window.location.pathname === "/twoplayers/") {
+		if (g_player_status === "PLAYING") {
+			updateStatus();
+		}
+	}
+};
+
+window.addEventListener('beforeunload', handlePageReload);
+
+/* -------------------------- Listener for the page ------------------------- */
 
 function listenerTwoPlayers() {
 
@@ -368,6 +362,8 @@ function listenerTwoPlayers() {
 		});
 	});
 };
+
+/* --------------------------- Loader for the page -------------------------- */
 
 async function loadTwoPlayers() {
 

@@ -3,6 +3,7 @@ import renderFourPlayers from "../views/viewFourPlayers.js"
 import renderFourOnline from "../views/viewFourOnline.js"
 import renderFriends from "../views/viewFriends.js"
 import renderLogin from "../views/viewLogin.js"
+import renderTournamentLocal from "../views/viewTournamentLocal.js"
 import renderTournament from "../views/viewTournament.js"
 import renderTwoPlayers from "../views/viewTwoPlayers.js"
 import renderTwoOnline from "../views/viewTwoOnline.js"
@@ -62,7 +63,7 @@ const routes = {
 	"tournament": {
 		title: "Tournoi Local",
 		path: "/tournament/",
-		view: renderTournament.renderTournament,
+		view: renderTournamentLocal.renderTournament,
 		load: handleTournament.loadTournament,
 		listener: handleTournament.listenerTournament
 	},
