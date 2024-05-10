@@ -36,6 +36,7 @@ const wsurl = 'wss://' + window.location.host + '/wss/gameFour/'; // link to web
 
 var g_game;
 var g_left_name, g_right_name, g_top_name, g_bottom_name;
+var g_left_score, g_right_score, g_top_score, g_bottom_score;
 var g_template_text, g_instructions, g_startButton;
 
 class PongGame4PlayersOnline {
@@ -187,9 +188,6 @@ class PongGame4PlayersOnline {
 		this.player_top.x = data.player_top_x;
 		this.player_bottom.x = data.player_bottom_x;
 
-		// this.ball.x = data.ball_x;
-		// this.ball.y = data.ball_y;
-
 		if (this.ball.color != data.ball_color)
 			this.ball.setcolor(data.ball_color);
 
@@ -207,17 +205,10 @@ class PongGame4PlayersOnline {
 	}
 
 	updateScores() {
-		this.context.font = "20px sans-serif";
-		this.context.fillStyle = "black";
-		// g_context.fillText(this.player_left.score, 10, constants.FOUR_WIN_HEIGHT / 2);
-		// g_context.fillText(this.player_right.score, constants.WIN_WIDTH - 20, constants.FOUR_WIN_HEIGHT / 2);
-		// g_context.fillText(this.player_top.score, constants.WIN_WIDTH / 2, 20);
-		// g_context.fillText(this.player_bottom.score, constants.WIN_WIDTH / 2, constants.FOUR_WIN_HEIGHT - 20);
-
-		document.getElementById("four__online--top--score").textContent = this.player_top.score;
-		document.getElementById("four__online--left--score").textContent = this.player_left.score;
-		document.getElementById("four__online--right--score").textContent = this.player_right.score;
-		document.getElementById("four__online--bottom--score").textContent = this.player_bottom.score;
+		g_top_score.textContent = this.player_top.score;
+		g_left_score.textContent = this.player_left.score;
+		g_right_score.textContent = this.player_right.score;
+		g_bottom_score.textContent = this.player_bottom.score;
 	}
 
 	updateWinner(winning_player_pos) {
@@ -276,15 +267,6 @@ class PongGame4PlayersOnline {
 	}
 
 	drawScoreAndLine() {
-		// Draw the horizontal line
-		this.context.beginPath();
-		this.context.setLineDash([5, 15]);
-		this.context.moveTo(constants.WIN_WIDTH / 2, 0);
-		this.context.lineTo(constants.WIN_WIDTH / 2, constants.FOUR_WIN_HEIGHT);
-		this.context.strokeStyle = "lightgray";
-		this.context.stroke();
-		this.context.setLineDash([]);
-
 		// Draw the vertical line
 		this.context.beginPath();
 		this.context.setLineDash([5, 15]);
@@ -294,11 +276,20 @@ class PongGame4PlayersOnline {
 		this.context.stroke();
 		this.context.setLineDash([]);
 
+		// Draw the horizontal line
+		this.context.beginPath();
+		this.context.setLineDash([5, 15]);
+		this.context.moveTo(0, constants.FOUR_WIN_HEIGHT / 2);
+		this.context.lineTo(constants.WIN_WIDTH, constants.FOUR_WIN_HEIGHT / 2);
+		this.context.strokeStyle = "lightgray";
+		this.context.stroke();
+		this.context.setLineDash([]);
+
 		// Update the scores on the page
-		document.getElementById("four__online--top--score").textContent = this.player_top.score;
-		document.getElementById("four__online--left--score").textContent = this.player_left.score;
-		document.getElementById("four__online--right--score").textContent = this.player_right.score;
-		document.getElementById("four__online--bottom--score").textContent = this.player_bottom.score;
+		g_top_score.textContent = this.player_top.score;
+		g_left_score.textContent = this.player_left.score;
+		g_right_score.textContent = this.player_right.score;
+		g_bottom_score.textContent = this.player_bottom.score;
 	}
 
 	messageHandler(e) {
@@ -370,6 +361,20 @@ function start4PlayerGameOnline() {
 	g_game.init();
 };
 
+function setGlobals() {
+	g_startButton = document.getElementById("startGame4Online");
+	g_template_text = document.getElementById("template_text");
+	g_instructions = document.getElementById("instructions");
+	g_left_name = document.getElementById("four__online--left--name");
+	g_right_name = document.getElementById("four__online--right--name");
+	g_top_name = document.getElementById("four__online--top--name");
+	g_bottom_name = document.getElementById("four__online--bottom--name");
+	g_left_score = document.getElementById("four__online--left--score");
+	g_right_score = document.getElementById("four__online--right--score");
+	g_top_score = document.getElementById("four__online--top--score");
+	g_bottom_score = document.getElementById("four__online--bottom--score");
+}
+
 function resetContent() {
 	// Reset some text placeholder to no content and no style
 	g_template_text.textContent = "";
@@ -378,22 +383,18 @@ function resetContent() {
 	g_instructions.style.color = "";
 
 	g_left_name.textContent = "";
-	g_left_name.style.color = "";
 	g_left_name.classList.remove("text-decoration-underline");
 	g_right_name.textContent = "";
-	g_right_name.style.color = "";
 	g_right_name.classList.remove("text-decoration-underline");
 	g_top_name.textContent = "";
-	g_top_name.style.color = "";
 	g_top_name.classList.remove("text-decoration-underline");
 	g_bottom_name.textContent = "";
-	g_bottom_name.style.color = "";
 	g_bottom_name.classList.remove("text-decoration-underline");
 
-	document.getElementById("four__online--top--score").textContent = "";
-	document.getElementById("four__online--left--score").textContent = "";
-	document.getElementById("four__online--right--score").textContent = "";
-	document.getElementById("four__online--bottom--score").textContent = "";
+	g_left_score.textContent = "";
+	g_right_score.textContent = "";
+	g_top_score.textContent = "";
+	g_bottom_score.textContent = "";
 
 	// Hide the start button
 	g_startButton.classList.add("d-none");
@@ -408,7 +409,11 @@ function resetContent() {
 /* ------------------------ Leaving or reloading game ----------------------- */
 
 function handlePageReload() {
-	resetContent();
+	// Wait for the HTML to be parsed before getting the globals and resetting them
+	window.addEventListener("DOMContentLoaded", (e) => {
+		setGlobals();
+		resetContent();
+	});
 };
 
 window.addEventListener('beforeunload', handlePageReload);
@@ -417,13 +422,7 @@ window.addEventListener('beforeunload', handlePageReload);
 
 function listenerFourPlayersOnline() {
 
-	g_startButton = document.getElementById("startGame4Online");
-	g_template_text = document.getElementById("template_text");
-	g_instructions = document.getElementById("instructions");
-	g_left_name = document.getElementById("four__online--left--name");
-	g_right_name = document.getElementById("four__online--right--name");
-	g_top_name = document.getElementById("four__online--top--name");
-	g_bottom_name = document.getElementById("four__online--bottom--name");
+	setGlobals();
 
 	// Reset the content and color of placeholder text
 	g_template_text.textContent = "";

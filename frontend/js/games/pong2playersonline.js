@@ -143,12 +143,6 @@ class PongGame2PlayersOnline {
 		this.player_left.y = data.player_left_y;
 		this.player_right.y = data.player_right_y;
 
-		// this.ball.x = data.ball_x;
-		// this.ball.y = data.ball_y;
-
-		// if (this.ball.color != data.ball_color)
-			// this.ball.setcolor(data.ball_color);
-
 		if (data.player_left_score != this.player_left.score)
 			this.player_left.score += 1;
 		else if (data.player_right_score != this.player_right.score)
@@ -296,6 +290,14 @@ function start2PlayerGameOnline() {
 	g_game.init();
 };
 
+function setGlobals() {
+	g_startButton = document.getElementById("startGame2Online");
+	g_template_text = document.getElementById("template_text");
+	g_instructions = document.getElementById("instructions");
+	g_left_container = document.getElementById("two__online--left");
+	g_right_container = document.getElementById("two__online--right");
+}
+
 function resetContent() {
 	// Reset some text placeholder to no content and no style
 	g_template_text.textContent = "";
@@ -321,7 +323,10 @@ function resetContent() {
 /* ------------------------ Leaving or reloading game ----------------------- */
 
 function handlePageReload() {
-	resetContent();
+	window.addEventListener("DOMContentLoaded", (e) => {
+		setGlobals();
+		resetContent();
+	});
 };
 
 window.addEventListener('beforeunload', handlePageReload);
@@ -330,11 +335,7 @@ window.addEventListener('beforeunload', handlePageReload);
 
 function listenerTwoPlayersOnline() {
 
-	g_startButton = document.getElementById("startGame2Online");
-	g_template_text = document.getElementById("template_text");
-	g_instructions = document.getElementById("instructions");
-	g_left_container = document.getElementById("two__online--left");
-	g_right_container = document.getElementById("two__online--right");
+	setGlobals();
 
 	// Reset the content and color of placeholder text
 	g_template_text.textContent = "";
