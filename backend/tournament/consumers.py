@@ -6,8 +6,10 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 from .models import Tournament
 from .gamelogic_tournament import GameState
+import random
 from players_manager.models import Player
 
+TIMER = 60
 tick_rate = 60
 tick_duration = 1 / tick_rate
 
@@ -312,8 +314,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		room = self.tournament_manager.get_room(tournament_name)
 
 		room['n_ready'] += 1
-		# if room['n_ready'] < players_size_max:
-		# 	return
 		if room['n_ready'] < len(room['players']):
 			return
 
@@ -329,6 +329,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		await self.send_game_start(players)
 
 		game.is_running = True
+		game.start_time = asyncio.get_event_loop().time()
+		game.time_elapsed = 0
 		game.ball.x_vel = game.ball.speed
 		asyncio.create_task(self.game_loop())
 
@@ -496,7 +498,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 					'ball_y': game.ball.y,
 					'ball_x_vel': game.ball.x_vel,
 					'ball_y_vel': game.ball.y_vel,
-					'ball_color': game.ball.color
+					'ball_color': game.ball.color,
+					'game_time': game.time_elapsed
 				}
 			}
 		)
@@ -513,13 +516,16 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		if self.update_lock is None:
 			self.update_lock = asyncio.Lock()
 		return self.update_lock
-	
+
 	async def game_loop(self):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
 		game = self.tournament_manager.get_room(tournament_name)['game_state']
-
 		async with await self.get_update_lock():
 			while game.is_running == True:
+				game.time_elapsed = asyncio.get_event_loop().time() - game.start_time
+				if game.time_elapsed > TIMER:
+					game.is_running = False
+					game.someone_won = True
 				await game.update()
 				await self.send_game_state()
 				await asyncio.sleep(tick_duration)
@@ -534,12 +540,19 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 		game.is_running = False
 
-		if game.players[0].score >= game.players[1].score:
+		if game.players[0].score > game.players[1].score:
 			await self.send_game_end(players[0], players[1], self.tournament_manager.get_room(tournament_name)['state'])
 			keep = self.tournament_manager.next_turn(tournament_name, 0, 1)
-		elif game.players[1].score >= game.players[0].score:
+		elif game.players[1].score > game.players[0].score:
 			await self.send_game_end(players[1], players[0], self.tournament_manager.get_room(tournament_name)['state'])
 			keep = self.tournament_manager.next_turn(tournament_name, 1, 0)
+		elif game.players[0].score == game.players[1].score:
+			winner = players[1] if random.choice([0, 1]) < 0.5 else players[0]
+			loser = players[0] if winner == players[1] else players[1]
+			winnerIdx = 1 if winner == players[1] else 0
+			loserIdx = 0 if loser == players[1] else 1
+			await self.send_game_end(winner, loser, self.tournament_manager.get_room(tournament_name)['state'])
+			keep = self.tournament_manager.next_turn(tournament_name, winnerIdx, loserIdx)
 		
 		await asyncio.sleep(5)
 
@@ -552,3 +565,4 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 			# Delete the tournament from the database
 			await sync_to_async(self.tournament.delete)()
+
