@@ -4,7 +4,7 @@ import asyncio
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
-from .models import Tournament
+from .models import TournamentRoom
 from .gamelogic_tournament import GameState
 import random
 from players_manager.models import Player
@@ -216,7 +216,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def connect(self):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
-		self.tournament = await sync_to_async(Tournament.objects.get)(name=tournament_name)
+		self.tournament = await sync_to_async(TournamentRoom.objects.get)(name=tournament_name)
 		player = self.scope['user'].username
 		# player_obj = Player.objects.get(owner=self.scope['user'])
 		player_obj = await sync_to_async(Player.objects.get)(owner=self.scope['user'])
