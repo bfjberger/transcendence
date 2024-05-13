@@ -45,6 +45,7 @@ class ListFriendAPIView(ListAPIView):
 				player_initiated = Player.objects.filter(owner=o.user_initiated.id).first()
 				result.append({"username" : o.user_initiated.username, "status" : player_initiated.status})
 			return Response(result, status=status.HTTP_200_OK)
+		return Response("Missing parameter", status=status.HTTP_400_BAD_REQUEST)
 
 class CreateFriendAPIView(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]

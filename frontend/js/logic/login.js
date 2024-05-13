@@ -188,13 +188,10 @@ async function loadLogin() {
 	document.getElementById("logout").setAttribute("disabled", true);
 
 	try {
-
 		let hostnameport = "https://" + window.location.host
-
 		const response = await fetch(hostnameport + '/api/index/');
 
 		if (response.status === 202) {
-
 			document.querySelectorAll(".nav__link").forEach(btn => {
 				btn.removeAttribute("disabled");
 			});

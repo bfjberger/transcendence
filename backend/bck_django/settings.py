@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ") # 127.0.0.1 et 10.11.1.2
 CSRF_TRUSTED_ORIGINS = ["https://localhost", "http://localhost"]
@@ -32,6 +32,10 @@ CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_DOMAIN = "localhost"
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+# CORS_ALLOWED_ORIGINS = [
+#     "https://localhost",
+# ]
 
 SITE_ID = 1
 
@@ -157,9 +161,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # }
 
 
-# CORS_ALLOWED_ORIGINS = [
-#     'http://localhost:80',
-# ]
+
 
 ASGI_APPLICATION = 'bck_django.asgi.application'
 

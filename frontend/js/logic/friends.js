@@ -196,9 +196,12 @@ async function loadFriends() {
 		const response_list_initiated_accepted = await fetch(hostnameport + '/api/friends/?type=initiated_accpeted', init)
 		const response_list_received_accepted = await fetch(hostnameport + '/api/friends/?type=received_accepted', init)
 
-		if (response_list_initiated.status != 200 || response_list_received.status != 200 || response_list_initiated_accepted.status != 200) {
-			const text = await response.text();
-			throw new Error(text);
+		if (response_list_initiated.status != 200
+			|| response_list_received.status != 200
+			|| response_list_initiated_accepted.status != 200
+			|| response_list_received_accepted.status != 200) {
+
+			throw new Error("error : issue loading friend");
 		}
 		else
 		{

@@ -136,42 +136,37 @@ class ProfileUpdateAvatarView(APIView):
 class TwoPlayers(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]
-	serializer_class = PlayerSerializer
+	serializer_class = DataSerializer
 
 	def get(self, request):
 		try :
-			player = Player.objects.get(owner=self.request.user)
+			serializer_player = DataSerializer(self.request.user)
 		except :
 			return Response(None, status=status.HTTP_400_BAD_REQUEST)
-
-		try :
-			serializer_player = PlayerSerializer(player)
-			serializer_user = UserSerializer(self.request.user)
-		except :
-			return Response(None, status=status.HTTP_400_BAD_REQUEST)
-
-		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
+		return Response(data=serializer_player.data, status=status.HTTP_200_OK)
 
 
 class FourPlayers(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]
-	serializer_class = PlayerSerializer
+	serializer_class = DataSerializer
 
 	def get(self, request):
-		player = Player.objects.get(owner=self.request.user)
-		serializer_player = PlayerSerializer(player)
-		serializer_user = UserSerializer(self.request.user)
-		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
+		try :
+			serializer_player = DataSerializer(self.request.user)
+		except :
+			return Response(None, status=status.HTTP_400_BAD_REQUEST)
+		return Response(data=serializer_player.data, status=status.HTTP_200_OK)
 
 
 class Tournament(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]
-	serializer_class = PlayerSerializer
+	serializer_class = DataSerializer
 
 	def get(self, request):
-		player = Player.objects.get(owner=self.request.user)
-		serializer_player = PlayerSerializer(player)
-		serializer_user = UserSerializer(self.request.user)
-		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
+		try :
+			serializer_player = DataSerializer(self.request.user)
+		except :
+			return Response(None, status=status.HTTP_400_BAD_REQUEST)
+		return Response(data=serializer_player.data, status=status.HTTP_200_OK)

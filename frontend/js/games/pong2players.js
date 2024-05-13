@@ -304,7 +304,7 @@ async function loadTwoPlayers() {
 			const text = await response.text();
 			throw new Error(response.status);
 		}
-
+		
 		return 1;
 	} catch (e)
 	{
