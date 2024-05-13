@@ -14,7 +14,7 @@ from django.contrib.auth import login, logout
 
 from django.contrib.auth.models import User
 
-from players_manager.serializers import LoginSerializer, UserSerializer, PlayerSerializer, RegisterSerializer, FriendSerializer, AvatarSerializer, DataSerializer
+from players_manager.serializers import LoginSerializer, UserSerializer, PlayerSerializer, RegisterSerializer, FriendSerializer, AvatarSerializer, DataSerializer, StatsSerializer
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
@@ -173,7 +173,12 @@ class Statistiques(APIView):
 
 	def get(self, request):
 		serializer_data = DataSerializer(self.request.user)
-		return Response(data=serializer_data.data, status=status.HTTP_200_OK)
+		try :
+			player = Player.objects.get(owner=self.request.user)
+		except :
+			return Response(None, status=status.HTTP_400_BAD_REQUEST)
+		serializer_stats = StatsSerializer(player)
+		return Response(data={"data": serializer_data.data, "stats": serializer_stats.data}, status=status.HTTP_200_OK)
 
 
 class UpdateStatus(APIView):

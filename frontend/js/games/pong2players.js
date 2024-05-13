@@ -3,6 +3,8 @@ import Player, {
 	default_paddle_width,
 } from "./Player.js"; // Import the Player class from Player
 
+import * as constants from "./Constants.js"
+
 var g_game;
 var g_startButton;
 var g_template_text;
@@ -13,19 +15,19 @@ var g_player_status;
 class PongGame2Players {
 	constructor(player_leftName, player_rightName) {
 		// board
-		[this.boardWidth, this.boardHeight] = [650, 480];
+		[this.boardWidth, this.boardHeight] = [constants.WIN_WIDTH, constants.WIN_HEIGHT];
 		[this.board, this.context] = [null, null]; // defined in setBoard()
 		this.start = false;
 
 		// players
 		[this.playerVelocityY, this.paddleSpeed] = [0, this.boardHeight / 100];
-		[this.player_left, this.player_right] = [new Player(player_leftName, "orange", false),
-												new Player(player_rightName, "blue", false)];
+		[this.player_left, this.player_right] = [new Player(player_leftName, constants.PLAYER_LEFT_COLOR, false),
+												new Player(player_rightName, constants.PLAYER_RIGHT_COLOR, false)];
 		this.winner = null;
 		this.keysPressed = {};
 
 		// ball
-		[this.ballRadius, this.ballSpeed] = [10, this.boardWidth / 250];
+		[this.ballRadius, this.ballSpeed] = [constants.BALL_RADIUS, this.boardWidth / 250];
 		[this.ballSpeedMultiplierX, this.ballSpeedMultiplierY] = [1.1, 1.05];
 		this.ball = {};
 	}
@@ -234,8 +236,8 @@ class PongGame2Players {
 	}
 
 	async gameOver() {
-		if (this.player_left.score === 3 || this.player_right.score === 3) {
-			this.winner = this.player_left.score === 3 ? this.player_left : this.player_right;
+		if (this.player_left.score == constants.WINNING_SCORE || this.player_right.score == constants.WINNING_SCORE) {
+			this.winner = this.player_left.score == constants.WINNING_SCORE ? this.player_left : this.player_right;
 			this.start = false;
 		}
 	};
@@ -272,6 +274,15 @@ class PongGame2Players {
 	};
 };
 
+function start2PlayerGame(p1_name, p2_name) {
+
+	if (g_game)
+		g_game = null;
+
+	g_game = new PongGame2Players(p1_name, p2_name);
+	g_game.init();
+};
+
 /* ---------------------------------- Utils --------------------------------- */
 
 async function updateStatus() {
@@ -305,15 +316,6 @@ async function updateStatus() {
 	} catch (e) {
 		console.error(e);
 	}
-};
-
-function start2PlayerGame(p1_name, p2_name) {
-
-	if (g_game)
-		g_game = null;
-
-	g_game = new PongGame2Players(p1_name, p2_name);
-	g_game.init();
 };
 
 /* --------------------------- Listener for reload -------------------------- */
@@ -401,7 +403,8 @@ async function loadTwoPlayers() {
 };
 
 export {
-	PongGame2Players
+	PongGame2Players,
+	updateStatus
 };
 
 export default {
