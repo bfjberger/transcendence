@@ -3,7 +3,7 @@ from players_manager.models import Player
 
 # Create your models here.
 
-class Tournament(models.Model):
+class TournamentRoom(models.Model):
 	name = models.CharField(max_length=100)
 	players = models.ManyToManyField(Player, related_name='tournaments')
 	owner = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='owned_tournaments', null=True, blank=True)

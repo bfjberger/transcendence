@@ -131,8 +131,6 @@ function joinRoom(tournamentName) {
 				loadContent(renderTournamentRoom, 'main__content');
 				handleRoom.listenerTournamentRoom();
 				handleRoom.loadTournamentRoom(tournament_name);
-				// listPlayersInRoom();
-				// listenerRoom();
 			} else {
 				// Handle error response
 				console.error('Failed to join tournament');

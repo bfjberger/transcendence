@@ -4,7 +4,7 @@ import asyncio
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
-from .models import Tournament
+from .models import TournamentRoom
 from .gamelogic_tournament import GameState
 import random
 from players_manager.models import Player
@@ -64,6 +64,7 @@ class TournamentManager():
 				'players': [player],
 				'players_list': [player],
 				'nicknames': [nickname],
+				'players_and_nicknames': {player: nickname},
 				'players_state': [PlayerState["PENDING"]],
 				'rounds': {},
 				'winners': [],
@@ -79,6 +80,7 @@ class TournamentManager():
 			current_room['players'].append(player)
 			current_room['players_list'].append(player)
 			current_room['nicknames'].append(nickname)
+			current_room['players_and_nicknames'][player] = nickname
 			current_room['players_state'].append(PlayerState["PENDING"])
 			self.rooms[room_name] = current_room
 		
@@ -214,12 +216,12 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def connect(self):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
-		self.tournament = await sync_to_async(Tournament.objects.get)(name=tournament_name)
+		self.tournament = await sync_to_async(TournamentRoom.objects.get)(name=tournament_name)
 		player = self.scope['user'].username
 		# player_obj = Player.objects.get(owner=self.scope['user'])
 		player_obj = await sync_to_async(Player.objects.get)(owner=self.scope['user'])
-		# nickname = player_obj.nickname
-		nickname = player
+		nickname = player_obj.nickname
+		# nickname = player
 
 		await self.channel_layer.group_add(
 			tournament_name,
@@ -238,8 +240,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		player = self.scope['user'].username
 		# player_obj = Player.objects.get(owner=self.scope['user'])
 		player_obj = await sync_to_async(Player.objects.get)(owner=self.scope['user'])
-		# nickname = player_obj.nickname
-		nickname = player
+		nickname = player_obj.nickname
+		# nickname = player
 		room = self.tournament_manager.get_room(tournament_name)
 
 		if room:
@@ -418,13 +420,15 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def send_set_position(self, players, state):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
-		
+		print("Players: ", players, " State: ", state)
+		nicknames = [ self.tournament_manager.get_room(tournament_name)['players_and_nicknames'][player] for player in players ]
 		await self.channel_layer.group_send(
 			tournament_name,
 			{
 				'type': 'set_position',
 				'arg': {
 					'players': players,
+					'nicknames': nicknames,
 					'state': state
 				}
 			}

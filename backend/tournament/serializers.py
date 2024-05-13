@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Tournament
+from .models import TournamentRoom
 
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import User
@@ -11,7 +11,7 @@ class TournamentSerializer(serializers.ModelSerializer):
 	owner = serializers.StringRelatedField()
 	players = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 	class Meta:
-		model = Tournament
+		model = TournamentRoom
 		fields = ['id', 'name', 'players', 'owner']
 
 class PlayerInTournamentSerializer(serializers.ModelSerializer):
