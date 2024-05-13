@@ -29,7 +29,7 @@ let g_username = '';
 let g_nickname = '';
 let g_data = {};
 
-export { g_nickname, g_socket };
+export { g_username, g_nickname, g_socket };
 
 /* ----------------------------------- UI ----------------------------------- */
 
@@ -128,7 +128,8 @@ function set_g_username() {
                 throw new Error('g_data or g_data.username is not defined');
             }
             g_username = g_data.username;
-            g_nickname = g_username;
+            g_nickname = g_data.nickname;
+			// g_nickname = g_username;
             resolve();
         } catch (error) {
             reject(error);
@@ -173,11 +174,8 @@ const load_playground = () => {
 /* -------------------------- Server communication -------------------------- */
 
 const connect_socket = (tournament_name) => {
-	// print("tournament_name: ", tournament_name);
 	const wsurl = base_wsurl + tournament_name + '/';
 	g_socket = new WebSocket(wsurl);
-
-	// print("g_socket: ", g_socket);
 
 	g_socket.onopen = function(event) {
 		console.log('Socket opened: ', event);
@@ -191,14 +189,6 @@ const connect_socket = (tournament_name) => {
 	g_socket.onclose = function(event) {
 		console.log('Socket closed: ', event);
 	}
-
-	const on_page_change = () => {
-		g_socket.close()
-		window.removeEventListener('page_change', on_page_change)
-		g_socket = {}
-	}
-
-	window.addEventListener('page_change', on_page_change)
 }
 
 /* ----------------------- Start and Delete Tournament ---------------------- */
@@ -254,6 +244,7 @@ function add_start_and_delete_buttons_listeners() {
 /* ------------------------------- Page listener ---------------------------- */
 
 function listenerTournamentRoom() {
+	// Add event listeners to the navbar items to close the socket when clicked
 	const navbarItems = document.querySelectorAll('.nav__item');
 	navbarItems.forEach(item => {
 		item.addEventListener('click', () => {
@@ -263,6 +254,18 @@ function listenerTournamentRoom() {
 			}
 		});
 	});
+
+	// !!! not working
+	// // Close the socket when the user leaves the page 
+	// console.log("Enter listenerTournamentRoom");
+	// window.addEventListener('beforeunload', () => {
+	// 	window.alert('You have left the tournament room');
+
+	// 	if (g_socket instanceof WebSocket && g_socket.readyState === WebSocket.OPEN) {
+	// 		g_socket.close();
+	// 		leaveRoomName(g_tournament_name);
+	// 	}
+	// });
 }
 
 async function loadTournamentRoom(tournament_name) {
@@ -271,10 +274,10 @@ async function loadTournamentRoom(tournament_name) {
 
 	window.startTournamentOnline = startTournamentOnline;
 	window.tournamentEvents = {
-	on_set_position,
-	on_game_start,
-	on_game_state,
-	on_game_end,
+		on_set_position,
+		on_game_start,
+		on_game_state,
+		on_game_end,
 	};
 
 	const init = {
