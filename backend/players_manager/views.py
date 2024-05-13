@@ -28,8 +28,6 @@ class IndexAction(APIView):
 	def get(self, request):
 		if self.request.user.is_authenticated:
 			player = Player.objects.get(owner=self.request.user)
-			serializer_player = PlayerSerializer(player)
-			serializer_user = UserSerializer(self.request.user)
 			data_serializer = DataSerializer(self.request.user)
 			return Response(data=data_serializer.data, status=status.HTTP_202_ACCEPTED)
 
@@ -141,9 +139,17 @@ class TwoPlayers(APIView):
 	serializer_class = PlayerSerializer
 
 	def get(self, request):
-		player = Player.objects.get(owner=self.request.user)
-		serializer_player = PlayerSerializer(player)
-		serializer_user = UserSerializer(self.request.user)
+		try :
+			player = Player.objects.get(owner=self.request.user)
+		except :
+			return Response(None, status=status.HTTP_400_BAD_REQUEST)
+
+		try :
+			serializer_player = PlayerSerializer(player)
+			serializer_user = UserSerializer(self.request.user)
+		except :
+			return Response(None, status=status.HTTP_400_BAD_REQUEST)
+
 		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
 
 

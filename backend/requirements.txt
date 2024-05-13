@@ -7,7 +7,7 @@ cffi==1.16.0
 channels==4.1.0
 charset-normalizer==3.3.2
 constantly==23.10.4
-cryptography==42.0.6
+cryptography==42.0.5
 daphne==4.1.2
 Django==5.0.4
 django-allauth==0.62.1

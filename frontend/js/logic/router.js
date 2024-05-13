@@ -255,6 +255,7 @@ window.onload = async function()
 
 				found = true
 				document.getElementById('main__content').innerHTML = routes[route].view();  // Render the HTML content for the page
+				
 				document.getElementById("navbar__btn--text").textContent = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
 				document.getElementById("navbar__btn--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
 				document.getElementById("navbar__btn--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
@@ -341,8 +342,6 @@ async function load42Profile(code)
 			});
 			document.getElementById("navbar__btn--user").removeAttribute("disabled");
 			document.getElementById("logout").removeAttribute("disabled");
-
-
 
 			loadIndex();
 

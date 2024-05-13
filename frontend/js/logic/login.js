@@ -163,21 +163,18 @@ function listenerLogin() {
 	// Login via "normal" account handler
 	loginForm.addEventListener("submit", e => {
 		e.preventDefault();
-
 		connectUser(loginForm);
 	});
 
 	// Create account handler
 	createAccountForm.addEventListener("submit", e => {
 		e.preventDefault();
-
 		createUser(createAccountForm);
 	});
 
 	// Login with 42 handler
 	login42Btn.addEventListener("click", e => {
 		e.preventDefault();
-
 		connectUser42();
 	});
 };

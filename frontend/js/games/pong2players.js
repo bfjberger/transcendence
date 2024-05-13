@@ -265,7 +265,8 @@ function start2PlayerGame(p1_name, p2_name) {
 	g_game.init();
 }
 
-function listenerTwoPlayers() {
+function listenerTwoPlayers()
+{
 
 	g_startButton = document.getElementById("startGame2");
 	g_template_text = document.getElementById("template_text");
@@ -296,21 +297,18 @@ async function loadTwoPlayers() {
 	};
 
 	try {
-
 		let hostnameport = "https://" + window.location.host
-
 		const response = await fetch(hostnameport +'/api/twoplayer/', init);
-		
+
 		if (response.status != 200) {
 			const text = await response.text();
-			throw new Error(text);
+			throw new Error(response.status);
 		}
 
-
-
 		return 1;
-	} catch (e) {
-		console.error("loadTwoPlayers: " + e);
+	} catch (e)
+	{
+		console.error("loadTwoPlayers: error : " + e);
 		return 0;
 	}
 };
