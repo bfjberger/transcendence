@@ -235,17 +235,33 @@ class PongGame2Players {
 		this.context.fillText(this.player_right.score, this.boardWidth / 2 + 25, 50);
 	}
 
-	async gameOver() {
-		if (this.player_left.score == constants.WINNING_SCORE || this.player_right.score == constants.WINNING_SCORE) {
-			this.winner = this.player_left.score == constants.WINNING_SCORE ? this.player_left : this.player_right;
-			this.start = false;
-		}
-	};
+	// async gameOver() {
+	// 	if (this.player_left.score == constants.WINNING_SCORE || this.player_right.score == constants.WINNING_SCORE) {
+	// 		this.winner = this.player_left.score == constants.WINNING_SCORE ? this.player_left : this.player_right;
+	// 		this.start = false;
+	// 	}
+	// };
 
 	resetGame() {
 		// reset the position and velocity of the ball
 		this.setBall();
 	};
+
+	gameOver() {
+		return new Promise((resolve) => {
+			const checkGameOver = () => {
+				if (this.player_left.score == constants.WINNING_SCORE || this.player_right.score == constants.WINNING_SCORE) {
+					let winner = this.player_left.score == constants.WINNING_SCORE ? this.player_left : this.player_right;
+					this.start = false;
+					resolve(winner);
+				}
+				else {
+					setTimeout(checkGameOver, 1000); // Check every second
+				}
+			};
+			checkGameOver();
+		});
+	}
 
 	async update() {
 		if (this.start) {
@@ -253,23 +269,23 @@ class PongGame2Players {
 			this.movePlayer();
 			this.moveBall();
 			this.draw();
-			this.gameOver();
-			if (this.winner != null) {
-				if (window.location.pathname === "/twoplayers/") {
-					g_template_text.textContent = this.winner.name + " a gagné !!";
-					g_template_text.style.color = this.winner.color;
-					g_startButton.classList.remove("d-none");
-					await updateStatus();
+			var winner = this.gameOver();
+			winner.then(winner => async () => {
+				if (winner) {
+					if (window.location.pathname === "/twoplayers/") {
+						g_template_text.textContent = winner.name + " a gagné !!";
+						g_template_text.style.color = winner.color;
+						g_startButton.classList.remove("d-none");
+						await updateStatus();
+					}
+					this.ball.velocityX = 0;
+					this.ball.velocityY = 0;
 				}
-				this.ball.velocityX = 0;
-				this.ball.velocityY = 0;
-				if (window.location.pathname === "/tournament/") {
-					return this.winner;
+				else {
+					requestAnimationFrame(this.update.bind(this));
 				}
-			}
-			else {
-				requestAnimationFrame(this.update.bind(this));
-			}
+			});
+			requestAnimationFrame(this.update.bind(this));
 		}
 	};
 };

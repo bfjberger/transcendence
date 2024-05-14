@@ -10,13 +10,6 @@ export function renderTournamentOnline() {
 					<input type="text" id="name" name="name" class="w-auto" required>
 				</div>
 				<div class="text-center pt-3">
-					<input type="radio" id="public" name="visibility" value="public" checked>
-					<label for="public">Public</label><br>
-					<input type="radio" id="private" name="visibility" value="private">
-					<label for="private">Privé</label><br>
-					<input type="password" id="password" name="password" placeholder="Mot de passe (si privée)">
-				</div>
-				<div class="text-center pt-3">
 					<button id="create-tournament-button" class="btn btn-info">Créer un tournoi en ligne</button>
 				</div>
 			</div>
@@ -48,6 +41,61 @@ export function renderTournamentRoom() {
 				</div>
 			</div>
 		`
+}
+
+function renderTournamentBracketsFour() {
+	return `
+			<div class="row">
+				<div class="col d-flex justify-content-center align-items-center">
+					<ul class="list-group font-monospace border rounded border-0" id="demi__brackets">
+						<li id="demi__seed1--1--main" class="list-group-item border rounded PlayerBracket__1">
+							<span id="demi__seed1--1--name">Demi-Finaliste 1 seed 1</span>
+							<span>&nbsp;</span>
+							<span id="demi__seed1--1--score">0</span>
+						</li>
+						<li id="demi__seed1--2--main" class="list-group-item border rounded PlayerBracket__2">
+							<span id="demi__seed1--2--name">Demi-Finaliste 2 seed 1</span>
+							<span>&nbsp;</span>
+							<span id="demi__seed1--2--score">0</span>
+						</li>
+						<li class="list-group-item border-0 BracketSpacer"></li>
+						<li id="demi__seed2--1--main" class="list-group-item border rounded PlayerBracket__3">
+							<span id="demi__seed2--1--name">Demi-Finaliste 1 seed 2</span>
+							<span>&nbsp;</span>
+							<span id="demi__seed2--1--score">0</span>
+						</li>
+						<li id="demi__seed2--2--main" class="list-group-item border rounded PlayerBracket__4">
+							<span id="demi__seed2--2--name">Demi-Finaliste 2 seed 2</span>
+							<span>&nbsp;</span>
+							<span id="demi__seed2--2--score">0</span>
+						</li>
+					</ul>
+				</div>
+				<div class="col d-flex justify-content-center align-items-center">
+					<ul class="list-group font-monospace border rounded border-0" id="final__brackets">
+						<li id="final__1--main" class="list-group-item border rounded PlayerBracket__1">
+							<span id="final__1--name">Finaliste 1</span>
+							<span>&nbsp;</span>
+							<span id="final__1--score">0</span>
+						</li>
+						<li id="final__2--main" class="list-group-item border rounded PlayerBracket__2">
+							<span id="final__2--name">Finaliste 2</span>
+							<span>&nbsp;</span>
+							<span id="final__2--score">0</span>
+						</li>
+					</ul>
+				</div>
+				<div class="col d-flex justify-content-center align-items-center">
+					<ul class="list-group font-monospace border rounded border-0" id="winner__main">
+						<li class="list-group-item border rounded PlayerBracket__1 bg-warning-subtle">
+							<span id="winner__name">Vainqueur</span>
+							<span>&nbsp;</span>
+							<img src="/frontend/img/trophy-fill-Bootstrap.svg" alt="trophy" width="15" height="15" class="">
+						</li>
+					</ul>
+				</div>
+			</div>
+		`;
 }
 
 /* ------------------------------- Components ------------------------------- */

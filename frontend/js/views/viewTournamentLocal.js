@@ -45,12 +45,12 @@ function renderTournament() {
 function renderTournamentRoom() {
 	return `
 		<div id="tournament__room--title" class="row pt-3 h2">
-			<div class="col-5"></div>
-			<div id="template_text" class="col-2 d-flex justify-content-center"></div>
-			<div class="col-5"></div>
+			<div class="col-4"></div>
+			<div id="template_text" class="col-4 d-flex justify-content-center"></div>
+			<div class="col-4"></div>
 		</div>
 		<div class="row">
-			<div id="tournament__left" class="col text-end text-warning align-self-center h3">
+			<div id="tournament__left" class="col text-end align-self-center h3" style="color: blue">
 			</div>
 			<div class="col d-flex justify-content-center align-items-center">
 				<div id="canvas--text" class="position-absolute h2">
@@ -59,7 +59,7 @@ function renderTournamentRoom() {
 					<canvas id="board_two" width="650" height="480"></canvas>
 				</div>
 			</div>
-			<div id="tournament__right" class="col text-start align-self-center text-primary h3">
+			<div id="tournament__right" class="col text-start align-self-center h3" style="color: orange">
 			</div>
 		</div>
 		<div id="tournament__room--brackets" class="container">
@@ -122,23 +122,23 @@ function renderTournamentBrackets() {
 						<li id="demi__seed1--1--main" class="list-group-item border rounded PlayerBracket__1">
 							<span id="demi__seed1--1--name">Demi-Finaliste 1 seed 1</span>
 							<span>&nbsp;</span>
-							<span id="demi__seed1--1--score">0</span>
+							<span id="demi__seed1--1--score"></span>
 						</li>
 						<li id="demi__seed1--2--main" class="list-group-item border rounded PlayerBracket__2">
 							<span id="demi__seed1--2--name">Demi-Finaliste 2 seed 1</span>
 							<span>&nbsp;</span>
-							<span id="demi__seed1--2--score">0</span>
+							<span id="demi__seed1--2--score"></span>
 						</li>
 						<li class="list-group-item border-0 BracketSpacer"></li>
 						<li id="demi__seed2--1--main" class="list-group-item border rounded PlayerBracket__3">
 							<span id="demi__seed2--1--name">Demi-Finaliste 1 seed 2</span>
 							<span>&nbsp;</span>
-							<span id="demi__seed2--1--score">0</span>
+							<span id="demi__seed2--1--score"></span>
 						</li>
 						<li id="demi__seed2--2--main" class="list-group-item border rounded PlayerBracket__4">
 							<span id="demi__seed2--2--name">Demi-Finaliste 2 seed 2</span>
 							<span>&nbsp;</span>
-							<span id="demi__seed2--2--score">0</span>
+							<span id="demi__seed2--2--score"></span>
 						</li>
 					</ul>
 				</div>
@@ -147,12 +147,12 @@ function renderTournamentBrackets() {
 						<li id="final__1--main" class="list-group-item border rounded PlayerBracket__1">
 							<span id="final__1--name">Finaliste 1</span>
 							<span>&nbsp;</span>
-							<span id="final__1--score">0</span>
+							<span id="final__1--score"></span>
 						</li>
 						<li id="final__2--main" class="list-group-item border rounded PlayerBracket__2">
 							<span id="final__2--name">Finaliste 2</span>
 							<span>&nbsp;</span>
-							<span id="final__2--score">0</span>
+							<span id="final__2--score"></span>
 						</li>
 					</ul>
 				</div>
