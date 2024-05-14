@@ -3,18 +3,20 @@ import renderFourPlayers from "../views/viewFourPlayers.js"
 import renderFourOnline from "../views/viewFourOnline.js"
 import renderFriends from "../views/viewFriends.js"
 import renderLogin from "../views/viewLogin.js"
-import renderProfile from "../views/viewProfile.js"
 import renderTournament from "../views/viewTournament.js"
 import renderTwoPlayers from "../views/viewTwoPlayers.js"
 import renderTwoOnline from "../views/viewTwoOnline.js"
 import renderGameHistory from "../views/ViewGameHistory.js"
 import renderPong_IA from "../views/viewPong_IA.js"
+import renderStats from "../views/viewStats.js"
+import renderUpdateInfo from "../views/viewUpdateInfo.js"
 
 // Importe le script de chaque page qui gere le load et listener
 import handleFriends from "./friends.js"
 import handleLogin from "./login.js"
-import handleProfile from "./profile.js"
 import handleGameHistory from "./gamehistory.js"
+import handleStats from "./stats.js"
+import handleUpdateInfo from "./updateinfo.js"
 import handleTournament from "../games/tournament.js"
 import handleTournamentOnline from "../games/tournamentOnline.js"
 import handleTournamentRoom from "../games/tournamentRoom.js"
@@ -60,13 +62,6 @@ const routes = {
 		load: handleLogin.loadLogin,
 		listener: handleLogin.listenerLogin
 	},
-	"profile": {
-		title: "Profile",
-		path: "/profile/",
-		view: renderProfile,
-		load: handleProfile.loadProfile,
-		listener: handleProfile.listenerProfile
-	},
 	"tournament": {
 		title: "Tournoi Local",
 		path: "/tournament/",
@@ -80,13 +75,6 @@ const routes = {
 		view: renderTournament.renderTournamentOnline,
 		load: handleTournamentOnline.loadTournamentOnline,
 		listener: handleTournamentOnline.listenerTournamentOnline
-	},
-	"tournament_online_room": {
-		title: "TournamentRoom",
-		path: "/tournamentRoom/",
-		view: renderTournament.renderTournamentRoom,
-		load: handleTournamentRoom.loadTournamentRoom,
-		listener: handleTournamentRoom.listenerTournamentRoom
 	},
 	"twoplayers": {
 		title: "2 Joueurs Local",
@@ -130,9 +118,21 @@ const routes = {
 		load: handlePong_IA.loadPong_IA,
 		listener: handlePong_IA.listenerPong_IA
 	},
+	"stats": {
+		title: "Mes Statistiques",
+		path: "/stats/",
+		view: renderStats,
+		load: handleStats.loadStats,
+		listener: handleStats.listenerStats
+	},
+	"updateinfo": {
+		title: "Modifier mes Informations",
+		path: "/updateinfo/",
+		view: renderUpdateInfo,
+		load: handleUpdateInfo.loadUpdateInfo,
+		listener: handleUpdateInfo.listenerUpdateInfo
+	},
 };
-
-
 
 /**
  * Logout handler function
@@ -170,7 +170,7 @@ async function handleLogout() {
  * @param {string} value - The value of the button that was clicked
  * Get the page from the routes object, if it exists
  * Call the load function of the page
- 	* If the load function returns 1 (the user can access it), render the view of the page
+ * If the load function returns 1 (the user can access it), render the view of the page
 */
 export default async function router(value) {
 
@@ -182,9 +182,12 @@ export default async function router(value) {
 	if (await page.load() === 1) {
 		document.getElementById("main__content").innerHTML = page.view();
 
-		document.getElementById("navbar__btn--text").textContent = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
-		document.getElementById("navbar__btn--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
-		document.getElementById("navbar__btn--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
+		document.getElementById("topbar__profile--username").textContent =
+			sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
+		document.getElementById("topbar__profile--avatar").src =
+			sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
+		document.getElementById("topbar__profile--avatar").alt =
+			sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
 
 		document.title = page.title;
 
@@ -192,16 +195,92 @@ export default async function router(value) {
 
 		page.listener();
 	}
-	else
-	{
+	else {
 		console.log("page.load n a pas renvoyé 1");
 		router("login");
 	}
 };
 
 /**
- * Event listener for popstate event
+ * Load index function
+ * Send a GET request to the server to check if the user is logged in
+ * If the response status is 202, the user is logged in and redirected to the index page
+ * If the response status is 203, the user is not logged in and redirected to the login page
+*/
+async function loadIndex() {
 
+	try {
+
+		let hostnameport = "https://" + window.location.host;
+
+		const response = await fetch(hostnameport + '/api/index/');
+
+		if (response.status === 202) {
+			router("index");
+		}
+		if (response.status === 203) {
+			router("login");
+		}
+	} catch (e) {
+		console.error(e);
+	}
+};
+
+/**
+ * function called when the user try to login with 42 app
+ * @param {string} code -> the code returned by the first step made by the backend
+ * This will do a request to the backend for the second step of the 42API login
+*/
+async function load42Profile(code)
+{
+	try {
+		let hostnameport = "https://" + window.location.host;
+
+		const init = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({code: code})
+		};
+
+		const response = await fetch(hostnameport + '/api/call_back/', init);
+
+		if (response.status == 200) {
+			const data = await response.json();
+
+			sessionStorage.setItem("username", data["username"]);
+			sessionStorage.setItem("avatar", data["player"].avatar);
+			sessionStorage.setItem("nickname", data["player"].nickname);
+
+			document.querySelectorAll(".dropdown-item").forEach(btn => {
+				btn.removeAttribute("disabled");
+			});
+			document.getElementById("topbar__profile--username").removeAttribute("disabled");
+			document.getElementById("topbar__logout").removeAttribute("disabled");
+
+			loadIndex();
+
+			// router("index");
+		}
+
+		if (response.status == 401) {
+			const data = await response.json();
+
+			window.alert(data);
+		}
+		else {
+			throw new Error(`HTTP error, status = ${response.status}`);
+		}
+
+	} catch (e) {
+		console.error(e);
+	}
+};
+
+/**
+ * Event listener for popstate event
+ * A popstate event is fired when the active history entry changes
 */
 window.addEventListener("popstate", async (e) => {
 	e.preventDefault();
@@ -219,9 +298,12 @@ window.addEventListener("popstate", async (e) => {
 	if (await page.load() === 1) {
 		document.getElementById("main__content").innerHTML = page.view();
 
-		document.getElementById("navbar__btn--text").textContent = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
-		document.getElementById("navbar__btn--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
-		document.getElementById("navbar__btn--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
+		document.getElementById("topbar__profile--username").textContent =
+			sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
+		document.getElementById("topbar__profile--avatar").src =
+			sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
+		document.getElementById("topbar__profile--avatar").alt =
+			sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
 
 		document.title = page.title;
 
@@ -245,9 +327,12 @@ window.onload = async function() {
 			if (await routes[route].load() === 1) {
 				document.getElementById('main__content').innerHTML = routes[route].view();  // Render the HTML content for the page
 
-				document.getElementById("navbar__btn--text").textContent = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
-				document.getElementById("navbar__btn--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
-				document.getElementById("navbar__btn--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
+				document.getElementById("topbar__profile--username").textContent =
+					sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
+				document.getElementById("topbar__profile--avatar").src =
+					sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
+				document.getElementById("topbar__profile--avatar").alt =
+					sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
 
 				document.title = routes[route].title;
 
@@ -260,122 +345,37 @@ window.onload = async function() {
 	}
 };
 
-
-
-/**
- * Load index function
- * Send a GET request to the server to check if the user is logged in
- * If the response status is 202, the user is logged in and redirected to the index page
- * If the response status is 203, the user is not logged in and redirected to the login page
-*/
-async function loadIndex() {
-
-	try {
-
-		let hostnameport = "https://" + window.location.host
-
-		const response = await fetch(hostnameport + '/api/index/');
-
-		if (response.status === 202) {
-
-			router("index");
-		}
-		if (response.status === 203) {
-
-			router("login");
-		}
-	} catch (e) {
-		console.error(e);
-	}
-};
-
-/*
-function called when the user try to login with 42 app
-*/
-async function load42Profile(code)
-{
-	try {
-		let hostnameport = "https://" + window.location.host
-
-		const init = {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-
-			body: JSON.stringify({code: code})
-		};
-		
-
-		const response = await fetch(hostnameport + '/api/call_back/', init);
-
-		if (response.status == 200)
-		{
-			const data = await response.json()
-			
-			console.log("username " + data["username"])
-			console.log("avatar " + data["player"].avatar)
-			console.log("nickname " + data["player"].nickname)
-
-			sessionStorage.setItem("username", data["username"]);
-			sessionStorage.setItem("avatar", data["player"].avatar);
-			sessionStorage.setItem("nickname", data["player"].nickname);
-
-			// document.querySelector("div.modal-backdrop.fade.show").remove();
-
-			document.querySelectorAll(".nav__link").forEach(btn => {
-				btn.removeAttribute("disabled");
-			});
-			document.getElementById("navbar__btn--user").removeAttribute("disabled");
-			document.getElementById("logout").removeAttribute("disabled");
-
-
-
-			loadIndex();
-
-			// router("index");
-		}
-		else
-		{
-			throw new Error(`HTTP error, status = ${response.status}`);
-		}
-
-	} catch (e) {
-		console.error(e);
-	}
-}
-
-
 /**
  * Event listener for DOMContentLoaded event
  * If the user is on the index page, index specific logic is executed
  * Attach event listener to the 'logout' button
- * Attach event listeners on all buttons with the class 'nav__link' i.e. all buttons that redirect to another "page"
+ * Attach event listeners on all buttons with the class 'dropdown-item' i.e. all buttons that redirect to another "page"
 */
 document.addEventListener("DOMContentLoaded", () => {
 
-	if (window.location.search) {
-		let code = window.location.search.split("=")[1]
-		// console.log("code = ", code)
-		load42Profile(code)
+	if (window.location.search.split("=")[0] == "?code") {
+		let code = window.location.search.split("=")[1];
+		load42Profile(code);
 	}
 
 	if (window.location.pathname === "/") {
 		loadIndex();
 	}
 
-	document.getElementById("logout").addEventListener("click", (e) => {
+	document.getElementById("topbar__logout").addEventListener("click", (e) => {
 		e.preventDefault();
 		handleLogout();
 	});
 
-	document.querySelectorAll(".nav__link").forEach(element => {
+	document.querySelectorAll(".nav__item").forEach(element => {
 		element.addEventListener("click", (e) => {
 			e.preventDefault();
+
 			if (element.value !== window.location.pathname.replaceAll("/", "")) {
 				router(element.value);
 			}
 		})
 	});
-
 });
+
+export { router }

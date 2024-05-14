@@ -22,7 +22,7 @@ from django.conf import settings
 
 from rest_framework import routers
 
-from players_manager.views import LoginView, ProfileView, RegisterAction, IndexAction, TwoPlayers, FourPlayers, Tournament, LogoutView, ProfileUpdateAvatarView
+from players_manager.views import LoginView, ProfileView, RegisterAction, IndexAction, TwoPlayers, FourPlayers, Tournament, LogoutView, ProfileUpdateAvatarView, UpdateStatus, Statistiques
 from tournament.views import TournamentOnline
 
 from login_api_42.views import Accounts_view, Callback
@@ -70,6 +70,7 @@ urlpatterns = [
     path('api/twoplayer/', TwoPlayers.as_view()),
     path('api/fourplayer/', FourPlayers.as_view()),
     path('api/tournament/', Tournament.as_view()),
+    path('api/stats/', Statistiques.as_view()),
 
     path('api/friends/', ListFriendAPIView.as_view()),
     path('api/friends/create/', CreateFriendAPIView.as_view()),
@@ -87,13 +88,13 @@ urlpatterns = [
     path('api/accounts/', Accounts_view.as_view(), name='accounts'),
     path('api/', include(router.urls)),
     path('api/tournaments/<str:tournament_name>/players/', PlayerViewSet.as_view({'get': 'list'}), name='tournament-players'),
-    # path('api/tournaments/<str:tournament_name>/join_tournament/', TournamentViewSet.as_view({'post': 'join_tournament'}), name='join-tournament'),
-    # path('api/tournaments/<str:tournament_name>/leave_tournament/', TournamentViewSet.as_view({'post': 'leave_tournament'}), name='leave-tournament'),
 
     path('api/twoplayeronline/', TwoPlayersOnlineView.as_view()),
     path('api/fourplayeronline/', FourPlayersOnlineView.as_view()),
-	
+
     path('api/tournamentOnline/', TournamentOnline.as_view()),
+
+    path('api/changestatus/', UpdateStatus.as_view()),
 		
     path('api/pong_IA/', Pong_IAView.as_view()),
 

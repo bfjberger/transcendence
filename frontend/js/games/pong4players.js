@@ -3,9 +3,13 @@ import Player, {
 	default_paddle_width,
 } from "./Player.js"; // Import the Player class from Player
 
+import * as constants from './Constants.js'
+
 var g_game;
 var g_startButton;
 var g_template_text;
+
+var g_player_status;
 
 class PongGame4Players {
 	constructor(player_left_name, player_right_name, player_top_name, player_bottom_name) {
@@ -18,10 +22,10 @@ class PongGame4Players {
 		[this.playerVelocityY, this.paddleSpeed] = [0, this.boardHeight / 100]; // overriden by movePlayer()
 		[this.player_left, this.player_right, this.player_top, this.player_bottom] =
 			[
-				new Player(player_left_name, "orange", false),
-				new Player(player_right_name, "blue", false),
-				new Player(player_top_name, "violet", true),
-				new Player(player_bottom_name, "red", true)
+				new Player(player_left_name, constants.FOUR_PLAYER_LEFT_COLOR, false),
+				new Player(player_right_name, constants.FOUR_PLAYER_RIGHT_COLOR, false),
+				new Player(player_top_name, constants.FOUR_PLAYER_TOP_COLOR, true),
+				new Player(player_bottom_name, constants.FOUR_PLAYER_BOTTOM_COLOR, true)
 			];
 		this.winner = null;
 		this.keysPressed = {};
@@ -34,9 +38,10 @@ class PongGame4Players {
 	}
 
 	init() {
+		this.start = true;
+
 		this.setBoard();
 
-		this.start = true;
 		requestAnimationFrame(this.update.bind(this));
 		document.addEventListener("keydown", this.pressKey.bind(this));
 		document.addEventListener("keydown", this.handleKeyPress.bind(this));
@@ -49,7 +54,26 @@ class PongGame4Players {
 		this.context = this.board.getContext("2d");
 
 		this.setPlayer();
-		this.setBall();
+		this.countdown();
+	}
+
+	countdown() {
+		let count = 0;
+		let interval = setInterval(() => {
+			if (this.start === false)
+				return;
+
+			count++;
+
+			document.getElementById("canvas--text").textContent = "La partie commence dans " + (5 - count);
+
+			if (count === 5) {
+				clearInterval(interval);
+				document.getElementById("canvas--text").textContent = "";
+
+				this.setBall();
+			}
+		}, 1000);
 	}
 
 	setPlayer() {
@@ -187,13 +211,20 @@ class PongGame4Players {
 	}
 
 	checkCollisions() {
+
+		var middle_y, difference_in_y, new_y_vel, reduction_factor;
 		// Ball and paddle collision (player_left and player_right)
 		if (this.ball.velocityX < 0) {
 			if (this.ball.y <= this.player_left.coords.y + default_paddle_height &&
 				this.ball.y >= this.player_left.coords.y && this.ball.x > this.player_left.coords.x &&
 				this.ball.x - this.ball.radius <= this.player_left.coords.x + default_paddle_width) {
 					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX; // reverse ball direction
-					this.ball.velocityY *= this.ballSpeedMultiplierY;
+					// this.ball.velocityY *= this.ballSpeedMultiplierY;
+					middle_y = this.player_left.coords.y + default_paddle_height / 2;
+					difference_in_y = middle_y - this.ball.y;
+					reduction_factor = default_paddle_height / 2;
+					new_y_vel = difference_in_y / reduction_factor;
+					this.ball.velocityY = -1 * new_y_vel;
 					this.lastPlayerTouched = "player_left";
 					this.ball.color = this.player_left.color;
 			}
@@ -203,18 +234,29 @@ class PongGame4Players {
 				this.ball.y >= this.player_right.coords.y && this.ball.x < this.player_right.coords.x &&
 				this.ball.x + this.ball.radius >= this.player_right.coords.x) {
 					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX; // reverse ball direction
-					this.ball.velocityY *= this.ballSpeedMultiplierY;
+					// this.ball.velocityY *= this.ballSpeedMultiplierY;
+					middle_y = this.player_right.coords.y + default_paddle_height / 2;
+					difference_in_y = middle_y - this.ball.y;
+					reduction_factor = default_paddle_height / 2;
+					new_y_vel = difference_in_y / reduction_factor;
+					this.ball.velocityY = -1 * new_y_vel;
 					this.lastPlayerTouched = "player_right";
 					this.ball.color = this.player_right.color;
 			}
 		}
 
+		var middle_x, difference_in_x, new_x_vel;
 		// Ball and paddle collision (player_top and player_bottom)
 		if (this.ball.velocityY < 0) {
 			if (this.ball.x <= this.player_top.coords.x + default_paddle_height &&
 				this.ball.x >= this.player_top.coords.x && this.ball.y > this.player_top.coords.y &&
 				this.ball.y - this.ball.radius <= this.player_top.coords.y + default_paddle_width) {
-					this.ball.velocityX *= this.ballSpeedMultiplierX;
+					// this.ball.velocityX *= this.ballSpeedMultiplierX;
+					middle_x = this.player_top.coords.x + default_paddle_height / 2;
+					difference_in_x = middle_x - this.ball.x;
+					reduction_factor = default_paddle_height / 2;
+					new_x_vel = difference_in_x / reduction_factor;
+					this.ball.velocityX = -1 * new_x_vel;
 					this.ball.velocityY *= -1 * this.ballSpeedMultiplierY; // reverse ball direction
 					this.lastPlayerTouched = "player_top";
 					this.ball.color = this.player_top.color;
@@ -224,7 +266,12 @@ class PongGame4Players {
 			if (this.ball.x <= this.player_bottom.coords.x + default_paddle_height &&
 				this.ball.x >= this.player_bottom.coords.x && this.ball.y < this.player_bottom.coords.y &&
 				this.ball.y + this.ball.radius >= this.player_bottom.coords.y) {
-					this.ball.velocityX *= this.ballSpeedMultiplierX;
+					// this.ball.velocityX *= this.ballSpeedMultiplierX;
+					middle_x = this.player_bottom.coords.x + default_paddle_height / 2;
+					difference_in_x = middle_x - this.ball.x;
+					reduction_factor = default_paddle_height / 2;
+					new_x_vel = difference_in_x / reduction_factor;
+					this.ball.velocityX = -1 * new_x_vel;
 					this.ball.velocityY *= -1 * this.ballSpeedMultiplierY; // reverse ball direction
 					this.lastPlayerTouched = "player_bottom";
 					this.ball.color = this.player_bottom.color;
@@ -267,7 +314,7 @@ class PongGame4Players {
 		this.context.setLineDash([5, 15]); // set the line to be a dashed line
 		this.context.moveTo(this.boardWidth / 2, 0);
 		this.context.lineTo(this.boardWidth / 2, this.boardHeight);
-		this.context.strokeStyle = "white";
+		this.context.strokeStyle = "lightrgray";
 		this.context.stroke();
 		this.context.setLineDash([]); // reset the line to be solid for other drawings
 
@@ -275,16 +322,15 @@ class PongGame4Players {
 		this.context.setLineDash([5, 15]); // set the line to be a dashed line
 		this.context.moveTo(0, this.boardHeight / 2);
 		this.context.lineTo(this.boardWidth, this.boardHeight / 2);
-		this.context.strokeStyle = "white";
+		this.context.strokeStyle = "lightrgray";
 		this.context.stroke();
 		this.context.setLineDash([]); // reset the line to be solid for other drawings
 
-		this.context.font = "20px sans-serif";
-		this.context.fillStyle = "black";
-		this.context.fillText(this.player_left.score, 10, this.boardHeight / 2);
-		this.context.fillText(this.player_right.score, this.boardWidth - 20, this.boardHeight / 2);
-		this.context.fillText(this.player_top.score, this.boardWidth / 2, 20);
-		this.context.fillText(this.player_bottom.score, this.boardWidth / 2, this.boardHeight - 20);
+		// Change the scores on the page
+		document.getElementById("four__local--top--score").textContent = this.player_top.score;
+		document.getElementById("four__local--right--score").textContent = this.player_right.score;
+		document.getElementById("four__local--bottom--score").textContent = this.player_bottom.score;
+		document.getElementById("four__local--left--score").textContent = this.player_left.score;
 	}
 
 	gameOver() {
@@ -314,28 +360,77 @@ class PongGame4Players {
 		this.lastPlayerTouched = null;
 	};
 
-	update() {
-		this.context.clearRect(0, 0, this.boardWidth, this.boardHeight);
-		this.movePlayer();
-		this.moveBall();
-		this.draw();
-		this.gameOver();
-		if (this.winner != null) {
-			this.ball.velocityX = 0;
-			this.ball.velocityY = 0;
-			g_template_text.textContent = this.winner.name + " a gagné !!";
-			g_template_text.style.color = this.winner.color;
-			g_startButton.classList.remove("d-none");
-		}
-		else {
-			requestAnimationFrame(this.update.bind(this));
+	async update() {
+		if (this.start) {
+			this.context.clearRect(0, 0, this.boardWidth, this.boardHeight);
+			this.movePlayer();
+			this.moveBall();
+			this.draw();
+			this.gameOver();
+			if (this.winner != null) {
+				this.ball.velocityX = 0;
+				this.ball.velocityY = 0;
+				g_template_text.textContent = this.winner.name + " a gagné !!";
+				g_template_text.style.color = this.winner.color;
+				g_startButton.classList.remove("d-none");
+				await updateStatus();
+			}
+			else {
+				requestAnimationFrame(this.update.bind(this));
+			}
 		}
 	};
 };
 
+/*
+	Event listener for reload
+*/
+function handlePageReload() {
+	if (window.location.pathname === "/fourplayers/") {
+		if (g_player_status === "PLAYING") {
+			updateStatus();
+		}
+	}
+};
+
+window.addEventListener('beforeunload', handlePageReload);
+
+async function updateStatus() {
+
+	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+
+	const init = {
+		method: 'PATCH',
+		headers: {
+			'Content-Type': 'applications/json',
+			'X-CSRFToken': csrftoken,
+		}
+	};
+
+	try {
+		let hostnameport = "https://" + window.location.host;
+
+		const response = await fetch(hostnameport + '/api/changestatus/', init);
+
+		if (!response.ok) {
+			const error_text = await response.text();
+			throw new Error(error_text);
+		}
+
+		if (response.status === 200) {
+			const data = await response.json();
+
+			g_player_status = data.status;
+		}
+
+	} catch (e) {
+		console.error(e);
+	}
+};
+
 function start4PlayerGame(p1_name, p2_name, p3_name, p4_name) {
 
-	if (g_game != undefined)
+	if (g_game)
 		g_game = null;
 
 	g_game = new PongGame4Players(p1_name, p2_name, p3_name, p4_name);
@@ -347,7 +442,7 @@ function listenerFourPlayers() {
 	g_startButton = document.getElementById("startGame4");
 	g_template_text = document.getElementById("template_text");
 
-	document.getElementById("four__local--left").textContent = `${sessionStorage.getItem("nickname")}: Q/A`;
+	document.getElementById("four__local--left--name").textContent = `${sessionStorage.getItem("nickname")}: Q/A`;
 
 	g_startButton.addEventListener("click", e => {
 		e.preventDefault();
@@ -357,7 +452,21 @@ function listenerFourPlayers() {
 		g_template_text.textContent = "";
 		g_template_text.style.color = "";
 
+		updateStatus();
 		start4PlayerGame(sessionStorage.getItem("nickname"), "Invité Droit", "Invité Haut", "Inivité Bas");
+	});
+
+	// Listen for a button from the menu bar being clicked
+	const navbarItems = document.querySelectorAll('.nav__item');
+	navbarItems.forEach(item => {
+		item.addEventListener('click', () => {
+			if (g_game) {
+				g_game.context.reset();
+				g_game.start = false;
+				g_game = null;
+				updateStatus();
+			}
+		});
 	});
 };
 

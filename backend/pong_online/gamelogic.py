@@ -22,6 +22,7 @@ class GameState:
 		room_name (str): The name of the room where the game is taking place.
 		ball (Ball): The ball object in the game.
 		players (dict): A dictionary with the player positions as keys and Player objects as values.
+		winner (str): The position of the player who won the game either by having the winning score or by deconnection
 		is_running (bool): Indicates whether the game is currently running.
 		winning_score (int): The score required to win the game.
 		game_history (TwoPlayersGame): The game history object to record the results of the games.

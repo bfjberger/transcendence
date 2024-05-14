@@ -25,13 +25,12 @@ pip freeze > requirements.txt
 python manage.py shell <<EOF
 from django.contrib.auth.models import User
 from players_manager.models import Player
-admin_user = User.objects.get(username='admin')
+admin_user = User.objects.get(username='$DJANGO_SUPERUSER_USERNAME')
 if not Player.objects.filter(owner=admin_user).exists():
     Player.objects.create(owner=admin_user, nickname=admin_user.username)
 EOF
 
 python manage.py runserver 0.0.0.0:8000
-echo "\n\n\n\n\n\n hello"
 # exec daphne -u /usr/backend/daphne.sock bck_django.asgi:application
 # daphne -b 0.0.0.0 -p 8001 django_project.asgi:application
 exec daphne -b 0.0.0.0 -p 8000 bck_django.asgi:application

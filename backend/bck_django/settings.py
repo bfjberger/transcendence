@@ -23,8 +23,11 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ") # 127.0.0.1 et 10.11.1.2
-CSRF_TRUSTED_ORIGINS = ["https://localhost", "http://localhost"]
-CSRF_ALLOWED_ORIGINS = ["https://localhost", "http://localhost"]
+urls = os.environ.get("HOSTS_CORS").split(" ")
+urls_with_https = ["https://" + url for url in urls]
+
+CSRF_TRUSTED_ORIGINS = ["https://localhost", "http://localhost"] + urls_with_https
+CSRF_ALLOWED_ORIGINS = ["https://localhost", "http://localhost"] + urls_with_https
 
 
 SESSION_COOKIE_SECURE = True
