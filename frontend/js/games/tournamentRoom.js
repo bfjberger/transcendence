@@ -91,9 +91,9 @@ const on_load_lobby = (arg) => {
 	update_lobby_ui(arg);
 }
 
-const on_load_playground = (arg) => {
-	console.log('on_load_playground', arg);
-	load_playground().then(() => {
+const on_load_game = (arg) => {
+	console.log('on_load_game', arg);
+	load_game().then(() => {
 		g_socket.send(JSON.stringify({ event: 'tournament_start' }));
 	});
 }
@@ -109,12 +109,20 @@ const on_tournament_end = (arg) => {
 	g_socket.close();
 }
 
+// MATCH INFO for brackets
+const on_matchs_info = (arg) => {
+	console.log('on_matchs_info', arg);
+	console.log(arg['DEMI_FINALS1']);
+	// console.log(arg['DEMI_FINALS2'][0]);
+}
+
 let on_message_handlers = [
 	{ type: 'players_update', handler: on_players_update },
 	{ type: 'load_lobby', handler: on_load_lobby },
-	{ type: 'load_playground', handler: on_load_playground },
+	{ type: 'load_game', handler: on_load_game },
 	{ type: 'tournament_start', handler: on_tournament_start },
 	{ type: 'tournament_end', handler: on_tournament_end },
+	{ type: 'matchs_info', handler: on_matchs_info },
 ];
 
 
@@ -160,7 +168,7 @@ const load_create_online = () => {
 
 
 
-const load_playground = () => {
+const load_game = () => {
 	on_message_handlers = [...on_message_handlers,
 		{ type: 'set_position', handler: window.tournamentEvents.on_set_position },
 		{ type: 'game_start', handler: window.tournamentEvents.on_game_start },
@@ -195,7 +203,7 @@ const connect_socket = (tournament_name) => {
 
 const start_online_tournament = () => {
     if (g_socket instanceof WebSocket && g_socket.readyState === WebSocket.OPEN) {
-        g_socket.send(JSON.stringify({ event: 'load_playground' }));
+        g_socket.send(JSON.stringify({ event: 'load_game' }));
     } else {
         console.error('Cannot send message: WebSocket is not open');
     }
