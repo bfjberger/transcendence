@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'games_manager',
 	'tournament',
     'friends_manager',
+	'pong_IA',
 
 ]
 
