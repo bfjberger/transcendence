@@ -15,12 +15,12 @@ export default function renderTwoPlayers() {
 			<div class="col-4"></div>
 		</div>
 		<div class="row">
-			<div class="col text-end text-warning align-self-center h3" id="two__local--left">
+			<div id="two__local--left" class="col text-end align-self-center h3" style="color: blue">
 				Joueur Gauche: W/S
 			</div>
 			<div class="col d-flex justify-content-center align-items-center">
 				<div class="position-absolute">
-					<button class="btn btn-danger" type="button" id="startGame2">Commencer une partie</button>
+					<button type="button" id="startGame2" class="btn btn-danger">Commencer une partie</button>
 				</div>
 				<div id="canvas--text" class="position-absolute h2">
 				</div>
@@ -28,7 +28,7 @@ export default function renderTwoPlayers() {
 					<canvas id="board_two" width="650" height="480"></canvas>
 				</div>
 			</div>
-			<div class="col text-start align-self-center text-primary h3">
+			<div class="col text-start align-self-center h3" style="color: orange">
 				Joueur Invité: O/L
 			</div>
 		</div>

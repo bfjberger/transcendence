@@ -67,18 +67,18 @@ async function loadStats() {
 		}
 		const data = await response.json();
 
-		g_games_2p = data["player"].nb_games_2p;
+		g_games_2p = data["stats"].nb_games_2p;
 		if (g_games_2p !== 0)
-			g_ratio_2p = Number(((data["player"].nb_games_2p_won / g_games_2p) * 100).toFixed(2));
+			g_ratio_2p = Number(((data["stats"].nb_games_2p_won / g_games_2p) * 100).toFixed(2));
 		else
 			g_ratio_2p = "no data";
-		g_games_4p = data["player"].nb_games_4p;
+		g_games_4p = data["stats"].nb_games_4p;
 		if (g_games_4p !== 0)
-			g_ratio_4p = Number(((data["player"].nb_games_4p_won / g_games_4p) * 100).toFixed(2));
+			g_ratio_4p = Number(((data["stats"].nb_games_4p_won / g_games_4p) * 100).toFixed(2));
 		else
 			g_ratio_4p = "no data";
-		g_points_2p = data["player"].nb_points_2p;
-		g_points_4p = data["player"].nb_points_4p;
+		g_points_2p = data["stats"].nb_points_2p;
+		g_points_4p = data["stats"].nb_points_4p;
 
 		return 1;
 	} catch (e) {

@@ -106,13 +106,19 @@ class DataSerializer(serializers.ModelSerializer):
             'status': player.status,
             'nickname': player.nickname,
             'avatar': player.avatar.url,
-            'nb_games_2p': player.nb_games_2p,
-            'nb_games_2p_lost': player.nb_games_2p_lost,
-            'nb_games_2p_won': player.nb_games_2p_won,
-            'nb_points_2p': player.nb_points_2p,
-            'nb_games_4p': player.nb_games_4p,
-            'nb_games_4p_won': player.nb_games_4p_won,
-            'nb_games_4p_lost': player.nb_games_4p_lost,
-            'nb_points_4p': player.nb_points_4p,
         }
         return player_data
+
+class StatsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Player
+        fields = [
+                    'nb_games_2p',
+                    'nb_games_2p_lost',
+                    'nb_games_2p_won',
+                    'nb_points_2p',
+                    'nb_games_4p',
+                    'nb_games_4p_won',
+                    'nb_games_4p_lost',
+                    'nb_points_4p'
+                ]
