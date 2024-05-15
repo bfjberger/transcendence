@@ -95,10 +95,6 @@ async function createUser(createAccountForm) {
 			return;
 		}
 		if (response.status === 201) {
-			// register is successful -> redirect to profile
-
-			const data = await response.json();
-			// sessionStorage.setItem("username", data.username); pas necessaire comme oblige de login et alors recoit infos importantes
 
 			document.getElementById("form__createAccount--msg").innerHTML = "Ton compte à été créé ! Tu peux te logger.";
 			document.getElementById("form__createAccount--msg").classList.remove("text-danger");

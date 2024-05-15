@@ -34,16 +34,25 @@ export { g_username, g_nickname, g_socket };
 /* ----------------------------------- UI ----------------------------------- */
 
 // To replace the current div that shows players later on
-const create_player_div = (player, nickname, is_owner) => {
-	const div = document.createElement('div');
+const create_player_div = (player, nickname, is_owner, actual_owner) => {
+	const div = document.createElement("div");
 
-	if (is_owner) {
-		div.classList.add('owner');
+	if (is_owner && g_username == actual_owner) {
+		div.className = "owner row align-items-center py-3";
+		div.innerHTML = `
+				<div class="h3">
+					${nickname}
+					<button id="start-btn" class="btn btn-warning">COMMENCER</button>
+					<button id="delete-btn" class="btn btn-danger">SUPPRIMER</button>
+				</div>
+			`;
 	}
-	div.innerHTML = `
-		<h3>PLAYER: ${player}</h3>
-		<div>NICKNAME: ${nickname}</div>
-	`
+	else {
+		div.className = "row align-items-center py-3";
+		div.innerHTML = `
+			<div class="h3">${nickname}</div>
+		`;
+	}
 	return div;
 }
 
@@ -59,19 +68,15 @@ const create_owner_btns = () => {
 
 // Might change depending on the room ui
 const update_lobby_ui = (room) => {
-	const lobby_container = document.getElementById('lobby-container');
+	const lobby_container = document.getElementById("tournament__room--main");
 
-	if (!lobby_container) {
-		return;
-	}
-	lobby_container.innerHTML = '';
 	room.players.forEach((player, i) => {
 		const is_owner = player === room.owner;
-		lobby_container.appendChild(create_player_div(player, room.nicknames[i], is_owner));
+		lobby_container.appendChild(create_player_div(player, room.nicknames[i], is_owner, room.owner));
 	})
 
 	if (room.owner === g_username) {
-		lobby_container.appendChild(create_owner_btns());
+		// lobby_container.appendChild(create_owner_btns());
 		add_start_and_delete_buttons_listeners();
 	}
 }
@@ -159,8 +164,12 @@ function set_g_tournament_name() {
 }
 
 const load_create_online = () => {
-	return loadContent2(renderTournamentLobby, 'tournament-room')
-	.then(set_g_username)
+	// return loadContent2(renderTournamentLobby, 'tournament-room')
+	// .then(set_g_username)
+	// .then(set_g_tournament_name)
+	// .then(connect_socket)
+	// .catch(console.error)
+	return set_g_username()
 	.then(set_g_tournament_name)
 	.then(connect_socket)
 	.catch(console.error)
@@ -264,7 +273,7 @@ function listenerTournamentRoom() {
 	});
 
 	// !!! not working
-	// // Close the socket when the user leaves the page 
+	// // Close the socket when the user leaves the page
 	// console.log("Enter listenerTournamentRoom");
 	// window.addEventListener('beforeunload', () => {
 	// 	window.alert('You have left the tournament room');
@@ -279,6 +288,7 @@ function listenerTournamentRoom() {
 async function loadTournamentRoom(tournament_name) {
 	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
+	document.getElementById("tournament__room--name").textContent = tournament_name;
 
 	window.startTournamentOnline = startTournamentOnline;
 	window.tournamentEvents = {

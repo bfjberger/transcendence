@@ -1,6 +1,7 @@
 import { renderTournamentRoom } from '../views/viewTournament.js';
 import { renderTournamentOnline } from '../views/viewTournament.js';
 import { renderTournamentLobby } from '../views/viewTournament.js';
+import { renderTournamentOnlineLobby } from "../views/viewTournament.js";
 
 import handleRoom from './tournamentRoom.js';
 
@@ -150,7 +151,8 @@ function joinRoom(tournamentName) {
 				// Handle success response
 				tournament_name = tournamentName;
 				console.log('Successfully joined tournament: ', tournament_name);
-				loadContent(renderTournamentRoom, 'main__content');
+				// loadContent(renderTournamentRoom, 'main__content');
+				loadContent(renderTournamentOnlineLobby, "main__content");
 				handleRoom.listenerTournamentRoom();
 				handleRoom.loadTournamentRoom(tournament_name);
 			} else {

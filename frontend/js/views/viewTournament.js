@@ -24,6 +24,45 @@ export function renderTournamentOnline() {
 	`;
 }
 
+function renderTournamentOnlineLobby() {
+	return `
+		<div class="row pt-3">
+			<div class="col-4"></div>
+			<div id="tournament__room--name" class="col-4 text-center h2"></div>
+			<div class="col-4"></div>
+		</div>
+		<div id="tournament__room--main" class="row pt-3">
+		</div>
+		<div id="tournament__room--brackets" class="container">
+		</div>
+	`;
+};
+
+// to be put in tournament__room--main instead of the list of the players once the tournament is started
+function renderTournamentOnlineGame() {
+	return `
+		<div class="row pt-3">
+			<div class="col-4"></div>
+			<div id="template__text" class="col-4 text-center h2" style="color: red"></div>
+			<div id="template__text--next" class="col-3 text-center h4"></div>
+			<div class="col-1"></div>
+		</div>
+		<div class="row">
+			<div id="tournament__left" class="col text-end align-self-center h3" style="color: blue">
+			</div>
+			<div class="col d-flex justify-content-center align-items-center">
+				<div id="canvas--text" class="position-absolute h2">
+				</div>
+				<div class="text-bg-success border border-black border-5">
+					<canvas id="board_two" width="650" height="480"></canvas>
+				</div>
+			</div>
+			<div id="tournament__right" class="col text-start align-self-center h3" style="color: orange">
+			</div>
+		</div>
+	`;
+};
+
 export function renderTournamentRoom() {
 	return `
 			<div id="tournament-room">
@@ -42,6 +81,108 @@ export function renderTournamentRoom() {
 			</div>
 		`
 }
+
+function renderTournamentBracketsEight() {
+	return `
+		<div class="row">
+			<div class="col d-flex justify-content-center align-items-center">
+				<ul class="list-group font-monospace border rounded border-0" id="quarter__brackets">
+					<li id="quarter__seed1--1--main" class="list-group-item border rounded PlayerBracket__1">
+						<span id="quarter__seed1--1--name"></span>
+						<span>&nbsp;</span>
+						<span id="quarter__seed1--1--score">0</span>
+					</li>
+					<li id="quarter__seed1--2--main" class="list-group-item border rounded PlayerBracket__2">
+						<span id="quarter__seed1--2--name"></span>
+						<span>&nbsp;</span>
+						<span id="quarter__seed1--2--score">0</span>
+					</li>
+					<li class="list-group-item border-0 BracketSpacer"></li>
+					<li id="quarter__seed2--1--main" class="list-group-item border rounded PlayerBracket__3">
+						<span id="quarter__seed2--1--name"></span>
+						<span>&nbsp;</span>
+						<span id="quarter__seed2--1--score">0</span>
+					</li>
+					<li id="quarter__seed2--2--main" class="list-group-item border rounded PlayerBracket__4">
+						<span id="quarter__seed2--2--name"></span>
+						<span>&nbsp;</span>
+						<span id="quarter__seed2--2--score">0</span>
+					</li>
+					<li class="list-group-item border-0 BracketSpacer"></li>
+					<li id="quarter__seed3--1--main" class="list-group-item border rounded PlayerBracket__5">
+						<span id="quarter__seed3--1--name"></span>
+						<span>&nbsp;</span>
+						<span id="quarter__seed3--1--score">0</span>
+					</li>
+					<li id="quarter__seed3--2--main" class="list-group-item border rounded PlayerBracket__6">
+						<span id="quarter__seed3--2--name"></span>
+						<span>&nbsp;</span>
+						<span id="quarter__seed3--2--score">0</span>
+					</li>
+					<li class="list-group-item border-0 BracketSpacer"></li>
+					<li id="quarter__seed4--1--main" class="list-group-item border rounded PlayerBracket__7">
+						<span id="quarter__seed4--1--name"></span>
+						<span>&nbsp;</span>
+						<span id="quarter__seed4--1--score">0</span>
+					</li>
+					<li id="quarter__seed4--2--main" class="list-group-item border rounded PlayerBracket__8">
+						<span id="quarter__seed4--2--name"></span>
+						<span>&nbsp;</span>
+						<span id="quarter__seed4--2--score">0</span>
+					</li>
+				</ul>
+			</div>
+			<div class="col d-flex justify-content-center align-items-center">
+				<ul class="list-group font-monospace border rounded border-0" id="demi__brackets">
+					<li id="demi__seed1--1--main" class="list-group-item border rounded PlayerBracket__1">
+						<span id="demi__seed1--1--name">Demi-Finaliste 1 seed 1</span>
+						<span>&nbsp;</span>
+						<span id="demi__seed1--1--score"></span>
+					</li>
+					<li id="demi__seed1--2--main" class="list-group-item border rounded PlayerBracket__2">
+						<span id="demi__seed1--2--name">Demi-Finaliste 2 seed 1</span>
+						<span>&nbsp;</span>
+						<span id="demi__seed1--2--score"></span>
+					</li>
+					<li class="list-group-item border-0 BracketSpacer"></li>
+					<li id="demi__seed2--1--main" class="list-group-item border rounded PlayerBracket__3">
+						<span id="demi__seed2--1--name">Demi-Finaliste 1 seed 2</span>
+						<span>&nbsp;</span>
+						<span id="demi__seed2--1--score"></span>
+					</li>
+					<li id="demi__seed2--2--main" class="list-group-item border rounded PlayerBracket__4">
+						<span id="demi__seed2--2--name">Demi-Finaliste 2 seed 2</span>
+						<span>&nbsp;</span>
+						<span id="demi__seed2--2--score"></span>
+					</li>
+				</ul>
+			</div>
+			<div class="col d-flex justify-content-center align-items-center">
+				<ul class="list-group font-monospace border rounded border-0" id="final__brackets">
+					<li id="final__1--main" class="list-group-item border rounded PlayerBracket__1">
+						<span id="final__1--name">Finaliste 1</span>
+						<span>&nbsp;</span>
+						<span id="final__1--score"></span>
+					</li>
+					<li id="final__2--main" class="list-group-item border rounded PlayerBracket__2">
+						<span id="final__2--name">Finaliste 2</span>
+						<span>&nbsp;</span>
+						<span id="final__2--score"></span>
+					</li>
+				</ul>
+			</div>
+			<div class="col d-flex justify-content-center align-items-center">
+				<ul class="list-group font-monospace border rounded border-0" id="winner__main">
+					<li class="list-group-item border rounded PlayerBracket__1 bg-warning-subtle">
+						<span id="winner__name">Vainqueur</span>
+						<span>&nbsp;</span>
+						<img src="/frontend/img/trophy-fill-Bootstrap.svg" alt="trophy" width="15" height="15" class="">
+					</li>
+				</ul>
+			</div>
+		</div>
+	`;
+};
 
 function renderTournamentBracketsFour() {
 	return `
@@ -124,3 +265,10 @@ export default {
 	renderTournamentRoom,
 	renderTournamentLobby
 }
+
+export {
+	renderTournamentBracketsEight,
+	renderTournamentBracketsFour,
+	renderTournamentOnlineLobby,
+	renderTournamentOnlineGame
+};
