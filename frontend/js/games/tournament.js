@@ -1,4 +1,4 @@
-import bracketGraph from "./bracket.js";
+import router from "../logic/router.js";
 import Player from "./Player.js";
 import { PongGame2Players, updateStatus } from "./pong2players.js";
 import {
@@ -184,7 +184,7 @@ class Tournament {
 		}
 		else if (this.nb_players == 8 && this.match_played == 7 || this.nb_players == 4 && this.match_played == 3) {
 			this.updateFinalBracket();
-			document.getElementById("template__text--next").textContent = "";
+			this.countdown();
 		}
 	}
 
@@ -351,6 +351,21 @@ class Tournament {
 		}
 		document.getElementById("final__1--score").textContent = this.final.topScore;
 		document.getElementById("final__2--score").textContent = this.final.bottomScore;
+	}
+
+	countdown() {
+		let count = 0;
+		let interval = setInterval(() => {
+			count++;
+
+			document.getElementById("template__text--next").textContent = "Tu reviens à la page de Tournoi dans " + (15 - count);
+
+			if (count == 15) {
+				clearInterval(interval);
+
+				router("tournament");
+			}
+		}, 1000);
 	}
 };
 
