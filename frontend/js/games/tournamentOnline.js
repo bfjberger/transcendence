@@ -52,9 +52,6 @@ function createTournament() {
 	// const visibility = document.querySelector('input[name="visibility"]:checked').value;
 	// const password = document.getElementById('password').value;
 	
-	let hostnameport = "https://" + window.location.host
-
-
 	fetch('/api/tournaments/', {
 		method: 'POST',
 		headers: {
@@ -80,8 +77,6 @@ function createTournament() {
 
 // Function to list all tournaments
 function loadTournaments() {
-
-	let hostnameport = "https://" + window.location.host
 
 	fetch('/api/tournaments/load_tournaments/') 
 		.then(response => response.json())
@@ -231,7 +226,6 @@ function listPlayersInRoom() {
 		.catch(error => {
 			console.error('Error:', error);
 		});
-
 }
 
 /* ---------------------------------- Utils --------------------------------- */
@@ -277,7 +271,6 @@ async function loadTournamentOnline() {
 	};
 
 	try {
-		// const response = await fetch(`https://${window.location.host}/api/tournamentOnline/`, init); //! Change this to the correct URL
 		const response = await fetch('/api/tournamentOnline/', init);
 
 		if (!response.ok) {

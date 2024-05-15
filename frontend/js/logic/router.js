@@ -7,6 +7,7 @@ import renderTournament from "../views/viewTournament.js"
 import renderTwoPlayers from "../views/viewTwoPlayers.js"
 import renderTwoOnline from "../views/viewTwoOnline.js"
 import renderGameHistory from "../views/ViewGameHistory.js"
+import render404_error from "../views/view404_error.js"
 import renderPong_IA from "../views/viewPong_IA.js"
 import renderStats from "../views/viewStats.js"
 import renderUpdateInfo from "../views/viewUpdateInfo.js"
@@ -24,6 +25,7 @@ import handleTwoPlayers from "../games/pong2players.js"
 import handleFourPlayers from "../games/pong4players.js"
 import handleTwoPlayersOnline from "../games/pong2playersonline.js"
 import handleFourPlayersOnline from "../games/pong4playersonline.js"
+import handle404_error from "./404_error.js"
 import handlePong_IA from "../games/pong_IA.js"
 
 // Cas particulier pour index
@@ -111,6 +113,13 @@ const routes = {
 		load: handleFourPlayersOnline.loadFourPlayersOnline,
 		listener: handleFourPlayersOnline.listenerFourPlayersOnline
 	},
+	"404_error": {
+		title: "404 error",
+		path: "/404_error/",
+		view: render404_error,
+		load: handle404_error.load404_error,
+		listener: handle404_error.listener404_error
+	},
 	"pong_IA": {
 		title: "1 Joueur contre l'IA",
 		path: "/pong_IA/",
@@ -173,13 +182,16 @@ async function handleLogout() {
  * If the load function returns 1 (the user can access it), render the view of the page
 */
 export default async function router(value) {
+	console.log("router activé " + value)
 
 	var page = routes[value];
+	console.log("router activé " + page)
 
 	if (!page)
 		return;
 
 	if (await page.load() === 1) {
+		console.log("value = " + value)
 		document.getElementById("main__content").innerHTML = page.view();
 
 		document.getElementById("topbar__profile--username").textContent =
@@ -200,6 +212,81 @@ export default async function router(value) {
 		router("login");
 	}
 };
+
+/**
+ * Event listener for popstate event
+
+*/
+window.addEventListener("popstate", async (e) => {
+	e.preventDefault();
+	
+
+	// Get the current url, remove all '/' and if the url is null assign it to 'index'
+	let url = window.location.pathname.replaceAll("/", "");
+	if (url === "")
+		url = "index";
+
+	var page = routes[url];
+
+	if (!page)
+		return;
+
+	if (await page.load() === 1) {
+		document.getElementById("main__content").innerHTML = page.view();
+
+		document.getElementById("navbar__btn--text").textContent = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
+		document.getElementById("navbar__btn--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
+		document.getElementById("navbar__btn--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
+
+		document.title = page.title;
+
+		page.listener();
+	}
+	else
+		loadIndex();
+});
+
+/**
+ * Event listener for window.onload event
+ * Load the page that the user is currently on
+ * If the user is logged in, load the page that the user is currently on
+ * If the user is not logged in, redirect to the login page
+*/
+window.onload = async function()
+{
+	const currentPath = window.location.pathname;
+
+	var found = false
+
+	for (const route in routes)
+	{
+		if (routes[route].path === currentPath)
+		{
+			if (await routes[route].load() === 1)
+			{
+
+				found = true
+				document.getElementById('main__content').innerHTML = routes[route].view();  // Render the HTML content for the page
+				
+				document.getElementById("navbar__btn--text").textContent = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
+				document.getElementById("navbar__btn--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
+				document.getElementById("navbar__btn--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
+
+				document.title = routes[route].title;
+				routes[route].listener();  // Attach event listeners
+			}
+			else
+				router("login");
+			break;
+		}
+	}
+	if (found == false)
+	{
+		router("404_error")
+	}
+};
+
+
 
 /**
  * Load index function
@@ -264,12 +351,13 @@ async function load42Profile(code)
 			// router("index");
 		}
 
-		if (response.status == 401) {
+		else if (response.status == 401) {
 			const data = await response.json();
 
 			window.alert(data);
 		}
-		else {
+
+		else if (!response.ok) {
 			throw new Error(`HTTP error, status = ${response.status}`);
 		}
 
