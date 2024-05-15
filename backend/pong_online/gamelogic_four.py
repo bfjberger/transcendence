@@ -340,7 +340,7 @@ class GameStateFour:
 						if (abs(self.x_vel) >= 20):
 							self.x_vel *= -1
 						self.x_vel *= -1 * self.speed_multiplier_x
-						middle_y = player_left.y + PADDLE_HEIGHT / 2
+						middle_y = player_right.y + PADDLE_HEIGHT / 2
 						difference_in_y = middle_y - self.y
 						reduction_factor = PADDLE_HEIGHT / 2
 						new_y_vel = difference_in_y / reduction_factor * self.speed
