@@ -15,7 +15,7 @@ services:
     volumes:
       - ./frontend/:/var/frontend/
       - ./backend/staticfiles/:/var/backend/staticfiles/
-      - ./backend/avatars/:/var/backend/avatars
+      
   bck_django:
     container_name: bck_django
     build:

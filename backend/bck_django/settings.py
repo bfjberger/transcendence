@@ -17,14 +17,28 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.0/howto/static-files/
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = 'static/'
 
+MEDIA_URL = ""
+MEDIA_ROOT = os.path.join(BASE_DIR, "")
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 DEBUG = False
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ") # 127.0.0.1 et 10.11.1.2
-CSRF_TRUSTED_ORIGINS = ["https://localhost", "http://localhost"]
-CSRF_ALLOWED_ORIGINS = ["https://localhost", "http://localhost"]
+urls = os.environ.get("HOSTS_CORS").split(" ")
+urls_with_https = ["https://" + url for url in urls]
+
+CSRF_TRUSTED_ORIGINS = ["https://localhost", "http://localhost"] + urls_with_https
+CSRF_ALLOWED_ORIGINS = ["https://localhost", "http://localhost"] + urls_with_https
+
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:80',
+# ]
 
 
 SESSION_COOKIE_SECURE = True
@@ -32,10 +46,6 @@ CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_DOMAIN = "localhost"
 
 CORS_ALLOW_ALL_ORIGINS = True
-
-# CORS_ALLOWED_ORIGINS = [
-#     "https://localhost",
-# ]
 
 SITE_ID = 1
 
@@ -136,10 +146,9 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_URL = 'static/'
+
+
+# print("\n\n", STATIC_ROOT, "\n\n")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -188,7 +197,6 @@ LOGOUT_REDIRECT_URL = 'https://localhost'
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-MEDIA_URL = ""
-MEDIA_ROOT = os.path.join(BASE_DIR, "")
+
 
 TIME_ZONE = 'Europe/Zurich'

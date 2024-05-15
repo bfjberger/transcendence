@@ -8,6 +8,6 @@ RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/conf.d
 
 RUN mkdir -p /var/frontend/
-COPY frontend/ /var/frontend/
+RUN mkdir -p /var/backend/staticfiles/
 
 CMD ["nginx", "-g", "daemon off;"]
