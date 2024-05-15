@@ -28,8 +28,6 @@ class IndexAction(APIView):
 	def get(self, request):
 		if self.request.user.is_authenticated:
 			player = Player.objects.get(owner=self.request.user)
-			serializer_player = PlayerSerializer(player)
-			serializer_user = UserSerializer(self.request.user)
 			data_serializer = DataSerializer(self.request.user)
 			return Response(data=data_serializer.data, status=status.HTTP_202_ACCEPTED)
 
@@ -138,34 +136,41 @@ class ProfileUpdateAvatarView(APIView):
 class TwoPlayers(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]
-	serializer_class = PlayerSerializer
+	serializer_class = DataSerializer
 
 	def get(self, request):
-		serializer_data = DataSerializer(self.request.user)
-		return Response(data=serializer_data.data, status=status.HTTP_200_OK)
+		try :
+			serializer_player = DataSerializer(self.request.user)
+		except :
+			return Response(None, status=status.HTTP_400_BAD_REQUEST)
+		return Response(data=serializer_player.data, status=status.HTTP_200_OK)
 
 
 class FourPlayers(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]
-	serializer_class = PlayerSerializer
+	serializer_class = DataSerializer
 
 	def get(self, request):
-		serializer_data = DataSerializer(self.request.user)
-		return Response(data=serializer_data.data, status=status.HTTP_200_OK)
+		try :
+			serializer_player = DataSerializer(self.request.user)
+		except :
+			return Response(None, status=status.HTTP_400_BAD_REQUEST)
+		return Response(data=serializer_player.data, status=status.HTTP_200_OK)
 
 
 class Tournament(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]
-	serializer_class = PlayerSerializer
+	serializer_class = DataSerializer
 
 	def get(self, request):
-		player = Player.objects.get(owner=self.request.user)
-		serializer_player = PlayerSerializer(player)
-		serializer_user = UserSerializer(self.request.user)
-		return Response(data={"player" : serializer_player.data, "user" : serializer_user.data}, status=status.HTTP_200_OK)
-
+		try :
+			serializer_player = DataSerializer(self.request.user)
+		except :
+			return Response(None, status=status.HTTP_400_BAD_REQUEST)
+		return Response(data=serializer_player.data, status=status.HTTP_200_OK)
+		
 
 class Statistiques(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
