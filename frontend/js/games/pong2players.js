@@ -182,7 +182,7 @@ class PongGame2Players {
 					new_y_vel = difference_in_y / reduction_factor * this.ballSpeed;
 					this.ball.velocityY = -1 * new_y_vel;
 					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX;
-					
+
 			}
 		}
 		else {
@@ -197,8 +197,8 @@ class PongGame2Players {
 					reduction_factor = default_paddle_height / 2;
 					new_y_vel = difference_in_y / reduction_factor * this.ballSpeed;
 					this.ball.velocityY = -1 * new_y_vel;
-					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX;	
-					
+					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX;
+
 			}
 		}
 	};
@@ -270,7 +270,7 @@ class PongGame2Players {
 			this.moveBall();
 			this.draw();
 			var winner = this.gameOver();
-			winner.then(winner => async () => {
+			winner.then(async (winner) => {
 				if (winner) {
 					if (window.location.pathname === "/twoplayers/") {
 						g_template_text.textContent = winner.name + " a gagné !!";
