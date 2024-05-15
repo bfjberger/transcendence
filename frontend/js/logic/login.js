@@ -102,7 +102,7 @@ async function createUser(createAccountForm) {
 
 			document.getElementById("form__createAccount--msg").innerHTML = "Ton compte à été créé ! Tu peux te logger.";
 			document.getElementById("form__createAccount--msg").classList.remove("text-danger");
-			document.getElementById("form__createAccount--msg").classList.add("text-info");
+			document.getElementById("form__createAccount--msg").classList.add("text-success");
 		}
 	} catch (e) {
 		console.error("Error create user: ", e);

@@ -1,21 +1,23 @@
 import bracketGraph from "./bracket.js";
 import Player from "./Player.js";
 import { PongGame2Players, updateStatus } from "./pong2players.js";
-import { renderTournamentBrackets, renderTournamentRoom } from "../views/viewTournamentLocal.js";
+import {
+	renderTournamentBracketsEight,
+	renderTournamentRoom,
+	renderTournamentBracketsFour,
+	renderTournamentCreationFour,
+	renderTournamentCreationEight
+	} from "../views/viewTournamentLocal.js";
 
 class Tournament {
-	/*
-	In the table 'rounds', the index 0 correspond to the quarters,
-		the index 1 correspond to the demi and the index 2 correspond to the final
-	*/
-	constructor() {
+	constructor(nb_players) {
+		this.nb_players = nb_players;
+		this.match_played = 0;
 		this.players = [];
 		this.matches = [];
-		this.rounds = [];
 		this.quarters = [];
 		this.demi = [];
 		this.final = null;
-		this.match_played = 0;
 		this.template_text;
 	}
 
@@ -33,16 +35,16 @@ class Tournament {
 	}
 
 	createPlayers() {
-		for (let i = 1; i <= 8; i++) {
+		for (let i = 1; i <= this.nb_players; i++) {
 			let playerName = document.getElementById(`tournament__player--${i}`).value;
 			if (playerName) {
 				let player = new Player(playerName, "white", false);
 				this.players.push(player);
 			}
 		}
-		if (this.players.length !== 8) {
+		if (this.players.length !== this.nb_players) {
 			this.players = [];
-			return ("Veuillez entrer les noms de 8 joueurs.");
+			return ("Veuillez entrer les noms de " + this.nb_players + " joueurs.");
 		}
 		if (!this.duplicateNickname()) {
 			this.players = [];
@@ -52,17 +54,21 @@ class Tournament {
 	}
 
 	startTournament() {
-		this.template_text = document.getElementById("template_text");
+		this.template_text = document.getElementById("template__text");
 
 		this.randomizePlayers();
-		this.quarters = this.createQuartersMatch(this.players);
 
-		this.addNameQuarterBrackets();
+		if (this.nb_players == 8) {
+			this.quarters = this.createMatchs(this.players);
 
-		// this.generateFirstRound(this.players);
-		// this.setRoundsNoValue(1);
-		// this.setRoundsNoValue(2);
-		// document.getElementById("tournament__room--brackets").innerHTML = bracketGraph.generateBracket(this.rounds);
+			this.addNameQuarterBrackets();
+		}
+		else if (this.nb_players == 4) {
+			this.demi = this.createMatchs(this.players);
+
+			this.addNameDemiBrackets();
+		}
+
 		this.organizeMatches();
 	}
 
@@ -73,7 +79,33 @@ class Tournament {
 		}
 	}
 
-	createQuartersMatch(players) {
+	async organizeMatches() {
+		var current_match = this.getCurrentMatch(this.match_played);
+
+		this.template_text.textContent = current_match.topTeam + " vs " + current_match.bottomTeam;
+		this.showNextMatch();
+
+		await new Promise((resolve) => setTimeout(resolve, 5000)); // wait for 5 sec
+
+		await this.gameLauncher(current_match);
+	}
+
+	showNextMatch() {
+		var template = document.getElementById("template__text--next");
+		if (this.nb_players == 8 && this.match_played <= 5 || this.nb_players == 4 && this.match_played < 2) {
+			var next_match = this.getCurrentMatch(this.match_played + 1);
+
+			if (next_match.bottomTeam != null)
+				template.textContent = "Le prochain match sera " + next_match.topTeam + " vs " + next_match.bottomTeam;
+			else
+				template.textContent = "Le prochain match sera " + next_match.topTeam + " vs le vainqueur du match actuel";
+		}
+		else if (this.nb_players == 8 && this.match_played == 6 || this.nb_players == 4 && this.match_played == 2) {
+			template.textContent = "La finale sera " + this.getCurrentMatch(this.match_played).topTeam + " vs " + this.getCurrentMatch(this.match_played).bottomTeam;
+		}
+	}
+
+	createMatchs(players) {
 		var matchs = [];
 		var match;
 
@@ -90,25 +122,6 @@ class Tournament {
 		return matchs;
 	}
 
-	async organizeMatches() {
-		var current_match = this.getCurrentMatch();
-
-		await this.gameLauncher(current_match);
-
-		// while (this.players.length >= 2) {
-		// 	let matchPlayers = this.players.splice(0, 2);
-		// 	this.matches.push(matchPlayers);
-		// }
-
-		// this.updateQuarterBrackets();
-		// if (this.players.length == 4)
-		// 	this.updateDemiBrackets();
-		// if (this.players.length == 2)
-		// 	this.updateFinalBracket();
-
-		// await this.displayNextMatch();
-	}
-
 	createMatchWithWinner(winner_name) {
 		var match = {
 			topTeam: winner_name,
@@ -121,7 +134,7 @@ class Tournament {
 	}
 
 	updateRoundsGameEnd(winner) {
-		if (this.match_played <= 4) {
+		if (this.nb_players == 8 && this.match_played <= 4) {
 			this.updateQuarterBrackets();
 
 			if (!this.demi[0]) {
@@ -153,7 +166,7 @@ class Tournament {
 				this.updateDemiBrackets();
 			}
 		}
-		else if (this.match_played <= 6) {
+		else if (this.nb_players == 8 && this.match_played <= 6 || this.nb_players == 4 && this.match_played <= 2) {
 			this.updateDemiBrackets();
 
 			if (!this.final) {
@@ -161,18 +174,18 @@ class Tournament {
 
 				this.final = this.createMatchWithWinner(winner.name);
 				this.addNameFinalBrackets();
-				this.updateFinalBracket();
 			}
 			else if (this.final.topTeam && this.final.bottomTeam == null) {
 				// The match for the final was created with his top player assigned and the bottom player not yet added
 
 				this.final.bottomTeam = winner.name;
 				this.addNameFinalBrackets();
-				this.updateFinalBracket();
 			}
 		}
-		else if (this.match_played == 7)
+		else if (this.nb_players == 8 && this.match_played == 7 || this.nb_players == 4 && this.match_played == 3) {
 			this.updateFinalBracket();
+			document.getElementById("template__text--next").textContent = "";
+		}
 	}
 
 	async gameLauncher(current_match) {
@@ -181,10 +194,32 @@ class Tournament {
 
 		this.updateRoundsGameEnd(winner);
 
-		if (this.match_played < 7)
-			this.organizeMatches();
-		else
-			this.template_text.textContent = this.final.winner + " a gagné ce tournoi.";
+		if (this.nb_players == 8) {
+			if (this.match_played < 7) {
+				this.template_text.textContent = winner.name + " a gagné cette partie";
+
+				await new Promise((resolve) => setTimeout(resolve, 5000)); // wait for 5 sec
+
+				this.organizeMatches();
+			}
+			else {
+				let winner_name = this.final.winner == "top" ? this.final.topTeam : this.final.bottomTeam;
+				this.template_text.textContent = winner_name + " a gagné le tournoi.";
+			}
+		}
+		else if (this.nb_players == 4) {
+			if (this.match_played < 3) {
+				this.template_text.textContent = winner.name + " a gagné cette partie";
+
+				await new Promise((resolve) => setTimeout(resolve, 5000)); // wait for 5 sec
+
+				this.organizeMatches();
+			}
+			else {
+				let winner_name = this.final.winner == "top" ? this.final.topTeam : this.final.bottomTeam;
+				this.template_text.textContent = winner_name + " a gagné le tournoi";
+			}
+		}
 	}
 
 	async startGame(current_match) {
@@ -202,26 +237,38 @@ class Tournament {
 		current_match.bottomScore = game.player_right.score;
 		current_match.winner = winner.name == current_match.topTeam ? "top" : "bottom";
 
-		console.log("Match finished. Winner:", winner.name);
+		game.context.clearRect(0, 0, game.boardWidth, game.boardHeight);
+		document.getElementById("tournament__left").textContent = "";
+		document.getElementById("tournament__right").textContent = "";
 
 		return winner;
 	}
 
-	getCurrentMatch() {
-		if (this.match_played == 0) // quarter seed 1
-			return this.quarters[0];
-		else if (this.match_played == 1) // quarter seed 2
-			return this.quarters[1];
-		else if (this.match_played == 2) // quarter seed 3
-			return this.quarters[2];
-		else if (this.match_played == 3) // quarter seed 4
-			return this.quarters[3];
-		else if (this.match_played == 4) // demi seed 1
-			return this.demi[0];
-		else if (this.match_played == 5) // demi seed 2
-			return this.demi[1];
-		else if (this.match_played == 6) // final
-			return this.final;
+	getCurrentMatch(match_played) {
+		if (this.nb_players == 8) {
+			if (match_played == 0) // quarter seed 1
+				return this.quarters[0];
+			else if (match_played == 1) // quarter seed 2
+				return this.quarters[1];
+			else if (match_played == 2) // quarter seed 3
+				return this.quarters[2];
+			else if (match_played == 3) // quarter seed 4
+				return this.quarters[3];
+			else if (match_played == 4) // demi seed 1
+				return this.demi[0];
+			else if (match_played == 5) // demi seed 2
+				return this.demi[1];
+			else if (match_played == 6) // final
+				return this.final;
+		}
+		else if (this.nb_players == 4) {
+			if (match_played == 0) // demi seed 1
+				return this.demi[0];
+			else if (match_played == 1) // demi seed 2
+				return this.demi[1];
+			else if (match_played == 2) // final
+				return this.final;
+		}
 	}
 
 	addNameQuarterBrackets() {
@@ -331,32 +378,70 @@ function handlePageReload() {
 
 window.addEventListener('beforeunload', handlePageReload);
 
-/* -------------------------- Listener for the page ------------------------- */
+/* ---------------------------- Creation Handlers --------------------------- */
 
-function listenerTournament() {
+function createTournamentFour() {
+
+	document.getElementById("tournament__main").innerHTML = renderTournamentCreationFour();
 
 	// Replace the value of the first field by the nickname of the user
 	document.getElementById("tournament__player--1").value = sessionStorage.getItem("nickname");
 
-	document.getElementById("startTournament").addEventListener("click", e => {
+	document.getElementById("startTournamentFour").addEventListener("click", e => {
 		e.preventDefault();
 
 		updateStatus();
 
-		let tournament = new Tournament();
+		let tournament = new Tournament(4);
 		let returnValue = tournament.createPlayers();
 		if (returnValue != null) {
-			document.getElementById("tournament__player--errorMsg").textContent = returnValue;
+			document.getElementById("tournament__four--errorMsg").textContent = returnValue;
 			return;
 		}
 
 		// Replace the HTML of main__content with the HTML of the room
 		changePageContent(renderTournamentRoom, "main__content");
 		// Add the HTML of the brackets to one of the element previously added
-		changePageContent(renderTournamentBrackets, "tournament__room--brackets");
+		changePageContent(renderTournamentBracketsFour, "tournament__room--brackets");
 
 		tournament.startTournament();
 	});
+};
+
+function createTournamentEight() {
+
+	document.getElementById("tournament__main").innerHTML = renderTournamentCreationEight();
+
+	// Replace the value of the first field by the nickname of the user
+	document.getElementById("tournament__player--1").value = sessionStorage.getItem("nickname");
+
+	document.getElementById("startTournamentEight").addEventListener("click", e => {
+		e.preventDefault();
+
+		updateStatus();
+
+		let tournament = new Tournament(8);
+		let returnValue = tournament.createPlayers();
+		if (returnValue != null) {
+			document.getElementById("tournament__eight--errorMsg").textContent = returnValue;
+			return;
+		}
+
+		// Replace the HTML of main__content with the HTML of the room
+		changePageContent(renderTournamentRoom, "main__content");
+		// Add the HTML of the brackets to one of the element previously added
+		changePageContent(renderTournamentBracketsEight, "tournament__room--brackets");
+
+		tournament.startTournament();
+	});
+};
+
+/* -------------------------- Listener for the page ------------------------- */
+
+function listenerTournament() {
+
+	document.getElementById("tournament__four--create").addEventListener("click", createTournamentFour);
+	document.getElementById("tournament__eight--create").addEventListener("click", createTournamentEight);
 };
 
 /* --------------------------- Loader for the page -------------------------- */

@@ -128,10 +128,10 @@ class PongGame4Players {
 
 	movePlayer() {
 		// Player 1 and 2 movement
-		if (this.keysPressed["q"]) {
+		if (this.keysPressed["q"] || this.keysPressed["Q"]) {
 			this.player_left.velocityY = -this.paddleSpeed;
 		}
-		else if (this.keysPressed["a"]) {
+		else if (this.keysPressed["a"] || this.keysPressed["A"]) {
 			this.player_left.velocityY = this.paddleSpeed;
 		}
 		else {
@@ -147,10 +147,10 @@ class PongGame4Players {
 			this.player_right.velocityY = 0;
 		}
 		// Player 3 and 4 movement
-		if (this.keysPressed["n"]) {
+		if (this.keysPressed["n"] || this.keysPressed["N"]) {
 			this.player_top.velocityX = -this.paddleSpeed;
 		}
-		else if (this.keysPressed["m"]) {
+		else if (this.keysPressed["m"] || this.keysPressed["M"]) {
 			this.player_top.velocityX = this.paddleSpeed;
 		}
 		else {

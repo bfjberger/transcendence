@@ -111,19 +111,19 @@ class PongGame2Players {
 	}
 
 	movePlayer() {
-		if (this.keysPressed["w"]) {
+		if (this.keysPressed["w"] || this.keysPressed["W"]) {
 			this.player_left.velocityY = -this.paddleSpeed;
 		}
-		else if (this.keysPressed["s"]) {
+		else if (this.keysPressed["s"] || this.keysPressed["S"]) {
 			this.player_left.velocityY = this.paddleSpeed;
 		}
 		else {
 			this.player_left.velocityY = 0;
 		}
-		if (this.keysPressed["o"]) {
+		if (this.keysPressed["o"] || this.keysPressed["O"]) {
 			this.player_right.velocityY = -this.paddleSpeed;
 		}
-		else if (this.keysPressed["l"]) {
+		else if (this.keysPressed["l"] || this.keysPressed["L"]) {
 			this.player_right.velocityY = this.paddleSpeed;
 		}
 		else {
@@ -234,13 +234,6 @@ class PongGame2Players {
 		this.context.fillText(this.player_left.score, this.boardWidth / 2 - 50, 50);
 		this.context.fillText(this.player_right.score, this.boardWidth / 2 + 25, 50);
 	}
-
-	// async gameOver() {
-	// 	if (this.player_left.score == constants.WINNING_SCORE || this.player_right.score == constants.WINNING_SCORE) {
-	// 		this.winner = this.player_left.score == constants.WINNING_SCORE ? this.player_left : this.player_right;
-	// 		this.start = false;
-	// 	}
-	// };
 
 	resetGame() {
 		// reset the position and velocity of the ball
