@@ -181,24 +181,31 @@ class PongGame2Players {
 			if (this.ball.y <= this.player_left.coords.y + default_paddle_height &&
 				this.ball.y >= this.player_left.coords.y && this.ball.x > this.player_left.coords.x &&
 				this.ball.x - this.ball.radius <= this.player_left.coords.x + default_paddle_width) {
-					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX; // reverse ball direction
+					if (Math.abs(this.ball.velocityX) >= 20)
+						this.ball.velocityX *= -1;
 					middle_y = this.player_left.coords.y + default_paddle_height / 2;
 					difference_in_y = middle_y - this.ball.y;
 					reduction_factor = default_paddle_height / 2;
-					new_y_vel = difference_in_y / reduction_factor;
+					new_y_vel = difference_in_y / reduction_factor * this.ballSpeed;
 					this.ball.velocityY = -1 * new_y_vel;
+					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX;
+					
 			}
 		}
-		else if (this.ball.velocityX > 0) {
+		else {
 			if (this.ball.y <= this.player_right.coords.y + default_paddle_height &&
 				this.ball.y >= this.player_right.coords.y && this.ball.x < this.player_right.coords.x &&
 				this.ball.x + this.ball.radius >= this.player_right.coords.x) {
-					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX; // reverse ball direction
+					if (Math.abs(this.ball.velocityX) >= 20)
+						this.ball.velocityX *= -1;
+					// this.ball.velocityX *= -1 * this.ballSpeedMultiplierX; // reverse ball direction
 					middle_y = this.player_right.coords.y + default_paddle_height / 2;
 					difference_in_y = middle_y - this.ball.y;
 					reduction_factor = default_paddle_height / 2;
-					new_y_vel = difference_in_y / reduction_factor;
+					new_y_vel = difference_in_y / reduction_factor * this.ballSpeed;
 					this.ball.velocityY = -1 * new_y_vel;
+					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX;	
+					
 			}
 		}
 	};

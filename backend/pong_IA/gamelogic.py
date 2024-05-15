@@ -105,6 +105,7 @@ class GameState:
 		def check_bounds(self, y_position):
 			return y_position < 0 or y_position > GAME_AREA_HEIGHT - PADDLE_HEIGHT
 		
+		# Predictive model to define the bally when it reaches the bot paddle x
 		def future_ball_y_calcul(self, ball, player):
 			if time.time() - self.timer_ai >= 1:
 				self.future_ball_y = ball.y + ball.y_vel * (610/ball.x_vel) #610 = 650 - (10 + 10)*2, 650 wind lenght, 10 paddle length, 10 space between paddle and win, two times because two paddles 
@@ -164,34 +165,50 @@ class GameState:
 		def handle_collision(self, player_left, bot):
 			if self.y - self.radius <= 0 or self.y + self.radius >= GAME_AREA_HEIGHT:
 				self.y_vel *= -1 * self.speed_multiplier_y
-				self.x_vel *= self.speed_multiplier_x
+				if (abs(self.x_vel) <= 20):
+					self.x_vel *= self.speed_multiplier_x
 			if self.y - self.radius <= 0:
 				self.y = self.radius
 			if self.y + self.radius >= GAME_AREA_HEIGHT:
 				self.y = GAME_AREA_HEIGHT - self.radius
-
 			if self.x_vel < 0:
 				if (self.y <= player_left.y + PADDLE_HEIGHT and
 					self.y >= player_left.y and self.x > player_left.x and
-					self.x - self.radius <= player_left.x + PADDLE_WIDTH):
-						self.x_vel *= -1 * self.speed_multiplier_x
-						middle_y = player_left.y + PADDLE_HEIGHT / 2
-						difference_in_y = middle_y - self.y
-						reduction_factor = PADDLE_HEIGHT / 2
-						new_y_vel = difference_in_y / reduction_factor
-						self.y_vel = -1 * new_y_vel
+					self.x - self.radius <= player_left.x + PADDLE_WIDTH ):
+						if (self.x_vel <= -20):
+							self.x_vel *= -1
+							middle_y = player_left.y + PADDLE_HEIGHT / 2
+							difference_in_y = middle_y - self.y
+							reduction_factor = PADDLE_HEIGHT / 2
+							new_y_vel = difference_in_y / reduction_factor * self.speed
+							self.y_vel = -1 * new_y_vel
+						else:
+							self.x_vel *= -1 * self.speed_multiplier_x
+							middle_y = player_left.y + PADDLE_HEIGHT / 2
+							difference_in_y = middle_y - self.y
+							reduction_factor = PADDLE_HEIGHT / 2
+							new_y_vel = difference_in_y / reduction_factor * self.speed
+							self.y_vel = -1 * new_y_vel
 						player_left.hits += 1
 						bot.future_ball_y_calcul(self, player_left)
-			elif self.x_vel > 0:
+			else:
 				if (self.y <= bot.y + PADDLE_HEIGHT and
 					self.y >= bot.y and self.x < bot.x and
 					self.x + self.radius >= bot.x):
-						self.x_vel *= -1 * self.speed_multiplier_x
-						middle_y = bot.y + PADDLE_HEIGHT / 2
-						difference_in_y = middle_y - self.y
-						reduction_factor = PADDLE_HEIGHT / 2
-						new_y_vel = difference_in_y / reduction_factor
-						self.y_vel = -1 * new_y_vel
+						if (self.x_vel >= 20):
+							self.x_vel *= -1
+							middle_y = bot.y + PADDLE_HEIGHT / 2
+							difference_in_y = middle_y - self.y
+							reduction_factor = PADDLE_HEIGHT / 2
+							new_y_vel = difference_in_y / reduction_factor * self.speed
+							self.y_vel = -1 * new_y_vel
+						else:
+							self.x_vel *= -1 * self.speed_multiplier_x
+							middle_y = bot.y + PADDLE_HEIGHT / 2
+							difference_in_y = middle_y - self.y
+							reduction_factor = PADDLE_HEIGHT / 2
+							new_y_vel = difference_in_y / reduction_factor * self.speed
+							self.y_vel = -1 * new_y_vel
 						bot.hits += 1
 
 		async def move(self, player_left, bot):

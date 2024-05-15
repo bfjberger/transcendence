@@ -122,21 +122,25 @@ class GameState:
 				if (self.y <= player_left.y + PADDLE_HEIGHT and
 					self.y >= player_left.y and self.x > player_left.x and
 					self.x - self.radius <= player_left.x + PADDLE_WIDTH):
-						self.x_vel *= -1 * self.speed_multiplier_x
+						if (abs(self.x_vel) <= 20):
+							self.x_vel *= self.speed_multiplier_x
 						middle_y = player_left.y + PADDLE_HEIGHT / 2
 						difference_in_y = middle_y - self.y
 						reduction_factor = PADDLE_HEIGHT / 2
-						new_y_vel = difference_in_y / reduction_factor
+						new_y_vel = difference_in_y / reduction_factor * self.speed
 						self.y_vel = -1 * new_y_vel
-			elif self.x_vel > 0:
+						self.x_vel *= -1
+			else:
 				if (self.y <= player_right.y + PADDLE_HEIGHT and
 					self.y >= player_right.y and self.x < player_right.x and
 					self.x + self.radius >= player_right.x):
-						self.x_vel *= -1 * self.speed_multiplier_x
+						if (abs(self.x_vel) <= 20):
+							self.x_vel *= self.speed_multiplier_x
+						self.x_vel *= -1
 						middle_y = player_right.y + PADDLE_HEIGHT / 2
 						difference_in_y = middle_y - self.y
 						reduction_factor = PADDLE_HEIGHT / 2
-						new_y_vel = difference_in_y / reduction_factor
+						new_y_vel = difference_in_y / reduction_factor * self.speed
 						self.y_vel = -1 * new_y_vel
 
 		async def move(self, player_left, player_right):
