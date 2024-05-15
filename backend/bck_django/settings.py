@@ -33,17 +33,13 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ") # 127.0.0.1 et
 urls = os.environ.get("HOSTS_CORS").split(" ")
 urls_with_https = ["https://" + url for url in urls]
 
-CSRF_TRUSTED_ORIGINS = ["https://localhost", "http://localhost"] + urls_with_https
-CSRF_ALLOWED_ORIGINS = ["https://localhost", "http://localhost"] + urls_with_https
-
-# CORS_ALLOWED_ORIGINS = [
-#     'http://localhost:80',
-# ]
+CSRF_TRUSTED_ORIGINS = ["https://localhost", "http://localhost", "https://10.12.8.4", "http://10.12.8.4"]
+CSRF_ALLOWED_ORIGINS = ["https://localhost", "http://localhost", "https://10.12.8.4", "http://10.12.8.4"]
 
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_DOMAIN = "localhost"
+CSRF_COOKIE_DOMAIN = None
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -69,18 +65,19 @@ INSTALLED_APPS = [
     'games_manager',
 	'tournament',
     'friends_manager',
+	'pong_IA',
 
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'allauth.account.middleware.AccountMiddleware',
 

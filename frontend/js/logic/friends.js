@@ -1,39 +1,104 @@
-var data_list_initiated;
-var data_list_received;
-var data_list_initiated_accepted
-var data_list_received_accepted
+var g_data_sent;
+var g_data_received;
+var g_data_sent_accepted;
+var g_data_received_accepted;
+
+var g_el_sent;
+var g_el_received;
+var g_el_accepted;
 
 var csrftoken;
 
-function listenerFriends() {
+function fillFriendsSent() {
 
-	display()
+	var element;
 
-	const form_post_friend = document.getElementById("form_post_friend")
-	form_post_friend.addEventListener("submit", e => {
-		e.preventDefault()
-		post_friend(form_post_friend)
-	});
+	for (const [index, friend] of g_data_sent.entries()) {
+		element = document.createElement("div");
+		element.id = `friends__sent--${index}`;
+		element.className = "row align-items-center py-3";
+		element.innerHTML = `
+				<div class="col-7">
+					${friend.user_received.username}
+				</div>
+				<div class="col-5">
+					<button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.user_received.username}">
+						Supprimer
+					</button>
+				</div>
+			`;
+		g_el_sent.appendChild(element);
+	};
+};
 
-	const buttons_accept_patch = document.querySelectorAll(".accept_friend_button")
-	buttons_accept_patch.forEach(button_accept => {
-		button_accept.addEventListener("click", e => {
-			e.preventDefault()
-			patch_friend_accept(button_accept.value)
-		})
-	});
+function fillFriendsReceived() {
 
-	const buttons_delete_friend = document.querySelectorAll(".delete_friend_button")
-	buttons_delete_friend.forEach(button_delete => {
-		button_delete.addEventListener("click", e => {
-			e.preventDefault()
-			delete_friend(button_delete.value)
-		})
-	});
+	var element;
+
+	for (const [index, friend] of g_data_received.entries()) {
+		element = document.createElement("div");
+		element.id = `friends__received--${index}`;
+		element.className = "row align-items-center py-3";
+		element.innerHTML = `
+				<div class="col-6">
+					${friend.user_initiated.username}
+				</div>
+				<div class="col-3">
+					<button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.user_initiated.username}">
+						Refuser
+					</button>
+				</div>
+				<div class="col-3">
+					<button class="btn btn-success mt-1 accept_friend_button" type="button" value="${friend.user_initiated.username}">
+						Accepter
+					</button>
+				</div>
+			`;
+		g_el_received.appendChild(element);
+	};
+};
+
+function fillFriendsAccepted() {
+
+	var element;
+
+	for (const [index, friend] of g_data_sent_accepted.entries()) {
+		element = document.createElement("div");
+		element.id = `friends__accepted--${index}`;
+		element.className = "row align-items-center py-3";
+		element.innerHTML = `
+				<div class="col-7">
+					${friend.username} | ${friend.status}
+				</div>
+				<div class="col-5">
+					<button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.username}">
+						Supprimer
+					</button>
+				</div>
+			`;
+		g_el_accepted.appendChild(element);
+	};
+
+	for (const [index, friend] of g_data_received_accepted.entries()) {
+		element = document.createElement("div");
+		element.id = `friends__accepted--${index}`;
+		element.className = "row align-items-center py-3";
+		element.innerHTML = `
+				<div class="col-7">
+					${friend.username} | ${friend.status}
+				</div>
+				<div class="col-5">
+					<button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.username}">
+						Supprimer
+					</button>
+				</div>
+			`;
+		g_el_accepted.appendChild(element);
+	};
 };
 
 async function delete_friend(username) {
-	console.log("DELETE FUNCTION CALLED")
+
 	csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
 	const init = {
@@ -46,28 +111,23 @@ async function delete_friend(username) {
 	};
 
 	try {
-		let hostnameport = "https://" + window.location.host
+		let hostnameport = "https://" + window.location.host;
 
 		const response = await fetch(hostnameport + '/api/friends/delete/', init);
 
-		if (response.status != 200)
-		{
+		if (response.status != 200) {
 			const text = await response.text();
 			throw new Error(text);
 		}
-		else
-		{
-			let json_response = await response.json()
-			console.log("Delete : " + username + " " + json_response)
-			window.location.reload()
+		else {
+			let json_response = await response.json();
+			window.location.reload();
 		}
 
 	} catch (e) {
 		console.error("error from post friend : " + e);
 	}
-
-}
-
+};
 
 async function patch_friend_accept(username) {
 
@@ -83,67 +143,27 @@ async function patch_friend_accept(username) {
 	};
 
 	try {
-		let hostnameport = "https://" + window.location.host
+		let hostnameport = "https://" + window.location.host;
 		const response = await fetch(hostnameport + '/api/friends/accept/', init);
 
-		if (response.status != 200)
-		{
+		if (response.status != 200) {
 			const text = await response.text();
 			throw new Error(text);
 		}
-		else
-		{
-			//data = await response.json()
-
-			let json_response = await response.json()
-			console.log("response = " + json_response)
-			window.location.reload()
-
+		else {
+			let json_response = await response.json();
+			window.location.reload();
 		}
 
 	} catch (e) {
 		console.error("error from post friend : " + e);
 	}
-}
-
-
-function display() {
-
-	console.log("path = " + window.location.pathname)
-	var parent_list_initiator = document.getElementById("list_friends_initiator")
-	var parent_list_received = document.getElementById("list_friends_received")
-	var parent_list_accepted = document.getElementById("list_friends_accepted")
-	var element_list
-
-	data_list_initiated.forEach(friend => {
-			element_list = document.createElement("li")
-			element_list.innerHTML =  `<p>${friend.user_received.username} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.user_received.username}">Supprimer</button></p>`
-			parent_list_initiator.appendChild(element_list)
-	});
-		
-	data_list_received.forEach(friend => {
-			element_list = document.createElement("li")
-			element_list.innerHTML = `<p> ${friend.user_initiated.username} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.user_initiated.username}">Refuser</button> <button class="btn btn-success mt-1 accept_friend_button" type="button" value="${friend.user_initiated.username}">Accepter</button></p>`
-			parent_list_received.appendChild(element_list)
-		});
-		
-	data_list_initiated_accepted.forEach(friend => {
-		element_list = document.createElement("li")
-		element_list.innerHTML = `<p>${friend.username} | ${friend.status} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.username}">Supprimer</button></p>`
-		parent_list_accepted.appendChild(element_list)
-	});
-
-	data_list_received_accepted.forEach(friend => {
-		element_list = document.createElement("li")
-		element_list.innerHTML = `<p>${friend.username} | ${friend.status} <button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.username}">Supprimer</button></p>`
-		parent_list_accepted.appendChild(element_list)
-	});
-}
+};
 
 async function post_friend(form_post_friend) {
 
-	let form_data = new FormData()
-	form_data.append('username', document.getElementById("username").textContent)
+	// remove a potential error message from the placeholder
+	document.getElementById("form__add--friend--msg").textContent = "";
 
 	const input = form_post_friend.elements;
 	csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
@@ -158,25 +178,61 @@ async function post_friend(form_post_friend) {
 	};
 
 	try {
-		let hostnameport = "https://" + window.location.host
+		let hostnameport = "https://" + window.location.host;
 
 		const response = await fetch(hostnameport + '/api/friends/create/', init);
 
-		if (response.status != 201)
-		{
+		if (response.status != 201) {
 			const text = await response.text();
-			throw new Error(text);
+
+			document.getElementById("form__add--friend--msg").textContent = text.replace(/["{}[\]]/g, '');
+			document.getElementById("form__add--friend--msg").classList.add("text-danger");
+			// throw new Error(text);
 		}
-		else
-		{
-			var data = await response.text()
-			console.log('response = ' + data)
-			window.location.reload()
+		else {
+			var data = await response.text();
+			window.location.reload();
 		}
 	} catch (e) {
 		console.error("error from post friend : " + e);
 	}
-}
+};
+
+function listenerFriends() {
+
+	g_el_sent = document.getElementById("friends__sent--main");
+	g_el_received = document.getElementById("friends__received--main");
+	g_el_accepted = document.getElementById("friends__accepted--main");
+
+	fillFriendsSent();
+	fillFriendsReceived();
+	fillFriendsAccepted();
+
+	const form_post_friend = document.getElementById("form__add--friend");
+	form_post_friend.addEventListener("submit", e => {
+		e.preventDefault();
+
+		post_friend(form_post_friend);
+	});
+
+	const buttons_accept_patch = document.querySelectorAll(".accept_friend_button");
+	buttons_accept_patch.forEach(button_accept => {
+		button_accept.addEventListener("click", e => {
+			e.preventDefault();
+
+			patch_friend_accept(button_accept.value);
+		})
+	});
+
+	const buttons_delete_friend = document.querySelectorAll(".delete_friend_button");
+	buttons_delete_friend.forEach(button_delete => {
+		button_delete.addEventListener("click", e => {
+			e.preventDefault();
+
+			delete_friend(button_delete.value);
+		})
+	});
+};
 
 async function loadFriends() {
 
@@ -203,16 +259,11 @@ async function loadFriends() {
 
 			throw new Error("error : issue loading friend");
 		}
-		else
-		{
-			data_list_initiated = await response_list_initiated.json()
-			data_list_received = await response_list_received.json()
-			data_list_initiated_accepted = await response_list_initiated_accepted.json()
-			data_list_received_accepted = await response_list_received_accepted.json()
-			
-			console.log(data_list_initiated_accepted + " " + data_list_received_accepted)
-
-
+		else {
+			g_data_sent = await response_list_initiated.json()
+			g_data_received = await response_list_received.json()
+			g_data_sent_accepted = await response_list_initiated_accepted.json()
+			g_data_received_accepted = await response_list_received_accepted.json()
 		}
 		return 1;
 	} catch (e) {

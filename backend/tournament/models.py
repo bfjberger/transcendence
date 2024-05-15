@@ -3,15 +3,8 @@ from players_manager.models import Player
 
 # Create your models here.
 
-class Tournament(models.Model):
-	VISIBILITY_CHOICES = (
-		('public', 'Public'),
-		('private', 'Private'),
-	)
-	
+class TournamentRoom(models.Model):
 	name = models.CharField(max_length=100)
-	visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES)
-	password = models.CharField(max_length=100, blank=True, null=True)  # Only required for private tournaments
 	players = models.ManyToManyField(Player, related_name='tournaments')
 	owner = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='owned_tournaments', null=True, blank=True)
 	
@@ -34,3 +27,12 @@ class Tournament(models.Model):
 	def print_players(self):
 		for player in self.players.all():
 			print(player)
+
+
+class TournamentStat(models.Model):
+	tournament_name = models.CharField(max_length=200)
+	winner = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='won_tournaments')
+	losers = models.ManyToManyField(Player, related_name='lost_tournaments')
+
+	def __str__(self):
+		return f"Stats for {self.tournament_name} (ID: {self.id})"

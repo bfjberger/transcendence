@@ -49,8 +49,8 @@ let g_data = {};
 
 function createTournament() {
 	const name = document.getElementById('name').value;
-	const visibility = document.querySelector('input[name="visibility"]:checked').value;
-	const password = document.getElementById('password').value;
+	// const visibility = document.querySelector('input[name="visibility"]:checked').value;
+	// const password = document.getElementById('password').value;
 	
 	fetch('/api/tournaments/', {
 		method: 'POST',
@@ -58,7 +58,7 @@ function createTournament() {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken') // Ensure to include CSRF token
 		},
-		body: JSON.stringify({ name, visibility, password })
+		body: JSON.stringify({ name })
 	})
 		.then(response => {
 			if (response.ok) {
@@ -88,26 +88,18 @@ function loadTournaments() {
 				const tournamentItem = document.createElement('div');
 				tournamentItem.textContent = tournament.name;
 
-				// Create password input
-				const passwordInput = document.createElement('input');
-				passwordInput.type = 'password';
-				passwordInput.placeholder = 'Enter password';
-
 				// Create join button
 				const joinButton = document.createElement('button');
 				joinButton.textContent = 'Join';
 
 				// Use a closure to associate the button with the tournament
-				joinButton.addEventListener('click', (function(tournament, passwordInput) {
+				joinButton.addEventListener('click', (function(tournament) {
 					return function() {
-						// Handle join button click
-						// console.log('Joining tournament:', tournament.name, 'with password:', passwordInput.value);
 						joinRoom(tournament.name);
 					};
-				})(tournament, passwordInput));
+				})(tournament));
 
 				// Append elements to tournament item
-				tournamentItem.appendChild(passwordInput);
 				tournamentItem.appendChild(joinButton);
 
 				tournamentList.appendChild(tournamentItem);
@@ -134,8 +126,6 @@ function joinRoom(tournamentName) {
 				loadContent(renderTournamentRoom, 'main__content');
 				handleRoom.listenerTournamentRoom();
 				handleRoom.loadTournamentRoom(tournament_name);
-				// listPlayersInRoom();
-				// listenerRoom();
 			} else {
 				// Handle error response
 				console.error('Failed to join tournament');
@@ -213,7 +203,7 @@ function listenerRoom() {
 
 }
 
-//!!! Need to rework this function, adjust the router maybe to work with it
+//!!! Not used
 // Function to list all players in the room
 function listPlayersInRoom() {
 	let divRoom = document.getElementById('tournament-room');

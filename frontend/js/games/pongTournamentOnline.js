@@ -1,7 +1,7 @@
 import {Player} from './PlayerOnline.js';
 import {Ball} from './BallOnline.js';
 import * as constants from './Constants.js';
-import {g_socket, g_alias} from './tournamentRoom.js';
+import {g_socket, g_nickname, g_username } from './tournamentRoom.js';
 
 const wsurl = 'wss://' + window.location.host + '/wss/game/'; // link to websocket
 let ws; // websocket
@@ -13,6 +13,9 @@ let playerField;
 
 var position = null;
 var id = null;
+var MAX_TIMER = 60;
+var g_timer = MAX_TIMER;
+var g_nicknames = []; // this is set in set_position, it is the player left and right
 let first_launch = true;
 const keys = {};
 
@@ -43,7 +46,6 @@ function initArena() {
 	player_one = new Player("player_left", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_LEFT_COLOR, 2);
 	player_two = new Player("player_right", constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT, constants.PLAYER_RIGHT_COLOR, 2);
 	ball = new Ball(2);
-	// console.log("Ball color: ", ball.color);
 }
 
 function handle_scores(player) {
@@ -56,12 +58,7 @@ function handle_scores(player) {
 function display_winner(winning_player) {
 	ball.stop();
 
-	if (winning_player === 'player_one') {
-		winning_text = "Player 1 wins!";
-	}
-	else {
-		winning_text = "Player 2 wins!";
-	}
+	winning_text = winning_player + ' has won the game!';
 }
 
 /* -------------------------------- Controls -------------------------------- */
@@ -111,7 +108,7 @@ function updateGameState(data) {
 		player_two.score += 1;
 		handle_scores('player_two');
 	}
-
+	g_timer = MAX_TIMER - Math.floor(data.game_time);
 	ball.get_update(data.ball_x, data.ball_y, data.ball_x_vel, data.ball_y_vel, data.ball_color);
 }
 
@@ -150,6 +147,11 @@ function animate() {
 
 function render() {
 	context.clearRect(0, 0, constants.WIN_WIDTH, constants.WIN_HEIGHT);
+
+	// Draw the timer
+	context.fillStyle = "white";
+	context.font = "50px sans-serif";
+	context.fillText(g_timer, constants.WIN_WIDTH / 2 - 25, 100);
 
 	// Draw the players
 	context.fillStyle = player_one.color;
@@ -203,19 +205,20 @@ const on_set_position = (arg) => {
 	initArena();
 	// console.log('Setting position', arg);
 	position = null;
-	if (arg.players[0] === g_alias)
+	if (arg.players[0] === g_username)
 		position = 'player_one';
-	if (arg.players[1] === g_alias)
+	if (arg.players[1] === g_username)
 		position = 'player_two';
 
 	// console.log('Position set to', position);
-
+	g_nicknames = arg.nicknames;
 	if (infoElement === null) {
 		infoElement = document.getElementById("InfoElement");
 		playerField = document.getElementById("playerField");
 	}
-	infoElement.innerHTML = 'BE READY, ' + arg.state + ' WILL START IN 5'
-	playerField.innerHTML = '<span style="color: cyan;">' + arg.players[0] + '</span> VS <span style="color: red;">' + arg.players[1] + '</span>';
+	infoElement.innerHTML = 'BE READY, ' + arg.state + ' WILL START IN 5';
+	console.log(arg.players[0], arg.players[1]);
+	playerField.innerHTML = '<span style="color: cyan;">' + arg.nicknames[0] + '</span> VS <span style="color: red;">' + arg.nicknames[1] + '</span>';
 
 	let count = 0;
 	let interval = setInterval(() => {
@@ -225,7 +228,7 @@ const on_set_position = (arg) => {
 			clearInterval(interval);
 			infoElement.innerHTML = 'Go !';
 
-			if (arg.players[0] === g_alias)
+			if (arg.players[0] === g_username)
 				g_socket.send(JSON.stringify({event: 'game_start'}));
 
 		}

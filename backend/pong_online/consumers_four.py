@@ -77,8 +77,6 @@ class RoomManagerFour:
 		"""
 		if room_name in self.rooms.keys():
 			await self.rooms[room_name].record_game_result(winner, losers)
-			if len(self.rooms[room_name].players) == 0:
-				self.delete_room(room_name)
 
 class RoomConsumerFour(AsyncWebsocketConsumer):
 	"""
@@ -154,6 +152,7 @@ class RoomConsumerFour(AsyncWebsocketConsumer):
 				'type': 'player_disconnect',
 				'player_name': self.game_state_obj.players[self.position].player_model.nickname
 			})
+		await self.end_game(self.position)
 
 	async def receive(self, text_data):
 		"""
@@ -174,9 +173,11 @@ class RoomConsumerFour(AsyncWebsocketConsumer):
 		if type == 'set_player_movement':
 			await self.game_state_obj.set_player_movement(data['player'], data['is_moving'],
 												 			data['direction_v'], data['direction_h'])
-		elif type == 'player_disconnect':
-			if len(self.game_state_obj.players) < 4	:
-				self.manager.delete_room(self.room_name)
+		# elif type == 'player_disconnect':
+		# 	if len(self.game_state_obj.players) < 4	:
+		# 		self.manager.delete_room(self.room_name)
+		elif type == 'start_game':
+			await self.start_game()
 
 	async def handle_new_connection(self, user):
 		"""
@@ -237,7 +238,10 @@ class RoomConsumerFour(AsyncWebsocketConsumer):
 		await self.channel_layer.group_add(self.room_name, self.channel_name)
 
 		if len(self.game_state_obj.players) == 4:
-			await self.start_game()
+			await self.channel_layer.group_send(self.room_name,
+				{
+					'type': 'ready'
+				})
 
 	async def start_game(self):
 		"""
@@ -261,31 +265,35 @@ class RoomConsumerFour(AsyncWebsocketConsumer):
 			winner (str): The position of the winning player.
 		"""
 		self.game_state_obj.is_running = False
-		if winner == 'player_left':
-			losers = ['player_right', 'player_top', 'player_bottom']
-			await self.manager.save_room(self.room_name, winner, losers)
-			await self.send_game_end(winner)
-		elif winner == 'player_right':
-			losers = ['player_left', 'player_top', 'player_bottom']
-			await self.manager.save_room(self.room_name, winner, losers)
-			await self.send_game_end(winner)
-		elif winner == 'player_top':
-			losers = ['player_left', 'player_right', 'player_bottom']
-			await self.manager.save_room(self.room_name, winner, losers)
-			await self.send_game_end(winner)
-		elif winner == 'player_bottom':
-			losers = ['player_left', 'player_right', 'player_top']
-			await self.manager.save_room(self.room_name, winner, losers)
-			await self.send_game_end(winner)
-		else:
-			winner = await self.game_state_obj.get_winner_pos()
-			if winner == "Not enough players":
-				# do not save the game in the database if there is no winner
-				await self.send_game_end("No winner")
-			else:
-				losers = [pos for pos in self.game_state_obj.players if pos != winner]
+		if len(self.game_state_obj.players) == 4:
+			if winner == 'player_left':
+				losers = ['player_right', 'player_top', 'player_bottom']
 				await self.manager.save_room(self.room_name, winner, losers)
 				await self.send_game_end(winner)
+			elif winner == 'player_right':
+				losers = ['player_left', 'player_top', 'player_bottom']
+				await self.manager.save_room(self.room_name, winner, losers)
+				await self.send_game_end(winner)
+			elif winner == 'player_top':
+				losers = ['player_left', 'player_right', 'player_bottom']
+				await self.manager.save_room(self.room_name, winner, losers)
+				await self.send_game_end(winner)
+			elif winner == 'player_bottom':
+				losers = ['player_left', 'player_right', 'player_top']
+				await self.manager.save_room(self.room_name, winner, losers)
+				await self.send_game_end(winner)
+			else:
+				winner = await self.game_state_obj.get_winner_pos()
+				if winner == "Not enough players":
+					# do not save the game in the database if there is no winner
+					await self.send_game_end("No winner")
+				else:
+					losers = [pos for pos in self.game_state_obj.players if pos != winner]
+					await self.manager.save_room(self.room_name, winner, losers)
+					await self.send_game_end(winner)
+				self.manager.delete_room(self.room_name)
+		if len(self.game_state_obj.players) < 4:
+			self.manager.delete_room(self.room_name)
 
 	async def get_update_lock(self):
 		"""
@@ -367,6 +375,22 @@ class RoomConsumerFour(AsyncWebsocketConsumer):
 			'player_name': event['player_name']
 		}))
 		self.channel_layer.group_discard(self.room_name, self.channel_name)
+
+	async def ready(self, event):
+		"""
+		Sends the 'ready' message to the WebSocket connection.
+		It serves only as an event to start a countdown on the front and to provide the name of the players.
+
+		Args:
+			event (dict): The event data received from the channel layer.
+		"""
+		await self.send(text_data=json.dumps({
+			'type': event['type'],
+			'player_left': self.game_state_obj.players['player_left'].player_model.nickname,
+			'player_right': self.game_state_obj.players['player_right'].player_model.nickname,
+			'player_top': self.game_state_obj.players['player_top'].player_model.nickname,
+			'player_bottom': self.game_state_obj.players['player_bottom'].player_model.nickname
+		}))
 
 	async def game_end(self, event):
 		"""

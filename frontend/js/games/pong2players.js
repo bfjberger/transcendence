@@ -7,6 +7,8 @@ var g_game;
 var g_startButton;
 var g_template_text;
 
+var g_player_status;
+
 // Some of the constructor default values are overriden by the different set functions
 class PongGame2Players {
 	constructor(player_leftName, player_rightName) {
@@ -29,9 +31,10 @@ class PongGame2Players {
 	}
 
 	init() {
+		this.start = true;
+
 		this.setBoard();
 
-		this.start = true;
 		requestAnimationFrame(this.update.bind(this));
 		document.addEventListener("keydown", this.pressKey.bind(this));
 		document.addEventListener("keydown", this.handleKeyPress.bind(this));
@@ -44,7 +47,26 @@ class PongGame2Players {
 		this.context = this.board.getContext("2d");
 
 		this.setPlayer();
-		this.setBall();
+		this.countdown();
+	}
+
+	countdown() {
+		let count = 0;
+		let interval = setInterval(() => {
+			if (this.start === false)
+				return;
+
+			count++;
+
+			document.getElementById("canvas--text").textContent = "La partie commence dans " + (5 - count);
+
+			if (count === 5) {
+				clearInterval(interval);
+				document.getElementById("canvas--text").textContent = "";
+
+				this.setBall();
+			}
+		}, 1000);
 	}
 
 	setPlayer() {
@@ -153,7 +175,7 @@ class PongGame2Players {
 			this.ball.y = this.boardHeight - this.ball.radius;
 		}
 
-		var middle_y, difference_in_y, reduction_factor, new_y_vel;
+		var middle_y, difference_in_y, new_y_vel, reduction_factor;
 		// Ball and paddle collision
 		if (this.ball.velocityX < 0) {
 			if (this.ball.y <= this.player_left.coords.y + default_paddle_height &&
@@ -232,33 +254,82 @@ class PongGame2Players {
 		this.setBall();
 	};
 
-	update() {
-		this.context.clearRect(0, 0, this.boardWidth, this.boardHeight);
-		this.movePlayer();
-		this.moveBall();
-		this.draw();
-		this.gameOver();
-		if (this.winner != null) {
-			if (window.location.pathname === "/twoplayers/") {
-				g_template_text.textContent = this.winner.name + " a gagné !!";
-				g_template_text.style.color = this.winner.color;
-				g_startButton.classList.remove("d-none");
+	async update() {
+		if (this.start) {
+			this.context.clearRect(0, 0, this.boardWidth, this.boardHeight);
+			this.movePlayer();
+			this.moveBall();
+			this.draw();
+			this.gameOver();
+			if (this.winner != null) {
+				if (window.location.pathname === "/twoplayers/") {
+					g_template_text.textContent = this.winner.name + " a gagné !!";
+					g_template_text.style.color = this.winner.color;
+					g_startButton.classList.remove("d-none");
+					await updateStatus();
+				}
+				this.ball.velocityX = 0;
+				this.ball.velocityY = 0;
+				if (window.location.pathname === "/tournament/") {
+					this.context.reset();
+				}
 			}
-			this.ball.velocityX = 0;
-			this.ball.velocityY = 0;
-			if (window.location.pathname === "/tournament/") {
-				this.context.reset();
+			else {
+				requestAnimationFrame(this.update.bind(this));
 			}
-		}
-		else {
-			requestAnimationFrame(this.update.bind(this));
 		}
 	};
 };
 
+/*
+	Event listener for reload
+*/
+function handlePageReload() {
+	if (window.location.pathname === "/twoplayers/") {
+		if (g_player_status === "PLAYING") {
+			updateStatus();
+		}
+	}
+};
+
+window.addEventListener('beforeunload', handlePageReload);
+
+async function updateStatus() {
+
+	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+
+	const init = {
+		method: 'PATCH',
+		headers: {
+			'Content-Type': 'applications/json',
+			'X-CSRFToken': csrftoken,
+		}
+	};
+
+	try {
+		let hostnameport = "https://" + window.location.host;
+
+		const response = await fetch(hostnameport + '/api/changestatus/', init);
+
+		if (!response.ok) {
+			const error_text = await response.text();
+			throw new Error(error_text);
+		}
+
+		if (response.status === 200) {
+			const data = await response.json();
+
+			g_player_status = data.status;
+		}
+
+	} catch (e) {
+		console.error(e);
+	}
+};
+
 function start2PlayerGame(p1_name, p2_name) {
 
-	if (g_game != undefined)
+	if (g_game)
 		g_game = null;
 
 	g_game = new PongGame2Players(p1_name, p2_name);
@@ -281,7 +352,21 @@ function listenerTwoPlayers()
 		g_template_text.textContent = "";
 		g_template_text.style.color = "";
 
+		updateStatus();
 		start2PlayerGame(sessionStorage.getItem("nickname"), "Joueur Invité");
+	});
+
+	// Listen for a button from the menu bar being clicked
+	const navbarItems = document.querySelectorAll('.nav__item');
+	navbarItems.forEach(item => {
+		item.addEventListener('click', () => {
+			if (g_game) {
+				g_game.context.reset();
+				g_game.start = false;
+				g_game = null;
+				updateStatus();
+			}
+		});
 	});
 };
 
@@ -301,10 +386,11 @@ async function loadTwoPlayers() {
 		const response = await fetch(hostnameport +'/api/twoplayer/', init);
 
 		if (response.status != 200) {
-			const text = await response.text();
 			throw new Error(response.status);
 		}
-		
+		const data = await response.json();
+		g_player_status = data['player'].status;
+
 		return 1;
 	} catch (e)
 	{
