@@ -19,7 +19,7 @@ class Player(models.Model):
 	nb_points_4p = models.IntegerField(default=0)
 	score = models.IntegerField(default=0)
 	status = models.CharField(max_length=200, choices=status.choices, default=status.OFFLINE)
-	avatar = models.ImageField(max_length=200, default="avatars/avatar.png", upload_to='avatars/')
+	avatar = models.ImageField(max_length=200, default="staticfiles/avatars/avatar.png", upload_to='staticfiles/avatars/')
 
 	def __str__(self):
 		return self.owner.username

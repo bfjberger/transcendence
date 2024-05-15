@@ -174,24 +174,31 @@ class PongGame2Players {
 			if (this.ball.y <= this.player_left.coords.y + default_paddle_height &&
 				this.ball.y >= this.player_left.coords.y && this.ball.x > this.player_left.coords.x &&
 				this.ball.x - this.ball.radius <= this.player_left.coords.x + default_paddle_width) {
-					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX; // reverse ball direction
+					if (Math.abs(this.ball.velocityX) >= 20)
+						this.ball.velocityX *= -1;
 					middle_y = this.player_left.coords.y + default_paddle_height / 2;
 					difference_in_y = middle_y - this.ball.y;
 					reduction_factor = default_paddle_height / 2;
-					new_y_vel = difference_in_y / reduction_factor;
+					new_y_vel = difference_in_y / reduction_factor * this.ballSpeed;
 					this.ball.velocityY = -1 * new_y_vel;
+					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX;
+					
 			}
 		}
-		else if (this.ball.velocityX > 0) {
+		else {
 			if (this.ball.y <= this.player_right.coords.y + default_paddle_height &&
 				this.ball.y >= this.player_right.coords.y && this.ball.x < this.player_right.coords.x &&
 				this.ball.x + this.ball.radius >= this.player_right.coords.x) {
-					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX; // reverse ball direction
+					if (Math.abs(this.ball.velocityX) >= 20)
+						this.ball.velocityX *= -1;
+					// this.ball.velocityX *= -1 * this.ballSpeedMultiplierX; // reverse ball direction
 					middle_y = this.player_right.coords.y + default_paddle_height / 2;
 					difference_in_y = middle_y - this.ball.y;
 					reduction_factor = default_paddle_height / 2;
-					new_y_vel = difference_in_y / reduction_factor;
+					new_y_vel = difference_in_y / reduction_factor * this.ballSpeed;
 					this.ball.velocityY = -1 * new_y_vel;
+					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX;	
+					
 			}
 		}
 	};
@@ -341,7 +348,8 @@ window.addEventListener('beforeunload', handlePageReload);
 
 /* -------------------------- Listener for the page ------------------------- */
 
-function listenerTwoPlayers() {
+function listenerTwoPlayers()
+{
 
 	g_startButton = document.getElementById("startGame2");
 	g_template_text = document.getElementById("template_text");
@@ -388,25 +396,19 @@ async function loadTwoPlayers() {
 	};
 
 	try {
-
 		let hostnameport = "https://" + window.location.host
-
 		const response = await fetch(hostnameport +'/api/twoplayer/', init);
 
-		if (!response.ok) {
-			const text = await response.text();
-			throw new Error(text);
+		if (response.status != 200) {
+			throw new Error(response.status);
 		}
-
-		if (response.status === 200) {
-			const data = await response.json();
-
-			g_player_status = data['player'].status;
-		}
+		const data = await response.json();
+		g_player_status = data['player'].status;
 
 		return 1;
-	} catch (e) {
-		console.error("loadTwoPlayers: " + e);
+	} catch (e)
+	{
+		console.error("loadTwoPlayers: error : " + e);
 		return 0;
 	}
 };

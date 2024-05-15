@@ -323,23 +323,27 @@ class GameStateFour:
 				if (self.y <= player_left.y + PADDLE_HEIGHT and
 					self.y >= player_left.y and self.x > player_left.x and
 					self.x - self.radius <= player_left.x + PADDLE_WIDTH):
+						if (abs(self.x_vel) >= 20):
+							self.x_vel *= -1
 						self.x_vel *= -1 * self.speed_multiplier_x
 						middle_y = player_left.y + PADDLE_HEIGHT / 2
 						difference_in_y = middle_y - self.y
 						reduction_factor = PADDLE_HEIGHT / 2
-						new_y_vel = difference_in_y / reduction_factor
+						new_y_vel = difference_in_y / reduction_factor * self.speed
 						self.y_vel = -1 * new_y_vel
 						# self.y_vel *= self.speed_multiplier_y
 						self.color = "blue"
-			elif self.x_vel > 0:
+			else:
 				if (self.y <= player_right.y + PADDLE_HEIGHT and
 					self.y >= player_right.y and self.x < player_right.x and
 					self.x + self.radius >= player_right.x):
+						if (abs(self.x_vel) >= 20):
+							self.x_vel *= -1
 						self.x_vel *= -1 * self.speed_multiplier_x
-						middle_y = player_left.y + PADDLE_HEIGHT / 2
+						middle_y = player_right.y + PADDLE_HEIGHT / 2
 						difference_in_y = middle_y - self.y
 						reduction_factor = PADDLE_HEIGHT / 2
-						new_y_vel = difference_in_y / reduction_factor
+						new_y_vel = difference_in_y / reduction_factor * self.speed
 						self.y_vel = -1 * new_y_vel
 						# self.y_vel *= self.speed_multiplier_y
 						self.color = "orange"
@@ -348,23 +352,25 @@ class GameStateFour:
 				if (self.x <= player_top.x + PADDLE_HEIGHT and
 					self.x >= player_top.x and self.y > player_top.y and
 					self.y - self.radius <= player_top.y + PADDLE_WIDTH):
-						# self.x_vel *= self.speed_multiplier_x
+						if (abs(self.y_vel) >= 20):
+							self.y_vel *= -1
 						middle_x = player_top.x + PADDLE_HEIGHT / 2
 						difference_in_x = middle_x - self.x
 						reduction_factor = PADDLE_HEIGHT / 2
-						new_x_vel = difference_in_x / reduction_factor
+						new_x_vel = difference_in_x / reduction_factor * self.speed
 						self.x_vel = -1 * new_x_vel
 						self.y_vel *= -1 * self.speed_multiplier_y
 						self.color = "violet"
-			elif self.y_vel > 0:
+			else:
 				if (self.x <= player_bottom.x + PADDLE_HEIGHT and
 					self.x >= player_bottom.x and self.y < player_bottom.y and
 					self.y + self.radius >= player_bottom.y):
-						# self.x_vel *= self.speed_multiplier_x
+						if (abs(self.y_vel) >= 20):
+							self.y_vel *= -1
 						middle_x = player_bottom.x + PADDLE_HEIGHT / 2
 						difference_in_x = middle_x - self.x
 						reduction_factor = PADDLE_HEIGHT / 2
-						new_x_vel = difference_in_x / reduction_factor
+						new_x_vel = difference_in_x / reduction_factor * self.speed
 						self.x_vel = -1 * new_x_vel
 						self.y_vel *= -1 * self.speed_multiplier_y
 						self.color = "red"

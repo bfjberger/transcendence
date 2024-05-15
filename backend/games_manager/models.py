@@ -3,7 +3,7 @@ from django.db import models
 from django.db import models
 from django.contrib.auth.models import User
 
-from tournament.models import Tournament
+from tournament.models import TournamentRoom
 
 from django.utils import timezone
 
@@ -14,7 +14,7 @@ class TwoPlayersGame(models.Model):
 	score_user2 = models.IntegerField(default=0)
 	score_max = models.IntegerField(default=3)
 	win_player = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='win_player')
-	id_tournament = models.ForeignKey(Tournament, on_delete=models.SET_NULL, null=True, blank = True, related_name='id_tournament')
+	id_tournament = models.ForeignKey(TournamentRoom, on_delete=models.SET_NULL, null=True, blank = True, related_name='id_tournament')
 	level = models.IntegerField(default=0)
 	date =  models.DateTimeField(default=timezone.now)
 

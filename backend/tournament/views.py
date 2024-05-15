@@ -1,16 +1,16 @@
 from django.shortcuts import render
+from django.http import HttpResponseBadRequest
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
-from .models import Tournament
+from .models import TournamentRoom
 from players_manager.models import Player
 from .serializers import TournamentSerializer, PlayerInTournamentSerializer
 from players_manager.serializers import PlayerSerializer
 from django.contrib.auth.models import User
 from players_manager.serializers import UserSerializer, PlayerSerializer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework import serializers
@@ -26,11 +26,11 @@ from rest_framework import serializers
 
 
 class TournamentViewSet(viewsets.ViewSet):
-	queryset = Tournament.objects.all()
+	queryset = TournamentRoom.objects.all()
 	serializer_class = TournamentSerializer
 
 	def get_queryset(self):
-		return Tournament.objects.all()
+		return TournamentRoom.objects.all()
 
 	def get_object(self):
 		queryset = self.get_queryset()
@@ -44,11 +44,22 @@ class TournamentViewSet(viewsets.ViewSet):
 		return obj
 		
 	def create(self, request):
+		MAX_TOURNAMENTS = 10
+
+		if TournamentRoom.objects.count() >= MAX_TOURNAMENTS:
+			return HttpResponseBadRequest('Maximum number of tournaments reached')
+		# Check if there is a space in the name
+		if ' ' in request.data['name']:
+			return Response({'success': False, 'detail': 'Tournament name should not contain spaces.'}, status=status.HTTP_400_BAD_REQUEST)
 		serializer = TournamentSerializer(data=request.data)
 		if serializer.is_valid():
 			name = serializer.validated_data.get('name')
-			if Tournament.objects.filter(name=name).exists():
+			if TournamentRoom.objects.filter(name=name).exists():
 				return Response({'detail': 'A tournament with this name already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+			# Check for special characters in the name
+			if not name.isalnum():
+				return Response({'detail': 'Tournament name should only contain alphanumeric characters.'}, status=status.HTTP_400_BAD_REQUEST)
+
 			# Set the owner of the tournament to the current user
 			player = Player.objects.get(owner=request.user)
 			serializer.save(owner=player)
@@ -74,7 +85,7 @@ class TournamentViewSet(viewsets.ViewSet):
 
 	@action(detail=False, methods=['get'])
 	def load_tournaments(self, request):
-		tournaments = Tournament.objects.all()
+		tournaments = TournamentRoom.objects.all()
 		serializer = TournamentSerializer(tournaments, many=True)
 		return Response(serializer.data)
 
@@ -101,7 +112,7 @@ class PlayerViewSet(viewsets.ModelViewSet):
 	"""
 	def get_queryset(self):
 		tournament_name = self.kwargs['tournament_name']
-		tournament = Tournament.objects.get(name=tournament_name)
+		tournament = TournamentRoom.objects.get(name=tournament_name)
 		return Player.objects.filter(tournament=tournament)
 
 	serializer_class = PlayerSerializer

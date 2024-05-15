@@ -17,22 +17,29 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.0/howto/static-files/
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = 'static/'
+
+MEDIA_URL = ""
+MEDIA_ROOT = os.path.join(BASE_DIR, "")
+
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ") # 127.0.0.1 et 10.11.1.2
 urls = os.environ.get("HOSTS_CORS").split(" ")
 urls_with_https = ["https://" + url for url in urls]
 
-CSRF_TRUSTED_ORIGINS = ["https://localhost", "http://localhost"] + urls_with_https
-CSRF_ALLOWED_ORIGINS = ["https://localhost", "http://localhost"] + urls_with_https
+CSRF_TRUSTED_ORIGINS = ["https://localhost", "http://localhost", "https://10.12.8.4", "http://10.12.8.4"]
+CSRF_ALLOWED_ORIGINS = ["https://localhost", "http://localhost", "https://10.12.8.4", "http://10.12.8.4"]
 
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_DOMAIN = "localhost"
+CSRF_COOKIE_DOMAIN = None
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -58,18 +65,19 @@ INSTALLED_APPS = [
     'games_manager',
 	'tournament',
     'friends_manager',
+	'pong_IA',
 
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'allauth.account.middleware.AccountMiddleware',
 
@@ -135,10 +143,9 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_URL = 'static/'
+
+
+# print("\n\n", STATIC_ROOT, "\n\n")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -160,9 +167,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # }
 
 
-# CORS_ALLOWED_ORIGINS = [
-#     'http://localhost:80',
-# ]
+
 
 ASGI_APPLICATION = 'bck_django.asgi.application'
 
@@ -189,7 +194,6 @@ LOGOUT_REDIRECT_URL = 'https://localhost'
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-MEDIA_URL = ""
-MEDIA_ROOT = os.path.join(BASE_DIR, "")
+
 
 TIME_ZONE = 'Europe/Zurich'

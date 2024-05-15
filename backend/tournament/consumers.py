@@ -4,10 +4,12 @@ import asyncio
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
-from .models import Tournament
+from .models import TournamentRoom, TournamentStat
 from .gamelogic_tournament import GameState
+import random
 from players_manager.models import Player
 
+TIMER = 60
 tick_rate = 60
 tick_duration = 1 / tick_rate
 
@@ -30,6 +32,23 @@ PlayerState = {
 	"LOSER": "LOSER",
 	"LEFT": "LEFT"
 }
+
+async def end_game_add_stats(winner, losers, tournament_name):
+	"""
+	Add stats to the database at the end of a game in a tournament.
+
+	Args:
+		winner (str): The nickname of the winner.
+		losers (list): A list of nicknames of the losers.
+		tournament_name (str): The name of the tournament.
+	"""
+	stats = TournamentStat(tournament_name=tournament_name, winner=winner)
+	await sync_to_async(stats.save)()
+	losers_objs = await sync_to_async(Player.objects.filter)(nickname__in=losers)
+	losers_ids = await sync_to_async(lambda: [loser.id for loser in losers_objs])()
+	await sync_to_async(stats.losers.add)(*losers_ids)
+	await sync_to_async(stats.save)()
+	
 
 class TournamentManager():
 	def __init__(self):
@@ -62,10 +81,13 @@ class TournamentManager():
 				'players': [player],
 				'players_list': [player],
 				'nicknames': [nickname],
+				'players_and_nicknames': {player: nickname},
 				'players_state': [PlayerState["PENDING"]],
 				'rounds': {},
 				'winners': [],
+				'losers': [],
 				'round_number': 1,
+				'match_number': 1,
 				'game_state': GameState()
 			}
 			self.rooms[room_name] = current_room
@@ -77,10 +99,10 @@ class TournamentManager():
 			current_room['players'].append(player)
 			current_room['players_list'].append(player)
 			current_room['nicknames'].append(nickname)
+			current_room['players_and_nicknames'][player] = nickname
 			current_room['players_state'].append(PlayerState["PENDING"])
 			self.rooms[room_name] = current_room
 		
-		# print("current room: ", current_room)
 		print(f'Room {room_name} has {len(current_room["players"])} players')
 		return True
 	
@@ -150,41 +172,14 @@ class TournamentManager():
 			room['players'] = room['winners']
 			room['winners'] = []
 			room['round_number'] += 1
-			room['rounds'][f"Round {room['round_number']}"] = []
-		elif room['round_number'] == 1:
-			room['rounds'][f"Round {room['round_number']}"] = []
+
 
 		player1 = room.get('players', [])[0]
 		player2 = room.get('players', [])[1]
 		players = [player1, player2]
 		return players
-	
-	def next_turn(self, room_name, winnerIdx, loserIdx):
-		room = self.get_room(room_name)
 
-		if len(room['players']) <= 1 and len(room['winners']) <= 1:
-			return False
-
-		round_number = room.get('round_number', 1)
-		winners = []
-		round_matches = []
-		player1 = room.get('players', [])[0]
-		player2 = room.get('players', [])[1]
-		winner = room.get('players', [])[winnerIdx]
-		round_matches.append((player1, player2, winner))
-		room['rounds'][f"Round {round_number}"].append(round_matches)
-		room['winners'].append(winner)
-		room['players'] = room['players'][2:]
-		room['game_state'] = GameState()
-
-		if len(room['players']) <= 1 and len(room['winners']) <= 1:
-			return False
-		elif len(room['players']) <= 1:
-			room['players'] = room['winners']
-			room['winners'] = []
-			room['round_number'] += 1
-			room['rounds'][f"Round {room['round_number']}"] = []
-
+	def change_room_state(self, room):
 		if room['state'] == TournamentStage["QUARTER_FINALS1"]:
 			room['state'] = TournamentStage["QUARTER_FINALS2"]
 		elif room['state'] == TournamentStage["QUARTER_FINALS2"]:
@@ -198,6 +193,82 @@ class TournamentManager():
 		elif room['state'] == TournamentStage["DEMI_FINALS2"]:
 			room['state'] = TournamentStage["FINALS"]
 
+
+	def add_match_info(self, room, game, winner):
+		"""
+		Add match information to the room's rounds dictionary.
+
+		Args:
+			room (dict): The room dictionary containing information about the room.
+			game (Game): The game object containing information about the game.
+			winner (str): The winner of the match.
+		"""
+		round_number = room.get('round_number', 1)
+		match_number = room.get('match_number', 1)
+		player1 = room.get('players', [])[0]
+		player2 = room.get('players', [])[1]
+		score = [game.players[0].score, game.players[1].score]
+
+		match = {
+			"players": [player1, player2],
+			"winner": winner,
+			"round": round_number,
+			"match": match_number,
+			"score": score
+		}
+
+		if not room['rounds'].get(room['state'], None):
+			room['rounds'][room['state']] = []
+
+		room['rounds'][room['state']] = match
+
+	def update_for_next_match(self, room, winner):
+		"""
+		Updates the room game state for the next match,
+		adjust the players list by popping the first 2 players,
+		increment the match_number.
+
+		Args:
+			room (dict): The room object containing the current state.
+			winner: The winner of the current match.
+		"""
+		room['match_number'] += 1
+		room['winners'].append(winner)
+		room['players'] = room['players'][2:]  # remove the first two players from the list
+		room['game_state'] = GameState()
+
+
+	def next_turn(self, room_name, winnerIdx, loserIdx):
+		"""
+		Process the next turn in the tournament.
+
+		Args:
+			room_name (str): The name of the room.
+			winnerIdx (int): The index of the winner player in the room's players list, the player list is [0, 1].
+			loserIdx (int): The index of the loser player in the room's players list. 
+
+		Returns:
+			bool: True if the next turn was processed successfully, False otherwise.
+		"""
+		room = self.get_room(room_name)
+		game = room['game_state']
+
+		if len(room['players']) <= 1 and len(room['winners']) <= 1:
+			return False
+
+		winner = room.get('players', [])[winnerIdx]
+		self.add_match_info(room, game, winner)
+		self.update_for_next_match(room, winner)
+
+		if len(room['players']) <= 1 and len(room['winners']) <= 1:
+			return False
+		elif len(room['players']) <= 1:
+			room['players'] = room['winners']
+			room['winners'] = []
+			room['round_number'] += 1
+			room['match_number'] = 1
+
+		self.change_room_state(room)
 		return True
 
 	def get_player_index(self, room_name, player):
@@ -212,12 +283,12 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def connect(self):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
-		self.tournament = await sync_to_async(Tournament.objects.get)(name=tournament_name)
+		self.tournament = await sync_to_async(TournamentRoom.objects.get)(name=tournament_name)
 		player = self.scope['user'].username
 		# player_obj = Player.objects.get(owner=self.scope['user'])
 		player_obj = await sync_to_async(Player.objects.get)(owner=self.scope['user'])
-		# nickname = player_obj.nickname
-		nickname = player
+		nickname = player_obj.nickname
+		# nickname = player
 
 		await self.channel_layer.group_add(
 			tournament_name,
@@ -236,8 +307,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		player = self.scope['user'].username
 		# player_obj = Player.objects.get(owner=self.scope['user'])
 		player_obj = await sync_to_async(Player.objects.get)(owner=self.scope['user'])
-		# nickname = player_obj.nickname
-		nickname = player
+		nickname = player_obj.nickname
+		# nickname = player
 		room = self.tournament_manager.get_room(tournament_name)
 
 		if room:
@@ -248,7 +319,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				idx = self.tournament_manager.get_player_index(tournament_name, player)
 				if idx > -1:
 					player_state = room['players_state'][idx]
-					print(f'Player {player} is in state {player_state}')
 					if player_state != PlayerState["LOSER"]:
 						room['game_state'].is_running = False
 						self.tournament_manager.remove_room(tournament_name)
@@ -273,8 +343,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			event = data['event']
 			if event == 'load_lobby':
 				await self.on_load_lobby()
-			elif event == 'load_playground':
-				await self.on_load_playground()
+			elif event == 'load_game':
+				await self.on_load_game()
 			elif event == 'tournament_start':
 				await self.on_tournament_start()
 			elif event == 'game_start':
@@ -299,10 +369,10 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			'arg': self.tournament_manager.get_printable_room(tournament_name)
 			}))
 		
-	async def on_load_playground(self):
+	async def on_load_game(self):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
 		if self.tournament_manager.start_tournament(tournament_name):
-			await self.send_load_playground()
+			await self.send_load_game()
 		else:
 			return
 
@@ -312,8 +382,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		room = self.tournament_manager.get_room(tournament_name)
 
 		room['n_ready'] += 1
-		# if room['n_ready'] < players_size_max:
-		# 	return
 		if room['n_ready'] < len(room['players']):
 			return
 
@@ -329,6 +397,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		await self.send_game_start(players)
 
 		game.is_running = True
+		game.start_time = asyncio.get_event_loop().time()
+		game.time_elapsed = 0
 		game.ball.x_vel = game.ball.speed
 		asyncio.create_task(self.game_loop())
 
@@ -397,32 +467,34 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			'arg': event['arg']
 		}))
 	
-	async def send_load_playground(self):
+	async def send_load_game(self):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
 		
 		await self.channel_layer.group_send(
 			tournament_name,
 			{
-				'type': 'load_playground',
+				'type': 'load_game',
 				'arg': {}
 			}
 		)
 
-	async def load_playground(self, event):
+	async def load_game(self, event):
 		await self.send(text_data=json.dumps({
-			'type': 'load_playground',
+			'type': 'load_game',
 			'arg': event['arg']
 		}))
 
 	async def send_set_position(self, players, state):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
-		
+		print("Players: ", players, " State: ", state)
+		nicknames = [ self.tournament_manager.get_room(tournament_name)['players_and_nicknames'][player] for player in players ]
 		await self.channel_layer.group_send(
 			tournament_name,
 			{
 				'type': 'set_position',
 				'arg': {
 					'players': players,
+					'nicknames': nicknames,
 					'state': state
 				}
 			}
@@ -447,10 +519,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				}
 			}
 		)
-		if len(players) == 2:
-			print("Player1: ", players[0] + " Player2: ", players[1])
-		else:
-			print("Error: ", players)
 
 	async def game_start(self, event):
 		await self.send(text_data=json.dumps({
@@ -479,6 +547,24 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			'arg': event['arg']
 		}))
 	
+	async def send_matchs_info(self):
+		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
+		room = self.tournament_manager.get_room(tournament_name)
+		matchs = room['rounds']
+		await self.channel_layer.group_send(
+			tournament_name,
+			{
+				'type': 'matchs_info',
+				'arg': matchs
+			}
+		)
+	
+	async def matchs_info(self, event):
+		await self.send(text_data=json.dumps({
+			'type': 'matchs_info',
+			'arg': event['arg']
+		}))
+	
 	async def send_game_state(self):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
 		game = self.tournament_manager.get_room(tournament_name)['game_state']
@@ -496,7 +582,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 					'ball_y': game.ball.y,
 					'ball_x_vel': game.ball.x_vel,
 					'ball_y_vel': game.ball.y_vel,
-					'ball_color': game.ball.color
+					'ball_color': game.ball.color,
+					'game_time': game.time_elapsed
 				}
 			}
 		)
@@ -513,13 +600,16 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		if self.update_lock is None:
 			self.update_lock = asyncio.Lock()
 		return self.update_lock
-	
+
 	async def game_loop(self):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
 		game = self.tournament_manager.get_room(tournament_name)['game_state']
-
 		async with await self.get_update_lock():
 			while game.is_running == True:
+				game.time_elapsed = asyncio.get_event_loop().time() - game.start_time
+				if game.time_elapsed > TIMER:
+					game.is_running = False
+					game.someone_won = True
 				await game.update()
 				await self.send_game_state()
 				await asyncio.sleep(tick_duration)
@@ -531,24 +621,44 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		room = self.tournament_manager.get_room(tournament_name)
 		game = self.tournament_manager.get_room(tournament_name)['game_state']
 		players = self.tournament_manager.get_players_turn(tournament_name)
-
 		game.is_running = False
+		loser = None
 
-		if game.players[0].score >= game.players[1].score:
+		if game.players[0].score > game.players[1].score:
+			loser = players[1]
 			await self.send_game_end(players[0], players[1], self.tournament_manager.get_room(tournament_name)['state'])
 			keep = self.tournament_manager.next_turn(tournament_name, 0, 1)
-		elif game.players[1].score >= game.players[0].score:
+		elif game.players[1].score > game.players[0].score:
+			loser = players[0]
 			await self.send_game_end(players[1], players[0], self.tournament_manager.get_room(tournament_name)['state'])
 			keep = self.tournament_manager.next_turn(tournament_name, 1, 0)
-		
+		elif game.players[0].score == game.players[1].score:
+			winner = players[1] if random.choice([0, 1]) < 0.5 else players[0]
+			loser = players[0] if winner == players[1] else players[1]
+			winnerIdx = 1 if winner == players[1] else 0
+			loserIdx = 0 if loser == players[1] else 1
+			await self.send_game_end(winner, loser, self.tournament_manager.get_room(tournament_name)['state'])
+			keep = self.tournament_manager.next_turn(tournament_name, winnerIdx, loserIdx)
+
+		await self.send_matchs_info()
+		if loser:
+			room['losers'].append(loser)
+
 		await asyncio.sleep(5)
+
 
 		if keep:
 			players = self.tournament_manager.get_players_turn(tournament_name)
 			await self.send_set_position(players, self.tournament_manager.get_room(tournament_name)['state'])
 		else:
+			# print room round matches
+			print(room['rounds'])
+			winner_nickname = room['players_and_nicknames'][room['winners'][0]]
+			winner_obj = await sync_to_async(Player.objects.get)(nickname=winner_nickname)
+			await end_game_add_stats(winner_obj, room['losers'], tournament_name)
 			self.tournament_manager.remove_room(tournament_name)
 			await self.send_tournament_end("Tournament ended")
 
 			# Delete the tournament from the database
 			await sync_to_async(self.tournament.delete)()
+

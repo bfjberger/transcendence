@@ -81,7 +81,7 @@ class AvatarSerializer(serializers.ModelSerializer):
     def save(self, *args, **kwargs):
         new_avatar = self.validated_data.get('avatar')
         if new_avatar:
-            if self.instance.avatar.name != 'avatars/avatar.png':
+            if self.instance.avatar.name != 'staticfiles/avatars/avatar.png':
                 # Delete the old avatar if it's not the default one
                 self.instance.avatar.delete()
         return super().save(*args, **kwargs)

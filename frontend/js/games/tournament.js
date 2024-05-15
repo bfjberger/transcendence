@@ -462,7 +462,7 @@ async function loadTournament() {
 
 		const response = await fetch(hostnameport + '/api/tournament/', init);
 
-		if (response.status === 403) {
+		if (response.status != 200) {
 			const text = await response.text();
 			throw new Error(text);
 		}
