@@ -25,6 +25,10 @@ game_running = false;
 var board = null;
 var context = null;
 
+var g_left_placeholder, g_right_placeholder;
+var g_template, g_template_next;
+var g_canvas_text;
+
 /* ------------------------------ Utils & Inits ----------------------------- */
 
 function intToHexColor(value) {
@@ -58,7 +62,7 @@ function handle_scores(player) {
 function display_winner(winning_player) {
 	ball.stop();
 
-	winning_text = winning_player + ' has won the game!';
+	winning_text = winning_player + ' a gagné!';
 }
 
 /* -------------------------------- Controls -------------------------------- */
@@ -161,14 +165,15 @@ function render() {
 
 	// Draw the ball
 	if (!ball.stop_flag) {
-		drawBall(ball.x, ball.y, ball.radius, intToHexColor(ball.color));
+		drawBall(ball.x, ball.y, ball.radius, "white");
 	}
 	else {
 		if (winning_text) {
-			context.fillStyle = "white";
-			context.font = "50px sans-serif";
-			let text_width = context.measureText(winning_text).width;
-			context.fillText(winning_text, (constants.WIN_WIDTH - text_width) / 2, constants.WIN_HEIGHT / 2);
+			// context.fillStyle = "white";
+			// context.font = "50px sans-serif";
+			// let text_width = context.measureText(winning_text).width;
+			// context.fillText(winning_text, (constants.WIN_WIDTH - text_width) / 2, constants.WIN_HEIGHT / 2);
+			g_canvas_text.textContent = winning_text;
 		}
 	}
 
@@ -177,11 +182,68 @@ function render() {
 
 }
 
+/* -------------------------------- Update UI ------------------------------- */
+
+function updateNextMatch(arg) {
+
+	if (arg.state == "QUARTER_FINALS1") {
+		let next_top, next_bottom, next_state;
+		next_state = "QUARTS SEED 2";
+		next_top = document.getElementById("quarter__seed2--1--name").innerText;
+		next_bottom = document.getElementById("quarter__seed2--2--name").innerText;
+		g_template_next.textContent = "Le prochain match sera " + next_state + " avec " + next_top + " vs " + next_bottom;
+	}
+	if (arg.state == "QUARTER_FINALS2") {
+		let next_top, next_bottom, next_state;
+		next_state = "QUARTS SEED 3";
+		next_top = document.getElementById("quarter__seed3--1--name").innerText;
+		next_bottom = document.getElementById("quarter__seed3--2--name").innerText;
+		g_template_next.textContent = "Le prochain match sera " + next_state + " avec " + next_top + " vs " + next_bottom;
+	}
+	if (arg.state == "QUARTER_FINALS3") {
+		let next_top, next_bottom, next_state;
+		next_state = "QUARTS SEED 4";
+		next_top = document.getElementById("quarter__seed4--1--name").innerText;
+		next_bottom = document.getElementById("quarter__seed4--2--name").innerText;
+		g_template_next.textContent = "Le prochain match sera " + next_state + " avec " + next_top + " vs " + next_bottom;
+	}
+	if (arg.state == "QUARTER_FINALS4") {
+		let next_top, next_bottom, next_state;
+		next_state = "DEMI SEED 1";
+		next_top = document.getElementById("demi__seed1--1--name").innerText;
+		next_bottom = "le vainqueur de ce match.";
+		g_template_next.textContent = "Le prochain match sera " + next_state + " avec " + next_top + " vs " + next_bottom;
+	}
+	if (arg.state == "DEMI_FINALS1") {
+		let next_top, next_bottom, next_state;
+		next_state = "DEMI SEED 2";
+		next_top = document.getElementById("demi__seed2--1--name").innerText;
+		next_bottom = document.getElementById("demi__seed2--2--name").innerText;
+		g_template_next.textContent = "Le prochain match sera " + next_state + " avec " + next_top + " vs " + next_bottom;
+	}
+	if (arg.state == "DEMI_FINALS2") {
+		let next_top, next_bottom, next_state;
+		next_state = "FINALE";
+		next_top = document.getElementById("final__1--name").innerText;
+		next_bottom = "le vainqueur de ce match.";
+		g_template_next.textContent = "Le prochain match sera " + next_state + " avec " + next_top + " vs " + next_bottom;
+	}
+	if (arg.state == "FINALS")
+		g_template_next.textContent = "Ce match est le dernier du tournoi. Enjoy !";
+};
+
 /* ----------------------------- Main Tournament ---------------------------- */
 
 export function startTournamentOnline() {
-	infoElement = document.getElementById("infoElement");
-	playerField = document.getElementById("playerField");
+	// infoElement = document.getElementById("infoElement");
+	// playerField = document.getElementById("playerField");
+
+	g_left_placeholder = document.getElementById("tournament__left");
+	g_right_placeholder = document.getElementById("tournament__right");
+	g_template = document.getElementById("template__text");
+	g_template_next = document.getElementById("template__text--next");
+	g_canvas_text = document.getElementById("canvas--text");
+	g_canvas_text.textContent = "";
 
 	if (first_launch) {
 		initDisplay();
@@ -212,21 +274,36 @@ const on_set_position = (arg) => {
 
 	// console.log('Position set to', position);
 	g_nicknames = arg.nicknames;
-	if (infoElement === null) {
-		infoElement = document.getElementById("InfoElement");
-		playerField = document.getElementById("playerField");
-	}
-	infoElement.innerHTML = 'BE READY, ' + arg.state + ' WILL START IN 5';
-	console.log(arg.players[0], arg.players[1]);
-	playerField.innerHTML = '<span style="color: cyan;">' + arg.nicknames[0] + '</span> VS <span style="color: red;">' + arg.nicknames[1] + '</span>';
+
+	g_left_placeholder.textContent = arg.nicknames[0];
+	g_right_placeholder.textContent = arg.nicknames[1];
+
+	if (arg.players[0] == g_username)
+		g_left_placeholder.classList.add("text-decoration-underline");
+	else if (arg.players[1] == g_username)
+		g_right_placeholder.classList.add("text-decoration-underline");
+
+	g_template.textContent = arg.state + " : " + arg.nicknames[0] + " vs " + arg.nicknames[1];
+
+	updateNextMatch(arg);
+
+	// if (infoElement === null) {
+	// 	infoElement = document.getElementById("InfoElement");
+	// 	playerField = document.getElementById("playerField");
+	// }
+	// infoElement.innerHTML = 'BE READY, ' + arg.state + ' WILL START IN 5';
+	// console.log(arg.players[0], arg.players[1]);
+	// playerField.innerHTML = '<span style="color: cyan;">' + arg.nicknames[0] + '</span> VS <span style="color: red;">' + arg.nicknames[1] + '</span>';
 
 	let count = 0;
 	let interval = setInterval(() => {
 		count++;
-		infoElement.innerHTML = 'BE READY, ' + arg.state + ' WILL START IN ' + (5 - count);
+		// infoElement.innerHTML = 'BE READY, ' + arg.state + ' WILL START IN ' + (5 - count);
+		g_canvas_text.textContent = "La partie commence dans " + (5 - count);
 		if (count === 5) {
 			clearInterval(interval);
-			infoElement.innerHTML = 'Go !';
+			// infoElement.innerHTML = 'Go !';
+			g_canvas_text.textContent = "";
 
 			if (arg.players[0] === g_username)
 				g_socket.send(JSON.stringify({event: 'game_start'}));
@@ -252,6 +329,11 @@ const on_game_state = (arg) => {
 const on_game_end = (arg) => {
 	game_running = false;
 	display_winner(arg.winner);
+
+	g_left_placeholder.textContent = "";
+	g_right_placeholder.textContent = "";
+	g_left_placeholder.classList.remove("text-decoration-underline");
+	g_right_placeholder.classList.remove("text-decoration-underline");
 }
 
 export { on_set_position, on_game_start, on_game_state, on_game_end }

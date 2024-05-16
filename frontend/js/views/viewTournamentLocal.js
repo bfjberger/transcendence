@@ -80,7 +80,7 @@ function renderTournamentCreationEight() {
 
 function renderTournamentRoom() {
 	return `
-		<div id="tournament__room--title" class="row pt-3">
+		<div class="row pt-3">
 			<div class="col-4"></div>
 			<div id="template__text" class="col-4 text-center h2" style="color: red"></div>
 			<div id="template__text--next" class="col-3 text-center h4"></div>

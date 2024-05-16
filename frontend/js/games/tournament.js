@@ -375,8 +375,7 @@ class Tournament {
 function changePageContent(viewFunction, elementId) {
 
 	try {
-		const htmlContent = viewFunction();
-		document.getElementById(elementId).innerHTML = htmlContent;
+		document.getElementById(elementId).innerHTML = viewFunction();
 		// Need to attach existing event listeners ?
 	} catch (error) {
 		console.error("Error loading content: ", error);

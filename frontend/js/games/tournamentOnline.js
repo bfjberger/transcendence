@@ -1,6 +1,7 @@
 import { renderTournamentRoom } from '../views/viewTournament.js';
 import { renderTournamentOnline } from '../views/viewTournament.js';
 import { renderTournamentLobby } from '../views/viewTournament.js';
+import { renderTournamentOnlineLobby } from "../views/viewTournament.js";
 
 import handleRoom from './tournamentRoom.js';
 
@@ -68,9 +69,10 @@ function createTournament() {
 				// Reload tournament list
 				loadTournaments();
 			} else {
-				// Handle error response
-				console.error('Failed to create tournament');
-				console.error(response);
+				response.text()
+				.then(errorMsg => {
+					document.getElementById("create__tournament--errorMsg").textContent = errorMsg.replace(/["{}[\]]/g, '');
+				})
 			}
 		})
 		.catch(error => {
@@ -150,13 +152,16 @@ function joinRoom(tournamentName) {
 				// Handle success response
 				tournament_name = tournamentName;
 				console.log('Successfully joined tournament: ', tournament_name);
-				loadContent(renderTournamentRoom, 'main__content');
+				// loadContent(renderTournamentRoom, 'main__content');
+				loadContent(renderTournamentOnlineLobby, "main__content");
 				handleRoom.listenerTournamentRoom();
 				handleRoom.loadTournamentRoom(tournament_name);
 			} else {
 				// Handle error response
-				console.error('Failed to join tournament');
-				console.error(response);
+				response.text()
+				.then(errorMsg => {
+					document.getElementById("tournament__list--errorMsg").textContent = errorMsg.replace(/["{}[\]]/g, '');
+				})
 			}
 		})
 		.catch(error => {
@@ -309,7 +314,7 @@ async function loadTournamentOnline() {
 		const data = await response.json();
 		g_data = data;
 		// console.log("g_data: ", g_data);
-		console.log("g_data.username: ", g_data.username);
+		// console.log("g_data.username: ", g_data.username);
 
 		return 1;
 	} catch (e) {

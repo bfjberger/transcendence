@@ -3,6 +3,11 @@ import { renderTournamentRoom } from "../views/viewTournament.js";
 import { renderTournamentLobby } from "../views/viewTournament.js";
 import { renderPlayground } from "../views/viewTournament.js";
 import { router } from "../logic/router.js";
+import {
+	renderTournamentOnlineGame,
+	renderTournamentBracketsEight,
+	renderTournamentBracketsFour
+ 		} from "../views/viewTournament.js";
 
 import {
 	loadContent,
@@ -34,47 +39,176 @@ export { g_username, g_nickname, g_socket };
 /* ----------------------------------- UI ----------------------------------- */
 
 // To replace the current div that shows players later on
-const create_player_div = (player, nickname, is_owner) => {
-	const div = document.createElement('div');
+const create_player_div = (player, nickname, is_owner, actual_owner) => {
+	const div = document.createElement("div");
 
-	if (is_owner) {
-		div.classList.add('owner');
+	if (is_owner && g_username == actual_owner) {
+		div.className = "owner row text-center justify-content-end py-3 border-info border-bottom";
+		div.innerHTML = `
+				<div class="col-4 h3">
+					${nickname}
+				</div>
+				<div class="col-2">
+					<button id="start-btn" class="btn btn-outline-success" type="button">COMMENCER</button>
+				</div>
+				<div class="col-2">
+					<button id="delete-btn" class="btn btn-outline-danger" type="button">SUPPRIMER</button>
+				</div>
+			`;
 	}
-	div.innerHTML = `
-		<h3>PLAYER: ${player}</h3>
-		<div>NICKNAME: ${nickname}</div>
-	`
+	else {
+		div.className = "row text-center py-3 border-info border-bottom";
+		div.innerHTML = `
+			<div class="h3">${nickname}</div>
+		`;
+	}
 	return div;
 }
 
+/*
 // Added a listener in update_lobby_ui
 const create_owner_btns = () => {
 	const div = document.createElement('div');
 	div.innerHTML = `
-		<button id="start-btn" class="btn btn-warning">COMMENCER</button>
-		<button id="delete-btn" class="btn btn-danger">SUPPRIMER</button>
+		<button id="start-btn" class="btn btn-outline-success">COMMENCER</button>
+		<button id="delete-btn" class="btn btn-outline-danger">SUPPRIMER</button>
 	`
 	return div;
 }
+*/
 
 // Might change depending on the room ui
 const update_lobby_ui = (room) => {
-	const lobby_container = document.getElementById('lobby-container');
+	const lobby_container = document.getElementById("tournament__room--list");
+	lobby_container.innerHTML = "";
 
-	if (!lobby_container) {
-		return;
-	}
-	lobby_container.innerHTML = '';
 	room.players.forEach((player, i) => {
 		const is_owner = player === room.owner;
-		lobby_container.appendChild(create_player_div(player, room.nicknames[i], is_owner));
+		lobby_container.appendChild(create_player_div(player, room.nicknames[i], is_owner, room.owner));
 	})
 
 	if (room.owner === g_username) {
-		lobby_container.appendChild(create_owner_btns());
+		// lobby_container.appendChild(create_owner_btns());
 		add_start_and_delete_buttons_listeners();
 	}
+
+	document.getElementById("tournament__room--list--nb").textContent = room.players.length;
 }
+
+function addNameBracketsStart(arg) {
+
+	if (arg["n_ready"] == 4) {
+		document.getElementById("demi__seed1--1--name").textContent = arg["nicknames"][0];
+		document.getElementById("demi__seed1--2--name").textContent = arg["nicknames"][1];
+		document.getElementById("demi__seed2--1--name").textContent = arg["nicknames"][2];
+		document.getElementById("demi__seed2--2--name").textContent = arg["nicknames"][3];
+	}
+	else if (arg["n_ready"] == 8) {
+		document.getElementById("quarter__seed1--1--name").textContent = arg["nicknames"][0];
+		document.getElementById("quarter__seed1--2--name").textContent = arg["nicknames"][1];
+		document.getElementById("quarter__seed2--1--name").textContent = arg["nicknames"][2];
+		document.getElementById("quarter__seed2--2--name").textContent = arg["nicknames"][3];
+		document.getElementById("quarter__seed3--1--name").textContent = arg["nicknames"][4];
+		document.getElementById("quarter__seed3--2--name").textContent = arg["nicknames"][5];
+		document.getElementById("quarter__seed4--1--name").textContent = arg["nicknames"][6];
+		document.getElementById("quarter__seed4--2--name").textContent = arg["nicknames"][7];
+	}
+};
+
+function updateBracketsEndOfGame(arg) {
+
+	if (arg["QUARTER_FINALS1"]) {
+		if (arg["QUARTER_FINALS1"].winner == arg["QUARTER_FINALS1"].players[0]) {
+			document.getElementById("quarter__seed1--1--main").classList.add("bg-success-subtle");
+			document.getElementById("quarter__seed1--2--main").classList.add("bg-danger-subtle");
+		}
+		else if (arg["QUARTER_FINALS1"].winner == arg["QUARTER_FINALS1"].players[1]) {
+			document.getElementById("quarter__seed1--1--main").classList.add("bg-danger-subtle");
+			document.getElementById("quarter__seed1--2--main").classList.add("bg-success-subtle");
+		}
+		document.getElementById("quarter__seed1--1--score").textContent = arg["QUARTER_FINALS1"].score[0];
+		document.getElementById("quarter__seed1--2--score").textContent = arg["QUARTER_FINALS1"].score[1];
+		document.getElementById("demi__seed1--1--name").textContent = arg["QUARTER_FINALS1"].winner;
+	}
+	if (arg["QUARTER_FINALS2"]) {
+		if (arg["QUARTER_FINALS2"].winner == arg["QUARTER_FINALS2"].players[0]) {
+			document.getElementById("quarter__seed2--1--main").classList.add("bg-success-subtle");
+			document.getElementById("quarter__seed2--2--main").classList.add("bg-danger-subtle");
+		}
+		else if (arg["QUARTER_FINALS2"].winner == arg["QUARTER_FINALS2"].players[1]) {
+			document.getElementById("quarter__seed2--1--main").classList.add("bg-danger-subtle");
+			document.getElementById("quarter__seed2--2--main").classList.add("bg-success-subtle");
+		}
+		document.getElementById("quarter__seed2--1--score").textContent = arg["QUARTER_FINALS2"].score[0];
+		document.getElementById("quarter__seed2--2--score").textContent = arg["QUARTER_FINALS2"].score[1];
+		document.getElementById("demi__seed1--2--name").textContent = arg["QUARTER_FINALS2"].winner;
+	}
+	if (arg["QUARTER_FINALS3"]) {
+		if (arg["QUARTER_FINALS3"].winner == arg["QUARTER_FINALS3"].players[0]) {
+			document.getElementById("quarter__seed3--1--main").classList.add("bg-success-subtle");
+			document.getElementById("quarter__seed3--2--main").classList.add("bg-danger-subtle");
+		}
+		else if (arg["QUARTER_FINALS3"].winner == arg["QUARTER_FINALS3"].players[1]) {
+			document.getElementById("quarter__seed3--1--main").classList.add("bg-danger-subtle");
+			document.getElementById("quarter__seed3--2--main").classList.add("bg-success-subtle");
+		}
+		document.getElementById("quarter__seed3--1--score").textContent = arg["QUARTER_FINALS3"].score[0];
+		document.getElementById("quarter__seed3--2--score").textContent = arg["QUARTER_FINALS3"].score[1];
+		document.getElementById("demi__seed2--1--name").textContent = arg["QUARTER_FINALS3"].winner;
+	}
+	if (arg["QUARTER_FINALS4"]) {
+		if (arg["QUARTER_FINALS4"].winner == arg["QUARTER_FINALS4"].players[0]) {
+			document.getElementById("quarter__seed4--1--main").classList.add("bg-success-subtle");
+			document.getElementById("quarter__seed4--2--main").classList.add("bg-danger-subtle");
+		}
+		else if (arg["QUARTER_FINALS4"].winner == arg["QUARTER_FINALS4"].players[1]) {
+			document.getElementById("quarter__seed4--1--main").classList.add("bg-danger-subtle");
+			document.getElementById("quarter__seed4--2--main").classList.add("bg-success-subtle");
+		}
+		document.getElementById("quarter__seed4--1--score").textContent = arg["QUARTER_FINALS4"].score[0];
+		document.getElementById("quarter__seed4--2--score").textContent = arg["QUARTER_FINALS4"].score[1];
+		document.getElementById("demi__seed2--2--name").textContent = arg["QUARTER_FINALS4"].winner;
+	}
+	if (arg["DEMI_FINALS1"]) {
+		if (arg["DEMI_FINALS1"].winner == arg["DEMI_FINALS1"].players[0]) {
+			document.getElementById("demi__seed1--1--main").classList.add("bg-success-subtle");
+			document.getElementById("demi__seed1--2--main").classList.add("bg-danger-subtle");
+		}
+		else if (arg["DEMI_FINALS1"].winner == arg["DEMI_FINALS1"].players[1]) {
+			document.getElementById("demi__seed1--1--main").classList.add("bg-danger-subtle");
+			document.getElementById("demi__seed1--2--main").classList.add("bg-success-subtle");
+		}
+		document.getElementById("demi__seed1--1--score").textContent = arg["DEMI_FINALS1"].score[0];
+		document.getElementById("demi__seed1--2--score").textContent = arg["DEMI_FINALS1"].score[1];
+		document.getElementById("final__1--name").textContent = arg["DEMI_FINALS1"].winner;
+	}
+	if (arg["DEMI_FINALS2"]) {
+		if (arg["DEMI_FINALS2"].winner == arg["DEMI_FINALS2"].players[0]) {
+			document.getElementById("demi__seed2--1--main").classList.add("bg-success-subtle");
+			document.getElementById("demi__seed2--2--main").classList.add("bg-danger-subtle");
+		}
+		else if (arg["DEMI_FINALS2"].winner == arg["DEMI_FINALS2"].players[1]) {
+			document.getElementById("demi__seed2--1--main").classList.add("bg-danger-subtle");
+			document.getElementById("demi__seed2--2--main").classList.add("bg-success-subtle");
+		}
+		document.getElementById("demi__seed2--1--score").textContent = arg["DEMI_FINALS2"].score[0];
+		document.getElementById("demi__seed2--2--score").textContent = arg["DEMI_FINALS2"].score[1];
+		document.getElementById("final__2--name").textContent = arg["DEMI_FINALS2"].winner;
+	}
+	if (arg["FINALS"]) {
+		if (arg["FINALS"].winner == arg["FINALS"].players[0]) {
+			document.getElementById("final__1--main").classList.add("bg-success-subtle");
+			document.getElementById("final__2--main").classList.add("bg-danger-subtle");
+		}
+		else if (arg["FINALS"].winner == arg["FINALS"].players[1]) {
+			document.getElementById("final__1--main").classList.add("bg-danger-subtle");
+			document.getElementById("final__2--main").classList.add("bg-success-subtle");
+		}
+		document.getElementById("final__1--score").textContent = arg["FINALS"].score[0];
+		document.getElementById("final__2--score").textContent = arg["FINALS"].score[1];
+		document.getElementById("winner__name").textContent = arg["FINALS"].winner;
+	}
+};
 
 /* --------------------------------- SOCKET --------------------------------- */
 
@@ -92,28 +226,33 @@ const on_load_lobby = (arg) => {
 }
 
 const on_load_game = (arg) => {
-	console.log('on_load_game', arg);
-	load_game().then(() => {
-		g_socket.send(JSON.stringify({ event: 'tournament_start' }));
-	});
+
+	loadContent(renderTournamentOnlineGame, "tournament__room--main");
+	if (arg == 4)
+		loadContent(renderTournamentBracketsFour, "tournament__room--brackets");
+	else if (arg == 8)
+		loadContent(renderTournamentBracketsEight, "tournament__room--brackets");
+
+	load_game();
+	g_socket.send(JSON.stringify({ event: 'tournament_start' }));
 }
 
 const on_tournament_start = (arg) => {
-	console.log('on_tournament_start', arg);
+	// console.log('on_tournament_start', arg);
+	addNameBracketsStart(arg);
 	window.startTournamentOnline();
 }
 
 const on_tournament_end = (arg) => {
-	console.log('on_tournament_end', arg);
+	// console.log('on_tournament_end', arg);
 	alert(arg);
 	g_socket.close();
 }
 
 // MATCH INFO for brackets
 const on_matchs_info = (arg) => {
-	console.log('on_matchs_info', arg);
-	console.log(arg['DEMI_FINALS1']);
-	// console.log(arg['DEMI_FINALS2'][0]);
+	// console.log('on_matchs_info', arg);
+	updateBracketsEndOfGame(arg);
 }
 
 let on_message_handlers = [
@@ -124,8 +263,6 @@ let on_message_handlers = [
 	{ type: 'tournament_end', handler: on_tournament_end },
 	{ type: 'matchs_info', handler: on_matchs_info },
 ];
-
-
 
 /* ------------------------------- Page loader ------------------------------ */
 
@@ -159,8 +296,12 @@ function set_g_tournament_name() {
 }
 
 const load_create_online = () => {
-	return loadContent2(renderTournamentLobby, 'tournament-room')
-	.then(set_g_username)
+	// return loadContent2(renderTournamentLobby, 'tournament-room')
+	// .then(set_g_username)
+	// .then(set_g_tournament_name)
+	// .then(connect_socket)
+	// .catch(console.error)
+	return set_g_username()
 	.then(set_g_tournament_name)
 	.then(connect_socket)
 	.catch(console.error)
@@ -175,7 +316,7 @@ const load_game = () => {
 		{ type: 'game_state', handler: window.tournamentEvents.on_game_state },
 		{ type: 'game_end', handler: window.tournamentEvents.on_game_end },
 	];
-	return loadContent2(renderPlayground, 'tournament-room');
+	// return loadContent2(renderPlayground, 'tournament-room');
 }
 
 
@@ -201,12 +342,23 @@ const connect_socket = (tournament_name) => {
 
 /* ----------------------- Start and Delete Tournament ---------------------- */
 
+/**
+ * Check the lenght of the list of players,
+ * if not enough does not send a message to the backend
+*/
 const start_online_tournament = () => {
-    if (g_socket instanceof WebSocket && g_socket.readyState === WebSocket.OPEN) {
-        g_socket.send(JSON.stringify({ event: 'load_game' }));
-    } else {
-        console.error('Cannot send message: WebSocket is not open');
-    }
+
+	let players_nb = document.getElementById("tournament__room--list").children.length;
+	if (players_nb != 4 && players_nb != 8) {
+		document.getElementById("tournament__room--errorMsg").textContent = "Le nombre de joueurs n'est pas valide. Il en faut 4 ou 8.";
+	}
+	else if (players_nb == 4 || players_nb == 8) {
+		if (g_socket instanceof WebSocket && g_socket.readyState === WebSocket.OPEN) {
+			g_socket.send(JSON.stringify({ event: 'load_game' }));
+		} else {
+			console.error('Cannot send message: WebSocket is not open');
+		}
+	}
 }
 
 function delete_room_name(tournament_name) {
@@ -264,7 +416,7 @@ function listenerTournamentRoom() {
 	});
 
 	// !!! not working
-	// // Close the socket when the user leaves the page 
+	// // Close the socket when the user leaves the page
 	// console.log("Enter listenerTournamentRoom");
 	// window.addEventListener('beforeunload', () => {
 	// 	window.alert('You have left the tournament room');
@@ -279,6 +431,7 @@ function listenerTournamentRoom() {
 async function loadTournamentRoom(tournament_name) {
 	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
+	document.getElementById("tournament__room--name").textContent = tournament_name;
 
 	window.startTournamentOnline = startTournamentOnline;
 	window.tournamentEvents = {

@@ -198,7 +198,7 @@ class Tournament(APIView):
 		except :
 			return Response(None, status=status.HTTP_400_BAD_REQUEST)
 		return Response(data=serializer_player.data, status=status.HTTP_200_OK)
-		
+
 
 class Statistiques(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]

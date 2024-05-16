@@ -42,46 +42,46 @@ class TournamentViewSet(viewsets.ViewSet):
 			# If the pk is not an integer, try using it as a string
 			obj = queryset.get(name=pk)
 		return obj
-		
+
 	def create(self, request):
 		MAX_TOURNAMENTS = 10
 
 		if TournamentRoom.objects.count() >= MAX_TOURNAMENTS:
-			return HttpResponseBadRequest('Maximum number of tournaments reached')
+			return Response(data="Le nombre de tournoi maximum à été atteint.", status=status.HTTP_400_BAD_REQUEST)
 		# Check if there is a space in the name
 		if ' ' in request.data['name']:
-			return Response({'success': False, 'detail': 'Tournament name should not contain spaces.'}, status=status.HTTP_400_BAD_REQUEST)
+			return Response(data="Un nom de tournoi ne peut pas contenir d\'espaces.", status=status.HTTP_400_BAD_REQUEST)
 		serializer = TournamentSerializer(data=request.data)
 		if serializer.is_valid():
 			name = serializer.validated_data.get('name')
 			if TournamentRoom.objects.filter(name=name).exists():
-				return Response({'detail': 'A tournament with this name already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+				return Response(data="Un tournoi avec ce nom existe déjà.", status=status.HTTP_400_BAD_REQUEST)
 			# Check for special characters in the name
 			if not name.isalnum():
-				return Response({'detail': 'Tournament name should only contain alphanumeric characters.'}, status=status.HTTP_400_BAD_REQUEST)
+				return Response(data="Un nom de tournoi doit seulement contenir des caractères alphanumériques.", status=status.HTTP_400_BAD_REQUEST)
 
 			# Set the owner of the tournament to the current user
 			player = Player.objects.get(owner=request.user)
 			serializer.save(owner=player)
 			print("Tournament created:", name)
-			return Response({'success': True})
+			return Response(data="Tournoi créé avec succès.", status=status.HTTP_200_OK)
 		else:
-			return Response({'success': False, 'errors': serializer.errors})
-		
+			return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 	@action(detail=True, methods=['delete'])
 	def delete_tournament(self, request, pk=None):
 		tournament = self.get_object()
 		tournament.delete()
 		return Response({'success': True})
- 
+
 	@action(detail=True, methods=['post'])
 	def join_tournament(self, request, pk=None):
 		tournament = self.get_object()
 		player = Player.objects.get(owner=request.user)
 		if tournament.is_player_in_tournament(player):
-			return Response({'success': False, 'detail': 'You are already in this tournament.'})
+			return Response(data="Tu es déjà dans ce tournoi.", status=status.HTTP_401_UNAUTHORIZED)
 		tournament.add_player(player)
-		return Response({'success': True})
+		return Response(data="Tu as rejoint ce tournoi", status=status.HTTP_200_OK)
 
 	@action(detail=False, methods=['get'])
 	def load_tournaments(self, request):
@@ -89,22 +89,22 @@ class TournamentViewSet(viewsets.ViewSet):
 		serializer = TournamentSerializer(tournaments, many=True)
 		return Response(serializer.data)
 
- 
 	@action(detail=True, methods=['get'])
 	def load_players(self, request, pk=None):
 		tournament = self.get_object()
 		players = tournament.get_players()
 		serializer = PlayerSerializer(players, many=True)
 		return Response(serializer.data)
- 
+
 	@action(detail=True, methods=['post'])
 	def leave_tournament(self, request, pk=None):
 		tournament = self.get_object()
 		player = Player.objects.get(owner=request.user)
 		if not tournament.is_player_in_tournament(player):
-			return Response({'success': False, 'detail': 'You are not in this tournament.'})
+			return Response(data="Tu n'es pas dans ce tournoi.", status=status.HTTP_401_UNAUTHORIZED)
 		tournament.remove_player(player)
-		return Response({'success': True})
+		return Response(data="Tu as quitté ce tournoi.", status=status.HTTP_200_OK)
+
 
 class PlayerViewSet(viewsets.ModelViewSet):
 	"""
@@ -116,6 +116,7 @@ class PlayerViewSet(viewsets.ModelViewSet):
 		return Player.objects.filter(tournament=tournament)
 
 	serializer_class = PlayerSerializer
+
 
 class TournamentOnline(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
