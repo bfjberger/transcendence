@@ -284,8 +284,9 @@ class GameState:
 					self.y >= player_left.y and self.x > player_left.x and
 					self.x - self.radius <= player_left.x + PADDLE_WIDTH):
 						if (abs(self.x_vel) >= 20):
-							self.x_vel *= -1 
-						self.x_vel *= -1 * self.speed_multiplier_x
+							self.x_vel *= -1
+						else :
+							self.x_vel *= -1 * self.speed_multiplier_x
 						middle_y = player_left.y + PADDLE_HEIGHT / 2
 						difference_in_y = middle_y - self.y
 						reduction_factor = PADDLE_HEIGHT / 2
@@ -296,6 +297,8 @@ class GameState:
 					self.y >= player_right.y and self.x < player_right.x and
 					self.x + self.radius >= player_right.x):
 						if (abs(self.x_vel) >= 20):
+							self.x_vel *= -1 
+						else:
 							self.x_vel *= -1 * self.speed_multiplier_x
 						middle_y = player_right.y + PADDLE_HEIGHT / 2
 						difference_in_y = middle_y - self.y

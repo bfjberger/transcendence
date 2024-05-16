@@ -325,13 +325,14 @@ class GameStateFour:
 					self.x - self.radius <= player_left.x + PADDLE_WIDTH):
 						if (abs(self.x_vel) >= 20):
 							self.x_vel *= -1
-						self.x_vel *= -1 * self.speed_multiplier_x
-						middle_y = player_left.y + PADDLE_HEIGHT / 2
-						difference_in_y = middle_y - self.y
-						reduction_factor = PADDLE_HEIGHT / 2
-						new_y_vel = difference_in_y / reduction_factor * self.speed
-						self.y_vel = -1 * new_y_vel
-						# self.y_vel *= self.speed_multiplier_y
+						else :
+							self.x_vel *= -1 * self.speed_multiplier_x
+						# middle_y = player_left.y + PADDLE_HEIGHT / 2
+						# difference_in_y = middle_y - self.y
+						# reduction_factor = PADDLE_HEIGHT / 2
+						# new_y_vel = difference_in_y / reduction_factor * self.speed
+						# self.y_vel = -1 * new_y_vel
+						self.y_vel *= -1 * self.speed_multiplier_y
 						self.color = "blue"
 			else:
 				if (self.y <= player_right.y + PADDLE_HEIGHT and
@@ -339,13 +340,14 @@ class GameStateFour:
 					self.x + self.radius >= player_right.x):
 						if (abs(self.x_vel) >= 20):
 							self.x_vel *= -1
-						self.x_vel *= -1 * self.speed_multiplier_x
-						middle_y = player_right.y + PADDLE_HEIGHT / 2
-						difference_in_y = middle_y - self.y
-						reduction_factor = PADDLE_HEIGHT / 2
-						new_y_vel = difference_in_y / reduction_factor * self.speed
-						self.y_vel = -1 * new_y_vel
-						# self.y_vel *= self.speed_multiplier_y
+						else:
+							self.x_vel *= -1 * self.speed_multiplier_x
+						# middle_y = player_right.y + PADDLE_HEIGHT / 2
+						# difference_in_y = middle_y - self.y
+						# reduction_factor = PADDLE_HEIGHT / 2
+						# new_y_vel = difference_in_y / reduction_factor * self.speed
+						# self.y_vel = -1 * new_y_vel
+						self.y_vel *= -1 * self.speed_multiplier_y
 						self.color = "orange"
 
 			if self.y_vel < 0:
@@ -354,12 +356,14 @@ class GameStateFour:
 					self.y - self.radius <= player_top.y + PADDLE_WIDTH):
 						if (abs(self.y_vel) >= 20):
 							self.y_vel *= -1
-						middle_x = player_top.x + PADDLE_HEIGHT / 2
-						difference_in_x = middle_x - self.x
-						reduction_factor = PADDLE_HEIGHT / 2
-						new_x_vel = difference_in_x / reduction_factor * self.speed
-						self.x_vel = -1 * new_x_vel
-						self.y_vel *= -1 * self.speed_multiplier_y
+						else:
+							self.y_vel *= -1 * self.speed_multiplier_y
+						# middle_x = player_top.x + PADDLE_HEIGHT / 2
+						# difference_in_x = middle_x - self.x
+						# reduction_factor = PADDLE_HEIGHT / 2
+						# new_x_vel = difference_in_x / reduction_factor * self.speed
+						# self.x_vel = -1 * new_x_vel
+						self.x_vel *= -1 * self.speed_multiplier_x
 						self.color = "violet"
 			else:
 				if (self.x <= player_bottom.x + PADDLE_HEIGHT and
@@ -367,12 +371,14 @@ class GameStateFour:
 					self.y + self.radius >= player_bottom.y):
 						if (abs(self.y_vel) >= 20):
 							self.y_vel *= -1
-						middle_x = player_bottom.x + PADDLE_HEIGHT / 2
-						difference_in_x = middle_x - self.x
-						reduction_factor = PADDLE_HEIGHT / 2
-						new_x_vel = difference_in_x / reduction_factor * self.speed
-						self.x_vel = -1 * new_x_vel
-						self.y_vel *= -1 * self.speed_multiplier_y
+						else:
+							self.y_vel *= -1 * self.speed_multiplier_y
+						# middle_x = player_bottom.x + PADDLE_HEIGHT / 2
+						# difference_in_x = middle_x - self.x
+						# reduction_factor = PADDLE_HEIGHT / 2
+						# new_x_vel = difference_in_x / reduction_factor * self.speed
+						# self.x_vel = -1 * new_x_vel
+						self.x_vel *= -1 * self.speed_multiplier_x
 						self.color = "red"
 
 		async def move(self, player_left, player_right, player_top, player_bottom):
