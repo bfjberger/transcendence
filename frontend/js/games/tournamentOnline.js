@@ -1,6 +1,7 @@
 import { renderTournamentRoom } from '../views/viewTournament.js';
 import { renderTournamentOnline } from '../views/viewTournament.js';
 import { renderTournamentLobby } from '../views/viewTournament.js';
+import { router } from '../logic/router.js';
 
 import handleRoom from './tournamentRoom.js';
 
@@ -145,23 +146,24 @@ function joinRoom(tournamentName) {
 			'X-CSRFToken': getCookie('csrftoken') // Ensure to include CSRF token
 		},
 	})
-		.then(response => {
-			if (response.ok) {
-				// Handle success response
-				tournament_name = tournamentName;
-				console.log('Successfully joined tournament: ', tournament_name);
-				loadContent(renderTournamentRoom, 'main__content');
-				handleRoom.listenerTournamentRoom();
-				handleRoom.loadTournamentRoom(tournament_name);
-			} else {
-				// Handle error response
-				console.error('Failed to join tournament');
-				console.error(response);
-			}
-		})
-		.catch(error => {
-			console.error('Error:', error);
-		});
+	.then(response => response.json()) // Parse the response as JSON
+	.then(data => {
+		if (data.success) {
+			// Handle success response
+			tournament_name = tournamentName;
+			console.log('Successfully joined tournament: ', tournament_name);
+			loadContent(renderTournamentRoom, 'main__content');
+			handleRoom.listenerTournamentRoom();
+			handleRoom.loadTournamentRoom(tournament_name);
+		} else {
+			// Handle error response
+			console.error('Failed to join tournament');
+			console.error(data.detail); // Log the error message
+		}
+	})
+	.catch(error => {
+		console.error('Error:', error);
+	});
 }
 
 function leaveRoom() {
@@ -197,21 +199,47 @@ export function leaveRoomName(tournamentName) {
 			'X-CSRFToken': getCookie('csrftoken') // Ensure to include CSRF token
 		},
 	})
-		.then(response => {
-			if (response.ok) {
-				// Handle success response
-				console.log('Successfully left tournament: ', tournamentName);
-				loadContent(renderTournamentOnline, 'main__content');
-				listenerTournamentOnline();
-			} else {
-				// Handle error response
-				console.error('Failed to leave tournament');
-				console.error(response);
-			}
-		})
-		.catch(error => {
-			console.error('Error:', error);
-		});
+	.then(response => response.json())
+	.then(data => {
+		if (data.success) {
+			// Handle success response
+			console.log('Successfully left tournament: ', tournamentName);
+			loadContent(renderTournamentOnline, 'main__content');
+			listenerTournamentOnline();
+		} else {
+			// Handle error response
+			console.error('Failed to leave tournament');
+			console.error(data.detail); // Log the error message
+		}
+	})
+	.catch(error => {
+		console.error('Error:', error);
+	});
+}
+
+export function leaveRoomNameAndGoTo(tournamentName, value) {
+	fetch(`/api/tournaments/${tournamentName}/leave_tournament/`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': getCookie('csrftoken') // Ensure to include CSRF token
+		},
+	})
+	.then(response => response.json())
+	.then(data => {
+		if (data.success) {
+			// Handle success response
+			console.log('Successfully left tournament: ', tournamentName);
+			router(value);
+		} else {
+			// Handle error response
+			console.error('Failed to leave tournament');
+			console.error(data.detail); // Log the error message
+		}
+	})
+	.catch(error => {
+		console.error('Error:', error);
+	});
 }
 
 

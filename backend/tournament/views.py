@@ -78,8 +78,10 @@ class TournamentViewSet(viewsets.ViewSet):
 	def join_tournament(self, request, pk=None):
 		tournament = self.get_object()
 		player = Player.objects.get(owner=request.user)
-		if tournament.is_player_in_tournament(player):
-			return Response({'success': False, 'detail': 'You are already in this tournament.'})
+		# if the player size is already at the maximum (8 players) then return an error
+		print(tournament.get_players().count())
+		if tournament.get_players().count() >= 8:
+			return Response({'success': False, 'detail': 'This tournament is full.'})
 		tournament.add_player(player)
 		return Response({'success': True})
 

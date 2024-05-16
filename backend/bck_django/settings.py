@@ -31,9 +31,13 @@ DEBUG = False
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
+ALLOWED_HOSTS_HTTPS = [f"https://{host}" for host in os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")]
+ALLOWED_HOSTS_HTTP = [f"http://{host}" for host in os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")]
 
-CSRF_TRUSTED_ORIGINS = ["https://localhost", "http://localhost", "https://10.12.8.4", "http://10.12.8.4"]
-CSRF_ALLOWED_ORIGINS = ["https://localhost", "http://localhost", "https://10.12.8.4", "http://10.12.8.4"]
+
+
+CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS_HTTPS + ALLOWED_HOSTS_HTTP
+CSRF_ALLOWED_ORIGINS = ALLOWED_HOSTS_HTTPS + ALLOWED_HOSTS_HTTP
 
 
 SESSION_COOKIE_SECURE = True
