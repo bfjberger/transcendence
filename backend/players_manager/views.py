@@ -1,3 +1,4 @@
+import requests
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -40,12 +41,39 @@ class RegisterAction(APIView):
 	serializer_class = RegisterSerializer
 
 	def post(self, request):
-		serializer = RegisterSerializer(data=request.data)
-		if serializer.is_valid():
-			user = serializer.save()
-			if user:
-				return Response(serializer.data, status=status.HTTP_201_CREATED)
-		return Response(serializer.errors, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+		# Verifier si un user 42 existe
+
+		authorization_url = "https://api.intra.42.fr/oauth/token" #by def, url where you can loggin ('https://api.intra.42.fr/oauth/authorize')
+		datas = {
+			"grant_type" : "client_credentials",
+			"client_id" : "u-s4t2ud-26a34e11bc579139cca876efa6b40fb67b760166dfe4b18858b82a4038f6cab0", #ATTENTION
+			"client_secret" : "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"
+		}
+
+		response_post = requests.post(authorization_url, datas)
+		token = response_post.json()["access_token"]
+
+
+		check_url = "https://api.intra.42.fr/v2/users" + "/" + request.data["username"]
+		header = {
+			"Authorization" : "Bearer" + " " + token
+		}
+
+		result = requests.get(check_url, headers=header)
+
+
+
+		if result.status_code != 200 :
+			serializer = RegisterSerializer(data=request.data)
+			if serializer.is_valid():
+				user = serializer.save()
+				if user:
+					return Response(serializer.data, status=status.HTTP_201_CREATED)
+			return Response(serializer.errors, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+		
+		return Response("C'est mort mec !!! Ce pseudo est déjà pris par un student de 42.", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+
+
 
 
 class LoginView(APIView):

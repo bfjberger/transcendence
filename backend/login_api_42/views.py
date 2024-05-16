@@ -29,7 +29,7 @@ class Accounts_view(APIView) :
             'client_id': settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'],
             'redirect_uri': redirect_uri,
             'response_type': 'code',
-            # Add any additional scopes your app requires
+
             'scope': "public"
         }
         auth_url = '{}?{}'.format(authorization_url, urlencode(params))
@@ -50,7 +50,6 @@ class Callback(APIView):
             'redirect_uri': redirect_uri,
             'grant_type': 'authorization_code',
             'scope': "public profile"
-
         }
 
         response = requests.post(token_url, data=data)
