@@ -29,9 +29,8 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 
 DEBUG = False
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ") # 127.0.0.1 et 10.11.1.2
-urls = os.environ.get("HOSTS_CORS").split(" ")
-urls_with_https = ["https://" + url for url in urls]
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+
 
 CSRF_TRUSTED_ORIGINS = ["https://localhost", "http://localhost", "https://10.12.8.4", "http://10.12.8.4"]
 CSRF_ALLOWED_ORIGINS = ["https://localhost", "http://localhost", "https://10.12.8.4", "http://10.12.8.4"]
