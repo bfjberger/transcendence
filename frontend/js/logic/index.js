@@ -1,3 +1,5 @@
+import { connect_socket_friend } from "./friends.js";
+
 function renderIndex() {
 	return `
 
@@ -25,13 +27,12 @@ function listenerIndex() {
 
 async function loadIndex()
 {
-	console.log("hello from load index")
 	try {
 		let hostnameport = "https://" + window.location.host;
 
 		const response = await fetch(hostnameport + '/api/index/');
 
-		console.log("response de api dans load index : ", response.status)
+		console.log("load_index(): response.status: ", response.status)
 
 		if (response.status === 202) {
 
@@ -40,6 +41,8 @@ async function loadIndex()
 			sessionStorage.setItem("username", data["username"]);
 			sessionStorage.setItem("avatar", data["player"].avatar);
 			sessionStorage.setItem("nickname", data["player"].nickname);
+
+			// connect_socket_friend();
 
 			return 1;
 		}

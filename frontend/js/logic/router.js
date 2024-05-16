@@ -183,16 +183,16 @@ async function handleLogout() {
  * If the load function returns 1 (the user can access it), render the view of the page
 */
 export default async function router(value) {
-	console.log("router activé " + value)
+	console.log("router(): value: " + value)
 
 	var page = routes[value];
-	console.log("router activé " + page)
+	console.log("router(): page: " + page)
 
 	if (!page)
 		return;
 
 	if (await page.load() === 1) {
-		console.log("value = " + value)
+		console.log("value: " + value)
 		document.getElementById("main__content").innerHTML = page.view();
 
 		document.getElementById("topbar__profile--username").textContent =
@@ -209,7 +209,7 @@ export default async function router(value) {
 		page.listener();
 	}
 	else {
-		console.log("page.load n a pas renvoyé 1");
+		console.log("page.load(): Error, redirect to login page");
 		router("login");
 	}
 };

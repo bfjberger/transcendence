@@ -222,6 +222,8 @@ class PongGame4Players {
 				this.ball.x - this.ball.radius <= this.player_left.coords.x + default_paddle_width) {
 					if (Math.abs(this.ball.velocityX) >= 20)
 						this.ball.velocityX *= -1;
+					else 
+						this.ball.velocityX *= -1 * this.ballSpeedMultiplierX;
 					// middle_y = this.player_left.coords.y + default_paddle_height / 2;
 					// difference_in_y = middle_y - this.ball.y;
 					// reduction_factor = default_paddle_height / 2;
@@ -230,7 +232,6 @@ class PongGame4Players {
 					this.ball.velocityY *= -1;
 					this.lastPlayerTouched = "player_left";
 					this.ball.color = this.player_left.color;
-					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX;
 			}
 		}
 		else {
@@ -238,7 +239,9 @@ class PongGame4Players {
 				this.ball.y >= this.player_right.coords.y && this.ball.x < this.player_right.coords.x &&
 				this.ball.x + this.ball.radius >= this.player_right.coords.x) {
 					if (Math.abs(this.ball.velocityX) >= 20)
-						this.ball.velocityX *= -1;			
+						this.ball.velocityX *= -1;	
+					else
+						this.ball.velocityX *= -1 * this.ballSpeedMultiplierX;		
 					// middle_y = this.player_right.coords.y + default_paddle_height / 2;
 					// difference_in_y = middle_y - this.ball.y;
 					// reduction_factor = default_paddle_height / 2;
@@ -247,7 +250,6 @@ class PongGame4Players {
  					this.ball.velocityY *= -1;
 					this.lastPlayerTouched = "player_right";
 					this.ball.color = this.player_right.color;
-					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX;		
 					
 			}
 		}
@@ -260,6 +262,8 @@ class PongGame4Players {
 				this.ball.y - this.ball.radius <= this.player_top.coords.y + default_paddle_width) {
 					if (Math.abs(this.ball.velocityY) >= 20)
 						this.ball.velocityY *= -1;
+					else
+						this.ball.velocityY *= -1 * this.ballSpeedMultiplierY;
 					// middle_x = this.player_top.coords.x + default_paddle_height / 2;
 					// difference_in_x = middle_x - this.ball.x;
 					// reduction_factor = default_paddle_height / 2;
@@ -267,7 +271,6 @@ class PongGame4Players {
 					// this.ball.velocityX = -1 * new_x_vel;
 					this.ball.velocityX *= -1;
 					 // reverse ball direction
-					this.ball.velocityY *= -1 * this.ballSpeedMultiplierY;
 					this.lastPlayerTouched = "player_top";
 					this.ball.color = this.player_top.color;
 			}
@@ -278,13 +281,14 @@ class PongGame4Players {
 				this.ball.y + this.ball.radius >= this.player_bottom.coords.y) {
 					if (Math.abs(this.ball.velocityY) >= 20)
 						this.ball.velocityY *= -1;
+					else
+						this.ball.velocityY *= -1 * this.ballSpeedMultiplierY;
 					// middle_x = this.player_bottom.coords.x + default_paddle_height / 2;
 					// difference_in_x = middle_x - this.ball.x;
 					// reduction_factor = default_paddle_height / 2;
 					// new_x_vel = difference_in_x / reduction_factor * this.ballSpeed;
 					// this.ball.velocityX = -1 * new_x_vel;
 					this.ball.velocityX *= -1;
-					this.ball.velocityY *= -1 * this.ballSpeedMultiplierY;
 					 // reverse ball direction
 					this.lastPlayerTouched = "player_bottom";
 					this.ball.color = this.player_bottom.color;

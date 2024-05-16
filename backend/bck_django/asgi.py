@@ -16,7 +16,7 @@ from django.core.asgi import get_asgi_application
 
 from pong_online.routing import websocket_urlpatterns
 from tournament.routing import tournament_websocket_urlpatterns
-
+from friends_manager.routing import friends_websocket_urlpatterns
 from pong_IA.routing import  websocket_IA_urlpatterns
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bck_django.settings')
@@ -28,7 +28,8 @@ application = ProtocolTypeRouter(
 		"websocket": AuthMiddlewareStack(
 			URLRouter(websocket_urlpatterns
 						 + tournament_websocket_urlpatterns
-						 + websocket_IA_urlpatterns)
+						 + websocket_IA_urlpatterns
+						 + friends_websocket_urlpatterns)
 			),
 	}
 )

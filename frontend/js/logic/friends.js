@@ -8,6 +8,59 @@ var g_el_received;
 var g_el_accepted;
 
 var csrftoken;
+var g_username;
+var g_socket_friend;
+
+async function get_username() {
+	const response = await fetch('/api/friends/getUserName/')
+	if (!response.ok) {
+		const text = await response.text();
+		return "";
+	}
+	const data = await response.json();
+	return data;
+}
+
+export async function connect_socket_friend() {
+	const username = await get_username();
+
+	if (username === "") {
+		return;
+	}
+
+	if (g_socket_friend && g_socket_friend.readyState === WebSocket.OPEN) {
+		return;
+	}
+	var socket = new WebSocket(`wss://${window.location.host}/wss/notifications/` + username + "/");
+	console.log("socket: ", socket);
+	g_socket_friend = socket;
+  
+	socket.onopen = function(event) {
+	  console.log('WebSocket connection opened');
+	};
+  
+	socket.onmessage = function(event) {
+	  console.log('Message from server: ' + event.data);
+	  var data = JSON.parse(event.data);
+	  if (data.type === 'notification') {
+		window.alert(data.message);
+	  }
+	};
+  
+	socket.onerror = function(event) {
+	  console.error('WebSocket error: ' + event);
+	};
+  
+	socket.onclose = function(event) {
+		// window.alert("WebSocket connection closed, trying to reconnect in 5 seconds...");
+	  console.log('WebSocket connection closed, trying to reconnect in 5 seconds...');
+	  setTimeout(connect_socket_friend, 5000);
+	};
+}
+
+connect_socket_friend();
+
+
 
 function fillFriendsSent() {
 
@@ -121,6 +174,13 @@ async function delete_friend(username) {
 		}
 		else {
 			let json_response = await response.json();
+			g_username = await get_username();
+			var message = {
+				type: "friend_request_refused",
+				from: username,
+				to: g_username,
+			};
+			g_socket_friend.send(JSON.stringify(message));
 			window.location.reload();
 		}
 
@@ -152,6 +212,13 @@ async function patch_friend_accept(username) {
 		}
 		else {
 			let json_response = await response.json();
+			g_username = await get_username();
+			var message = {
+				type: "friend_request_accepted",
+				from: username,
+				to: g_username,
+			};
+			g_socket_friend.send(JSON.stringify(message));
 			window.location.reload();
 		}
 
@@ -176,6 +243,7 @@ async function post_friend(form_post_friend) {
 		},
 		body: JSON.stringify({username: input.username.value})
 	};
+	console.log("target_username: " + input.username.value);
 
 	try {
 		let hostnameport = "https://" + window.location.host;
@@ -191,7 +259,16 @@ async function post_friend(form_post_friend) {
 		}
 		else {
 			var data = await response.text();
-			window.location.reload();
+			g_username = await get_username();
+
+			var message = {
+				type: "friend_request",
+				from: g_username,
+				to: input.username.value,
+			};
+			g_socket_friend.send(JSON.stringify(message));
+
+			// window.location.reload();
 		}
 	} catch (e) {
 		console.error("error from post friend : " + e);

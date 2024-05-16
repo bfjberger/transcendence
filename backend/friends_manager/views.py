@@ -118,3 +118,15 @@ class DeleteFriendAPIView(APIView):
 			return Response("Aucun lien d'amitié trouvé", status=status.HTTP_400_BAD_REQUEST)
 		relation_to_delete.delete()
 		return Response ("Lien d'amitié supprimé", status=status.HTTP_200_OK)
+
+
+class GetUserNameAPI(APIView):
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
+	serializer_class = UserSerializer
+
+	def get(self, request):
+		username = self.request.user.username
+		if not username :
+			return Response("User issue", status=status.HTTP_400_BAD_REQUEST)
+		return Response(data=username, status=status.HTTP_200_OK)
