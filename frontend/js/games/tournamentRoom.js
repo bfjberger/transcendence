@@ -80,7 +80,6 @@ const create_owner_btns = () => {
 // Might change depending on the room ui
 const update_lobby_ui = (room) => {
 	const lobby_container = document.getElementById("tournament__room--list");
-
 	lobby_container.innerHTML = "";
 
 	room.players.forEach((player, i) => {
@@ -92,6 +91,8 @@ const update_lobby_ui = (room) => {
 		// lobby_container.appendChild(create_owner_btns());
 		add_start_and_delete_buttons_listeners();
 	}
+
+	document.getElementById("tournament__room--list--nb").textContent = room.players.length;
 }
 
 function addNameBracketsStart(arg) {
@@ -237,20 +238,20 @@ const on_load_game = (arg) => {
 }
 
 const on_tournament_start = (arg) => {
-	console.log('on_tournament_start', arg);
+	// console.log('on_tournament_start', arg);
 	addNameBracketsStart(arg);
 	window.startTournamentOnline();
 }
 
 const on_tournament_end = (arg) => {
-	console.log('on_tournament_end', arg);
+	// console.log('on_tournament_end', arg);
 	alert(arg);
 	g_socket.close();
 }
 
 // MATCH INFO for brackets
 const on_matchs_info = (arg) => {
-	console.log('on_matchs_info', arg);
+	// console.log('on_matchs_info', arg);
 	updateBracketsEndOfGame(arg);
 }
 
@@ -262,8 +263,6 @@ let on_message_handlers = [
 	{ type: 'tournament_end', handler: on_tournament_end },
 	{ type: 'matchs_info', handler: on_matchs_info },
 ];
-
-
 
 /* ------------------------------- Page loader ------------------------------ */
 

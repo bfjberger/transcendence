@@ -182,6 +182,56 @@ function render() {
 
 }
 
+/* -------------------------------- Update UI ------------------------------- */
+
+function updateNextMatch(arg) {
+
+	if (arg.state == "QUARTER_FINALS1") {
+		let next_top, next_bottom, next_state;
+		next_state = "QUARTS SEED 2";
+		next_top = document.getElementById("quarter__seed2--1--name").innerText;
+		next_bottom = document.getElementById("quarter__seed2--2--name").innerText;
+		g_template_next.textContent = "Le prochain match sera " + next_state + " avec " + next_top + " vs " + next_bottom;
+	}
+	if (arg.state == "QUARTER_FINALS2") {
+		let next_top, next_bottom, next_state;
+		next_state = "QUARTS SEED 3";
+		next_top = document.getElementById("quarter__seed3--1--name").innerText;
+		next_bottom = document.getElementById("quarter__seed3--2--name").innerText;
+		g_template_next.textContent = "Le prochain match sera " + next_state + " avec " + next_top + " vs " + next_bottom;
+	}
+	if (arg.state == "QUARTER_FINALS3") {
+		let next_top, next_bottom, next_state;
+		next_state = "QUARTS SEED 4";
+		next_top = document.getElementById("quarter__seed4--1--name").innerText;
+		next_bottom = document.getElementById("quarter__seed4--2--name").innerText;
+		g_template_next.textContent = "Le prochain match sera " + next_state + " avec " + next_top + " vs " + next_bottom;
+	}
+	if (arg.state == "QUARTER_FINALS4") {
+		let next_top, next_bottom, next_state;
+		next_state = "DEMI SEED 1";
+		next_top = document.getElementById("demi__seed1--1--name").innerText;
+		next_bottom = "le vainqueur de ce match.";
+		g_template_next.textContent = "Le prochain match sera " + next_state + " avec " + next_top + " vs " + next_bottom;
+	}
+	if (arg.state == "DEMI_FINALS1") {
+		let next_top, next_bottom, next_state;
+		next_state = "DEMI SEED 2";
+		next_top = document.getElementById("demi__seed2--1--name").innerText;
+		next_bottom = document.getElementById("demi__seed2--2--name").innerText;
+		g_template_next.textContent = "Le prochain match sera " + next_state + " avec " + next_top + " vs " + next_bottom;
+	}
+	if (arg.state == "DEMI_FINALS2") {
+		let next_top, next_bottom, next_state;
+		next_state = "FINALE";
+		next_top = document.getElementById("final__1--name").innerText;
+		next_bottom = "le vainqueur de ce match.";
+		g_template_next.textContent = "Le prochain match sera " + next_state + " avec " + next_top + " vs " + next_bottom;
+	}
+	if (arg.state == "FINALS")
+		g_template_next.textContent = "Ce match est le dernier du tournoi. Enjoy !";
+};
+
 /* ----------------------------- Main Tournament ---------------------------- */
 
 export function startTournamentOnline() {
@@ -234,6 +284,8 @@ const on_set_position = (arg) => {
 		g_right_placeholder.classList.add("text-decoration-underline");
 
 	g_template.textContent = arg.state + " : " + arg.nicknames[0] + " vs " + arg.nicknames[1];
+
+	updateNextMatch(arg);
 
 	// if (infoElement === null) {
 	// 	infoElement = document.getElementById("InfoElement");

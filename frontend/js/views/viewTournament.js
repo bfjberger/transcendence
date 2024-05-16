@@ -38,12 +38,12 @@ function renderTournamentOnlineLobby() {
 			<div id="tournament__room--errorMsg" class="text-center text-danger h4">
 			</div>
 			<div class="text-center text-warning h4 pb-3 border-info border-bottom">
-				Liste des Joueurs dans le tournoi:
+				Joueurs dans le tournoi: <span id="tournament__room--list--nb" class="text-decoration-underline"></span> sur 4 ou 8
 			</div>
 			<div id="tournament__room--list">
 			</div>
 		</div>
-		<div id="tournament__room--brackets" class="container pt-3">
+		<div id="tournament__room--brackets" class="container py-3">
 		</div>
 	`;
 };
@@ -54,8 +54,7 @@ function renderTournamentOnlineGame() {
 		<div class="row pt-3">
 			<div class="col-4"></div>
 			<div id="template__text" class="col-4 text-center h2" style="color: red"></div>
-			<div id="template__text--next" class="col-3 text-center h4"></div>
-			<div class="col-1"></div>
+			<div id="template__text--next" class="col-4 text-center text-dark h4"></div>
 		</div>
 		<div class="row">
 			<div id="tournament__left" class="col text-end align-self-center h3" style="color: blue">
