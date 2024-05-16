@@ -48,7 +48,7 @@ async def end_game_add_stats(winner, losers, tournament_name):
 	losers_ids = await sync_to_async(lambda: [loser.id for loser in losers_objs])()
 	await sync_to_async(stats.losers.add)(*losers_ids)
 	await sync_to_async(stats.save)()
-	
+
 
 class TournamentManager():
 	def __init__(self):
@@ -62,7 +62,7 @@ class TournamentManager():
 			room_name (str): The name of the room
 			player (str): The player's name
 			nickname (str): The player's nickname
-		
+
 		Returns:
 			bool: True if the player was added to the room, False otherwise
 		"""
@@ -71,7 +71,7 @@ class TournamentManager():
 		if current_room and len(current_room.get('players', [])) >= players_size_max:
 			print("Room is full")
 			return False
-	
+
 		if not current_room:
 			print("CREATING room")
 			current_room = {
@@ -102,10 +102,10 @@ class TournamentManager():
 			current_room['players_and_nicknames'][player] = nickname
 			current_room['players_state'].append(PlayerState["PENDING"])
 			self.rooms[room_name] = current_room
-		
+
 		print(f'Room {room_name} has {len(current_room["players"])} players')
 		return True
-	
+
 	def remove_player(self, room_name, player):
 		"""
 		Removes a player from a room
@@ -135,7 +135,7 @@ class TournamentManager():
 
 	def get_room(self, room_name):
 		return self.rooms.get(room_name, {})
-	
+
 	def remove_room(self, room_name):
 		self.rooms.pop(room_name, None)
 
@@ -150,7 +150,7 @@ class TournamentManager():
 		room = self.get_room(room_name)
 		if not room:
 			return False
-		
+
 		if len(room['players']) == 8:
 			room['state'] = TournamentStage['QUARTER_FINALS1']
 			print("Tournament with 8 players started")
@@ -162,7 +162,7 @@ class TournamentManager():
 			print("Expected: ", 4 , " or ", 8)
 			return False
 		return True
-	
+
 	def get_players_turn(self, room_name):
 		room = self.get_room(room_name)
 
@@ -207,11 +207,14 @@ class TournamentManager():
 		match_number = room.get('match_number', 1)
 		player1 = room.get('players', [])[0]
 		player2 = room.get('players', [])[1]
+		nickname1 = room['players_and_nicknames'][player1]
+		nickname2 = room['players_and_nicknames'][player2]
+		nicknameWinner = room['players_and_nicknames'][winner]
 		score = [game.players[0].score, game.players[1].score]
 
 		match = {
-			"players": [player1, player2],
-			"winner": winner,
+			"players": [nickname1, nickname2],
+			"winner": nicknameWinner,
 			"round": round_number,
 			"match": match_number,
 			"score": score
@@ -245,7 +248,7 @@ class TournamentManager():
 		Args:
 			room_name (str): The name of the room.
 			winnerIdx (int): The index of the winner player in the room's players list, the player list is [0, 1].
-			loserIdx (int): The index of the loser player in the room's players list. 
+			loserIdx (int): The index of the loser player in the room's players list.
 
 		Returns:
 			bool: True if the next turn was processed successfully, False otherwise.
@@ -325,19 +328,19 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 						await self.send_tournament_end("Tournament ended, missing player")
 				else:
 					print(f'Player {player} not found in room')
-		
+
 		# Leave the room
 		await self.channel_layer.group_discard(
 			tournament_name,
 			self.channel_name
 		)
-	
+
 	async def receive(self, text_data):
 		data = json.loads(text_data)
 		await self.parse_receive(data)
 
 	# ------------------------------- Parse events ------------------------------- #
- 
+
 	async def parse_receive(self, data):
 		if 'event' in data:
 			event = data['event']
@@ -361,18 +364,19 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			print('Event not found in data', data)
 
 	# ------------------------------- Event handlers ------------------------------- #
- 
+
 	async def on_load_lobby(self):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
 		await self.send(text_data=json.dumps({
 			'type': 'load_lobby',
 			'arg': self.tournament_manager.get_printable_room(tournament_name)
 			}))
-		
+
 	async def on_load_game(self):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
 		if self.tournament_manager.start_tournament(tournament_name):
-			await self.send_load_game()
+			room = self.tournament_manager.get_room(tournament_name)
+			await self.send_load_game(len(room['players']))
 		else:
 			return
 
@@ -418,7 +422,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def send_players_update(self):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
-		
+
 		await self.channel_layer.group_send(
 			tournament_name,
 			{
@@ -435,7 +439,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def send_tournament_start(self):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
-		
+
 		await self.channel_layer.group_send(
 			tournament_name,
 			{
@@ -452,7 +456,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def send_tournament_end(self, message):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
-		
+
 		await self.channel_layer.group_send(
 			tournament_name,
 			{
@@ -466,15 +470,15 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			'type': 'tournament_end',
 			'arg': event['arg']
 		}))
-	
-	async def send_load_game(self):
+
+	async def send_load_game(self, message):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
-		
+
 		await self.channel_layer.group_send(
 			tournament_name,
 			{
 				'type': 'load_game',
-				'arg': {}
+				'arg': message
 			}
 		)
 
@@ -508,7 +512,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def send_game_start(self, players):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
-		
+
 		await self.channel_layer.group_send(
 			tournament_name,
 			{
@@ -528,13 +532,15 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def send_game_end(self, winner, looser, state):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
-		
+
+		room = self.tournament_manager.get_room(tournament_name)
+		winner_nickname = room['players_and_nicknames'][winner]
 		await self.channel_layer.group_send(
 			tournament_name,
 			{
 				'type': 'game_end',
 				'arg': {
-					'winner': winner,
+					'winner': winner_nickname,
 					'looser': looser,
 					'state': state
 				}
@@ -546,7 +552,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			'type': 'game_end',
 			'arg': event['arg']
 		}))
-	
+
 	async def send_matchs_info(self):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
 		room = self.tournament_manager.get_room(tournament_name)
@@ -558,17 +564,17 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				'arg': matchs
 			}
 		)
-	
+
 	async def matchs_info(self, event):
 		await self.send(text_data=json.dumps({
 			'type': 'matchs_info',
 			'arg': event['arg']
 		}))
-	
+
 	async def send_game_state(self):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
 		game = self.tournament_manager.get_room(tournament_name)['game_state']
-		
+
 		await self.channel_layer.group_send(
 			tournament_name,
 			{
@@ -595,7 +601,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		}))
 
 	# ------------------------------- Game handler ------------------------------- #
- 
+
 	async def get_update_lock(self):
 		if self.update_lock is None:
 			self.update_lock = asyncio.Lock()
@@ -661,4 +667,3 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 			# Delete the tournament from the database
 			await sync_to_async(self.tournament.delete)()
-

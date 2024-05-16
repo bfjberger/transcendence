@@ -5,19 +5,22 @@ export function renderTournamentOnline() {
 				<div class="col text-center pt-3 h2">
 					<p class="mb-1">Créer un Tournoi</p>
 				</div>
+				<div id="create__tournament--errorMsg" class="text-center pt-1 h5 text-danger">
+				</div>
 				<div class="text-center pt-1">
 					<label for="name">Nom du tournoi:</label>
 					<input type="text" id="name" name="name" class="w-auto" required>
 				</div>
 				<div class="text-center pt-3">
-					<button id="create-tournament-button" class="btn btn-info">Créer un tournoi en ligne</button>
+					<button id="create-tournament-button" class="btn btn-info" type="submit">Créer un tournoi en ligne</button>
 				</div>
 			</div>
 			<div class="col-6">
 				<div class="col text-center pt-3 h2">
 					<p class="mb-1">Rejoindre un tournoi existant</p>
 				</div>
-				<div id="tournament-list" class="pt-2">
+				<div id="tournament__list--errorMsg" class="text-center pt-1 h5 text-danger">
+				<div id="tournament-list" class="pt-2 text-primary">
 				</div>
 			</div>
 		</div>
@@ -28,12 +31,19 @@ function renderTournamentOnlineLobby() {
 	return `
 		<div class="row pt-3">
 			<div class="col-4"></div>
-			<div id="tournament__room--name" class="col-4 text-center h2"></div>
+			<div id="tournament__room--name" class="col-4 text-center h2" style="text-decoration: underline"></div>
 			<div class="col-4"></div>
 		</div>
-		<div id="tournament__room--main" class="row pt-3">
+		<div id="tournament__room--main" class="row">
+			<div id="tournament__room--errorMsg" class="text-center text-danger h4">
+			</div>
+			<div class="text-center text-warning h4 pb-3 border-info border-bottom">
+				Liste des Joueurs dans le tournoi:
+			</div>
+			<div id="tournament__room--list">
+			</div>
 		</div>
-		<div id="tournament__room--brackets" class="container">
+		<div id="tournament__room--brackets" class="container pt-3">
 		</div>
 	`;
 };
