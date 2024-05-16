@@ -5,6 +5,8 @@ import Player, {
 
 import * as constants from './Constants.js'
 
+import { updateStatus } from "./pong2players.js";
+
 var g_game;
 var g_startButton;
 var g_template_text;
@@ -14,7 +16,7 @@ var g_player_status;
 class PongGame4Players {
 	constructor(player_left_name, player_right_name, player_top_name, player_bottom_name) {
 		// board
-		[this.boardWidth, this.boardHeight] = [650, 650];
+		[this.boardWidth, this.boardHeight] = [constants.WIN_WIDTH, constants.FOUR_WIN_HEIGHT];
 		[this.board, this.context] = [null, null]; // defined in setBoard()
 		this.start = false;
 
@@ -31,7 +33,7 @@ class PongGame4Players {
 		this.keysPressed = {};
 
 		// ball
-		[this.ballRadius, this.ballSpeed] = [10, this.boardWidth / 250];
+		[this.ballRadius, this.ballSpeed] = [constants.BALL_RADIUS, this.boardWidth / 250];
 		[this.ballSpeedMultiplierX, this.ballSpeedMultiplierY] = [1.1, 1.05];
 		this.ball = {};
 		this.lastPlayerTouched = null;
@@ -126,10 +128,10 @@ class PongGame4Players {
 
 	movePlayer() {
 		// Player 1 and 2 movement
-		if (this.keysPressed["q"]) {
+		if (this.keysPressed["q"] || this.keysPressed["Q"]) {
 			this.player_left.velocityY = -this.paddleSpeed;
 		}
-		else if (this.keysPressed["a"]) {
+		else if (this.keysPressed["a"] || this.keysPressed["A"]) {
 			this.player_left.velocityY = this.paddleSpeed;
 		}
 		else {
@@ -145,10 +147,10 @@ class PongGame4Players {
 			this.player_right.velocityY = 0;
 		}
 		// Player 3 and 4 movement
-		if (this.keysPressed["n"]) {
+		if (this.keysPressed["n"] || this.keysPressed["N"]) {
 			this.player_top.velocityX = -this.paddleSpeed;
 		}
-		else if (this.keysPressed["m"]) {
+		else if (this.keysPressed["m"] || this.keysPressed["M"]) {
 			this.player_top.velocityX = this.paddleSpeed;
 		}
 		else {
@@ -220,6 +222,8 @@ class PongGame4Players {
 				this.ball.x - this.ball.radius <= this.player_left.coords.x + default_paddle_width) {
 					if (Math.abs(this.ball.velocityX) >= 20)
 						this.ball.velocityX *= -1;
+					else 
+						this.ball.velocityX *= -1 * this.ballSpeedMultiplierX;
 					// middle_y = this.player_left.coords.y + default_paddle_height / 2;
 					// difference_in_y = middle_y - this.ball.y;
 					// reduction_factor = default_paddle_height / 2;
@@ -228,7 +232,6 @@ class PongGame4Players {
 					this.ball.velocityY *= -1;
 					this.lastPlayerTouched = "player_left";
 					this.ball.color = this.player_left.color;
-					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX;
 			}
 		}
 		else {
@@ -236,7 +239,9 @@ class PongGame4Players {
 				this.ball.y >= this.player_right.coords.y && this.ball.x < this.player_right.coords.x &&
 				this.ball.x + this.ball.radius >= this.player_right.coords.x) {
 					if (Math.abs(this.ball.velocityX) >= 20)
-						this.ball.velocityX *= -1;			
+						this.ball.velocityX *= -1;	
+					else
+						this.ball.velocityX *= -1 * this.ballSpeedMultiplierX;		
 					// middle_y = this.player_right.coords.y + default_paddle_height / 2;
 					// difference_in_y = middle_y - this.ball.y;
 					// reduction_factor = default_paddle_height / 2;
@@ -245,7 +250,6 @@ class PongGame4Players {
  					this.ball.velocityY *= -1;
 					this.lastPlayerTouched = "player_right";
 					this.ball.color = this.player_right.color;
-					this.ball.velocityX *= -1 * this.ballSpeedMultiplierX;		
 					
 			}
 		}
@@ -258,6 +262,8 @@ class PongGame4Players {
 				this.ball.y - this.ball.radius <= this.player_top.coords.y + default_paddle_width) {
 					if (Math.abs(this.ball.velocityY) >= 20)
 						this.ball.velocityY *= -1;
+					else
+						this.ball.velocityY *= -1 * this.ballSpeedMultiplierY;
 					// middle_x = this.player_top.coords.x + default_paddle_height / 2;
 					// difference_in_x = middle_x - this.ball.x;
 					// reduction_factor = default_paddle_height / 2;
@@ -265,7 +271,6 @@ class PongGame4Players {
 					// this.ball.velocityX = -1 * new_x_vel;
 					this.ball.velocityX *= -1;
 					 // reverse ball direction
-					this.ball.velocityY *= -1 * this.ballSpeedMultiplierY;
 					this.lastPlayerTouched = "player_top";
 					this.ball.color = this.player_top.color;
 			}
@@ -276,13 +281,14 @@ class PongGame4Players {
 				this.ball.y + this.ball.radius >= this.player_bottom.coords.y) {
 					if (Math.abs(this.ball.velocityY) >= 20)
 						this.ball.velocityY *= -1;
+					else
+						this.ball.velocityY *= -1 * this.ballSpeedMultiplierY;
 					// middle_x = this.player_bottom.coords.x + default_paddle_height / 2;
 					// difference_in_x = middle_x - this.ball.x;
 					// reduction_factor = default_paddle_height / 2;
 					// new_x_vel = difference_in_x / reduction_factor * this.ballSpeed;
 					// this.ball.velocityX = -1 * new_x_vel;
 					this.ball.velocityX *= -1;
-					this.ball.velocityY *= -1 * this.ballSpeedMultiplierY;
 					 // reverse ball direction
 					this.lastPlayerTouched = "player_bottom";
 					this.ball.color = this.player_bottom.color;
@@ -345,19 +351,19 @@ class PongGame4Players {
 	}
 
 	gameOver() {
-		if (this.player_left.score === 3 || this.player_right.score === 3 ||
-			this.player_top.score === 3 || this.player_bottom.score === 3) {
+		if (this.player_left.score == constants.WINNING_SCORE || this.player_right.score == constants.WINNING_SCORE ||
+			this.player_top.score == constants.WINNING_SCORE || this.player_bottom.score == constants.WINNING_SCORE) {
 
-			if (this.player_left.score === 3) {
+			if (this.player_left.score == constants.WINNING_SCORE) {
 				this.winner = this.player_left;
 			}
-			else if (this.player_right.score === 3) {
+			else if (this.player_right.score == constants.WINNING_SCORE) {
 				this.winner = this.player_right;
 			}
-			else if (this.player_top.score === 3) {
+			else if (this.player_top.score == constants.WINNING_SCORE) {
 				this.winner = this.player_top;
 			}
-			else if (this.player_bottom.score === 3) {
+			else if (this.player_bottom.score == constants.WINNING_SCORE) {
 				this.winner = this.player_bottom;
 			}
 			this.start = false;
@@ -393,9 +399,17 @@ class PongGame4Players {
 	};
 };
 
-/*
-	Event listener for reload
-*/
+function start4PlayerGame(p1_name, p2_name, p3_name, p4_name) {
+
+	if (g_game)
+		g_game = null;
+
+	g_game = new PongGame4Players(p1_name, p2_name, p3_name, p4_name);
+	g_game.init();
+};
+
+/* --------------------------- Listener for reload -------------------------- */
+
 function handlePageReload() {
 	if (window.location.pathname === "/fourplayers/") {
 		if (g_player_status === "PLAYING") {
@@ -406,47 +420,7 @@ function handlePageReload() {
 
 window.addEventListener('beforeunload', handlePageReload);
 
-async function updateStatus() {
-
-	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
-
-	const init = {
-		method: 'PATCH',
-		headers: {
-			'Content-Type': 'applications/json',
-			'X-CSRFToken': csrftoken,
-		}
-	};
-
-	try {
-		let hostnameport = "https://" + window.location.host;
-
-		const response = await fetch(hostnameport + '/api/changestatus/', init);
-
-		if (!response.ok) {
-			const error_text = await response.text();
-			throw new Error(error_text);
-		}
-
-		if (response.status === 200) {
-			const data = await response.json();
-
-			g_player_status = data.status;
-		}
-
-	} catch (e) {
-		console.error(e);
-	}
-};
-
-function start4PlayerGame(p1_name, p2_name, p3_name, p4_name) {
-
-	if (g_game)
-		g_game = null;
-
-	g_game = new PongGame4Players(p1_name, p2_name, p3_name, p4_name);
-	g_game.init();
-}
+/* -------------------------- Listener for the page ------------------------- */
 
 function listenerFourPlayers() {
 
@@ -480,6 +454,8 @@ function listenerFourPlayers() {
 		});
 	});
 };
+
+/* --------------------------- Loader for the page -------------------------- */
 
 async function loadFourPlayers() {
 

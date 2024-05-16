@@ -1,34 +1,20 @@
 import requests
+from urllib.parse import urlencode
+
+from django.conf import settings
+from django.contrib.auth import login
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.utils.crypto import get_random_string
 
-from players_manager.models import Player
-from players_manager.serializers import DataSerializer
-
-from django.shortcuts import redirect
-from django.contrib.auth import login
-from django.contrib.auth.models import User
-
-from django.conf import settings
-from urllib.parse import urlencode
-from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework import status
 
-from django.core.files.base import ContentFile
-from players_manager.serializers import PlayerSerializer
 from players_manager.models import Player
-
-from django.contrib.auth import authenticate
-
-
-from django.core.files import File
-from urllib.request import urlopen
-from tempfile import NamedTemporaryFile
-from django.core.files.uploadedfile import InMemoryUploadedFile
-from io import BytesIO
+from players_manager.serializers import DataSerializer
 
 class Accounts_view(APIView) :
     permission_classes = (permissions.AllowAny,)
@@ -36,7 +22,9 @@ class Accounts_view(APIView) :
     def get(self, request):
         # Step 1: Redirect user to 42 authorization URL
         authorization_url = 'https://api.intra.42.fr/oauth/authorize' #by def, url where you can loggin ('https://api.intra.42.fr/oauth/authorize')
-        redirect_uri = 'https://localhost/'  # Change to your callback URL
+        redirect_uri = settings.CSRF_TRUSTED_ORIGINS[2] + "/"  # Change to your callback URL
+        # print("\n\n", settings.CSRF_TRUSTED_ORIGINS[2] + "/", "\n\n\n")
+
         params = {
             'client_id': settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'],
             'redirect_uri': redirect_uri,
@@ -53,7 +41,7 @@ class Callback(APIView):
     def post(self, request):
         # Step 2: Receive authorization code and exchange for access token
         code = request.data["code"]
-        redirect_uri = 'https://localhost/'
+        redirect_uri = settings.CSRF_TRUSTED_ORIGINS[2] + "/"
         token_url = 'https://api.intra.42.fr/oauth/token'
         data = {
             'client_id': settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'],
@@ -91,7 +79,7 @@ class Callback(APIView):
             if created == True :
                 img_resp = requests.get(avatar)
                 if img_resp.status_code != 200 :
-                    print("\n\n\nimage pas downloaded\n\n\n")
+                    print("\n\n\nimage pas downloaded\n\n\n") #ATTENTION
 
                 player = Player(owner=user)
                 player.avatar.save(username+'.jpg', ContentFile(img_resp.content), save=False)
