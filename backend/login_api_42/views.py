@@ -5,20 +5,20 @@ from django.utils.crypto import get_random_string
 from players_manager.models import Player
 from players_manager.serializers import DataSerializer
 
-from django.shortcuts import redirect
+
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 
 from django.conf import settings
 from urllib.parse import urlencode
-from django.http import JsonResponse
+
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework import status
 
 from django.core.files.base import ContentFile
-from players_manager.serializers import PlayerSerializer
+
 from players_manager.models import Player
 
 from django.contrib.auth import authenticate
