@@ -19,6 +19,10 @@ python manage.py migrate
 python manage.py createsuperuser --noinput
 python3 manage.py collectstatic --noinput
 
+
+mkdir -p staticfiles/avatars
+cp avatar.png staticfiles/avatars
+
 pip freeze > requirements.txt
 
 # script to create admin player
