@@ -51,8 +51,8 @@ const create_player_div = (player, nickname, is_owner) => {
 const create_owner_btns = () => {
 	const div = document.createElement('div');
 	div.innerHTML = `
-		<button id="start-btn">START</button>
-		<button id="delete-btn">DELETE</button>
+		<button id="start-btn" class="btn btn-warning">COMMENCER</button>
+		<button id="delete-btn" class="btn btn-danger">SUPPRIMER</button>
 	`
 	return div;
 }

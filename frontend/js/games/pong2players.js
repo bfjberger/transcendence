@@ -3,6 +3,8 @@ import Player, {
 	default_paddle_width,
 } from "./Player.js"; // Import the Player class from Player
 
+import * as constants from "./Constants.js"
+
 var g_game;
 var g_startButton;
 var g_template_text;
@@ -13,19 +15,19 @@ var g_player_status;
 class PongGame2Players {
 	constructor(player_leftName, player_rightName) {
 		// board
-		[this.boardWidth, this.boardHeight] = [650, 480];
+		[this.boardWidth, this.boardHeight] = [constants.WIN_WIDTH, constants.WIN_HEIGHT];
 		[this.board, this.context] = [null, null]; // defined in setBoard()
 		this.start = false;
 
 		// players
 		[this.playerVelocityY, this.paddleSpeed] = [0, this.boardHeight / 100];
-		[this.player_left, this.player_right] = [new Player(player_leftName, "orange", false),
-												new Player(player_rightName, "blue", false)];
+		[this.player_left, this.player_right] = [new Player(player_leftName, constants.PLAYER_LEFT_COLOR, false),
+												new Player(player_rightName, constants.PLAYER_RIGHT_COLOR, false)];
 		this.winner = null;
 		this.keysPressed = {};
 
 		// ball
-		[this.ballRadius, this.ballSpeed] = [10, this.boardWidth / 250];
+		[this.ballRadius, this.ballSpeed] = [constants.BALL_RADIUS, this.boardWidth / 250];
 		[this.ballSpeedMultiplierX, this.ballSpeedMultiplierY] = [1.1, 1.05];
 		this.ball = {};
 	}
@@ -96,15 +98,6 @@ class PongGame2Players {
 		// Velocity of the ball
 		this.ball.velocityX = (Math.cos(randomAngle) * this.ballSpeed) * direction;
 		this.ball.velocityY = Math.sin(randomAngle) * this.ballSpeed;
-
-		// DEBUG
-		if (this.player_left.name.substr(0, 4) === "test" && this.player_right.name.substr(0, 4) === "test") {
-			this.player_left.setCoords(10, 10);
-			this.player_right.setCoords(this.boardWidth - this.player_right.width - 10, 10);
-			this.ball.y = this.boardHeight / 2;
-			this.ball.velocityX = 180 * this.ballSpeed * -1; // player 1 gagne (gauche)
-			// this.ball.velocityX = 180 * this.ballSpeed; // player 2 gagne (droite)
-		}
 	}
 
 	pressKey(e) {
@@ -118,19 +111,19 @@ class PongGame2Players {
 	}
 
 	movePlayer() {
-		if (this.keysPressed["w"]) {
+		if (this.keysPressed["w"] || this.keysPressed["W"]) {
 			this.player_left.velocityY = -this.paddleSpeed;
 		}
-		else if (this.keysPressed["s"]) {
+		else if (this.keysPressed["s"] || this.keysPressed["S"]) {
 			this.player_left.velocityY = this.paddleSpeed;
 		}
 		else {
 			this.player_left.velocityY = 0;
 		}
-		if (this.keysPressed["o"]) {
+		if (this.keysPressed["o"] || this.keysPressed["O"]) {
 			this.player_right.velocityY = -this.paddleSpeed;
 		}
-		else if (this.keysPressed["l"]) {
+		else if (this.keysPressed["l"] || this.keysPressed["L"]) {
 			this.player_right.velocityY = this.paddleSpeed;
 		}
 		else {
@@ -251,17 +244,26 @@ class PongGame2Players {
 		this.context.fillText(this.player_right.score, this.boardWidth / 2 + 25, 50);
 	}
 
-	gameOver() {
-		if (this.player_left.score === 3 || this.player_right.score === 3) {
-			this.winner = this.player_left.score === 3 ? this.player_left : this.player_right;
-			this.start = false;
-		}
-	};
-
 	resetGame() {
 		// reset the position and velocity of the ball
 		this.setBall();
 	};
+
+	gameOver() {
+		return new Promise((resolve) => {
+			const checkGameOver = () => {
+				if (this.player_left.score == constants.WINNING_SCORE || this.player_right.score == constants.WINNING_SCORE) {
+					let winner = this.player_left.score == constants.WINNING_SCORE ? this.player_left : this.player_right;
+					this.start = false;
+					resolve(winner);
+				}
+				else {
+					setTimeout(checkGameOver, 1000); // Check every second
+				}
+			};
+			checkGameOver();
+		});
+	}
 
 	async update() {
 		if (this.start) {
@@ -269,39 +271,37 @@ class PongGame2Players {
 			this.movePlayer();
 			this.moveBall();
 			this.draw();
-			this.gameOver();
-			if (this.winner != null) {
-				if (window.location.pathname === "/twoplayers/") {
-					g_template_text.textContent = this.winner.name + " a gagné !!";
-					g_template_text.style.color = this.winner.color;
-					g_startButton.classList.remove("d-none");
-					await updateStatus();
+			var winner = this.gameOver();
+			winner.then(async (winner) => {
+				if (winner) {
+					if (window.location.pathname === "/twoplayers/") {
+						g_template_text.textContent = winner.name + " a gagné !!";
+						g_template_text.style.color = winner.color;
+						g_startButton.classList.remove("d-none");
+						await updateStatus();
+					}
+					this.ball.velocityX = 0;
+					this.ball.velocityY = 0;
 				}
-				this.ball.velocityX = 0;
-				this.ball.velocityY = 0;
-				if (window.location.pathname === "/tournament/") {
-					this.context.reset();
+				else {
+					requestAnimationFrame(this.update.bind(this));
 				}
-			}
-			else {
-				requestAnimationFrame(this.update.bind(this));
-			}
+			});
+			requestAnimationFrame(this.update.bind(this));
 		}
 	};
 };
 
-/*
-	Event listener for reload
-*/
-function handlePageReload() {
-	if (window.location.pathname === "/twoplayers/") {
-		if (g_player_status === "PLAYING") {
-			updateStatus();
-		}
-	}
+function start2PlayerGame(p1_name, p2_name) {
+
+	if (g_game)
+		g_game = null;
+
+	g_game = new PongGame2Players(p1_name, p2_name);
+	g_game.init();
 };
 
-window.addEventListener('beforeunload', handlePageReload);
+/* ---------------------------------- Utils --------------------------------- */
 
 async function updateStatus() {
 
@@ -336,14 +336,19 @@ async function updateStatus() {
 	}
 };
 
-function start2PlayerGame(p1_name, p2_name) {
+/* --------------------------- Listener for reload -------------------------- */
 
-	if (g_game)
-		g_game = null;
+function handlePageReload() {
+	if (window.location.pathname === "/twoplayers/") {
+		if (g_player_status === "PLAYING") {
+			updateStatus();
+		}
+	}
+};
 
-	g_game = new PongGame2Players(p1_name, p2_name);
-	g_game.init();
-}
+window.addEventListener('beforeunload', handlePageReload);
+
+/* -------------------------- Listener for the page ------------------------- */
 
 function listenerTwoPlayers()
 {
@@ -379,6 +384,8 @@ function listenerTwoPlayers()
 	});
 };
 
+/* --------------------------- Loader for the page -------------------------- */
+
 async function loadTwoPlayers() {
 
 	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
@@ -409,7 +416,8 @@ async function loadTwoPlayers() {
 };
 
 export {
-	PongGame2Players
+	PongGame2Players,
+	updateStatus
 };
 
 export default {

@@ -51,7 +51,10 @@ function createTournament() {
 	const name = document.getElementById('name').value;
 	// const visibility = document.querySelector('input[name="visibility"]:checked').value;
 	// const password = document.getElementById('password').value;
-	
+
+	let hostnameport = "https://" + window.location.host
+
+
 	fetch('/api/tournaments/', {
 		method: 'POST',
 		headers: {
@@ -78,13 +81,16 @@ function createTournament() {
 // Function to list all tournaments
 function loadTournaments() {
 
-	fetch('/api/tournaments/load_tournaments/') 
+	fetch('/api/tournaments/load_tournaments/')
 		.then(response => response.json())
 		.then(data => {
 			const tournamentList = document.getElementById('tournament-list');
 			tournamentList.innerHTML = ''; // Clear existing list
-			
+
+			var tournamentItem;
+
 			data.forEach(tournament => {
+				/*
 				const tournamentItem = document.createElement('div');
 				tournamentItem.textContent = tournament.name;
 
@@ -101,8 +107,29 @@ function loadTournaments() {
 
 				// Append elements to tournament item
 				tournamentItem.appendChild(joinButton);
-
+				*/
+				tournamentItem = document.createElement('ul');
+				tournamentItem.className = "row text-center";
+				tournamentItem.style.listStyleType = "none";
+				tournamentItem.innerHTML = `
+						<li>
+							${tournament.name}
+							<button id="join__${tournament.name}" class="btn btn-success ms-3">Rejoindre</button>
+						</li>
+					`;
 				tournamentList.appendChild(tournamentItem);
+
+				// ? why use the closure ?
+				document.getElementById(`join__${tournament.name}`).addEventListener("click", (function(tournament) {
+					return function() {
+						joinRoom(tournament.name);
+					}
+				})(tournament));
+
+				// document.getElementById(`join__${tournament.name}`).addEventListener("click", (e) => {
+				// 	e.preventDefault();
+				// 	joinRoom(tournament.name);
+				// });
 			});
 		})
 		.catch(error => {
@@ -211,7 +238,7 @@ function listPlayersInRoom() {
 	let playersList = document.getElementById('players-list');
 
 	// console.log('Loading room:', tournament_name);
-	fetch(`/api/tournaments/${tournament_name}/load_players/`) 
+	fetch(`/api/tournaments/${tournament_name}/load_players/`)
 		.then(response => response.json())
 		.then(players => {
 			tournamentName.textContent = tournament_name;
@@ -249,6 +276,7 @@ function getCookie(name) {
 /* ------------ Listener and loader for the tournamentOnline page ----------- */
 
 function listenerTournamentOnline() {
+
 	const button_create_tournament = document.getElementById('create-tournament-button');
 	button_create_tournament.addEventListener('click', (event) => {
 		event.preventDefault();
