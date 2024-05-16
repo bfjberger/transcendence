@@ -1,4 +1,5 @@
 import router from "./router.js"
+import { connect_socket_friend } from "./friends.js";
 
 async function connectUser(loginForm) {
 
@@ -22,8 +23,6 @@ async function connectUser(loginForm) {
 
 		let hostnameport = "https://" + window.location.host
 
-		console.log("connectUser : " + hostnameport)
-
 		const response = await fetch(hostnameport + '/api/login/', init); // will use another URL
 
 		if (!response.ok || response.status === 203) {
@@ -37,20 +36,17 @@ async function connectUser(loginForm) {
 
 			const data = await response.json();
 
-			console.log("data du user qui veut se connecter = ", data)
-
 			sessionStorage.setItem("username", data["username"]);
 			sessionStorage.setItem("avatar", data["player"].avatar);
 			sessionStorage.setItem("nickname", data["player"].nickname);
 
 			document.querySelector("div.modal-backdrop.fade.show").remove();
-
 			document.querySelectorAll(".dropdown-item").forEach(btn => {
 				btn.removeAttribute("disabled");
 			});
 			document.getElementById("topbar__profile--username").removeAttribute("disabled");
 			document.getElementById("topbar__logout").removeAttribute("disabled");
-
+			connect_socket_friend();
 			router("index");
 		}
 	} catch (e) {
