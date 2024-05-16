@@ -24,6 +24,7 @@ RUN pip install requests
 RUN pip install django-cors-headers
 RUN pip install django-allauth
 
+
 COPY ./script_django.sh .
 RUN sed -i 's/\r$//g' ./script_django.sh
 RUN chmod +x ./script_django.sh
@@ -35,6 +36,7 @@ RUN chown -R bck_django:bck_django /usr/backend
 USER bck_django
 # Added
 WORKDIR /usr/backend
+
 #
 # ENTRYPOINT ["./script_django.sh"]
 ENTRYPOINT ["/script_django.sh"]
