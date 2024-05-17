@@ -331,7 +331,7 @@ async function post_friend(form_post_friend) {
 			};
 			g_socket_friend.send(JSON.stringify(message));
 
-			// window.location.reload();
+			window.location.reload();
 		}
 	} catch (e) {
 		console.error("error from post friend : " + e);
