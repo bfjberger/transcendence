@@ -62,6 +62,8 @@ async function createUser(createAccountForm) {
 
 	if (input["password_one"].value !== input["password_two"].value) {
 		document.getElementById("form__createAccount--msg").textContent = "Les mots de passe ne correspondent pas.";
+		document.getElementById("form__createAccount--msg").classList.add("text-danger");
+		document.getElementById("form__createAccount--msg").classList.remove("text-success");
 		return;
 	}
 
@@ -82,20 +84,19 @@ async function createUser(createAccountForm) {
 
 		const response = await fetch(hostnameport + '/api/register/', init);
 
-		if (response.status == 500) {
-			document.getElementById("form__createAccount--msg").textContent = "Erreur du serveur (500)";
+		if (!response.ok || response.status == 500) {
+			document.getElementById("form__createAccount--msg").textContent = "Erreur " + response.status;
 			document.getElementById("form__createAccount--msg").classList.add("text-danger");
 			document.getElementById("form__createAccount--msg").classList.remove("text-success");
-			return;
 		}
-		if (!response.ok || response.status === 203) {
-			const error = await response.text();
-			document.getElementById("form__createAccount--msg").textContent = error.replace(/["{}[\]]/g, '');
+		else if (response.status == 203) {
+			var errorMsg = await response.text();
+			errorMsg = JSON.parse(errorMsg);
+			document.getElementById("form__createAccount--msg").textContent = Object.keys(errorMsg)[0] + " : " + Object.values(errorMsg)[0];
 			document.getElementById("form__createAccount--msg").classList.add("text-danger");
 			document.getElementById("form__createAccount--msg").classList.remove("text-success");
-			return;
 		}
-		if (response.status === 201) {
+		else if (response.status === 201) {
 			document.getElementById("form__createAccount--msg").innerHTML = "Ton compte à été créé ! Tu peux te logger.";
 			document.getElementById("form__createAccount--msg").classList.remove("text-danger");
 			document.getElementById("form__createAccount--msg").classList.add("text-success");
@@ -117,8 +118,7 @@ async function connectUser42() {
 			throw new Error(`HTTP error, status = ${response.status}`);
 		}
 
-		const address = await response.json()
-		console.log("Voici l'adresse : " + address);
+		const address = await response.json();
 
 		window.location.href = address;
 		// waitFor42();
