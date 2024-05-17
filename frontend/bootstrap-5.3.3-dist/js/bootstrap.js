@@ -4317,7 +4317,7 @@
   const Default = {
     animation: true,
     autohide: true,
-    delay: 5000
+    delay: 10000
   };
 
   /**

@@ -36,16 +36,17 @@ class ListFriendAPIView(ListAPIView):
 			result = []
 			for o in initiated_accepted :
 				player_received = Player.objects.filter(owner=o.user_received.id).first()
-				result.append({"username" : o.user_received.username, "status" : player_received.status})
+				result.append({"username" : o.user_received.username, "status" : player_received.status, "avatar" : player_received.avatar.url})
 			return Response(result, status=status.HTTP_200_OK)
 		elif param == "received_accepted" :
 			received_accepted = Friend.objects.filter(user_received = self.request.user.id , accept = True)
 			result = []
 			for o in received_accepted :
 				player_initiated = Player.objects.filter(owner=o.user_initiated.id).first()
-				result.append({"username" : o.user_initiated.username, "status" : player_initiated.status})
+				result.append({"username" : o.user_initiated.username, "status" : player_initiated.status, "avatar" : player_initiated.avatar.url})
 			return Response(result, status=status.HTTP_200_OK)
 		return Response("Missing parameter", status=status.HTTP_400_BAD_REQUEST)
+
 
 class CreateFriendAPIView(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -77,6 +78,7 @@ class CreateFriendAPIView(APIView):
 
 		return Response(serializer_new_relation.errors, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
+
 class AcceptFriendAPIView(APIView) :
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]
@@ -97,13 +99,32 @@ class AcceptFriendAPIView(APIView) :
 			serializer_relation.save()
 		return Response ("Ami ajouté.", status=status.HTTP_200_OK)
 
+
+class RefuseFriendAPIView(APIView):
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
+	serializer_class = FriendSerializerPOST
+
+	def patch(self, request):
+		try :
+			user_initator = User.objects.get(username=self.request.data["username"])
+		except User.DoesNotExist:
+			return Response("Ce user n'existe pas.", status=status.HTTP_400_BAD_REQUEST)
+
+		friendship_refused = Friend.objects.filter(user_initiated=user_initator, user_received = self.request.user).first()
+		if not friendship_refused:
+			return Response("Cette relation d'amitié n'existe pas.", status=status.HTTP_400_BAD_REQUEST)
+
+		friendship_refused.delete()
+		return Response ("Lien d'amitié refusé", status=status.HTTP_200_OK)
+
+
 class DeleteFriendAPIView(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]
 	serializer_class = FriendSerializerPOST
 
 	def delete(self, request) :
-
 		try :
 			former_friend = User.objects.get(username=self.request.data["username"])
 		except User.DoesNotExist:
