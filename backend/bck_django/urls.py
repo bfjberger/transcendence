@@ -34,7 +34,7 @@ from tournament.views import TournamentViewSet, PlayerViewSet
 from pong_online.views import TwoPlayersOnlineView, FourPlayersOnlineView
 
 
-from friends_manager.views import ListFriendAPIView, CreateFriendAPIView, AcceptFriendAPIView, DeleteFriendAPIView, GetUserNameAPI
+from friends_manager.views import ListFriendAPIView, CreateFriendAPIView, AcceptFriendAPIView, RefuseFriendAPIView, DeleteFriendAPIView, GetUserNameAPI
 
 
 from pong_IA.views import Pong_IAView
@@ -75,6 +75,7 @@ urlpatterns = [
     path('api/friends/', ListFriendAPIView.as_view()),
     path('api/friends/create/', CreateFriendAPIView.as_view()),
     path('api/friends/accept/', AcceptFriendAPIView.as_view()),
+    path('api/friends/refuse/', RefuseFriendAPIView.as_view()),
     path('api/friends/delete/', DeleteFriendAPIView.as_view()),
     path('api/friends/getUserName/', GetUserNameAPI.as_view()),
 
@@ -96,7 +97,7 @@ urlpatterns = [
     path('api/tournamentOnline/', TournamentOnline.as_view()),
 
     path('api/changestatus/', UpdateStatus.as_view()),
-		
+
     path('api/pong_IA/', Pong_IAView.as_view()),
 
 

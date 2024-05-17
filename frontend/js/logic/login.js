@@ -27,8 +27,7 @@ async function connectUser(loginForm) {
 
 		if (!response.ok || response.status === 203) {
 			const error = await response.text();
-			console.log(error);
-			document.getElementById("form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '');
+			document.getElementById("form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '').split(":")[1];
 			return;
 		}
 		if (response.status === 202) {
@@ -83,15 +82,20 @@ async function createUser(createAccountForm) {
 
 		const response = await fetch(hostnameport + '/api/register/', init);
 
+		if (response.status == 500) {
+			document.getElementById("form__createAccount--msg").textContent = "Erreur du serveur (500)";
+			document.getElementById("form__createAccount--msg").classList.add("text-danger");
+			document.getElementById("form__createAccount--msg").classList.remove("text-success");
+			return;
+		}
 		if (!response.ok || response.status === 203) {
 			const error = await response.text();
 			document.getElementById("form__createAccount--msg").textContent = error.replace(/["{}[\]]/g, '');
 			document.getElementById("form__createAccount--msg").classList.add("text-danger");
-			document.getElementById("form__createAccount--msg").classList.remove("text-info");
+			document.getElementById("form__createAccount--msg").classList.remove("text-success");
 			return;
 		}
 		if (response.status === 201) {
-
 			document.getElementById("form__createAccount--msg").innerHTML = "Ton compte à été créé ! Tu peux te logger.";
 			document.getElementById("form__createAccount--msg").classList.remove("text-danger");
 			document.getElementById("form__createAccount--msg").classList.add("text-success");

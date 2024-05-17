@@ -7,7 +7,7 @@ import {
 	renderTournamentOnlineGame,
 	renderTournamentBracketsEight,
 	renderTournamentBracketsFour
- 		} from "../views/viewTournament.js";
+} from "../views/viewTournament.js";
 
 import {
 	loadContent,
