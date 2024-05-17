@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
+from django.conf import settings
 
 from rest_framework.reverse import reverse_lazy
 
@@ -46,8 +47,8 @@ class RegisterAction(APIView):
 		authorization_url = "https://api.intra.42.fr/oauth/token" #by def, url where you can loggin ('https://api.intra.42.fr/oauth/authorize')
 		datas = {
 			"grant_type" : "client_credentials",
-			"client_id" : "u-s4t2ud-26a34e11bc579139cca876efa6b40fb67b760166dfe4b18858b82a4038f6cab0", #ATTENTION
-			"client_secret" : "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"
+			"client_id" : settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'], #ATTENTION
+			"client_secret" : settings.SOCIALACCOUNT_PROVIDERS['42']['SECRET']
 		}
 
 		response_post = requests.post(authorization_url, datas)
