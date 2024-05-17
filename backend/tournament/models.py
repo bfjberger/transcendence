@@ -6,7 +6,7 @@ from players_manager.models import Player
 class TournamentRoom(models.Model):
 	name = models.CharField(max_length=100)
 	players = models.ManyToManyField(Player, related_name='tournaments')
-	owner = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='owned_tournaments', null=True, blank=True)
+	started = models.BooleanField(default=False)
 	
 	def __str__(self):
 		return self.name

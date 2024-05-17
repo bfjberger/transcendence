@@ -7,7 +7,7 @@ from players_manager.models import Player
 from django.contrib.auth.models import User
 
 class TournamentAdmin(admin.ModelAdmin):
-	list_display = ("name", "players_list")
+	list_display = ("name", "players_list", "started")
 
 	def players_list(self, obj):
 		return ", ".join([str(player.id) for player in obj.players.all()])

@@ -1,12 +1,10 @@
 import { renderTournamentRoom } from '../views/viewTournament.js';
 import { renderTournamentOnline } from '../views/viewTournament.js';
 import { renderTournamentLobby } from '../views/viewTournament.js';
+import { router } from '../logic/router.js';
 import { renderTournamentOnlineLobby } from "../views/viewTournament.js";
 
 import handleRoom from './tournamentRoom.js';
-
-// TODO: Need to think about what ui elements to add
-// TODO: Change the logic of the room creation / joining maybe it would be better to invite ?
 
 // Function to load content into an element
 export function loadContent(viewFunction, elementId) {
@@ -50,11 +48,6 @@ let g_data = {};
 
 function createTournament() {
 	const name = document.getElementById('name').value;
-	// const visibility = document.querySelector('input[name="visibility"]:checked').value;
-	// const password = document.getElementById('password').value;
-
-	let hostnameport = "https://" + window.location.host
-
 
 	fetch('/api/tournaments/', {
 		method: 'POST',
@@ -64,15 +57,16 @@ function createTournament() {
 		},
 		body: JSON.stringify({ name })
 	})
-		.then(response => {
-			if (response.ok) {
+		.then(response => response.json())
+		.then(data => {
+			if (data.success) {
 				// Reload tournament list
 				loadTournaments();
 			} else {
-				response.text()
-				.then(errorMsg => {
-					document.getElementById("create__tournament--errorMsg").textContent = errorMsg.replace(/["{}[\]]/g, '');
-				})
+				// Handle error response
+				const errorMsg = data.detail;
+				document.getElementById("create__tournament--errorMsg").textContent = errorMsg.replace(/["{}[\]]/g, '');
+
 			}
 		})
 		.catch(error => {
@@ -147,26 +141,26 @@ function joinRoom(tournamentName) {
 			'X-CSRFToken': getCookie('csrftoken') // Ensure to include CSRF token
 		},
 	})
-		.then(response => {
-			if (response.ok) {
-				// Handle success response
-				tournament_name = tournamentName;
-				console.log('Successfully joined tournament: ', tournament_name);
-				// loadContent(renderTournamentRoom, 'main__content');
-				loadContent(renderTournamentOnlineLobby, "main__content");
-				handleRoom.listenerTournamentRoom();
-				handleRoom.loadTournamentRoom(tournament_name);
-			} else {
-				// Handle error response
-				response.text()
-				.then(errorMsg => {
-					document.getElementById("tournament__list--errorMsg").textContent = errorMsg.replace(/["{}[\]]/g, '');
-				})
-			}
-		})
-		.catch(error => {
-			console.error('Error:', error);
-		});
+	.then(response => response.json()) // Parse the response as JSON
+	.then(data => {
+		if (data.success) {
+			// Handle success response
+			tournament_name = tournamentName;
+			console.log('Successfully joined tournament: ', tournament_name);
+			loadContent(renderTournamentOnlineLobby, "main__content");
+			handleRoom.listenerTournamentRoom();
+			handleRoom.loadTournamentRoom(tournament_name);
+		} else {
+			// Handle error response
+			console.error('Failed to join tournament');
+			// console.error(data.detail); // Log the error message
+			const errorMsg = data.detail;
+			document.getElementById("tournament__list--errorMsg").textContent = errorMsg.replace(/["{}[\]]/g, '');
+		}
+	})
+	.catch(error => {
+		console.error('Error:', error);
+	});
 }
 
 function leaveRoom() {
@@ -202,62 +196,47 @@ export function leaveRoomName(tournamentName) {
 			'X-CSRFToken': getCookie('csrftoken') // Ensure to include CSRF token
 		},
 	})
-		.then(response => {
-			if (response.ok) {
-				// Handle success response
-				console.log('Successfully left tournament: ', tournamentName);
-				loadContent(renderTournamentOnline, 'main__content');
-				listenerTournamentOnline();
-			} else {
-				// Handle error response
-				console.error('Failed to leave tournament');
-				console.error(response);
-			}
-		})
-		.catch(error => {
-			console.error('Error:', error);
-		});
+	.then(response => response.json())
+	.then(data => {
+		if (data.success) {
+			// Handle success response
+			console.log('Successfully left tournament: ', tournamentName);
+			loadContent(renderTournamentOnline, 'main__content');
+			listenerTournamentOnline();
+		} else {
+			// Handle error response
+			console.error('Failed to leave tournament');
+			console.error(data.detail); // Log the error message
+		}
+	})
+	.catch(error => {
+		console.error('Error:', error);
+	});
 }
 
-
-function listenerRoom() {
-	const leaveRoomButton = document.getElementById('leave-room-button');
-	leaveRoomButton.addEventListener('click', (event) => {
-		event.preventDefault();
-		leaveRoom();
+export function leaveRoomNameAndGoTo(tournamentName, value) {
+	fetch(`/api/tournaments/${tournamentName}/leave_tournament/`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': getCookie('csrftoken') // Ensure to include CSRF token
+		},
+	})
+	.then(response => response.json())
+	.then(data => {
+		if (data.success) {
+			// Handle success response
+			console.log('Successfully left tournament: ', tournamentName);
+			router(value);
+		} else {
+			// Handle error response
+			console.error('Failed to leave tournament');
+			console.error(data.detail); // Log the error message
+		}
+	})
+	.catch(error => {
+		console.error('Error:', error);
 	});
-
-	const startTournamentButton = document.getElementById('start-tournament-button');
-	startTournamentButton.addEventListener('click', (event) => {
-		event.preventDefault();
-		// startTournament();
-	});
-
-}
-
-//!!! Not used
-// Function to list all players in the room
-function listPlayersInRoom() {
-	let divRoom = document.getElementById('tournament-room');
-	let tournamentName = document.getElementById('tournament-name');
-	let playersList = document.getElementById('players-list');
-
-	// console.log('Loading room:', tournament_name);
-	fetch(`/api/tournaments/${tournament_name}/load_players/`)
-		.then(response => response.json())
-		.then(players => {
-			tournamentName.textContent = tournament_name;
-			playersList.innerHTML = ''; // Clear existing list
-
-			players.forEach(player => {
-				const playerItem = document.createElement('div');
-				playerItem.textContent = player.id;
-				playersList.appendChild(playerItem);
-			});
-		})
-		.catch(error => {
-			console.error('Error:', error);
-		});
 }
 
 /* ---------------------------------- Utils --------------------------------- */
