@@ -1,9 +1,9 @@
 Un example du `.env`:
 
 ```sh
-SECRET_KEY=s'django-insecure-sm@b^=144g8k*vt7gc&&h7q3z7(yf4q=08mdikb=^lrr-18vz2'
-DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1] 10.12.7.3
-HOSTS_CORS=localhost 127.0.0.1 10.12.7.3
+SECRET_KEY= # votre clé django
+DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1
+HOSTS_CORS=localhost 127.0.0.1
 SQL_ENGINE=django.db.backends.postgresql
 SQL_DATABASE=db_bck_django
 SQL_USER=bck_django
