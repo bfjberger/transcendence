@@ -2,22 +2,17 @@ import { connect_socket_friend } from "./friends.js";
 
 function renderIndex() {
 	return `
-
-		<div class="d-flex align-items-center">
-			Bienvenue, ceci est la page principale.
-			<div class="row">
-				<img src="https://c.tenor.com/5UrSnlHPuXkAAAAC/tenor.gif" height="300" width="300">
-				<img src="https://c.tenor.com/8Y4tlL5MQFEAAAAC/tenor.gif" height="300" width="300">
-				<img src="https://static.hitek.fr/img/actualite/ill_m/1435480913/darkvador.webp" height="300" width="300">
-				<img src="https://cdn.ferrari.com/cms/network/media/img/resize/631b55bb9ba7b26ce62de2e7?" height="300" width="300">
+			<div class="text-center py-5">
+				Bienvenue, ceci est la page principale.
 			</div>
 			<div class="row">
+				<div class="col-6 d-flex justify-content-center">
+					<img src="/frontend/img/index42.png" alt="PONG X 42" width="600" height="600" />
+				</div>
+				<div class="col-6 d-flex justify-content-center">
+					<img src="/frontend/img/index42_second.png" alt="PONG x 42" width="600" height="600"/>
+				</div>
 			</div>
-			<div class="row">
-			</div>
-			<div class="row">
-			</div>
-		</div>
 	`;
 };
 

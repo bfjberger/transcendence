@@ -27,8 +27,7 @@ async function connectUser(loginForm) {
 
 		if (!response.ok || response.status === 203) {
 			const error = await response.text();
-			console.log(error);
-			document.getElementById("form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '');
+			document.getElementById("form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '').split(":")[1];
 			return;
 		}
 		if (response.status === 202) {
@@ -63,6 +62,8 @@ async function createUser(createAccountForm) {
 
 	if (input["password_one"].value !== input["password_two"].value) {
 		document.getElementById("form__createAccount--msg").textContent = "Les mots de passe ne correspondent pas.";
+		document.getElementById("form__createAccount--msg").classList.add("text-danger");
+		document.getElementById("form__createAccount--msg").classList.remove("text-success");
 		return;
 	}
 
@@ -83,19 +84,19 @@ async function createUser(createAccountForm) {
 
 		const response = await fetch(hostnameport + '/api/register/', init);
 
-		if (!response.ok || response.status === 203) {
-			const error = await response.text();
-			document.getElementById("form__createAccount--msg").textContent = error.replace(/["{}[\]]/g, '');
+		if (!response.ok || response.status == 500) {
+			document.getElementById("form__createAccount--msg").textContent = "Erreur " + response.status;
 			document.getElementById("form__createAccount--msg").classList.add("text-danger");
-			document.getElementById("form__createAccount--msg").classList.remove("text-info");
-			return;
+			document.getElementById("form__createAccount--msg").classList.remove("text-success");
 		}
-		if (response.status === 201) {
-			// register is successful -> redirect to profile
-
-			const data = await response.json();
-			// sessionStorage.setItem("username", data.username); pas necessaire comme oblige de login et alors recoit infos importantes
-
+		else if (response.status == 203) {
+			var errorMsg = await response.text();
+			errorMsg = JSON.parse(errorMsg);
+			document.getElementById("form__createAccount--msg").textContent = Object.keys(errorMsg)[0] + " : " + Object.values(errorMsg)[0];
+			document.getElementById("form__createAccount--msg").classList.add("text-danger");
+			document.getElementById("form__createAccount--msg").classList.remove("text-success");
+		}
+		else if (response.status === 201) {
 			document.getElementById("form__createAccount--msg").innerHTML = "Ton compte à été créé ! Tu peux te logger.";
 			document.getElementById("form__createAccount--msg").classList.remove("text-danger");
 			document.getElementById("form__createAccount--msg").classList.add("text-success");
@@ -117,8 +118,7 @@ async function connectUser42() {
 			throw new Error(`HTTP error, status = ${response.status}`);
 		}
 
-		const address = await response.json()
-		console.log("Voici l'adresse : " + address);
+		const address = await response.json();
 
 		window.location.href = address;
 		// waitFor42();

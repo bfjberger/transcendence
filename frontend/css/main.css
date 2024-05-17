@@ -55,7 +55,7 @@
 	cursor: pointer;
 }
 
-#sidebar-left, #sidebar-right {
+#sidebar__left, #sidebar__right {
 	background-color: #6C7878;
 }
 

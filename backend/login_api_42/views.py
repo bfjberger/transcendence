@@ -22,14 +22,15 @@ class Accounts_view(APIView) :
     def get(self, request):
         # Step 1: Redirect user to 42 authorization URL
         authorization_url = 'https://api.intra.42.fr/oauth/authorize' #by def, url where you can loggin ('https://api.intra.42.fr/oauth/authorize')
-        redirect_uri = settings.CSRF_TRUSTED_ORIGINS[2] + "/"  # Change to your callback URL
+        redirect_uri = settings.CSRF_TRUSTED_ORIGINS[0] + "/"  # Change to your callback URL
+        # redirect_uri = settings.CSRF_TRUSTED_ORIGINS[2] + "/"  # Change to your callback URL
         # print("\n\n", settings.CSRF_TRUSTED_ORIGINS[2] + "/", "\n\n\n")
 
         params = {
             'client_id': settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'],
             'redirect_uri': redirect_uri,
             'response_type': 'code',
-            # Add any additional scopes your app requires
+
             'scope': "public"
         }
         auth_url = '{}?{}'.format(authorization_url, urlencode(params))
@@ -41,7 +42,8 @@ class Callback(APIView):
     def post(self, request):
         # Step 2: Receive authorization code and exchange for access token
         code = request.data["code"]
-        redirect_uri = settings.CSRF_TRUSTED_ORIGINS[2] + "/"
+        # redirect_uri = settings.CSRF_TRUSTED_ORIGINS[2] + "/"
+        redirect_uri = settings.CSRF_TRUSTED_ORIGINS[0] + "/"
         token_url = 'https://api.intra.42.fr/oauth/token'
         data = {
             'client_id': settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'],
@@ -50,7 +52,6 @@ class Callback(APIView):
             'redirect_uri': redirect_uri,
             'grant_type': 'authorization_code',
             'scope': "public profile"
-
         }
 
         response = requests.post(token_url, data=data)

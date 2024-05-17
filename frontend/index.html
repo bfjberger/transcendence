@@ -12,7 +12,7 @@
 		<script type="module" src="/frontend/js/logic/router.js"></script>
 
 		<link rel="stylesheet" href="/frontend/bootstrap-5.3.3-dist/css/bootstrap.css" />
-		<script type="module" src="/frontend/bootstrap-5.3.3-dist/js/bootstrap.min.js"></script>
+		<script type="module" src="/frontend/bootstrap-5.3.3-dist/js/bootstrap.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
 		integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 	</head>
@@ -26,7 +26,7 @@
 			<div class="col-3 offset-6">
 				<div>
 					<span>
-						<span id="topbar__profile" href="profile">
+						<span id="topbar__profile">
 							<span id="topbar__profile--username"></span>
 							<img src="" alt="" id="topbar__profile--avatar" class="rounded-circle" width="50" height="50">
 						</span>
@@ -118,20 +118,22 @@
 				</div>
 			</div>
 		</div>
+		<div id="container__toast" class="p-4 mr-4 d-flex flex-column align-items-end" style="position: absolute; right: 0;">
+		</div>
 		<div class="container-fluid">
 			<div class="row">
-				<div class="col-1 min-vh-100 px-0" id="sidebar-left">
+				<div class="col-1 min-vh-100 px-0" id="sidebar__left">
 				</div>
 				<div class="col-10 container" id="main__content">
 				</div>
-				<div class="col-1 min-vh-100 px-0" id="sidebar-right">
+				<div class="col-1 min-vh-100 px-0" id="sidebar__right">
 				</div>
 			</div>
 		</div>
 		<div class="container-fluid px-0">
 			<div id="footer" class="row">
 				<div class="text-center">
-					Fait avec amour et passion par ASENAUD, BBERGER, FCOINDRE, KMORIN, PVONG aka ... (nom de team)
+					Fait avec amour et passion par BBERGER, FCOINDRE, KMORIN, PVONG aka ... (nom de team)
 				</div>
 			</div>
 		</div>

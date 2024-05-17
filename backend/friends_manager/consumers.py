@@ -41,7 +41,7 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
 				'chat_%s' % to_user,
 				{
 					'type': 'notification',
-					'message': f"{from_user} sent you a friend request"
+					'message': f"{from_user} t'as envoyé une demande d'ami."
 				}
 			)
 
@@ -56,7 +56,7 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
 				'chat_%s' % from_user,
 				{
 					'type': 'notification',
-					'message': f"{to_user} accepted your friend request"
+					'message': f"{to_user} a accepté ta demande d'ami."
 				}
 			)
 
@@ -72,7 +72,21 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
 				'chat_%s' % from_user,
 				{
 					'type': 'notification',
-					'message': f"{to_user} refused your friend request"
+					'message': f"{to_user} a refusé ta demande d'ami"
+				}
+			)
+
+		elif message_type == 'friend_deleted':
+			from_user = text_data_json.get('from')
+			to_user = text_data_json.get('to')
+
+			if from_user is None or to_user is None:
+				return
+			await self.channel_layer.group_send(
+				'chat_%s' % from_user,
+				{
+					'type': 'notification',
+					'message': f"{to_user} a supprimé votre amitié 😔"
 				}
 			)
 

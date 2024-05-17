@@ -1,8 +1,10 @@
+import requests
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
+from django.conf import settings
 
 from rest_framework.reverse import reverse_lazy
 
@@ -40,12 +42,39 @@ class RegisterAction(APIView):
 	serializer_class = RegisterSerializer
 
 	def post(self, request):
-		serializer = RegisterSerializer(data=request.data)
-		if serializer.is_valid():
-			user = serializer.save()
-			if user:
-				return Response(serializer.data, status=status.HTTP_201_CREATED)
-		return Response(serializer.errors, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+		# Verifier si un user 42 existe
+
+		authorization_url = "https://api.intra.42.fr/oauth/token" #by def, url where you can loggin ('https://api.intra.42.fr/oauth/authorize')
+		datas = {
+			"grant_type" : "client_credentials",
+			"client_id" : settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'], #ATTENTION
+			"client_secret" : settings.SOCIALACCOUNT_PROVIDERS['42']['SECRET']
+		}
+
+		response_post = requests.post(authorization_url, datas)
+		token = response_post.json()["access_token"]
+
+
+		check_url = "https://api.intra.42.fr/v2/users" + "/" + request.data["username"]
+		header = {
+			"Authorization" : "Bearer" + " " + token
+		}
+
+		result = requests.get(check_url, headers=header)
+
+
+
+		if result.status_code != 200 :
+			serializer = RegisterSerializer(data=request.data)
+			if serializer.is_valid():
+				user = serializer.save()
+				if user:
+					return Response(serializer.data, status=status.HTTP_201_CREATED)
+			return Response(serializer.errors, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+		
+		return Response("C'est mort mec !!! Ce pseudo est déjà pris par un student de 42.", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+
+
 
 
 class LoginView(APIView):
@@ -170,7 +199,7 @@ class Tournament(APIView):
 		except :
 			return Response(None, status=status.HTTP_400_BAD_REQUEST)
 		return Response(data=serializer_player.data, status=status.HTTP_200_OK)
-		
+
 
 class Statistiques(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]

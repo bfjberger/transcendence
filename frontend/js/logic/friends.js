@@ -11,6 +11,28 @@ var csrftoken;
 var g_username;
 var g_socket_friend;
 
+function showFirendNotificationToast(message) {
+
+	let id = new Date().getTime();
+	let toastElement = `
+			<div id=${id} class="toast" role="alert" aria-live="assertive" aria-atomic="true" style="background-color: lightgoldenrodyellow">
+				<div class="toast-header">
+					<strong>AMIS</strong>
+					<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+				</div>
+				<div class="toast-body">${message}</div>
+			</div>
+		`;
+
+	let toastNode = document.createElement("div");
+	toastNode.innerHTML = toastElement;
+
+	document.querySelector("#container__toast").appendChild(toastNode);
+
+	const toast = new bootstrap.Toast(document.getElementById(id));
+	toast.show();
+};
+
 async function get_username() {
 	const response = await fetch('/api/friends/getUserName/')
 	if (!response.ok) {
@@ -34,23 +56,24 @@ export async function connect_socket_friend() {
 	var socket = new WebSocket(`wss://${window.location.host}/wss/notifications/` + username + "/");
 	console.log("socket: ", socket);
 	g_socket_friend = socket;
-  
+
 	socket.onopen = function(event) {
 	  console.log('WebSocket connection opened');
 	};
-  
+
 	socket.onmessage = function(event) {
 	  console.log('Message from server: ' + event.data);
 	  var data = JSON.parse(event.data);
 	  if (data.type === 'notification') {
-		window.alert(data.message);
+		// window.alert(data.message);
+		showFirendNotificationToast(data.message);
 	  }
 	};
-  
+
 	socket.onerror = function(event) {
 	  console.error('WebSocket error: ' + event);
 	};
-  
+
 	socket.onclose = function(event) {
 		// window.alert("WebSocket connection closed, trying to reconnect in 5 seconds...");
 	  console.log('WebSocket connection closed, trying to reconnect in 5 seconds...');
@@ -97,7 +120,7 @@ function fillFriendsReceived() {
 					${friend.user_initiated.username}
 				</div>
 				<div class="col-3">
-					<button class="btn btn-danger mt-1 delete_friend_button" type="button" value="${friend.user_initiated.username}">
+					<button class="btn btn-danger mt-1 refuse_friend_button" type="button" value="${friend.user_initiated.username}">
 						Refuser
 					</button>
 				</div>
@@ -121,6 +144,7 @@ function fillFriendsAccepted() {
 		element.className = "row align-items-center py-3";
 		element.innerHTML = `
 				<div class="col-7">
+					<img src=${friend.avatar} class="rounded-circle" alt="${friend.username} avatar" width="30" height="30" />
 					${friend.username} | ${friend.status}
 				</div>
 				<div class="col-5">
@@ -138,6 +162,7 @@ function fillFriendsAccepted() {
 		element.className = "row align-items-center py-3";
 		element.innerHTML = `
 				<div class="col-7">
+					<img src=${friend.avatar} class="rounded-circle" alt="${friend.username} avatar" width="30" height="30" />
 					${friend.username} | ${friend.status}
 				</div>
 				<div class="col-5">
@@ -176,7 +201,7 @@ async function delete_friend(username) {
 			let json_response = await response.json();
 			g_username = await get_username();
 			var message = {
-				type: "friend_request_refused",
+				type: "friend_deleted",
 				from: username,
 				to: g_username,
 			};
@@ -215,6 +240,44 @@ async function patch_friend_accept(username) {
 			g_username = await get_username();
 			var message = {
 				type: "friend_request_accepted",
+				from: username,
+				to: g_username,
+			};
+			g_socket_friend.send(JSON.stringify(message));
+			window.location.reload();
+		}
+
+	} catch (e) {
+		console.error("error from post friend : " + e);
+	}
+};
+
+async function patch_friend_refuse(username) {
+
+	csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
+
+	const init = {
+		method: 'PATCH',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrftoken,
+		},
+		body: JSON.stringify({username: username})
+	};
+
+	try {
+		let hostnameport = "https://" + window.location.host;
+		const response = await fetch(hostnameport + '/api/friends/refuse/', init);
+
+		if (response.status != 200) {
+			const text = await response.text();
+			throw new Error(text);
+		}
+		else {
+			let json_response = await response.json();
+			g_username = await get_username();
+			var message = {
+				type: "friend_request_refused",
 				from: username,
 				to: g_username,
 			};
@@ -268,7 +331,7 @@ async function post_friend(form_post_friend) {
 			};
 			g_socket_friend.send(JSON.stringify(message));
 
-			// window.location.reload();
+			window.location.reload();
 		}
 	} catch (e) {
 		console.error("error from post friend : " + e);
@@ -300,6 +363,15 @@ function listenerFriends() {
 			patch_friend_accept(button_accept.value);
 		})
 	});
+
+	const button_refuse_patch = document.querySelector(".refuse_friend_button");
+	if (button_refuse_patch) {
+		button_refuse_patch.addEventListener("click", e => {
+			e.preventDefault();
+
+			patch_friend_refuse(button_refuse_patch.value);
+		});
+	}
 
 	const buttons_delete_friend = document.querySelectorAll(".delete_friend_button");
 	buttons_delete_friend.forEach(button_delete => {
@@ -334,7 +406,7 @@ async function loadFriends() {
 			|| response_list_initiated_accepted.status != 200
 			|| response_list_received_accepted.status != 200) {
 
-			throw new Error("error : issue loading friend");
+			throw new Error("issue loading friend");
 		}
 		else {
 			g_data_sent = await response_list_initiated.json()
