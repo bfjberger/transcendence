@@ -53,16 +53,14 @@ class TournamentViewSet(viewsets.ViewSet):
 			return Response({'success': False, 'detail': 'Tournament name should not contain spaces.'}, status=status.HTTP_400_BAD_REQUEST)
 		serializer = TournamentSerializer(data=request.data)
 		if serializer.is_valid():
+			print("Creating tournament")
 			name = serializer.validated_data.get('name')
 			if TournamentRoom.objects.filter(name=name).exists():
 				return Response({'detail': 'A tournament with this name already exists.'}, status=status.HTTP_400_BAD_REQUEST)
 			# Check for special characters in the name
 			if not name.isalnum():
 				return Response({'detail': 'Tournament name should only contain alphanumeric characters.'}, status=status.HTTP_400_BAD_REQUEST)
-
-			# Set the owner of the tournament to the current user
-			player = Player.objects.get(owner=request.user)
-			serializer.save(owner=player)
+			serializer.save()
 			print("Tournament created:", name)
 			return Response({'success': True})
 		else:
@@ -77,9 +75,12 @@ class TournamentViewSet(viewsets.ViewSet):
 	@action(detail=True, methods=['post'])
 	def join_tournament(self, request, pk=None):
 		tournament = self.get_object()
+		# if (not tournament):
+			# return Response({'success': False, 'detail': 'This tournament does not exist.'})
 		player = Player.objects.get(owner=request.user)
-		# if the player size is already at the maximum (8 players) then return an error
-		print(tournament.get_players().count())
+		# if the tournament started, don't allow players to join
+		if tournament.started == True:
+			return Response({'success': False, 'detail': 'This tournament has already started.'})
 		if tournament.get_players().count() >= 8:
 			return Response({'success': False, 'detail': 'This tournament is full.'})
 		tournament.add_player(player)

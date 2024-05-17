@@ -8,11 +8,10 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 
 class TournamentSerializer(serializers.ModelSerializer):
-	owner = serializers.StringRelatedField()
 	players = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 	class Meta:
 		model = TournamentRoom
-		fields = ['id', 'name', 'players', 'owner']
+		fields = ['id', 'name', 'players']
 
 class PlayerInTournamentSerializer(serializers.ModelSerializer):
 	

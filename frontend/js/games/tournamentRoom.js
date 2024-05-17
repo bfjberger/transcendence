@@ -185,15 +185,7 @@ const load_game = () => {
 const connect_socket = (tournament_name) => {
 	const wsurl = base_wsurl + tournament_name + '/';
 	g_socket = new WebSocket(wsurl);
-	window.addEventListener('beforeunload', () => {
-		window.alert('You have left the tournament room');
-		
-		if (g_socket instanceof WebSocket && g_socket.readyState === WebSocket.OPEN) {
-			g_socket.close();
-			leaveRoomName(g_tournament_name);
-		}
-	});
-
+	
 	g_socket.onopen = function(event) {
 		console.log('Socket opened: ', event);
 	}
@@ -206,6 +198,7 @@ const connect_socket = (tournament_name) => {
 	g_socket.onclose = function(event) {
 		console.log('Socket closed: ', event);
 	}
+
 }
 
 /* ----------------------- Start and Delete Tournament ---------------------- */
@@ -273,18 +266,6 @@ function listenerTournamentRoom() {
 			}
 		});
 	});
-
-	// !!! not working
-	// // Close the socket when the user leaves the page 
-	// console.log("Enter listenerTournamentRoom");
-	// window.addEventListener('beforeunload', () => {
-	// 	window.alert('You have left the tournament room');
-		
-	// 	if (g_socket instanceof WebSocket && g_socket.readyState === WebSocket.OPEN) {
-	// 		g_socket.close();
-	// 		leaveRoomName(g_tournament_name);
-	// 	}
-	// });
 }
 
 async function loadTournamentRoom(tournament_name) {

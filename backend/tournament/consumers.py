@@ -305,15 +305,17 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 	async def disconnect(self, close_code):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
 		player = self.scope['user'].username
-		# player_obj = Player.objects.get(owner=self.scope['user'])
 		player_obj = await sync_to_async(Player.objects.get)(owner=self.scope['user'])
 		nickname = player_obj.nickname
-		# nickname = player
 		room = self.tournament_manager.get_room(tournament_name)
-
 		if room:
 			if room['state'] == TournamentStage["LOBBY"]:
 				self.tournament_manager.remove_player(tournament_name, player)
+				try:
+					tournament_room = await sync_to_async(TournamentRoom.objects.get)(name=tournament_name)
+					await sync_to_async(tournament_room.players.remove)(player_obj)
+				except:
+					pass
 				await self.send_players_update()
 			else:
 				idx = self.tournament_manager.get_player_index(tournament_name, player)
@@ -435,6 +437,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def send_tournament_start(self):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
+		tournament_room = await sync_to_async(TournamentRoom.objects.get)(name=tournament_name)
+		tournament_room.started = True
+		await sync_to_async(tournament_room.save)()
 		
 		await self.channel_layer.group_send(
 			tournament_name,
@@ -486,7 +491,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def send_set_position(self, players, state):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
-		print("Players: ", players, " State: ", state)
 		nicknames = [ self.tournament_manager.get_room(tournament_name)['players_and_nicknames'][player] for player in players ]
 		await self.channel_layer.group_send(
 			tournament_name,

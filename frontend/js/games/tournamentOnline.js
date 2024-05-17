@@ -5,9 +5,6 @@ import { router } from '../logic/router.js';
 
 import handleRoom from './tournamentRoom.js';
 
-// TODO: Need to think about what ui elements to add
-// TODO: Change the logic of the room creation / joining maybe it would be better to invite ?
-
 // Function to load content into an element
 export function loadContent(viewFunction, elementId) {
 	try {
@@ -50,11 +47,6 @@ let g_data = {};
 
 function createTournament() {
 	const name = document.getElementById('name').value;
-	// const visibility = document.querySelector('input[name="visibility"]:checked').value;
-	// const password = document.getElementById('password').value;
-
-	let hostnameport = "https://" + window.location.host
-
 
 	fetch('/api/tournaments/', {
 		method: 'POST',
@@ -64,14 +56,14 @@ function createTournament() {
 		},
 		body: JSON.stringify({ name })
 	})
-		.then(response => {
-			if (response.ok) {
+		.then(response => response.json())
+		.then(data => {
+			if (data.success) {
 				// Reload tournament list
 				loadTournaments();
 			} else {
 				// Handle error response
-				console.error('Failed to create tournament');
-				console.error(response);
+				console.error('Failed to create tournament:', data.detail);
 			}
 		})
 		.catch(error => {
@@ -240,47 +232,6 @@ export function leaveRoomNameAndGoTo(tournamentName, value) {
 	.catch(error => {
 		console.error('Error:', error);
 	});
-}
-
-
-function listenerRoom() {
-	const leaveRoomButton = document.getElementById('leave-room-button');
-	leaveRoomButton.addEventListener('click', (event) => {
-		event.preventDefault();
-		leaveRoom();
-	});
-
-	const startTournamentButton = document.getElementById('start-tournament-button');
-	startTournamentButton.addEventListener('click', (event) => {
-		event.preventDefault();
-		// startTournament();
-	});
-
-}
-
-//!!! Not used
-// Function to list all players in the room
-function listPlayersInRoom() {
-	let divRoom = document.getElementById('tournament-room');
-	let tournamentName = document.getElementById('tournament-name');
-	let playersList = document.getElementById('players-list');
-
-	// console.log('Loading room:', tournament_name);
-	fetch(`/api/tournaments/${tournament_name}/load_players/`)
-		.then(response => response.json())
-		.then(players => {
-			tournamentName.textContent = tournament_name;
-			playersList.innerHTML = ''; // Clear existing list
-
-			players.forEach(player => {
-				const playerItem = document.createElement('div');
-				playerItem.textContent = player.id;
-				playersList.appendChild(playerItem);
-			});
-		})
-		.catch(error => {
-			console.error('Error:', error);
-		});
 }
 
 /* ---------------------------------- Utils --------------------------------- */
