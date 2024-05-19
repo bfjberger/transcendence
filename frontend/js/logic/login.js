@@ -91,7 +91,9 @@ async function createUser(createAccountForm) {
 		}
 		else if (response.status == 203) {
 			var errorMsg = await response.text();
+			console.log(errorMsg)
 			errorMsg = JSON.parse(errorMsg);
+			console.log(errorMsg)
 			document.getElementById("form__createAccount--msg").textContent = Object.keys(errorMsg)[0] + " : " + Object.values(errorMsg)[0];
 			document.getElementById("form__createAccount--msg").classList.add("text-danger");
 			document.getElementById("form__createAccount--msg").classList.remove("text-success");

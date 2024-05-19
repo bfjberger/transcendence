@@ -62,8 +62,6 @@ class RegisterAction(APIView):
 
 		result = requests.get(check_url, headers=header)
 
-
-
 		if result.status_code != 200 :
 			serializer = RegisterSerializer(data=request.data)
 			if serializer.is_valid():
@@ -72,7 +70,7 @@ class RegisterAction(APIView):
 					return Response(serializer.data, status=status.HTTP_201_CREATED)
 			return Response(serializer.errors, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 		
-		return Response("C'est mort mec !!! Ce pseudo est déjà pris par un student de 42.", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+		return Response({"42 API " : "C'est mort mec !!! Ce pseudo est déjà pris par un student de 42."}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
 
 

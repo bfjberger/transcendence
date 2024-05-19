@@ -34,11 +34,8 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 ALLOWED_HOSTS_HTTPS = [f"https://{host}" for host in os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")]
 ALLOWED_HOSTS_HTTP = [f"http://{host}" for host in os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")]
 
-
-
 CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS_HTTPS + ALLOWED_HOSTS_HTTP
 CSRF_ALLOWED_ORIGINS = ALLOWED_HOSTS_HTTPS + ALLOWED_HOSTS_HTTP
-
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
@@ -169,9 +166,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #    ],
 # }
 
-
-
-
 ASGI_APPLICATION = 'bck_django.asgi.application'
 
 CHANNEL_LAYERS = {
@@ -186,17 +180,14 @@ SOCIALACCOUNT_PROVIDERS = {
         'AUTH_PARAMS': {'access_type': 'online'},
         'METHOD': 'oauth2',
         'VERIFIED_EMAIL': False,
-        'KEY': 'u-s4t2ud-f615740997c083b92e2a938e5187cc7a9370ed9ccd21d07b022db2afe9c6fe73',
-        'SECRET': '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',
+        'KEY': 'u-s4t2ud-491a5d4d14d35ef25080f2f05937152abcd6c6f65ab162196a8c5ea26e7e5f65',
+        'SECRET': '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',
     }
 }
 
 LOGIN_REDIRECT_URL = 'https://localhost'
 LOGOUT_REDIRECT_URL = 'https://localhost'
 
-
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-
-
 
 TIME_ZONE = 'Europe/Zurich'
