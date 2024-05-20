@@ -3,6 +3,7 @@ from copy import deepcopy
 import asyncio
 
 from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async
 from .models import TournamentRoom, TournamentStat
 from .gamelogic_tournament import GameState
@@ -32,6 +33,11 @@ PlayerState = {
 	"LOSER": "LOSER",
 	"LEFT": "LEFT"
 }
+
+@database_sync_to_async
+def save_player_status(player_obj, status):
+	player_obj.status = status
+	player_obj.save()
 
 async def end_game_add_stats(winner, losers, tournament_name):
 	"""
@@ -102,7 +108,7 @@ class TournamentManager():
 			current_room['players_and_nicknames'][player] = nickname
 			current_room['players_state'].append(PlayerState["PENDING"])
 			self.rooms[room_name] = current_room
-
+		
 		print(f'Room {room_name} has {len(current_room["players"])} players')
 		return True
 
@@ -288,10 +294,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		tournament_name = self.scope['url_route']['kwargs']['tournament_name']
 		self.tournament = await sync_to_async(TournamentRoom.objects.get)(name=tournament_name)
 		player = self.scope['user'].username
-		# player_obj = Player.objects.get(owner=self.scope['user'])
 		player_obj = await sync_to_async(Player.objects.get)(owner=self.scope['user'])
 		nickname = player_obj.nickname
-		# nickname = player
 
 		await self.channel_layer.group_add(
 			tournament_name,
@@ -300,6 +304,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 		if self.tournament_manager.create_or_join_room(tournament_name, player, nickname):
 			await self.accept()
+			await save_player_status(player_obj, "IN_TOURNAMENT")
 		else:
 			await self.close()
 
@@ -311,6 +316,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		player_obj = await sync_to_async(Player.objects.get)(owner=self.scope['user'])
 		nickname = player_obj.nickname
 		room = self.tournament_manager.get_room(tournament_name)
+
+		await save_player_status(player_obj, "ONLINE")
 		if room:
 			if room['state'] == TournamentStage["LOBBY"]:
 				self.tournament_manager.remove_player(tournament_name, player)
