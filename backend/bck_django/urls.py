@@ -22,7 +22,10 @@ from django.conf import settings
 
 from rest_framework import routers
 
-from players_manager.views import LoginView, ProfileView, RegisterAction, IndexAction, TwoPlayers, FourPlayers, Tournament, LogoutView, ProfileUpdateAvatarView, UpdateStatus, Statistiques
+from players_manager.views import (LoginView, ProfileView, RegisterAction,
+								    IndexAction, TwoPlayers, FourPlayers,
+									Tournament, LogoutView, ProfileUpdateAvatarView,
+									UpdateStatus, Statistiques)
 from tournament.views import TournamentOnline
 
 from login_api_42.views import Accounts_view, Callback

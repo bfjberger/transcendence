@@ -72,9 +72,9 @@ const routes = {
 		load: handleTournament.loadTournament,
 		listener: handleTournament.listenerTournament
 	},
-	"tournament_online": {
+	"tournamentonline": {
 		title: "Tournoi en Ligne",
-		path: "/tournamentOnline/",
+		path: "/tournamentonline/",
 		view: renderTournament.renderTournamentOnline,
 		load: handleTournamentOnline.loadTournamentOnline,
 		listener: handleTournamentOnline.listenerTournamentOnline
@@ -210,81 +210,6 @@ export default async function router(value) {
 };
 
 /**
- * Event listener for popstate event
-
-*/
-window.addEventListener("popstate", async (e) => {
-	e.preventDefault();
-
-
-	// Get the current url, remove all '/' and if the url is null assign it to 'index'
-	let url = window.location.pathname.replaceAll("/", "");
-	if (url === "")
-		url = "index";
-
-	var page = routes[url];
-
-	if (!page)
-		return;
-
-	if (await page.load() === 1) {
-		document.getElementById("main__content").innerHTML = page.view();
-
-		document.getElementById("navbar__btn--text").textContent = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
-		document.getElementById("navbar__btn--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
-		document.getElementById("navbar__btn--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
-
-		document.title = page.title;
-
-		page.listener();
-	}
-	else
-		loadIndex();
-});
-
-/**
- * Event listener for window.onload event
- * Load the page that the user is currently on
- * If the user is logged in, load the page that the user is currently on
- * If the user is not logged in, redirect to the login page
-*/
-window.onload = async function()
-{
-	const currentPath = window.location.pathname;
-
-	var found = false
-
-	for (const route in routes)
-	{
-		if (routes[route].path === currentPath)
-		{
-			if (await routes[route].load() === 1)
-			{
-
-				found = true
-				document.getElementById('main__content').innerHTML = routes[route].view();  // Render the HTML content for the page
-
-				document.getElementById("navbar__btn--text").textContent = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
-				document.getElementById("navbar__btn--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
-				document.getElementById("navbar__btn--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
-
-				document.title = routes[route].title;
-				routes[route].listener();  // Attach event listeners
-			}
-			else
-				router("login");
-			break;
-		}
-	}
-	if (found == false)
-	{
-		router("404_error")
-	}
-};
-
-
-
-/**
  * Load index function
  * Send a GET request to the server to check if the user is logged in
  * If the response status is 202, the user is logged in and redirected to the index page
@@ -363,6 +288,49 @@ async function load42Profile(code)
 };
 
 /**
+ * Event listener for window.onload event
+ * Load the page that the user is currently on
+ * If the user is logged in, load the page that the user is currently on
+ * If the user is not logged in, redirect to the login page
+*/
+window.onload = async function()
+{
+	const currentPath = window.location.pathname;
+
+	var found = false
+
+	for (const route in routes)
+	{
+		if (routes[route].path === currentPath)
+		{
+			if (await routes[route].load() === 1)
+			{
+
+				found = true
+				document.getElementById('main__content').innerHTML = routes[route].view();  // Render the HTML content for the page
+
+				document.getElementById("topbar__profile--username").textContent =
+					sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
+				document.getElementById("topbar__profile--avatar").src =
+					sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
+				document.getElementById("topbar__profile--avatar").alt =
+					sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
+
+				document.title = routes[route].title;
+				routes[route].listener();  // Attach event listeners
+			}
+			else
+				router("login");
+			break;
+		}
+	}
+	if (found == false)
+	{
+		router("404_error")
+	}
+};
+
+/**
  * Event listener for popstate event
  * A popstate event is fired when the active history entry changes
 */
@@ -396,38 +364,6 @@ window.addEventListener("popstate", async (e) => {
 	else
 		loadIndex();
 });
-
-/**
- * Event listener for window.onload event
- * Load the page that the user is currently on
- * If the user is logged in, load the page that the user is currently on
- * If the user is not logged in, redirect to the login page
-*/
-window.onload = async function() {
-
-	const currentPath = window.location.pathname;
-	for (const route in routes) {
-		if (routes[route].path === currentPath) {
-			if (await routes[route].load() === 1) {
-				document.getElementById('main__content').innerHTML = routes[route].view();  // Render the HTML content for the page
-
-				document.getElementById("topbar__profile--username").textContent =
-					sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
-				document.getElementById("topbar__profile--avatar").src =
-					sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
-				document.getElementById("topbar__profile--avatar").alt =
-					sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";
-
-				document.title = routes[route].title;
-
-				routes[route].listener();  // Attach event listeners
-			}
-			else
-				router("login");
-			break;
-		}
-	}
-};
 
 /**
  * Event listener for DOMContentLoaded event

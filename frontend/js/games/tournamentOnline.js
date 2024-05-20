@@ -71,6 +71,7 @@ function createTournament() {
 				// Handle error response
 				const errorMsg = data.detail;
 				document.getElementById("create__tournament--errorMsg").textContent = errorMsg;
+
 			}
 		})
 		.catch(error => {
@@ -274,8 +275,6 @@ async function loadTournamentOnline() {
 
 		const data = await response.json();
 		g_data = data;
-		// console.log("g_data: ", g_data);
-		// console.log("g_data.username: ", g_data.username);
 
 		return 1;
 	} catch (e) {

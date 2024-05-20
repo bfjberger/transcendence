@@ -27,26 +27,53 @@ function fillHistoryTwo() {
 		gameHistoryEntry.id = `game__historyTwo--${game_index}`;
 		gameHistoryEntry.className = "row border-top border-warning";
 		const date = game.date.replace("Z", "").split("T");
-		gameHistoryEntry.innerHTML = `
-				<div class="col mt-2">
-					<div class="d-inline" id="game__historyTwo--${game_index}--left">
-						${game.user1.username}
-						<br>
-						${game.score_user1}
+		if (game.id_tournament == null) {
+			gameHistoryEntry.innerHTML = `
+					<div class="col mt-2">
+						<div class="d-inline" id="game__historyTwo--${game_index}--left">
+							${game.user1.username}
+							<br>
+							${game.score_user1}
+						</div>
 					</div>
-				</div>
-				<div class="col mt-2 align-self-center">VS</div>
-				<div class="col mt-2">
-					<div class="d-inline" id="game__historyTwo--${game_index}--right">
-						${game.user2.username}
-						<br>
-						${game.score_user2}
+					<div class="col mt-2 align-self-center">VS</div>
+					<div class="col mt-2">
+						<div class="d-inline" id="game__historyTwo--${game_index}--right">
+							${game.user2.username}
+							<br>
+							${game.score_user2}
+						</div>
 					</div>
-				</div>
-				<div class="mb-2" id="game__historyTwo--${game_index}--date">
-					Le ${date[0]} à ${date[1].split(".")[0]}
-				</div>
-			`;
+					<div class="mb-2" id="game__historyTwo--${game_index}--date">
+						Le ${date[0]} à ${date[1].split(".")[0]}
+					</div>
+				`;
+		}
+		else {
+			gameHistoryEntry.innerHTML = `
+					<div class="mt-2" id="game__historyTwo--${game_index}--tournament">
+						${game.level} pendant ${game.id_tournament}
+					</div>
+					<div class="col mt-2">
+						<div class="d-inline" id="game__historyTwo--${game_index}--left">
+							${game.user1.username}
+							<br>
+							${game.score_user1}
+						</div>
+					</div>
+					<div class="col mt-2 align-self-center">VS</div>
+					<div class="col mt-2">
+						<div class="d-inline" id="game__historyTwo--${game_index}--right">
+							${game.user2.username}
+							<br>
+							${game.score_user2}
+						</div>
+					</div>
+					<div class="mb-2" id="game__historyTwo--${game_index}--date">
+						Le ${date[0]} à ${date[1].split(".")[0]}
+					</div>
+				`;
+		}
 		g_game_history_two.appendChild(gameHistoryEntry);
 		if (game.win_player.username == game.user1.username) {
 			document.getElementById(`game__historyTwo--${game_index}--left`).classList.add("bg-success-subtle");

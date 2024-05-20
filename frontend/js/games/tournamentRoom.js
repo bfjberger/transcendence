@@ -1,7 +1,3 @@
-import { renderTournamentOnline } from "../views/viewTournament.js";
-import { renderTournamentRoom } from "../views/viewTournament.js";
-import { renderTournamentLobby } from "../views/viewTournament.js";
-import { renderPlayground } from "../views/viewTournament.js";
 import { router } from "../logic/router.js";
 import {
 	renderTournamentOnlineGame,
@@ -11,8 +7,6 @@ import {
 
 import {
 	loadContent,
-	loadContent2,
-	leaveRoomName,
 	leaveRoomNameAndGoTo,
 } from "./tournamentOnline.js";
 
@@ -82,6 +76,9 @@ const create_owner_btns = () => {
 const update_lobby_ui = (room) => {
 	const lobby_container = document.getElementById("tournament__room--list");
 	lobby_container.innerHTML = "";
+
+	if (!room.players)
+		return ;
 
 	room.players.forEach((player, i) => {
 		const is_owner = player === room.owner;
@@ -239,13 +236,11 @@ const on_load_game = (arg) => {
 }
 
 const on_tournament_start = (arg) => {
-	// console.log('on_tournament_start', arg);
 	addNameBracketsStart(arg);
 	window.startTournamentOnline();
 }
 
 const on_tournament_end = (arg) => {
-	// console.log('on_tournament_end', arg);
 	alert(arg);
 	g_socket.close();
 }
@@ -326,7 +321,7 @@ const load_game = () => {
 const connect_socket = (tournament_name) => {
 	const wsurl = base_wsurl + tournament_name + '/';
 	g_socket = new WebSocket(wsurl);
-	
+
 	g_socket.onopen = function(event) {
 		console.log('Socket opened: ', event);
 	}
@@ -413,7 +408,6 @@ function listenerTournamentRoom() {
 			const value = item.getAttribute('value');
 			if (g_socket instanceof WebSocket && g_socket.readyState === WebSocket.OPEN) {
 				g_socket.close();
-				// leaveRoomName(g_tournament_name);
 				leaveRoomNameAndGoTo(g_tournament_name, value);
 			}
 		});
