@@ -48,6 +48,10 @@ let g_data = {};
 
 function createTournament() {
 	const name = document.getElementById('name').value;
+	if (name === '') {
+		document.getElementById("create__tournament--errorMsg").textContent = "Le nom du tournoi ne peut pas être vide";
+		return;
+	}
 
 	fetch('/api/tournaments/', {
 		method: 'POST',
@@ -59,6 +63,7 @@ function createTournament() {
 	})
 		.then(response => response.json())
 		.then(data => {
+			console.log("data: ", data);
 			if (data.success) {
 				// Reload tournament list
 				loadTournaments();
@@ -75,7 +80,6 @@ function createTournament() {
 
 // Function to list all tournaments
 function loadTournaments() {
-
 	fetch('/api/tournaments/load_tournaments/')
 		.then(response => response.json())
 		.then(data => {
@@ -133,6 +137,7 @@ function joinRoom(tournamentName) {
 			// Handle error response
 			const errorMsg = data.detail;
 			document.getElementById("tournament__list--errorMsg").textContent = errorMsg;
+			loadTournaments();
 		}
 	})
 	.catch(error => {

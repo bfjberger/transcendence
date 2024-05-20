@@ -44,6 +44,9 @@ async function get_username() {
 }
 
 export async function connect_socket_friend() {
+	if (sessionStorage.getItem("username") === null) {
+		return;
+	}
 	const username = await get_username();
 
 	if (username === "") {

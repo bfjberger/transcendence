@@ -16,15 +16,6 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 
 
-
-
-# Ok currently kinda working after checking the following error:
-# AttributeError: 'TournamentViewSet' object has no attribute 'get_object' (in the join_tournament method)
-# I think it's because of the get_object method in the TournamentViewSet class was not defined properly
-# And also because pk was expecting an int but it was a string
-# Either change the pk to an int or change the get_object method to accept a string
-
-
 class TournamentViewSet(viewsets.ViewSet):
 	queryset = TournamentRoom.objects.all()
 	serializer_class = TournamentSerializer
@@ -47,22 +38,22 @@ class TournamentViewSet(viewsets.ViewSet):
 		MAX_TOURNAMENTS = 10
 
 		if TournamentRoom.objects.count() >= MAX_TOURNAMENTS:
-			return Response({'detail': "Le nombre de tournoi maximum à été atteint."}, status=status.HTTP_400_BAD_REQUEST)
+			return Response({'success': False, 'detail':"Le nombre de tournoi maximum à été atteint."}, status=status.HTTP_400_BAD_REQUEST)
 		# Check if there is a space in the name
 		if ' ' in request.data['name']:
-			return Response({'detail': "Un nom de tournoi ne peut pas contenir d\'espaces."}, status=status.HTTP_400_BAD_REQUEST)
+			return Response({'success': False, 'detail':"Un nom de tournoi ne peut pas contenir d\'espaces."}, status=status.HTTP_400_BAD_REQUEST)
 		serializer = TournamentSerializer(data=request.data)
 		if serializer.is_valid():
 			print("Creating tournament")
 			name = serializer.validated_data.get('name')
 			if TournamentRoom.objects.filter(name=name).exists():
-				return Response({'detail': "Un tournoi avec ce nom existe déjà."}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({'success': False, 'detail':'Un tournoi avec ce nom existe déjà.'}, status=status.HTTP_400_BAD_REQUEST)
 			# Check for special characters in the name
 			if not name.isalnum():
-				return Response({'detail':'Un nom de tournoi doit seulement contenir des caractères alphanumériques.'}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({'success': False, 'detail':'Un nom de tournoi doit seulement contenir des caractères alphanumériques.'}, status=status.HTTP_400_BAD_REQUEST)
 			serializer.save()
 			print("Tournament created:", name)
-			return Response({'success': True, 'detail': "Tournoi créé avec succès."}, status=status.HTTP_200_OK)
+			return Response({'success': True, 'detail': 'Tournoi créé avec succès.'}, status=status.HTTP_200_OK)
 		else:
 			return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -74,17 +65,17 @@ class TournamentViewSet(viewsets.ViewSet):
 
 	@action(detail=True, methods=['post'])
 	def join_tournament(self, request, pk=None):
+		tournament = TournamentRoom.objects.filter(name=pk).first()
+		if (not tournament):
+			return Response({'success': False, 'detail': f"{pk} n\'existe plus."}, status=status.HTTP_400_BAD_REQUEST)
 		tournament = self.get_object()
-		# if (not tournament):
-			# return Response({'success': False, 'detail': 'This tournament does not exist.'})
 		player = Player.objects.get(owner=request.user)
-		# if the tournament started, don't allow players to join
 		if tournament.started == True:
-			return Response({'success': False, 'detail': 'Ce tournoi à déjà commencé.'})
+			return Response({'success': False, 'detail': f"{pk} a débuté."}, status=status.HTTP_400_BAD_REQUEST)
 		if tournament.get_players().count() >= 8:
-			return Response({'success': False, 'detail': 'Ce tournoi est plein.'})
+			return Response({'success': False, 'detail': f"{pk} est complet."}, status=status.HTTP_400_BAD_REQUEST)
 		tournament.add_player(player)
-		return Response({'success': True, 'detail': "Tu as rejoint ce tournoi"}, status=status.HTTP_200_OK)
+		return Response({'success': True, 'detail': 'Vous avez rejoint ce tournoi.'}, status=status.HTTP_200_OK)
 
 	@action(detail=False, methods=['get'])
 	def load_tournaments(self, request):
