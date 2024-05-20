@@ -165,8 +165,6 @@ async function handleLogout() {
 		const response = await fetch(hostnameport + '/api/logout/', init);
 
 		if (response.status === 200) {
-			console.log("user successfull logged out");
-
 			sessionStorage.clear();
 			router("login");
 		}
@@ -217,7 +215,7 @@ export default async function router(value) {
 */
 window.addEventListener("popstate", async (e) => {
 	e.preventDefault();
-	
+
 
 	// Get the current url, remove all '/' and if the url is null assign it to 'index'
 	let url = window.location.pathname.replaceAll("/", "");
@@ -265,7 +263,7 @@ window.onload = async function()
 
 				found = true
 				document.getElementById('main__content').innerHTML = routes[route].view();  // Render the HTML content for the page
-				
+
 				document.getElementById("navbar__btn--text").textContent = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : "user";
 				document.getElementById("navbar__btn--avatar").src = sessionStorage.getItem("avatar") ? sessionStorage.getItem("avatar") : "/frontend/img/person-circle-Bootstrap.svg";
 				document.getElementById("navbar__btn--avatar").alt = sessionStorage.getItem("avatar") ? sessionStorage.getItem("username") + " avatar" : "temp avatar";

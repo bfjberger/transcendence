@@ -1,6 +1,6 @@
 import router from "../logic/router.js";
 import Player from "./Player.js";
-import { PongGame2Players, updateStatus } from "./pong2players.js";
+import { PongGame2Players } from "./pong2players.js";
 import {
 	renderTournamentBracketsEight,
 	renderTournamentRoom,
@@ -8,6 +8,8 @@ import {
 	renderTournamentCreationFour,
 	renderTournamentCreationEight
 	} from "../views/viewTournamentLocal.js";
+
+import { updateStatus } from "./pong2players.js";
 
 class Tournament {
 	constructor(nb_players) {

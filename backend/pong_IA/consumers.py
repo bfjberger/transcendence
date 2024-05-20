@@ -33,7 +33,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 		await sync_to_async(player.save)()
 
 		self.position = 'player_left'
-		self.room.add_player()
+		self.room.add_player(player)
 		await self.send(text_data=json.dumps({
 			'type': 'set_position',
 			'position': 'player_left',
@@ -43,7 +43,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
 		await self.start_game()
 
 	async def disconnect(self, close_code):
-		pass
+		self.room.player.player_model.status = "ONLINE"
+		await sync_to_async(self.room.player.player_model.save)()
 
 	async def receive(self, text_data):
 

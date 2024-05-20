@@ -27,8 +27,6 @@ async function loadIndex()
 
 		const response = await fetch(hostnameport + '/api/index/');
 
-		console.log("load_index(): response.status: ", response.status)
-
 		if (response.status === 202) {
 
 			const data = await response.json();

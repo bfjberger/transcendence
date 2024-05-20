@@ -23,8 +23,8 @@ class GameState:
 		self.is_running = False
 		self.winning_score = 2
 
-	def add_player(self):
-		self.player = self.GameState_player()
+	def add_player(self, player_model):
+		self.player = self.GameState_player(player_model)
 		self.bot = self.GameState_bot()
 
 	def remove_player_from_dict(self):
@@ -58,7 +58,9 @@ class GameState:
 			self.bot.future_ball_y = GAME_AREA_HEIGHT / 2
 
 		if self.player.score >= self.winning_score or self.bot.score >= self.winning_score:
-				self.is_running = False
+			self.is_running = False
+			self.player.player_model.status = "ONLINE"
+			await sync_to_async(self.player.player_model.save)()
 
 	async def update(self):
 		await self.player.move()
@@ -67,13 +69,14 @@ class GameState:
 		await self.handle_scores()
 
 	class GameState_player:
-		def __init__(self):
+		def __init__(self, player_model):
 			self.x = PADDLE_WIDTH
 			self.y = PLAYER_START_POS_Y
 			self.score = 0
 			self.is_moving = False
 			self.vertical = False
 			self.hits = 0
+			self.player_model = player_model
 
 		def check_bounds(self, y_position):
 			return y_position < 0 or y_position > GAME_AREA_HEIGHT - PADDLE_HEIGHT
@@ -104,18 +107,18 @@ class GameState:
 
 		def check_bounds(self, y_position):
 			return y_position < 0 or y_position > GAME_AREA_HEIGHT - PADDLE_HEIGHT
-		
+
 		# Predictive model to define the bally when it reaches the bot paddle x
 		def future_ball_y_calcul(self, ball, player):
 			if time.time() - self.timer_ai >= 1:
-				self.future_ball_y = ball.y + ball.y_vel * (610/ball.x_vel) #610 = 650 - (10 + 10)*2, 650 wind lenght, 10 paddle length, 10 space between paddle and win, two times because two paddles 
+				self.future_ball_y = ball.y + ball.y_vel * (610/ball.x_vel) #610 = 650 - (10 + 10)*2, 650 wind lenght, 10 paddle length, 10 space between paddle and win, two times because two paddles
 				self.flag = False
 				self.timer_ai = time.time()
 
-		async def move(self, ball, player):						
+		async def move(self, ball, player):
 			# Predictive movement when the ball start on ai side
 			x_vel = ball.x_vel
-			if x_vel > 0 and self.flag == True: 
+			if x_vel > 0 and self.flag == True:
 				self.future_ball_y = ball.y + ball.y_vel * (305/ball.x_vel) #295 = 650/2 - 10 - 10, screen width/2 - space between paddle and window limit - paddle width
 				self.flag = False
 			# management of future_ball_y, while the is touching the selling or the floor
@@ -124,8 +127,8 @@ class GameState:
 					self.future_ball_y *= -1
 				elif self.future_ball_y > GAME_AREA_HEIGHT:
 					self.future_ball_y = GAME_AREA_HEIGHT - self.future_ball_y + GAME_AREA_HEIGHT
-							
-			
+
+
 			if self.future_ball_y < self.y :
 				self.move_paddle(up=True)
 			elif self.future_ball_y > (self.y + 70): # the origin of paddle is top left, though +70 pixels
@@ -138,7 +141,7 @@ class GameState:
 			if not up and self.y + PLAYER_SPEED > GAME_AREA_HEIGHT:
 				return False
 			self.move_prime(up)
-		# move paddle derive 
+		# move paddle derive
 		def move_prime(self, up=True):
 			if up:
 				self.y -= PLAYER_SPEED
