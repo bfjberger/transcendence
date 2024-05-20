@@ -48,6 +48,10 @@ let g_data = {};
 
 function createTournament() {
 	const name = document.getElementById('name').value;
+	if (name === '') {
+		document.getElementById("create__tournament--errorMsg").textContent = "Le nom du tournoi ne peut pas être vide";
+		return;
+	}
 
 	fetch('/api/tournaments/', {
 		method: 'POST',
@@ -59,13 +63,14 @@ function createTournament() {
 	})
 		.then(response => response.json())
 		.then(data => {
+			console.log("data: ", data);
 			if (data.success) {
 				// Reload tournament list
 				loadTournaments();
 			} else {
 				// Handle error response
 				const errorMsg = data.detail;
-				document.getElementById("create__tournament--errorMsg").textContent = errorMsg.replace(/["{}[\]]/g, '');
+				document.getElementById("create__tournament--errorMsg").textContent = errorMsg;
 
 			}
 		})
@@ -76,7 +81,6 @@ function createTournament() {
 
 // Function to list all tournaments
 function loadTournaments() {
-
 	fetch('/api/tournaments/load_tournaments/')
 		.then(response => response.json())
 		.then(data => {
@@ -107,6 +111,11 @@ function loadTournaments() {
 				tournamentItem = document.createElement('ul');
 				tournamentItem.className = "row text-center";
 				tournamentItem.style.listStyleType = "none";
+
+				// if tournament started, skip it
+				// if (tournament.started) {
+				// 	return;
+				// }
 				tournamentItem.innerHTML = `
 						<li>
 							${tournament.name}
@@ -155,7 +164,7 @@ function joinRoom(tournamentName) {
 			console.error('Failed to join tournament');
 			// console.error(data.detail); // Log the error message
 			const errorMsg = data.detail;
-			document.getElementById("tournament__list--errorMsg").textContent = errorMsg.replace(/["{}[\]]/g, '');
+			document.getElementById("tournament__list--errorMsg").textContent = errorMsg;
 		}
 	})
 	.catch(error => {

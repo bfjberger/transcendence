@@ -16,15 +16,6 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 
 
-
-
-# Ok currently kinda working after checking the following error:
-# AttributeError: 'TournamentViewSet' object has no attribute 'get_object' (in the join_tournament method)
-# I think it's because of the get_object method in the TournamentViewSet class was not defined properly
-# And also because pk was expecting an int but it was a string
-# Either change the pk to an int or change the get_object method to accept a string
-
-
 class TournamentViewSet(viewsets.ViewSet):
 	queryset = TournamentRoom.objects.all()
 	serializer_class = TournamentSerializer
@@ -62,7 +53,7 @@ class TournamentViewSet(viewsets.ViewSet):
 				return Response({'detail':'Un nom de tournoi doit seulement contenir des caractères alphanumériques.'}, status=status.HTTP_400_BAD_REQUEST)
 			serializer.save()
 			print("Tournament created:", name)
-			return Response(data="Tournoi créé avec succès.", status=status.HTTP_200_OK)
+			return Response({'success': True, 'detail': 'Tournoi créé avec succès.'}, status=status.HTTP_200_OK)
 		else:
 			return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -74,17 +65,17 @@ class TournamentViewSet(viewsets.ViewSet):
 
 	@action(detail=True, methods=['post'])
 	def join_tournament(self, request, pk=None):
+		tournament = TournamentRoom.objects.filter(name=pk).first()
+		if (not tournament):
+			return Response({'success': False, 'detail': "Ce tournoi n'existe plus. Veuillez rafraîchir la page."})
 		tournament = self.get_object()
-		# if (not tournament):
-			# return Response({'success': False, 'detail': 'This tournament does not exist.'})
 		player = Player.objects.get(owner=request.user)
-		# if the tournament started, don't allow players to join
 		if tournament.started == True:
-			return Response({'success': False, 'detail': 'This tournament has already started.'})
+			return Response({'success': False, 'detail': 'Ce tournoi a débuté.'}, status=status.HTTP_400_BAD_REQUEST)
 		if tournament.get_players().count() >= 8:
-			return Response({'success': False, 'detail': 'This tournament is full.'})
+			return Response({'success': False, 'detail': 'Ce tournoi est complet.'}, status=status.HTTP_400_BAD_REQUEST)
 		tournament.add_player(player)
-		return Response(data="Tu as rejoint ce tournoi", status=status.HTTP_200_OK)
+		return Response({'success': True, 'detail': 'Vous avez rejoint ce tournoi.'}, status=status.HTTP_200_OK)
 
 	@action(detail=False, methods=['get'])
 	def load_tournaments(self, request):
