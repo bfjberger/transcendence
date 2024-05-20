@@ -62,15 +62,21 @@ class RegisterAction(APIView):
 
 		result = requests.get(check_url, headers=header)
 
-		if result.status_code != 200 :
+		check_url2 = "https://api.intra.42.fr/v2/users/?filter[email]=" + request.data["email"]
+
+		result2 = requests.get(check_url2, headers=header)
+
+		mail_chk = True if len(result2.json()) == 1 else False
+
+		if result.status_code != 200 and mail_chk == False :
 			serializer = RegisterSerializer(data=request.data)
 			if serializer.is_valid():
 				user = serializer.save()
 				if user:
 					return Response(serializer.data, status=status.HTTP_201_CREATED)
 			return Response(serializer.errors, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
-		
-		return Response({"42 API " : "C'est mort mec !!! Ce pseudo est déjà pris par un student de 42."}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+
+		return Response({"42 API " : "Pseudo ou mail déjà utilisé par un étudiant de 42."}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
 
 

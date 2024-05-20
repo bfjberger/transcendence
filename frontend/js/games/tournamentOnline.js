@@ -65,8 +65,7 @@ function createTournament() {
 			} else {
 				// Handle error response
 				const errorMsg = data.detail;
-				document.getElementById("create__tournament--errorMsg").textContent = errorMsg.replace(/["{}[\]]/g, '');
-
+				document.getElementById("create__tournament--errorMsg").textContent = errorMsg;
 			}
 		})
 		.catch(error => {
@@ -86,24 +85,6 @@ function loadTournaments() {
 			var tournamentItem;
 
 			data.forEach(tournament => {
-				/*
-				const tournamentItem = document.createElement('div');
-				tournamentItem.textContent = tournament.name;
-
-				// Create join button
-				const joinButton = document.createElement('button');
-				joinButton.textContent = 'Join';
-
-				// Use a closure to associate the button with the tournament
-				joinButton.addEventListener('click', (function(tournament) {
-					return function() {
-						joinRoom(tournament.name);
-					};
-				})(tournament));
-
-				// Append elements to tournament item
-				tournamentItem.appendChild(joinButton);
-				*/
 				tournamentItem = document.createElement('ul');
 				tournamentItem.className = "row text-center";
 				tournamentItem.style.listStyleType = "none";
@@ -145,17 +126,13 @@ function joinRoom(tournamentName) {
 	.then(data => {
 		if (data.success) {
 			// Handle success response
-			tournament_name = tournamentName;
-			console.log('Successfully joined tournament: ', tournament_name);
 			loadContent(renderTournamentOnlineLobby, "main__content");
 			handleRoom.listenerTournamentRoom();
-			handleRoom.loadTournamentRoom(tournament_name);
+			handleRoom.loadTournamentRoom(tournamentName);
 		} else {
 			// Handle error response
-			console.error('Failed to join tournament');
-			// console.error(data.detail); // Log the error message
 			const errorMsg = data.detail;
-			document.getElementById("tournament__list--errorMsg").textContent = errorMsg.replace(/["{}[\]]/g, '');
+			document.getElementById("tournament__list--errorMsg").textContent = errorMsg;
 		}
 	})
 	.catch(error => {
