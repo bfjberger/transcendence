@@ -6,8 +6,10 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async
 from .models import TournamentRoom, TournamentStat
+from games_manager.models import TwoPlayersGame
 from .gamelogic_tournament import GameState
 import random
+from django.contrib.auth.models import User
 from players_manager.models import Player
 
 TIMER = 60
@@ -39,7 +41,39 @@ def save_player_status(player_obj, status):
 	player_obj.status = status
 	player_obj.save()
 
-async def end_game_add_stats(winner, losers, tournament_name):
+@database_sync_to_async
+def create_tournament_stats_at_start(tournament_name):
+	stats = TournamentStat(tournament_name=tournament_name)
+	stats.save()
+	return stats.id
+
+@database_sync_to_async
+def end_game_save_stats(game, players, win_player, tournament_id, room_state):
+	user1 = User.objects.get(username=players[0])
+	player1 = Player.objects.get(owner=user1)
+	user2 = User.objects.get(username=players[1])
+	player2 = Player.objects.get(owner=user2)
+	win_user = User.objects.get(username=win_player)
+	winner = Player.objects.get(owner=win_user)
+
+	tournamentStat_object = TournamentStat.objects.get(id=tournament_id)
+
+	score_1 = game.players[0].score
+	score_2 = game.players[1].score
+
+	game = TwoPlayersGame.objects.create()
+	game.create(player1, player2)
+	game.id_tournament = tournamentStat_object
+	game.level = room_state
+	game.result(winner, score_1, score_2)
+
+	sync_to_async(game.save)()
+
+
+
+
+
+async def end_tournament_save_stats(winner, losers, tournament_name, tournament_id):
 	"""
 	Add stats to the database at the end of a game in a tournament.
 
@@ -48,9 +82,14 @@ async def end_game_add_stats(winner, losers, tournament_name):
 		losers (list): A list of nicknames of the losers.
 		tournament_name (str): The name of the tournament.
 	"""
-	stats = TournamentStat(tournament_name=tournament_name, winner=winner)
-	await sync_to_async(stats.save)()
-	losers_objs = await sync_to_async(Player.objects.filter)(nickname__in=losers)
+	# stats = await sync_to_async(TournamentStat.objects.get)(tournament_name=tournament_name)
+	stats = await sync_to_async(TournamentStat.objects.get)(id=tournament_id)
+	# await sync_to_async(stats.save)()
+	win_user = await sync_to_async(User.objects.get)(username=winner)
+	winner_obj = await sync_to_async(Player.objects.get)(owner=win_user)
+	stats.winner = winner_obj
+	losers_users = await sync_to_async(User.objects.filter)(username__in=losers)
+	losers_objs = await sync_to_async(Player.objects.filter)(owner__in=losers_users)
 	losers_ids = await sync_to_async(lambda: [loser.id for loser in losers_objs])()
 	await sync_to_async(stats.losers.add)(*losers_ids)
 	await sync_to_async(stats.save)()
@@ -94,6 +133,7 @@ class TournamentManager():
 				'losers': [],
 				'round_number': 1,
 				'match_number': 1,
+				'tournament_id': '',
 				'game_state': GameState()
 			}
 			self.rooms[room_name] = current_room
@@ -405,6 +445,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 		print("All players ready")
 		await self.send_tournament_start()
+		# Create the tournament stats and store the id in the room
+		tournament_stat_id = await create_tournament_stats_at_start(tournament_name)
+		room['tournament_id'] = tournament_stat_id
 		players = self.tournament_manager.get_players_turn(tournament_name)
 		await self.send_set_position(players, room['state'])
 
@@ -645,12 +688,15 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		players = self.tournament_manager.get_players_turn(tournament_name)
 		game.is_running = False
 		loser = None
+		current_state = room['state']
 
 		if game.players[0].score > game.players[1].score:
+			winner = players[0]
 			loser = players[1]
 			await self.send_game_end(players[0], players[1], self.tournament_manager.get_room(tournament_name)['state'])
 			keep = self.tournament_manager.next_turn(tournament_name, 0, 1)
 		elif game.players[1].score > game.players[0].score:
+			winner = players[1]
 			loser = players[0]
 			await self.send_game_end(players[1], players[0], self.tournament_manager.get_room(tournament_name)['state'])
 			keep = self.tournament_manager.next_turn(tournament_name, 1, 0)
@@ -662,7 +708,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			await self.send_game_end(winner, loser, self.tournament_manager.get_room(tournament_name)['state'])
 			keep = self.tournament_manager.next_turn(tournament_name, winnerIdx, loserIdx)
 
-		await self.send_matchs_info()
+		await end_game_save_stats(game, players, winner, room['tournament_id'], current_state)
+
+		await self.send_matchs_info() # send each round that was paired with their respective winners
 		if loser:
 			room['losers'].append(loser)
 
@@ -675,9 +723,10 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		else:
 			# print room round matches
 			print(room['rounds'])
-			winner_nickname = room['players_and_nicknames'][room['winners'][0]]
-			winner_obj = await sync_to_async(Player.objects.get)(nickname=winner_nickname)
-			await end_game_add_stats(winner_obj, room['losers'], tournament_name)
+			winner_tournament = room['players_and_nicknames'][room['winners'][0]]
+			if (room['tournament_id'] != ''):
+				await end_tournament_save_stats(winner_tournament, room['losers'], tournament_name, room['tournament_id'])
+			# await end_tournament_save_stats(winner_obj, room['losers'], tournament_name, room['tournament_id'])
 			self.tournament_manager.remove_room(tournament_name)
 			await self.send_tournament_end("Tournament ended")
 
