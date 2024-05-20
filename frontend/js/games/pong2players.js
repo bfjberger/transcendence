@@ -5,6 +5,8 @@ import Player, {
 
 import * as constants from "./Constants.js"
 
+import { updateStatus } from "../logic/utils.js";
+
 var g_game;
 var g_startButton;
 var g_template_text;
@@ -183,7 +185,7 @@ class PongGame2Players {
 					reduction_factor = default_paddle_height / 2;
 					new_y_vel = difference_in_y / reduction_factor * this.ballSpeed;
 					this.ball.velocityY = -1 * new_y_vel;
-					
+
 			}
 		}
 		else {
@@ -193,14 +195,14 @@ class PongGame2Players {
 					if (Math.abs(this.ball.velocityX) >= 20)
 						this.ball.velocityX *= -1;
 					else
-						this.ball.velocityX *= -1 * this.ballSpeedMultiplierX;	
+						this.ball.velocityX *= -1 * this.ballSpeedMultiplierX;
 					// this.ball.velocityX *= -1 * this.ballSpeedMultiplierX; // reverse ball direction
 					middle_y = this.player_right.coords.y + default_paddle_height / 2;
 					difference_in_y = middle_y - this.ball.y;
 					reduction_factor = default_paddle_height / 2;
 					new_y_vel = difference_in_y / reduction_factor * this.ballSpeed;
 					this.ball.velocityY = -1 * new_y_vel;
-					
+
 			}
 		}
 	};
@@ -299,41 +301,6 @@ function start2PlayerGame(p1_name, p2_name) {
 
 	g_game = new PongGame2Players(p1_name, p2_name);
 	g_game.init();
-};
-
-/* ---------------------------------- Utils --------------------------------- */
-
-async function updateStatus() {
-
-	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
-
-	const init = {
-		method: 'PATCH',
-		headers: {
-			'Content-Type': 'applications/json',
-			'X-CSRFToken': csrftoken,
-		}
-	};
-
-	try {
-		let hostnameport = "https://" + window.location.host;
-
-		const response = await fetch(hostnameport + '/api/changestatus/', init);
-
-		if (!response.ok) {
-			const error_text = await response.text();
-			throw new Error(error_text);
-		}
-
-		if (response.status === 200) {
-			const data = await response.json();
-
-			g_player_status = data.status;
-		}
-
-	} catch (e) {
-		console.error(e);
-	}
 };
 
 /* --------------------------- Listener for reload -------------------------- */

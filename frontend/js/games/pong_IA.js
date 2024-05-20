@@ -217,12 +217,10 @@ export function start() {
 
 		if (data.type === 'set_position') {
 			g_position = data.position;
-			console.log('I am at position', g_position);
 			setPositionStyleUpdate(data);
 		}
 
 		if (data.type === 'game_start') {
-			console.log('Starting game . . .');
 
 			g_template_text.textContent = "IA prête à jouer . . .";
 
@@ -239,7 +237,6 @@ export function start() {
 
 		if (data.type === 'game_end') {
 			g_game_running = false;
-			console.log('Game over');
 			display_winner(data.winner);
 			g_websocket.close();
 		}
@@ -270,8 +267,7 @@ function listenerPong_IA() {
 		g_template_text.textContent = "En attente d'un adversaire";
 		g_template_text.style.color = "";
 
-		start()
-
+		start();
 	});
 };
 
