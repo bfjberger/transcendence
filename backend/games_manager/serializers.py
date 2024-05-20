@@ -16,7 +16,7 @@ class TwoPlayersGameSerializer(serializers.ModelSerializer):
 	win_player = UserSerializerSpe(read_only=True)
 	class Meta:
 		model = TwoPlayersGame
-		fields = ["user1", "user2", "score_user1", "score_user2", "score_max", "win_player", "id_tournament", "level", "date"]
+		fields = ["user1", "user2", "score_user1", "score_user2", "score_max", "win_player", "id_tournament", "id_name", "level", "date"]
 
 
 class FourPlayersGameSerializer(serializers.ModelSerializer):

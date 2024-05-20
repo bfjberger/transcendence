@@ -15,6 +15,7 @@ class TwoPlayersGame(models.Model):
 	score_max = models.IntegerField(default=3)
 	win_player = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='win_player')
 	id_tournament = models.ForeignKey(TournamentStat, on_delete=models.SET_NULL, null=True, blank = True, related_name='id_tournament')
+	id_name = models.CharField(max_length=100, null=True, blank=True)
 	level = models.CharField(max_length=100, null=True, blank=True)
 	date =  models.DateTimeField(default=timezone.now)
 

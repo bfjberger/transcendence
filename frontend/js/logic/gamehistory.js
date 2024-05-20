@@ -52,7 +52,7 @@ function fillHistoryTwo() {
 		else {
 			gameHistoryEntry.innerHTML = `
 					<div class="mt-2" id="game__historyTwo--${game_index}--tournament">
-						${game.level} pendant ${game.id_tournament}
+						${game.level} pendant ${game.id_name}
 					</div>
 					<div class="col mt-2">
 						<div class="d-inline" id="game__historyTwo--${game_index}--left">
