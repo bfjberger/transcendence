@@ -39,11 +39,11 @@
 			</div>
 		</div>
 		<div id="menu" class="container border-bottom py-3">
-			<div class="row">
-				<div class="col-2 btn-group" role="group">
+			<div class="row menu-navigation-grid">
+				<div class="btn-group" role="group">
 					<button class="dropdown-toggle btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="menu__dropdown--1">
 						<img src="/frontend/img/table-tennis-paddle-ball-solid.svg" alt="table tennis paddle" width="20" height="20" />
-						1 v 1
+						<p class="menu-navigation-text">1 v 1</p>
 					</button>
 					<ul id="menu__dropdown--1" class="dropdown-menu text-center">
 						<li>
@@ -57,10 +57,10 @@
 						</li>
 					</ul>
 				</div>
-				<div class="col-2 btn-group" role="group">
+				<div class="btn-group" role="group">
 					<button class="dropdown-toggle btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="menu__dropdown--2">
 						<img src="/frontend/img/table-tennis-paddle-ball-solid.svg" alt="table tennis paddle" width="20" height="20" />
-						Multi-Joueurs à 4
+						<p class="menu-navigation-text">Multi-Joueurs à 4</p>
 					</button>
 					<ul id="menu__dropdown--2" class="dropdown-menu text-center">
 						<li>
@@ -71,10 +71,10 @@
 						</li>
 					</ul>
 				</div>
-				<div class="col-2 btn-group" role="group">
+				<div class="btn-group" role="group">
 					<button class="dropdown-toggle btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="menu__dropdown--3">
 						<img src="/frontend/img/diagram-3-fill.svg" alt="tournament" width="20" height="20" />
-						Tournoi
+						<p class="menu-navigation-text">Tournoi</p>
 					</button>
 					<ul id="menu__dropdown--3" class="dropdown-menu text-center">
 						<li>
@@ -85,32 +85,33 @@
 						</li>
 					</ul>
 				</div>
-				<div class="col-2 offset-2">
-					<button class="btn nav__item" value="friends">
+				<div style="margin-left: auto; margin-right: 0px; width: 120px;">
+					<button class="btn nav__item" value="friends" style="grid-template-columns: 20px auto">
 						<img src="/frontend/img/friends.png" alt="friends" width="20" height="20" />
-						Amis
+						<p class="menu-navigation-text">Amis</p>
 					</button>
 				</div>
-				<div class="col-2 btn-group" role="group">
-					<button class="dropdown-toggle btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="menu__dropdown--4">
-						Profile
+				<div class="btn-group" role="group">
+					<button class="dropdown-toggle btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="menu__dropdown--4"
+						style="grid-template-columns: auto 10px !important">
+						<p class="menu-navigation-text">Profile</p>
 					</button>
 					<ul id="menu__dropdown--4" class="dropdown-menu text-center">
 						<li>
-							<button class="dropdown-item nav__item" value="gamehistory">
-								Historique des parties
+							<button class="dropdown-item nav__item menu-navigation-button" value="gamehistory">
+								<p class="menu-navigation-text">Historique des parties</p>
 								<img src="/frontend/img/bi-journal.svg" alt="friends" width="20" height="20" />
 							</button>
 						</li>
 						<li>
-							<button class="dropdown-item nav__item" value="stats">
-								Statistiques
+							<button class="dropdown-item nav__item menu-navigation-button" value="stats">
+								<p class="menu-navigation-text">Statistiques</p>
 								<img src="/frontend/img/clipboard-data.svg" alt="statistics" width="20" height="20" />
 							</button>
 						</li>
 						<li>
-							<button class="dropdown-item nav__item" value="updateinfo">
-								Modifier mes informations
+							<button class="dropdown-item nav__item menu-navigation-button" value="updateinfo">
+								<p class="menu-navigation-text">Modifier mes informations</p>
 								<img src="/frontend/img/pencil.svg" alt="pencil edit" width="20" height="20" />
 							</button>
 						</li>
