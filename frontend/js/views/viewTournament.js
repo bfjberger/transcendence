@@ -19,7 +19,7 @@ export function renderTournamentOnline() {
 				<div class="col text-center pt-3 h2">
 					<p class="mb-1">Rejoindre un tournoi existant</p>
 				</div>
-				<div id="tournament__list--errorMsg" class="text-center pt-1 h5 text-danger">
+				<div id="tournament__list--errorMsg" class="text-center pt-1 h5 text-danger"></div>
 				<div id="tournament-list" class="pt-2 text-primary">
 				</div>
 			</div>

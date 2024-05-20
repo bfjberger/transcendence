@@ -38,19 +38,19 @@ class TournamentViewSet(viewsets.ViewSet):
 		MAX_TOURNAMENTS = 10
 
 		if TournamentRoom.objects.count() >= MAX_TOURNAMENTS:
-			return Response(data="Le nombre de tournoi maximum à été atteint.", status=status.HTTP_400_BAD_REQUEST)
+			return Response({'success': False, 'detail':"Le nombre de tournoi maximum à été atteint."}, status=status.HTTP_400_BAD_REQUEST)
 		# Check if there is a space in the name
 		if ' ' in request.data['name']:
-			return Response(data="Un nom de tournoi ne peut pas contenir d\'espaces.", status=status.HTTP_400_BAD_REQUEST)
+			return Response({'success': False, 'detail':"Un nom de tournoi ne peut pas contenir d\'espaces."}, status=status.HTTP_400_BAD_REQUEST)
 		serializer = TournamentSerializer(data=request.data)
 		if serializer.is_valid():
 			print("Creating tournament")
 			name = serializer.validated_data.get('name')
 			if TournamentRoom.objects.filter(name=name).exists():
-				return Response(data="Un tournoi avec ce nom existe déjà.", status=status.HTTP_400_BAD_REQUEST)
+				return Response({'success': False, 'detail':'Un tournoi avec ce nom existe déjà.'}, status=status.HTTP_400_BAD_REQUEST)
 			# Check for special characters in the name
 			if not name.isalnum():
-				return Response({'detail':'Un nom de tournoi doit seulement contenir des caractères alphanumériques.'}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({'success': False, 'detail':'Un nom de tournoi doit seulement contenir des caractères alphanumériques.'}, status=status.HTTP_400_BAD_REQUEST)
 			serializer.save()
 			print("Tournament created:", name)
 			return Response({'success': True, 'detail': 'Tournoi créé avec succès.'}, status=status.HTTP_200_OK)
@@ -67,13 +67,13 @@ class TournamentViewSet(viewsets.ViewSet):
 	def join_tournament(self, request, pk=None):
 		tournament = TournamentRoom.objects.filter(name=pk).first()
 		if (not tournament):
-			return Response({'success': False, 'detail': "Ce tournoi n'existe plus. Veuillez rafraîchir la page."})
+			return Response({'success': False, 'detail': f"{pk} n\'existe plus."}, status=status.HTTP_400_BAD_REQUEST)
 		tournament = self.get_object()
 		player = Player.objects.get(owner=request.user)
 		if tournament.started == True:
-			return Response({'success': False, 'detail': 'Ce tournoi a débuté.'}, status=status.HTTP_400_BAD_REQUEST)
+			return Response({'success': False, 'detail': f"{pk} a débuté."}, status=status.HTTP_400_BAD_REQUEST)
 		if tournament.get_players().count() >= 8:
-			return Response({'success': False, 'detail': 'Ce tournoi est complet.'}, status=status.HTTP_400_BAD_REQUEST)
+			return Response({'success': False, 'detail': f"{pk} est complet."}, status=status.HTTP_400_BAD_REQUEST)
 		tournament.add_player(player)
 		return Response({'success': True, 'detail': 'Vous avez rejoint ce tournoi.'}, status=status.HTTP_200_OK)
 

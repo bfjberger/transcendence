@@ -108,14 +108,12 @@ function loadTournaments() {
 				// Append elements to tournament item
 				tournamentItem.appendChild(joinButton);
 				*/
+				if (tournament.started) {
+					return;
+				}
 				tournamentItem = document.createElement('ul');
 				tournamentItem.className = "row text-center";
 				tournamentItem.style.listStyleType = "none";
-
-				// if tournament started, skip it
-				// if (tournament.started) {
-				// 	return;
-				// }
 				tournamentItem.innerHTML = `
 						<li>
 							${tournament.name}
@@ -162,9 +160,9 @@ function joinRoom(tournamentName) {
 		} else {
 			// Handle error response
 			console.error('Failed to join tournament');
-			// console.error(data.detail); // Log the error message
 			const errorMsg = data.detail;
 			document.getElementById("tournament__list--errorMsg").textContent = errorMsg;
+			loadTournaments();
 		}
 	})
 	.catch(error => {

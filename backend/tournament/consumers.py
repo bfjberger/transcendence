@@ -327,6 +327,11 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 					if player_state != PlayerState["LOSER"]:
 						room['game_state'].is_running = False
 						self.tournament_manager.remove_room(tournament_name)
+						try :
+							tournament_room = await sync_to_async(TournamentRoom.objects.get)(name=tournament_name)
+							await sync_to_async(tournament_room.delete)()
+						except:
+							pass
 						await self.send_tournament_end("Tournament ended, missing player")
 				else:
 					print(f'Player {player} not found in room')
