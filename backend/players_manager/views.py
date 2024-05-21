@@ -79,6 +79,7 @@ class RegisterAction(APIView):
 		return Response({"42 API" : "Pseudo ou mail déjà utilisé par un étudiant de 42."}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
 
+
 class LoginView(APIView):
 	permission_classes = (permissions.AllowAny,)
 
@@ -128,9 +129,6 @@ class ProfileView(APIView):
 		serializer_data = DataSerializer(user_data)
 		return Response(data=serializer_data.data, status=status.HTTP_200_OK)
 
-	# @transaction.atomic
-	# @method_decorator()
-	# @method_decorator(csrf_exempt, name='dispatch')
 	def patch(self, request):
 		try :
 			player = Player.objects.get(owner=self.request.user)
@@ -145,6 +143,28 @@ class ProfileView(APIView):
 
 		return Response(data=serializer_player.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ProfileUpdatePassword(APIView) :
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
+	serializer_class = UserSerializer
+
+	def patch (self, request):
+		try :
+			user = User.objects.get(username=self.request.user)
+			logout(request)
+		except :
+			return Response("pb avec le user les gars", status=status.HTTP_400_BAD_REQUEST)
+
+		serialized_user = UserSerializer(user, data=request.data)
+
+		if serialized_user.is_valid():
+			serialized_user.save()
+			login(request, user)
+			return Response(data=serialized_user.data, status=status.HTTP_200_OK)
+
+
+		return Response(data=serialized_user.errors, status=status.HTTP_400_OK)
 
 class ProfileUpdateAvatarView(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
