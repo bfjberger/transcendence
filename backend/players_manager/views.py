@@ -76,9 +76,7 @@ class RegisterAction(APIView):
 					return Response(serializer.data, status=status.HTTP_201_CREATED)
 			return Response(serializer.errors, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
-		return Response({"42 API " : "Pseudo ou mail déjà utilisé par un étudiant de 42."}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
-
-
+		return Response({"42 API" : "Pseudo ou mail déjà utilisé par un étudiant de 42."}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
 
 class LoginView(APIView):
@@ -97,7 +95,7 @@ class LoginView(APIView):
 		try:
 			player = Player.objects.get(owner=user)
 		except Player.DoesNotExist:
-			return Response("Player not found.", status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+			return Response("Utilisateur inexistant.", status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 		player.status = "ONLINE"
 		player.save()
