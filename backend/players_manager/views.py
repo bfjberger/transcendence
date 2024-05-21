@@ -86,13 +86,14 @@ class LoginView(APIView):
 			return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
 		user = serializer.validated_data['user']
-		login(request, user)
-
 		try:
 			player = Player.objects.get(owner=user)
 		except Player.DoesNotExist:
 			return Response("Player not found.", status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
+		if (player.status == "ONLINE"):
+			return Response("Player is already login", status=status.HTTP_401_UNAUTHORIZED)
+		login(request, user)
 		player.status = "ONLINE"
 		player.save()
 
