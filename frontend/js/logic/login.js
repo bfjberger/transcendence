@@ -67,6 +67,14 @@ async function createUser(createAccountForm) {
 		return;
 	}
 
+	const usernameRegex = /^[a-zA-Z0-9@./+\-_]{1,150}$/g;
+	if (!input.username.value.match(usernameRegex)){
+		console.log("regex is false");
+		document.getElementById("form__createAccount--msg").textContent = "Charactère invalide dans le username.";
+		document.getElementById("form__createAccount--msg").classList.add("text-danger");
+		return;
+	}
+
 	const inputValues = {
 		username: input.username.value,
 		password: input.password_one.value,
