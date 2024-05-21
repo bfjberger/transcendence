@@ -12,11 +12,30 @@ from .gamelogic import GameState
 TICK_RATE = 60
 TICK_DURATION = 1 / TICK_RATE
 
+class RoomManager:
+	def __init__(self):
+		self.rooms = {}
+
+	def create_room(self, room_name):
+		self.rooms[room_name] = GameState(room_name)
+
+	def room_available(self):
+		new_room_name = f"room_{len(self.rooms) + 1}"
+		self.create_room(new_room_name)
+		return new_room_name
+
+	def delete_room(self, room_name):
+		if room_name in self.rooms:
+			del self.rooms[room_name]
+
 
 
 class RoomConsumer(AsyncWebsocketConsumer):
-	room = GameState("Room_IA")
-	room_name = "Room_IA"
+	manager = RoomManager()
+	# room = GameState("Room_IA")
+	room = None
+	# room_name = "Room_IA"
+	room_name = None
 	update_lock = None
 
 	async def connect(self):
@@ -28,10 +47,12 @@ class RoomConsumer(AsyncWebsocketConsumer):
 			await self.close()
 
 	async def handle_new_connection(self, user):
+		self.room_name = self.manager.room_available()
+		self.room = self.manager.rooms.get(self.room_name)
 		player = await sync_to_async(Player.objects.get)(owner=user)
 		player.status = "PLAYING"
 		await sync_to_async(player.save)()
-
+		# print(f"Player {player.nickname} connected to room {self.room_name}") # DEBUG
 		self.position = 'player_left'
 		self.room.add_player(player)
 		await self.send(text_data=json.dumps({
@@ -40,11 +61,20 @@ class RoomConsumer(AsyncWebsocketConsumer):
 			'name': player.nickname
 		}))
 
+		await self.channel_layer.group_add(self.room_name, self.channel_name)
+
 		await self.start_game()
 
 	async def disconnect(self, close_code):
 		self.room.player.player_model.status = "ONLINE"
 		await sync_to_async(self.room.player.player_model.save)()
+		await self.channel_layer.group_send(self.room_name, {
+			'type': 'player_disconnect'
+		})
+		await self.end_game(None)
+		self.manager.delete_room(self.room_name)
+		await self.close()
+		await self.channel_layer.group_discard(self.room_name, self.channel_name) # Since we are not using send_game_end
 
 	async def receive(self, text_data):
 
@@ -79,6 +109,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 	async def game_loop(self):
 		async with await self.get_update_lock():
 			while self.room.is_running == True:
+				# await self.room.update()
 				await self.room.update()
 				# await self.send_game_state()
 				await self.game_state({

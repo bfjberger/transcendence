@@ -2,6 +2,32 @@
 	left: 0px !important;
 }
 
+.menu-navigation-grid{
+	display: grid !important;grid-template-columns: 130px 220px 150px auto 250px;width: 100%;
+}
+@media only screen and (max-width: calc(870px + 15rem)) {
+    .menu-navigation-grid {grid-template-columns: 1fr 1fr 1fr 1fr 1fr;}
+}
+
+.menu-navigation-grid > div > button{
+  display: grid !important;
+  grid-template-columns: 20px auto 10px;
+  align-items: center;
+  width: 100%;
+}
+
+.menu-navigation-button{
+  display: grid !important;
+  grid-template-columns: auto 20px !important;
+  width: 100%;
+}
+.menu-navigation-text{
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+	margin: auto;
+	width: 100%;
+}
+
 /* Animation for the dropdown */
 @media (min-width: 768px) {
 	.animate {
@@ -64,6 +90,10 @@
 	margin-left: auto;
 	margin-right: auto;
 	padding: 1em 10px;
+}
+
+#form__input--usernameError, #form__input--emailError, #form__input--passwordError {
+	font-size: small;
 }
 
 #game__historyTwo--holder, #game__historyFour--holder {
