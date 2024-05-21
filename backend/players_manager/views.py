@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
 from django.conf import settings
+import datetime
+
 
 from rest_framework.reverse import reverse_lazy
 
@@ -86,6 +88,7 @@ class LoginView(APIView):
 			return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
 		user = serializer.validated_data['user']
+		Player.check_inactive_players()
 		try:
 			player = Player.objects.get(owner=user)
 		except Player.DoesNotExist:
