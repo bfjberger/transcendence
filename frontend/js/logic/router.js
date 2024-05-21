@@ -264,7 +264,6 @@ async function load42Profile(code)
 			document.querySelectorAll(".dropdown-item").forEach(btn => {
 				btn.removeAttribute("disabled");
 			});
-			document.getElementById("topbar__profile--username").removeAttribute("disabled");
 			document.getElementById("topbar__logout").removeAttribute("disabled");
 
 			loadIndex();

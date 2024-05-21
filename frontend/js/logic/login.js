@@ -13,7 +13,16 @@ async function connectUser(loginForm) {
 		password: input.password.value,
 	};
 
-	 const init = {
+	if (!inputValues.username) {
+		document.getElementById("form__login--errorMsg").textContent = "Le champ 'Username' ne peut pas être vide.";
+		return;
+	}
+	if (!inputValues.password) {
+		document.getElementById("form__login--errorMsg").textContent = "Le champ 'Mot de passe' ne peut pas être vide.";
+		return;
+	}
+
+	const init = {
 		method: 'POST',
 		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify(inputValues)
@@ -26,8 +35,15 @@ async function connectUser(loginForm) {
 		const response = await fetch(hostnameport + '/api/login/', init); // will use another URL
 
 		if (!response.ok || response.status === 203) {
-			const error = await response.text();
-			document.getElementById("form__login--errorMsg").textContent = error.replace(/["{}[\]]/g, '').split(":")[1];
+			let errorMsg = await response.text();
+			errorMsg = JSON.parse(errorMsg);
+
+			if (Object.keys(errorMsg) == "non_field_errors" && Object.values(errorMsg) == "Incorrect Credentials")
+				document.getElementById("form__login--errorMsg").textContent = "Identifiants incorrects";
+			else if (response.status == 422)
+				document.getElementById("form__login--errorMsg").textContent = errorMsg;
+			else
+				document.getElementById("form__login--errorMsg").textContent = "Une erreur s'est produite.";
 			return;
 		}
 		if (response.status === 202) {
@@ -39,11 +55,13 @@ async function connectUser(loginForm) {
 			sessionStorage.setItem("avatar", data["player"].avatar);
 			sessionStorage.setItem("nickname", data["player"].nickname);
 
-			document.querySelector("div.modal-backdrop.fade.show").remove();
+			// Manually call the hide function of the boostrap Modal element
+			var modal = bootstrap.Modal.getOrCreateInstance('#modal__login');
+			await modal.hide();
+
 			document.querySelectorAll(".dropdown-item").forEach(btn => {
 				btn.removeAttribute("disabled");
 			});
-			document.getElementById("topbar__profile--username").removeAttribute("disabled");
 			document.getElementById("topbar__logout").removeAttribute("disabled");
 			connect_socket_friend();
 			router("index");
@@ -57,6 +75,9 @@ async function createUser(createAccountForm) {
 
 	// remove a potential error message from the field
 	document.getElementById("form__createAccount--msg").textContent = "";
+	document.getElementById("form__input--usernameError").textContent = "";
+	document.getElementById("form__input--emailError").textContent = "";
+	document.getElementById("form__input--passwordError").textContent = "";
 
 	const input = createAccountForm.elements;
 
@@ -99,10 +120,24 @@ async function createUser(createAccountForm) {
 		}
 		else if (response.status == 203) {
 			var errorMsg = await response.text();
-			console.log(errorMsg)
 			errorMsg = JSON.parse(errorMsg);
-			console.log(errorMsg)
-			document.getElementById("form__createAccount--msg").textContent = Object.keys(errorMsg)[0] + " : " + Object.values(errorMsg)[0];
+
+			if (Object.keys(errorMsg)[0] == "42 API") {
+				document.getElementById("form__createAccount--msg").textContent = Object.values(errorMsg);
+			}
+			else if (Object.keys(errorMsg)[0] == "username") {
+				document.getElementById("form__createAccount--msg").textContent = "Le username n'est pas valide."
+				document.getElementById("form__input--usernameError").textContent = Object.values(errorMsg);
+			}
+			else if (Object.keys(errorMsg)[0] == "email") {
+				document.getElementById("form__createAccount--msg").textContent = "L'email n'est pas valide.";
+				document.getElementById("form__input--emailError").textContent = Object.values(errorMsg);
+			}
+			else if (Object.keys(errorMsg)[0] == "password") {
+				document.getElementById("form__createAccount--msg").textContent = "Le mot de passe n'est pas valide.";
+				document.getElementById("form__input--passwordError").textContent = Object.values(errorMsg);
+			}
+
 			document.getElementById("form__createAccount--msg").classList.add("text-danger");
 			document.getElementById("form__createAccount--msg").classList.remove("text-success");
 		}
@@ -150,8 +185,12 @@ function listenerLogin() {
 
 		loginForm.querySelectorAll(".input__field").forEach(inputElement => {
 			inputElement.value = "";
-			inputElement.parentElement.querySelector(".form__input--errorMsg").textContent = "";
-			document.getElementById("form__login--errorMsg").textContent = "";
+
+			// Check the existence of the element since trigger by the hide() when the connect is successful
+			if (inputElement.parentElement.querySelector(".form__input--errorMsg"))
+				inputElement.parentElement.querySelector(".form__input--errorMsg").textContent = "";
+			if (document.getElementById("form__login--errorMsg"))
+				document.getElementById("form__login--errorMsg").textContent = "";
 		});
 	});
 
@@ -161,7 +200,10 @@ function listenerLogin() {
 
 		createAccountForm.querySelectorAll(".input__field").forEach(inputElement => {
 			inputElement.value = "";
-			inputElement.parentElement.querySelector(".form__input--errorMsg").textContent = "";
+			// inputElement.parentElement.querySelector(".form__input--errorMsg").textContent = "";
+			document.getElementById("form__input--usernameError").textContent = "";
+			document.getElementById("form__input--emailError").textContent = "";
+			document.getElementById("form__input--passwordError").textContent = "";
 			document.getElementById("form__createAccount--msg").textContent = "";
 		});
 	});
@@ -190,7 +232,6 @@ async function loadLogin() {
 	document.querySelectorAll(".dropdown-item").forEach(btn => {
 		btn.setAttribute("disabled", true);
 	});
-	document.getElementById("topbar__profile--username").setAttribute("disabled", true);
 	document.getElementById("topbar__logout").setAttribute("disabled", true);
 
 	try {
@@ -202,7 +243,6 @@ async function loadLogin() {
 			document.querySelectorAll(".dropdown-item").forEach(btn => {
 				btn.removeAttribute("disabled");
 			});
-			document.getElementById("topbar__profile--username").removeAttribute("disabled");
 			document.getElementById("topbar__logout").removeAttribute("disabled");
 
 			router("index");

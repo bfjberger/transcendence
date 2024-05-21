@@ -43,9 +43,6 @@ export default function renderLogin() {
 								<button class="btn btn-primary mt-1" type="submit" id="form__login--btn">
 									Se connecter
 								</button>
-								<!-- <p class="my-2">
-									<a id="forgotPassword" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="#">Forgot your password?</a>
-								</p> -->
 							</form>
 						</div>
 						<div class="modal-footer py-2">
@@ -68,28 +65,27 @@ export default function renderLogin() {
 										Username
 									</div>
 									<input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="username">
-									<div class="form__input--errorMsg text-danger"></div>
+									<div id="form__input--usernameError" class="h6 text-danger"></div>
 								</div>
 								<div class="mb-2">
 									<div class="text-success-emphasis">
 										Adresse mail
 									</div>
 									<input type="text" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="email">
-									<div class="form__input--errorMsg text-danger"></div>
+									<div id="form__input--emailError" class="h6 text-danger"></div>
 								</div>
 								<div class="mb-2">
 									<div class="text-success-emphasis">
 										Mot de passe
 									</div>
 									<input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="password_one">
-									<div class="form__input--errorMsg text-danger"></div>
+									<div id="form__input--passwordError" class="text-danger"></div>
 								</div>
 								<div class="mb-2">
 									<div class="text-success-emphasis">
 										Confirmer le mot de passe
 									</div>
 									<input type="password" class="p-1 border border-1 border-secondary rounded bg-info-subtle input__field" name="password_two">
-									<div class="form__input--errorMsg text-danger"></div>
 								</div>
 								<button class="btn btn-success mt-1" type="submit">
 									Créer le compte

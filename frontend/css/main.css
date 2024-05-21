@@ -92,6 +92,10 @@
 	padding: 1em 10px;
 }
 
+#form__input--usernameError, #form__input--emailError, #form__input--passwordError {
+	font-size: small;
+}
+
 #game__historyTwo--holder, #game__historyFour--holder {
 	display: flex;
 	flex-direction: row;
