@@ -104,7 +104,7 @@ class LoginView(APIView):
 		except Player.DoesNotExist:
 			return Response("Utilisateur inexistant.", status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-		if (player.status == "ONLINE"):
+		if (player.status == "ONLINE" or player.status == "PLAYING"):
 			return Response("Player is already login", status=status.HTTP_401_UNAUTHORIZED)
 		login(request, user)
 		player.status = "ONLINE"
