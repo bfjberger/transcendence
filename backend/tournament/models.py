@@ -33,8 +33,7 @@ class TournamentStat(models.Model):
 	tournament_name = models.CharField(max_length=200, null=True, blank=True)
 	winner = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='won_tournaments', null=True, blank=True)
 	losers = models.ManyToManyField(Player, related_name='lost_tournaments')
-	TwoPlayersGame = models.ForeignKey('games_manager.TwoPlayersGame', on_delete=models.SET_NULL, null=True, blank=True)
-
+	# TwoPlayersGame = models.ForeignKey('games_manager.TwoPlayersGame', on_delete=models.SET_NULL, null=True, blank=True)
 
 	def __str__(self):
 		return f"{self.tournament_name} (ID: {self.id})"

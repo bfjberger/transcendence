@@ -9,7 +9,7 @@ import {
 	renderTournamentCreationEight
 	} from "../views/viewTournamentLocal.js";
 
-import { updateStatus } from "./pong2players.js";
+import { updateStatus } from "../logic/utils.js";
 
 class Tournament {
 	constructor(nb_players) {

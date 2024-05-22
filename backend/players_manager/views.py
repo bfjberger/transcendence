@@ -18,13 +18,18 @@ from django.contrib.auth import login, logout
 
 from django.contrib.auth.models import User
 
-from players_manager.serializers import LoginSerializer, UserSerializer, PlayerSerializer, RegisterSerializer, FriendSerializer, AvatarSerializer, DataSerializer, StatsSerializer
+from players_manager.serializers import (LoginSerializer, UserSerializer, PlayerSerializer,
+										RegisterSerializer, FriendSerializer, AvatarSerializer,
+										DataSerializer, StatsSerializer)
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
-
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+
+from tournament.models import TournamentStat
+
+from games_manager.models import TwoPlayersGame
 
 class IndexAction(APIView):
 	permission_classes = (permissions.AllowAny,)
@@ -238,7 +243,18 @@ class Statistiques(APIView):
 		except :
 			return Response(None, status=status.HTTP_400_BAD_REQUEST)
 		serializer_stats = StatsSerializer(player)
-		return Response(data={"data": serializer_data.data, "stats": serializer_stats.data}, status=status.HTTP_200_OK)
+
+		tournament_stats = {}
+
+		nb_win = len(TournamentStat.objects.filter(winner=player))
+		tournament_stats.update({"nb_win": nb_win})
+
+		tournament_matchs = TwoPlayersGame.objects.exclude(level__isnull=True)
+		tournament_matchs_win = len(tournament_matchs.filter(win_player=self.request.user))
+
+		tournament_stats.update({"match_win": tournament_matchs_win})
+
+		return Response(data={"data": serializer_data.data, "stats": serializer_stats.data, "tournament": tournament_stats}, status=status.HTTP_200_OK)
 
 
 class UpdateStatus(APIView):

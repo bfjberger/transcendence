@@ -243,6 +243,20 @@ const on_tournament_start = (arg) => {
 const on_tournament_end = (arg) => {
 	alert(arg);
 	g_socket.close();
+
+	// countdown before going back to the tournamentonline page
+	let count = 0;
+	let interval = setInterval(() => {
+		count++;
+
+		document.getElementById("template__text--next").textContent = "Tu reviens à la page Tournoi en Ligne dans " + (15 - count);
+
+		if (count == 15) {
+			clearInterval(interval);
+
+			router("tournamentonline")
+		}
+	}, 1000);
 }
 
 // MATCH INFO for brackets
@@ -387,7 +401,7 @@ const delete_online_tournament = () => {
 		console.error('Cannot send message: WebSocket is not open');
 	}
 	delete_room_name(g_tournament_name);
-	router("tournament_online");
+	router("tournamentonline");
 
 }
 

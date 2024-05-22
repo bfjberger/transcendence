@@ -46,8 +46,8 @@ class UserSerializer(serializers.ModelSerializer):
 	password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
 	class Meta:
 		model = User
-		fields = ("password",) 
-		
+		fields = ("password",)
+
 	def update(self, instance, validated_data):
 		instance.set_password(validated_data["password"])
 		instance.save()
@@ -112,15 +112,16 @@ class DataSerializer(serializers.ModelSerializer):
 		return player_data
 
 class StatsSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Player
-		fields = [
-					'nb_games_2p',
-					'nb_games_2p_lost',
-					'nb_games_2p_won',
-					'nb_points_2p',
-					'nb_games_4p',
-					'nb_games_4p_won',
-					'nb_games_4p_lost',
-					'nb_points_4p'
-				]
+    class Meta:
+        model = Player
+        fields = [
+                    'nb_games_2p',
+                    'nb_games_2p_lost',
+                    'nb_games_2p_won',
+                    'nb_points_2p',
+                    'nb_games_4p',
+                    'nb_games_4p_won',
+                    'nb_games_4p_lost',
+                    'nb_points_4p',
+                    'nb_points_tournament'
+                ]
