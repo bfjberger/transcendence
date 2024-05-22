@@ -283,7 +283,9 @@ const on_set_position = (arg) => {
 	else if (arg.players[1] == g_username)
 		g_right_placeholder.classList.add("text-decoration-underline");
 
-	g_template.textContent = arg.state + " : " + arg.nicknames[0] + " vs " + arg.nicknames[1];
+	var state = arg.state.replace("_", " ");
+	state = state.slice(0, -1) + " " + state.slice(-1);
+	g_template.textContent = state + " : " + arg.nicknames[0] + " vs " + arg.nicknames[1];
 
 	updateNextMatch(arg);
 
