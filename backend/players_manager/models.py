@@ -8,6 +8,7 @@ class Player(models.Model):
 		ONLINE = "ONLINE"
 		OFFLINE = "OFFLINE"
 		PLAYING = "PLAYING"
+		IN_TOURNAMENT = "IN_TOURNAMENT"
 	owner = models.OneToOneField('auth.User', related_name='Player', on_delete=models.CASCADE)
 	nickname = models.CharField(max_length=20)
 	nb_games_2p = models.IntegerField(default=0)
