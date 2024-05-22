@@ -65,7 +65,7 @@ class Player(models.Model):
 		print("score : ", self.score)
 
 	def check_inactive_players():
-		threshold = 60  # 1 minutes
+		threshold = 60 * 5  # 5 minutes
 		for player in Player.objects.filter(status='ONLINE'):
 			player.set_offline_if_inactive(threshold)
 
