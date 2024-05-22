@@ -82,10 +82,11 @@ async function updatePassword(passwordForm) {
 
 		let hostnameport = "https://" + window.location.host
 
-		const response = await fetch(hostnameport + '/api/profile/', init);
+		const response = await fetch(hostnameport + '/api/updatepassword/', init);
 
-		if (response.status === 400) {
+		if (response.status != 200) {
 			const error = await response.text();
+			console.log(error)
 			msgElement.textContent = error.replace(/["{}[\]]/g, '');
 			msgElement.classList.add("text-danger");
 			return;

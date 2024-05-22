@@ -25,7 +25,7 @@ from rest_framework import routers
 from players_manager.views import (LoginView, ProfileView, RegisterAction,
 								    IndexAction, TwoPlayers, FourPlayers,
 									Tournament, LogoutView, ProfileUpdateAvatarView,
-									UpdateStatus, Statistiques)
+									UpdateStatus, Statistiques, ProfileUpdatePassword)
 from tournament.views import TournamentOnline
 
 from login_api_42.views import Accounts_view, Callback
@@ -68,6 +68,7 @@ urlpatterns = [
     path('api/logout/', LogoutView.as_view()),
     path('api/register/', RegisterAction.as_view()),
     path('api/profile/', ProfileView.as_view()),
+	path('api/updatepassword/', ProfileUpdatePassword.as_view()),
     # path('api/index/', IndexView.as_view()),
     # path('staticfiles/AuthenticateChoice/', ),
     path('api/twoplayer/', TwoPlayers.as_view()),
