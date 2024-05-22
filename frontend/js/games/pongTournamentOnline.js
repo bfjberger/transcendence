@@ -211,7 +211,7 @@ function updateNextMatch(arg) {
 		let next_top, next_bottom, next_state;
 		next_state = "DEMI SEED 1";
 		next_top = document.getElementById("demi__seed1--1--name").innerText;
-		next_bottom = "le vainqueur de ce match.";
+		next_bottom = document.getElementById("demi__seed1--2--name").innerText;
 		g_template_next.textContent = "Le prochain match sera " + next_state + " avec " + next_top + " vs " + next_bottom;
 	}
 	if (arg.state == "DEMI_FINALS1") {
@@ -283,26 +283,20 @@ const on_set_position = (arg) => {
 	else if (arg.players[1] == g_username)
 		g_right_placeholder.classList.add("text-decoration-underline");
 
-	g_template.textContent = arg.state + " : " + arg.nicknames[0] + " vs " + arg.nicknames[1];
+	var state = arg.state.replace("_", " ");
+	state = state.slice(0, -1) + " " + state.slice(-1);
+	g_template.textContent = state + " : " + arg.nicknames[0] + " vs " + arg.nicknames[1];
 
 	updateNextMatch(arg);
-
-	// if (infoElement === null) {
-	// 	infoElement = document.getElementById("InfoElement");
-	// 	playerField = document.getElementById("playerField");
-	// }
-	// infoElement.innerHTML = 'BE READY, ' + arg.state + ' WILL START IN 5';
-	// console.log(arg.players[0], arg.players[1]);
-	// playerField.innerHTML = '<span style="color: cyan;">' + arg.nicknames[0] + '</span> VS <span style="color: red;">' + arg.nicknames[1] + '</span>';
 
 	let count = 0;
 	let interval = setInterval(() => {
 		count++;
-		// infoElement.innerHTML = 'BE READY, ' + arg.state + ' WILL START IN ' + (5 - count);
+
 		g_canvas_text.textContent = "La partie commence dans " + (5 - count);
 		if (count === 5) {
 			clearInterval(interval);
-			// infoElement.innerHTML = 'Go !';
+
 			g_canvas_text.textContent = "";
 
 			if (arg.players[0] === g_username)

@@ -120,5 +120,6 @@ class StatsSerializer(serializers.ModelSerializer):
                     'nb_games_4p',
                     'nb_games_4p_won',
                     'nb_games_4p_lost',
-                    'nb_points_4p'
+                    'nb_points_4p',
+                    'nb_points_tournament'
                 ]

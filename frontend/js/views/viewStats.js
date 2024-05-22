@@ -61,11 +61,11 @@ export default function renderStats() {
 			</div>
 			<div id="stats__tournament" class="row py-3">
 				<div class="bg-body-secondary fs-4 stats__color--title">
-					Tournoi
+					TOURNOI EN LIGNE
 				</div>
 				<div class="col bg-body-tertiary">
-					<div id="stats__tournament--best" class="fs-4 stats__color--stats">x</div>
-					<div class="fw-light stats__color--context">MEILLEUR CLASSEMENT</div>
+					<div id="stats__tournament--nbwin" class="fs-4 stats__color--stats">x</div>
+					<div class="fw-light stats__color--context">TOURNOIS GAGNES</div>
 				</div>
 				<div class="col bg-body-tertiary">
 					<div id="stats__tournament--matchwin" class="fs-4 stats__color--stats"></div>

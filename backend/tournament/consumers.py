@@ -59,6 +59,10 @@ def end_game_save_stats(game, players, win_player, tournament_id, room_state):
 	tournamentStat_object = TournamentStat.objects.get(id=tournament_id)
 	score_1 = game.players[0].score
 	score_2 = game.players[1].score
+	player1.nb_points_tournament += score_1
+	player2.nb_points_tournament += score_2
+	player1.save()
+	player2.save()
 
 	game = TwoPlayersGame.objects.create()
 	game.create(player1, player2)

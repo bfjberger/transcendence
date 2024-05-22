@@ -4,6 +4,9 @@ var g_points_2p;
 var g_games_4p;
 var g_ratio_4p;
 var g_points_4p;
+var g_tournament_win;
+var g_tournament_matchs_win;
+var g_tournament_points;
 
 var csrftoken;
 
@@ -36,9 +39,9 @@ function listenerStats() {
 	document.getElementById("stats__4player--played").textContent = g_games_4p;
 	document.getElementById("stats__4player--wlrate").textContent = g_ratio_4p;
 	document.getElementById("stats__4player--points").textContent = g_points_4p;
-	document.getElementById("stats__tournament--best").textContent = "no data";
-	document.getElementById("stats__tournament--matchwin").textContent = "no data";
-	document.getElementById("stats__tournament--points").textContent = "no data";
+	document.getElementById("stats__tournament--nbwin").textContent = g_tournament_win;
+	document.getElementById("stats__tournament--matchwin").textContent = g_tournament_matchs_win;
+	document.getElementById("stats__tournament--points").textContent = g_tournament_points;
 
 	document.getElementById("stats__username").textContent = sessionStorage.getItem("username") ?
 		sessionStorage.getItem("username") : "user";
@@ -79,6 +82,9 @@ async function loadStats() {
 			g_ratio_4p = "no data";
 		g_points_2p = data["stats"].nb_points_2p;
 		g_points_4p = data["stats"].nb_points_4p;
+		g_tournament_win = data["tournament"].nb_win;
+		g_tournament_matchs_win = data["tournament"].match_win;
+		g_tournament_points = data["stats"].nb_points_tournament;
 
 		return 1;
 	} catch (e) {
