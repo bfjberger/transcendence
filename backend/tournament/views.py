@@ -79,8 +79,14 @@ class TournamentViewSet(viewsets.ViewSet):
 
 	@action(detail=False, methods=['get'])
 	def load_tournaments(self, request):
-		tournaments = TournamentRoom.objects.all()
-		serializer = TournamentSerializer(tournaments, many=True)
+		# Get all the tournaments that have started and delete them
+		tournaments_started = TournamentRoom.objects.filter(started=True)
+		for tournament in tournaments_started:
+			tournament.delete_if_timer(1200)
+		tournaments_not_started = TournamentRoom.objects.filter(started=False)
+		for tournament in tournaments_not_started:
+			tournament.delete_if_empty(600)
+		serializer = TournamentSerializer(tournaments_not_started, many=True)
 		return Response(serializer.data)
 
 	@action(detail=True, methods=['get'])
