@@ -205,6 +205,7 @@ export default async function router(value) {
 	}
 	else {
 		console.log("page.load(): Error, redirect to login page");
+		sessionStorage.clear();
 		router("login");
 	}
 };
@@ -318,8 +319,10 @@ window.onload = async function()
 				document.title = routes[route].title;
 				routes[route].listener();  // Attach event listeners
 			}
-			else
+			else {
+				sessionStorage.clear();
 				router("login");
+			}
 			break;
 		}
 	}
@@ -360,8 +363,10 @@ window.addEventListener("popstate", async (e) => {
 
 		page.listener();
 	}
-	else
+	else {
+		sessionStorage.clear();
 		loadIndex();
+	}
 });
 
 /**

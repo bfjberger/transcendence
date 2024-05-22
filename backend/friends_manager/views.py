@@ -27,7 +27,7 @@ class ListFriendAPIView(ListAPIView):
 	serializer_class = FriendSerializer
 
 	def get(self, request):
-		Player.check_inactive_players()
+		# Player.check_inactive_players()
 		param = self.request.query_params.get('type')
 		if param == "initiated" :
 			initiated_serialized = FriendSerializer(Friend.objects.filter(user_initiated = self.request.user, accept = False), many =True)
