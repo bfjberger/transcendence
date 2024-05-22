@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 
@@ -19,7 +20,13 @@ class Player(models.Model):
 	nb_points_4p = models.IntegerField(default=0)
 	score = models.IntegerField(default=0)
 	status = models.CharField(max_length=200, choices=status.choices, default=status.OFFLINE)
+	last_activity = models.DateTimeField(auto_now_add=True)
 	avatar = models.ImageField(max_length=200, default="staticfiles/avatars/avatar.png", upload_to='staticfiles/avatars/')
+
+	def set_offline_if_inactive(self, threshold):
+		if self.status == 'ONLINE' and (timezone.now() - self.last_activity).total_seconds() > threshold:
+			self.status = 'OFFLINE'
+			self.save()
 
 	def __str__(self):
 		return self.owner.username
@@ -57,6 +64,10 @@ class Player(models.Model):
 		print("nb_games_4p_lost : ", self.nb_games_4p_lost)
 		print("score : ", self.score)
 
+	def check_inactive_players():
+		threshold = 60 * 5  # 5 minutes
+		for player in Player.objects.filter(status='ONLINE'):
+			player.set_offline_if_inactive(threshold)
 
 class Friend(models.Model):
 		player_initiated = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='player_initiate')

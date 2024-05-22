@@ -1,5 +1,8 @@
 from django.db.models import Q
 from django.contrib.auth.models import User
+from players_manager.models import Player
+import datetime
+
 
 
 from rest_framework import permissions
@@ -24,6 +27,7 @@ class ListFriendAPIView(ListAPIView):
 	serializer_class = FriendSerializer
 
 	def get(self, request):
+		Player.check_inactive_players()
 		param = self.request.query_params.get('type')
 		if param == "initiated" :
 			initiated_serialized = FriendSerializer(Friend.objects.filter(user_initiated = self.request.user, accept = False), many =True)
