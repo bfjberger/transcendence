@@ -278,11 +278,12 @@ async function load42Profile(code)
 		}
 
 		else if (!response.ok) {
-			throw new Error(`HTTP error, status = ${response.status}`);
+			const data2 = await response.json()
+			throw new Error(data2);
 		}
 
 	} catch (e) {
-		console.error(e);
+		console.error(" 42profile error : " + e);
 	}
 };
 

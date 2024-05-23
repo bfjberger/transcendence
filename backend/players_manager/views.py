@@ -101,13 +101,13 @@ class LoginView(APIView):
 			return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
 		user = serializer.validated_data['user']
-		Player.check_inactive_players()
+		# Player.check_inactive_players()
 		try:
 			player = Player.objects.get(owner=user)
 		except Player.DoesNotExist:
 			return Response("Utilisateur inexistant.", status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-		if (player.status == "ONLINE"):
+		if (player.status == "ONLINE" or player.status == "PLAYING"):
 			return Response("Player is already login", status=status.HTTP_401_UNAUTHORIZED)
 		login(request, user)
 		player.status = "ONLINE"
@@ -270,10 +270,8 @@ class UpdateStatus(APIView):
 		except :
 			return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
-		if player.status == "PLAYING":
-			player.status = "ONLINE"
-		elif player.status == "ONLINE":
-			player.status = "PLAYING"
+		player.status = request.data.get("status")
 		player.save()
+
 		serializer_player = PlayerSerializer(player)
 		return Response(data=serializer_player.data, status=status.HTTP_200_OK)

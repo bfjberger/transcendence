@@ -20,8 +20,6 @@ async function updateNickname(nicknameForm) {
 			'X-CSRFToken': csrftoken,
 		},
 		body: JSON.stringify({nickname: input.nickname.value}),
-		credentials: 'same-origin',
-		referrerPolicy: 'same-origin',
 	};
 
 	try {

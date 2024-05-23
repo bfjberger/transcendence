@@ -386,15 +386,23 @@ function changePageContent(viewFunction, elementId) {
 	}
 };
 
-/* --------------------------- Listener for reload -------------------------- */
+/* --------------------- Listener for navigation event ---------------------- */
 
-function handlePageReload() {
-	if (window.location.pathname === "/tournament/") {
-		updateStatus();
+async function handlePageReload() {
+	if (window.location.pathname == "/tournament/") {
+		await updateStatus("ONLINE");
 	}
 };
 
-window.addEventListener('beforeunload', handlePageReload);
+window.addEventListener('load', handlePageReload);
+
+function handlePageChange() {
+	if (window.location.pathname == "/tournament/") {
+		updateStatus("ONLINE");
+	}
+};
+
+window.addEventListener('popstate', handlePageChange);
 
 /* ---------------------------- Creation Handlers --------------------------- */
 
@@ -408,7 +416,7 @@ function createTournamentFour() {
 	document.getElementById("startTournamentFour").addEventListener("click", e => {
 		e.preventDefault();
 
-		updateStatus();
+		updateStatus("IN_TOURNAMENT");
 
 		let tournament = new Tournament(4);
 		let returnValue = tournament.createPlayers();
@@ -436,7 +444,7 @@ function createTournamentEight() {
 	document.getElementById("startTournamentEight").addEventListener("click", e => {
 		e.preventDefault();
 
-		updateStatus();
+		updateStatus("IN_TOURNAMENT");
 
 		let tournament = new Tournament(8);
 		let returnValue = tournament.createPlayers();
