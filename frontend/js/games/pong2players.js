@@ -11,8 +11,6 @@ var g_game;
 var g_startButton;
 var g_template_text;
 
-var g_player_status;
-
 // Some of the constructor default values are overriden by the different set functions
 class PongGame2Players {
 	constructor(player_leftName, player_rightName) {
@@ -62,11 +60,14 @@ class PongGame2Players {
 
 			count++;
 
-			document.getElementById("canvas--text").textContent = "La partie commence dans " + (5 - count);
+			if (document.getElementById("canvas--text"))
+				document.getElementById("canvas--text").textContent = "La partie commence dans " + (5 - count);
 
 			if (count === 5) {
 				clearInterval(interval);
-				document.getElementById("canvas--text").textContent = "";
+
+				if (document.getElementById("canvas--text"))
+					document.getElementById("canvas--text").textContent = "";
 
 				this.setBall();
 			}
@@ -280,7 +281,6 @@ class PongGame2Players {
 						g_template_text.textContent = winner.name + " a gagné !!";
 						g_template_text.style.color = winner.color;
 						g_startButton.classList.remove("d-none");
-						await updateStatus();
 					}
 					this.ball.velocityX = 0;
 					this.ball.velocityY = 0;
@@ -294,26 +294,41 @@ class PongGame2Players {
 	};
 };
 
-function start2PlayerGame(p1_name, p2_name) {
+async function start2PlayerGame(p1_name, p2_name) {
 
 	if (g_game)
 		g_game = null;
 
 	g_game = new PongGame2Players(p1_name, p2_name);
 	g_game.init();
+
+	await g_game.gameOver();
+	await updateStatus("ONLINE");
+
+	g_game = null;
 };
 
-/* --------------------------- Listener for reload -------------------------- */
+/* --------------------- Listener for navigation event ---------------------- */
 
-function handlePageReload() {
-	if (window.location.pathname === "/twoplayers/") {
-		if (g_player_status === "PLAYING") {
-			updateStatus();
-		}
+async function handlePageReload() {
+	if (window.location.pathname == "/twoplayers/") {
+		await updateStatus("ONLINE");
+		if (g_game)
+			g_game = null;
 	}
 };
 
-window.addEventListener('beforeunload', handlePageReload);
+window.addEventListener('load', handlePageReload);
+
+function handlePageChange() {
+	if (window.location.pathname == "/twoplayers/") {
+		updateStatus("ONLINE");
+		if (g_game)
+			g_game = null;
+	}
+};
+
+window.addEventListener('popstate', handlePageChange);
 
 /* -------------------------- Listener for the page ------------------------- */
 
@@ -333,22 +348,26 @@ function listenerTwoPlayers()
 		g_template_text.textContent = "";
 		g_template_text.style.color = "";
 
-		updateStatus();
+		updateStatus("PLAYING");
 		start2PlayerGame(sessionStorage.getItem("nickname"), "Joueur Invité");
 	});
 
+	/* MARCHE PAS
 	// Listen for a button from the menu bar being clicked
 	const navbarItems = document.querySelectorAll('.nav__item');
 	navbarItems.forEach(item => {
-		item.addEventListener('click', () => {
+		item.addEventListener('click', e => {
+			e.preventDefault();
+
 			if (g_game) {
 				g_game.context.reset();
 				g_game.start = false;
 				g_game = null;
-				updateStatus();
+				updateStatus("ONLINE");
 			}
 		});
 	});
+	*/
 };
 
 /* --------------------------- Loader for the page -------------------------- */
@@ -372,7 +391,6 @@ async function loadTwoPlayers() {
 			throw new Error(response.status);
 		}
 		const data = await response.json();
-		g_player_status = data['player'].status;
 
 		return 1;
 	} catch (e)

@@ -1,5 +1,6 @@
 from django.db import models
 from players_manager.models import Player
+from django.utils import timezone
 
 # Create your models here.
 
@@ -7,6 +8,7 @@ class TournamentRoom(models.Model):
 	name = models.CharField(max_length=100)
 	players = models.ManyToManyField(Player, related_name='tournaments')
 	started = models.BooleanField(default=False)
+	time_created = models.DateTimeField(default=timezone.now)
 
 	def __str__(self):
 		return self.name
@@ -27,6 +29,14 @@ class TournamentRoom(models.Model):
 	def print_players(self):
 		for player in self.players.all():
 			print(player)
+
+	def delete_if_empty(self, timer=600):
+		if self.players.count() == 0 and (timezone.now() - self.time_created).seconds > timer:
+			self.delete()
+
+	def delete_if_timer(self, timer=1200):
+		if (timezone.now() - self.time_created).seconds > timer:
+			self.delete()
 
 
 class TournamentStat(models.Model):

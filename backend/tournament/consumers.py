@@ -48,6 +48,11 @@ def create_tournament_stats_at_start(tournament_name):
 	return stats.id
 
 @database_sync_to_async
+def delete_tournament_stats(id):
+	stats = TournamentStat.objects.get(id=id)
+	stats.delete()
+
+@database_sync_to_async
 def end_game_save_stats(game, players, win_player, tournament_id, room_state):
 	user1 = User.objects.get(username=players[0])
 	player1 = Player.objects.get(owner=user1)
@@ -305,12 +310,15 @@ class TournamentManager():
 		"""
 		room = self.get_room(room_name)
 		game = room['game_state']
+		current_state = room['state']
 
 		if len(room['players']) <= 1 and len(room['winners']) <= 1:
 			return False
 
 		winner = room.get('players', [])[winnerIdx]
 		self.add_match_info(room, game, winner)
+		room['players_state'][winnerIdx] = PlayerState["WINNER"]
+		room['players_state'][loserIdx] = PlayerState["LOSER"]
 		self.update_for_next_match(room, winner)
 
 		if len(room['players']) <= 1 and len(room['winners']) <= 1:
@@ -326,7 +334,7 @@ class TournamentManager():
 
 	def get_player_index(self, room_name, player):
 		try:
-			return self.get_room(room_name)['players'].index(player)
+			return self.get_room(room_name)['players_list'].index(player)
 		except:
 			return -1
 
@@ -378,11 +386,10 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 					if player_state != PlayerState["LOSER"]:
 						room['game_state'].is_running = False
 						self.tournament_manager.remove_room(tournament_name)
-						try :
-							tournament_room = await sync_to_async(TournamentRoom.objects.get)(name=tournament_name)
-							await sync_to_async(tournament_room.delete)()
-						except:
-							pass
+						# try:
+						# 	await delete_tournament_stats(room['tournament_id'])
+						# except:
+						# 	pass
 						await self.send_tournament_end("Tournament ended, missing player")
 				else:
 					print(f'Player {player} not found in room')
@@ -503,6 +510,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		tournament_room = await sync_to_async(TournamentRoom.objects.get)(name=tournament_name)
 		tournament_room.started = True
 		await sync_to_async(tournament_room.save)()
+		await sync_to_async(tournament_room.delete)()
 
 		await self.channel_layer.group_send(
 			tournament_name,
@@ -727,12 +735,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		else:
 			# print room round matches
 			print(room['rounds'])
-			winner_tournament = room['players_and_nicknames'][room['winners'][0]]
+			winner_tournament = room['winners'][0]
 			if (room['tournament_id'] != ''):
 				await end_tournament_save_stats(winner_tournament, room['losers'], tournament_name, room['tournament_id'])
-			# await end_tournament_save_stats(winner_obj, room['losers'], tournament_name, room['tournament_id'])
 			self.tournament_manager.remove_room(tournament_name)
 			await self.send_tournament_end("Tournament ended")
-
-			# Delete the tournament from the database
-			await sync_to_async(self.tournament.delete)()

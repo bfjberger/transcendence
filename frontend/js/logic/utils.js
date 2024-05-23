@@ -1,13 +1,14 @@
-export async function updateStatus() {
+export async function updateStatus(new_status) {
 
 	const csrftoken = document.cookie.split("; ").find((row) => row.startsWith("csrftoken"))?.split("=")[1];
 
 	const init = {
 		method: 'PATCH',
 		headers: {
-			'Content-Type': 'applications/json',
+			'Content-Type': 'application/json',
 			'X-CSRFToken': csrftoken,
-		}
+		},
+		body: JSON.stringify({status: new_status}),
 	};
 
 	try {
