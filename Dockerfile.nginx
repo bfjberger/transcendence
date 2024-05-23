@@ -9,6 +9,8 @@ COPY nginx.conf /etc/nginx/conf.d
 
 RUN mkdir -p /var/www/frontend/
 RUN mkdir -p /var/www/backend/staticfiles/
+COPY script_nginx.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/script_nginx.sh
 
-
-CMD ["nginx", "-g", "daemon off;"]
+# CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT [ "sh", "/usr/local/bin/script_nginx.sh"]
