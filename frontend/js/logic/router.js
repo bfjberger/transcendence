@@ -321,7 +321,7 @@ window.onload = async function()
 			}
 			else
 				router("login");
-			break;
+			return;
 		}
 	}
 	if (found == false)
