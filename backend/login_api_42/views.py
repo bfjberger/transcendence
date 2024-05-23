@@ -78,7 +78,7 @@ class Callback(APIView):
 				img_resp = requests.get(avatar)
 
 				if img_resp.status_code != 200 :
-					img_resp = "" #ATTENTION
+					img_resp = "staticfiles/avatars/avatar.png"
 
 				new_password = get_random_string(length=12)
 				user.set_password(new_password)
