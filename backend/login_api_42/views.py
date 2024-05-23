@@ -73,15 +73,16 @@ class Callback(APIView):
 
 			user, created = User.objects.get_or_create(username=username,defaults={'email': email})
 
-			new_password = get_random_string(length=12)
-			user.set_password(new_password)
-			user.save()
 
 			if created == True :
 				img_resp = requests.get(avatar)
 
 				if img_resp.status_code != 200 :
 					img_resp = "" #ATTENTION
+
+				new_password = get_random_string(length=12)
+				user.set_password(new_password)
+				user.save()
 
 				new_player = Player(owner=user)
 				new_player.avatar.save(username+'.jpg', ContentFile(img_resp.content), save=False)
@@ -104,9 +105,13 @@ class Callback(APIView):
 				if (player.status == "ONLINE" or player.status == "PLAYING"):
 					return Response("L'utilisateur est déjà loggé.", status=status.HTTP_401_UNAUTHORIZED)
 
+				new_password2 = get_random_string(length=12)
+				user.set_password(new_password2)
+				user.save()
+
 				player.status = "ONLINE"
 				player.save()
-				user_to_login = authenticate(username=username, password=new_password)
+				user_to_login = authenticate(username=username, password=new_password2)
 				r = login(request, user_to_login)
 				serializer_data = DataSerializer(user_to_login)
 				return Response(serializer_data.data, status=status.HTTP_200_OK)
