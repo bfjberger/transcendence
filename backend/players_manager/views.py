@@ -164,19 +164,18 @@ class ProfileUpdatePassword(APIView) :
 	def patch (self, request):
 		try :
 			user = User.objects.get(username=self.request.user)
-			logout(request)
 		except :
-			return Response("pb avec le user les gars", status=status.HTTP_400_BAD_REQUEST)
+			return Response("Utilisateur inconnu. Contactez le webmaster.", status=status.HTTP_400_BAD_REQUEST)
 
 		serialized_user = UserSerializer(user, data=request.data)
 
 		if serialized_user.is_valid():
+			logout(request)
 			serialized_user.save()
 			login(request, user)
 			return Response(data=serialized_user.data, status=status.HTTP_200_OK)
 
-
-		return Response(data=serialized_user.errors, status=status.HTTP_400_OK)
+		return Response("Nouveau mot de passe non valide.", status=status.HTTP_400_BAD_REQUEST)
 
 class ProfileUpdateAvatarView(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]

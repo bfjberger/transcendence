@@ -27,8 +27,12 @@ async function updateNickname(nicknameForm) {
 
 		const response = await fetch(hostnameport + '/api/profile/', init);
 
-		if (response.status === 400) {
+		if (response.status != 200) {
+
 			const error = await response.text();
+			
+
+			
 			msgElement.textContent = error.replace(/["{}[\]]/g, '');
 			msgElement.classList.add("text-danger");
 			return;
@@ -84,7 +88,7 @@ async function updatePassword(passwordForm) {
 
 		if (response.status != 200) {
 			const error = await response.text();
-			console.log(error)
+			console.log("PUNAISE", error)
 			msgElement.textContent = error.replace(/["{}[\]]/g, '');
 			msgElement.classList.add("text-danger");
 			return;
