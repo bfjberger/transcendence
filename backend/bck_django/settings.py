@@ -37,9 +37,6 @@ ALLOWED_HOSTS_HTTP = [f"http://" + os.environ.get("DJANGO_ALLOWED_HOSTS")]
 CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS_HTTPS + ALLOWED_HOSTS_HTTP
 CSRF_ALLOWED_ORIGINS = ALLOWED_HOSTS_HTTPS + ALLOWED_HOSTS_HTTP
 
-print("CSRF_TRUSTED_ORIGINS = ", CSRF_TRUSTED_ORIGINS)
-print(" CSRF_ALLOWED_ORIGINS = ", CSRF_ALLOWED_ORIGINS)
-
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_DOMAIN = None
@@ -148,8 +145,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-
-# print("\n\n", STATIC_ROOT, "\n\n")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

@@ -88,7 +88,7 @@ async function updatePassword(passwordForm) {
 
 		if (response.status != 200) {
 			const error = await response.text();
-			console.log("PUNAISE", error)
+			console.log("undpate password", error)
 			msgElement.textContent = error.replace(/["{}[\]]/g, '');
 			msgElement.classList.add("text-danger");
 			return;
