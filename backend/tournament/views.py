@@ -17,6 +17,8 @@ from rest_framework import serializers
 
 
 class TournamentViewSet(viewsets.ViewSet):
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
 	queryset = TournamentRoom.objects.all()
 	serializer_class = TournamentSerializer
 
@@ -107,6 +109,8 @@ class TournamentViewSet(viewsets.ViewSet):
 
 
 class PlayerViewSet(viewsets.ModelViewSet):
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
 	"""
 	API endpoint that allows players in a tournament to be viewed.
 	"""
