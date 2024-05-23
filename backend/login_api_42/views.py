@@ -39,6 +39,7 @@ class Accounts_view(APIView) :
 
 class Callback(APIView):
 	permission_classes = (permissions.AllowAny,)
+
 	def post(self, request):
 		# Step 2: Receive authorization code and exchange for access token
 		code = request.data["code"]
@@ -66,17 +67,11 @@ class Callback(APIView):
 
 		if response.status_code == 200:
 			user_data = response.json()
-
 			username = user_data.get('login')
 			avatar = user_data.get('image')["link"]
 			email = user_data.get('email')
 
 			user, created = User.objects.get_or_create(username=username,defaults={'email': email})
-
-			player = Player.objects.get(owner=user)
-			
-			if (player.status == "ONLINE" or player.status == "PLAYING"):
-				return Response("Le joueur est déjà loggé", status=status.HTTP_401_UNAUTHORIZED)
 
 			new_password = get_random_string(length=12)
 			user.set_password(new_password)
@@ -85,18 +80,31 @@ class Callback(APIView):
 			if created == True :
 				img_resp = requests.get(avatar)
 
-				player.avatar.save(username+'.jpg', ContentFile(img_resp.content), save=False)
-				player.status = "ONLINE"
-				player.nickname = username
-				player.save()
+				if img_resp.status_code != 200 :
+					img_resp = "" #ATTENTION
+
+				new_player = Player(owner=user)
+				new_player.avatar.save(username+'.jpg', ContentFile(img_resp.content), save=False)
+				new_player.status = "ONLINE"
+				new_player.nickname = username
+				new_player.save()
 				user_auth = authenticate(username=username, password=new_password)
 				r = login(request, user_auth)
 				serializer_data = DataSerializer(user_auth)
 				return Response(data=serializer_data.data, status=status.HTTP_200_OK)
 			else :
 
+				try:
+					player = Player.objects.get(owner=user)
+				except Player.DoesNotExist:
+					return Response("Player does not exist", status=status.HTTP_404_NOT_FOUND)
+				except Player.MultipleObjectsReturned:
+					return Response("Multiple players found", status=status.HTTP_400_BAD_REQUEST)
+
+				if (player.status == "ONLINE" or player.status == "PLAYING"):
+					return Response("L'utilisateur est déjà loggé.", status=status.HTTP_401_UNAUTHORIZED)
+
 				player.status = "ONLINE"
-				player.nickname = username
 				player.save()
 				user_to_login = authenticate(username=username, password=new_password)
 				r = login(request, user_to_login)

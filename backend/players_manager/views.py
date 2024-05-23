@@ -74,7 +74,7 @@ class RegisterAction(APIView):
 		result2 = requests.get(check_url2, headers=header)
 
 		mail_chk = True if len(result2.json()) == 1 else False
-
+		
 		if result.status_code != 200 and mail_chk == False :
 			serializer = RegisterSerializer(data=request.data)
 			if serializer.is_valid():
