@@ -244,6 +244,7 @@ const on_tournament_end = (arg) => {
 	alert(arg);
 	g_socket.close();
 
+	/*
 	// countdown before going back to the tournamentonline page
 	let count = 0;
 	let interval = setInterval(() => {
@@ -257,6 +258,7 @@ const on_tournament_end = (arg) => {
 			router("tournamentonline")
 		}
 	}, 1000);
+	*/
 }
 
 // MATCH INFO for brackets

@@ -74,7 +74,10 @@ class RegisterAction(APIView):
 		result2 = requests.get(check_url2, headers=header)
 
 		mail_chk = True if len(result2.json()) == 1 else False
-		
+
+		if '@' in request.data['username'] or '+' in request.data['username']:
+			return Response({"username": "Votre username ne peut pas contenir de '@' ou de '+'."}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+
 		if result.status_code != 200 and mail_chk == False :
 			serializer = RegisterSerializer(data=request.data)
 			if serializer.is_valid():

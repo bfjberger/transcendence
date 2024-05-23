@@ -186,7 +186,7 @@ class Tournament {
 		}
 		else if (this.nb_players == 8 && this.match_played == 7 || this.nb_players == 4 && this.match_played == 3) {
 			this.updateFinalBracket();
-			this.countdown();
+			// this.countdown();
 		}
 	}
 
@@ -355,6 +355,7 @@ class Tournament {
 		document.getElementById("final__2--score").textContent = this.final.bottomScore;
 	}
 
+	/*
 	countdown() {
 		let count = 0;
 		let interval = setInterval(() => {
@@ -369,6 +370,7 @@ class Tournament {
 			}
 		}, 1000);
 	}
+	*/
 };
 
 /* ---------------------------------- Utils --------------------------------- */
