@@ -37,13 +37,17 @@ async function connectUser(loginForm) {
 		if (!response.ok || response.status === 203) {
 			let errorMsg = await response.text();
 			errorMsg = JSON.parse(errorMsg);
-
+			console.log(errorMsg);
 			if (Object.keys(errorMsg) == "non_field_errors" && Object.values(errorMsg) == "Incorrect Credentials")
 				document.getElementById("form__login--errorMsg").textContent = "Identifiants incorrects";
 			else if (response.status == 422)
 				document.getElementById("form__login--errorMsg").textContent = errorMsg;
-			else
-				document.getElementById("form__login--errorMsg").textContent = "Une erreur s'est produite.";
+			else {
+				if (Object.keys(errorMsg) == "Erreur")
+					document.getElementById("form__login--errorMsg").textContent = errorMsg["Erreur"];
+				else
+					document.getElementById("form__login--errorMsg").textContent = "Une erreur s'est produite.";
+			}
 			return;
 		}
 		if (response.status === 202) {

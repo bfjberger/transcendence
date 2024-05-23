@@ -108,7 +108,7 @@ class LoginView(APIView):
 			return Response("Utilisateur inexistant.", status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 		if (player.status == "ONLINE" or player.status == "PLAYING"):
-			return Response("Player is already login", status=status.HTTP_401_UNAUTHORIZED)
+			return Response({"Erreur" : "Le joueur est deja loggé."}, status=status.HTTP_401_UNAUTHORIZED)
 		login(request, user)
 		player.status = "ONLINE"
 		player.save()
