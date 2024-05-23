@@ -67,11 +67,14 @@ class PongGame4Players {
 
 			count++;
 
-			document.getElementById("canvas--text").textContent = "La partie commence dans " + (5 - count);
+			if (document.getElementById("canvas--text"))
+				document.getElementById("canvas--text").textContent = "La partie commence dans " + (5 - count);
 
 			if (count === 5) {
 				clearInterval(interval);
-				document.getElementById("canvas--text").textContent = "";
+
+				if (document.getElementById("canvas--text"))
+					document.getElementById("canvas--text").textContent = "";
 
 				this.setBall();
 			}
@@ -390,7 +393,7 @@ class PongGame4Players {
 				g_template_text.textContent = this.winner.name + " a gagné !!";
 				g_template_text.style.color = this.winner.color;
 				g_startButton.classList.remove("d-none");
-				await updateStatus();
+				await updateStatus("ONLINE");
 			}
 			else {
 				requestAnimationFrame(this.update.bind(this));
@@ -408,17 +411,23 @@ function start4PlayerGame(p1_name, p2_name, p3_name, p4_name) {
 	g_game.init();
 };
 
-/* --------------------------- Listener for reload -------------------------- */
+/* --------------------- Listener for navigation event ---------------------- */
 
-function handlePageReload() {
-	if (window.location.pathname === "/fourplayers/") {
-		if (g_player_status === "PLAYING") {
-			updateStatus();
-		}
+async function handlePageReload() {
+	if (window.location.pathname == "/fourplayers/") {
+		await updateStatus("ONLINE");
 	}
 };
 
-window.addEventListener('beforeunload', handlePageReload);
+window.addEventListener('load', handlePageReload);
+
+function handlePageChange() {
+	if (window.location.pathname == "/fourplayers/") {
+		updateStatus("ONLINE");
+	}
+};
+
+window.addEventListener('popstate', handlePageChange);
 
 /* -------------------------- Listener for the page ------------------------- */
 
@@ -437,10 +446,11 @@ function listenerFourPlayers() {
 		g_template_text.textContent = "";
 		g_template_text.style.color = "";
 
-		updateStatus();
+		updateStatus("PLAYING");
 		start4PlayerGame(sessionStorage.getItem("nickname"), "Invité Droit", "Invité Haut", "Inivité Bas");
 	});
 
+	/* MARCHE PAS
 	// Listen for a button from the menu bar being clicked
 	const navbarItems = document.querySelectorAll('.nav__item');
 	navbarItems.forEach(item => {
@@ -449,10 +459,11 @@ function listenerFourPlayers() {
 				g_game.context.reset();
 				g_game.start = false;
 				g_game = null;
-				updateStatus();
+				updateStatus("ONLINE");
 			}
 		});
 	});
+	*/
 };
 
 /* --------------------------- Loader for the page -------------------------- */
