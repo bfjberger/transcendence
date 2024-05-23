@@ -367,14 +367,14 @@ function listenerFriends() {
 		})
 	});
 
-	const button_refuse_patch = document.querySelector(".refuse_friend_button");
-	if (button_refuse_patch) {
-		button_refuse_patch.addEventListener("click", e => {
+	const button_refuse_patch = document.querySelectorAll(".refuse_friend_button");
+	button_refuse_patch.forEach(button_refuse => {
+		button_refuse.addEventListener("click", e => {
 			e.preventDefault();
 
-			patch_friend_refuse(button_refuse_patch.value);
-		});
-	}
+			patch_friend_refuse(button_refuse.value);
+		})
+	});
 
 	const buttons_delete_friend = document.querySelectorAll(".delete_friend_button");
 	buttons_delete_friend.forEach(button_delete => {

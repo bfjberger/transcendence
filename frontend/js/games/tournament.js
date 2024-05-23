@@ -416,7 +416,7 @@ function createTournamentFour() {
 	document.getElementById("startTournamentFour").addEventListener("click", e => {
 		e.preventDefault();
 
-		updateStatus("IN_TOURNAMENT");
+		updateStatus("PLAYING");
 
 		let tournament = new Tournament(4);
 		let returnValue = tournament.createPlayers();
@@ -444,7 +444,7 @@ function createTournamentEight() {
 	document.getElementById("startTournamentEight").addEventListener("click", e => {
 		e.preventDefault();
 
-		updateStatus("IN_TOURNAMENT");
+		updateStatus("PLAYING");
 
 		let tournament = new Tournament(8);
 		let returnValue = tournament.createPlayers();

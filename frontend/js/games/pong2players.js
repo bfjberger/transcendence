@@ -352,7 +352,6 @@ function listenerTwoPlayers()
 		start2PlayerGame(sessionStorage.getItem("nickname"), "Joueur Invité");
 	});
 
-	/* MARCHE PAS
 	// Listen for a button from the menu bar being clicked
 	const navbarItems = document.querySelectorAll('.nav__item');
 	navbarItems.forEach(item => {
@@ -363,11 +362,10 @@ function listenerTwoPlayers()
 				g_game.context.reset();
 				g_game.start = false;
 				g_game = null;
-				updateStatus("ONLINE");
 			}
+			updateStatus("ONLINE");
 		});
 	});
-	*/
 };
 
 /* --------------------------- Loader for the page -------------------------- */

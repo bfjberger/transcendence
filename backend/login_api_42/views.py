@@ -115,8 +115,5 @@ class Callback(APIView):
 				r = login(request, user_to_login)
 				serializer_data = DataSerializer(user_to_login)
 				return Response(serializer_data.data, status=status.HTTP_200_OK)
-			
+
 		return Response ("Error from API 42", status=status.HTTP_401_UNAUTHORIZED)
-
-
-

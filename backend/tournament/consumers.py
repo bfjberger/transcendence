@@ -356,7 +356,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 		if self.tournament_manager.create_or_join_room(tournament_name, player, nickname):
 			await self.accept()
-			await save_player_status(player_obj, "IN_TOURNAMENT")
+			await save_player_status(player_obj, "PLAYING")
 		else:
 			await self.close()
 

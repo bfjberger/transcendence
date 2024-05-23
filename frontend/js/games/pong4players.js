@@ -450,20 +450,20 @@ function listenerFourPlayers() {
 		start4PlayerGame(sessionStorage.getItem("nickname"), "Invité Droit", "Invité Haut", "Inivité Bas");
 	});
 
-	/* MARCHE PAS
 	// Listen for a button from the menu bar being clicked
 	const navbarItems = document.querySelectorAll('.nav__item');
 	navbarItems.forEach(item => {
-		item.addEventListener('click', () => {
+		item.addEventListener('click', e => {
+			e.preventDefault();
+
 			if (g_game) {
 				g_game.context.reset();
 				g_game.start = false;
 				g_game = null;
-				updateStatus("ONLINE");
 			}
+			updateStatus("ONLINE");
 		});
 	});
-	*/
 };
 
 /* --------------------------- Loader for the page -------------------------- */
