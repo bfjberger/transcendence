@@ -72,7 +72,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 			'type': 'player_disconnect'
 		})
 		await self.end_game(None)
-		self.manager.delete_room(self.room_name)
+		# self.manager.delete_room(self.room_name)
 		await self.close()
 		await self.channel_layer.group_discard(self.room_name, self.channel_name) # Since we are not using send_game_end
 

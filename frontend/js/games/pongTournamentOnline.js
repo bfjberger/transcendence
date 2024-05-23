@@ -17,7 +17,7 @@ var MAX_TIMER = 60;
 var g_timer = MAX_TIMER;
 var g_nicknames = []; // this is set in set_position, it is the player left and right
 let first_launch = true;
-const keys = {};
+var keys = {};
 
 game_running = false;
 
@@ -328,6 +328,8 @@ const on_game_end = (arg) => {
 	g_right_placeholder.textContent = "";
 	g_left_placeholder.classList.remove("text-decoration-underline");
 	g_right_placeholder.classList.remove("text-decoration-underline");
+
+	id = null;
 }
 
 export { on_set_position, on_game_start, on_game_state, on_game_end }
