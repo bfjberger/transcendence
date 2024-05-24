@@ -310,25 +310,19 @@ async function start2PlayerGame(p1_name, p2_name) {
 
 /* --------------------- Listener for navigation event ---------------------- */
 
-async function handlePageReload() {
+async function handlePageChange() {
 	if (window.location.pathname == "/twoplayers/") {
 		await updateStatus("ONLINE");
-		if (g_game)
+		if (g_game) {
+			window.alert("WAAAWW");
 			g_game = null;
+		}
 	}
 };
 
-window.addEventListener('load', handlePageReload);
-
-function handlePageChange() {
-	if (window.location.pathname == "/twoplayers/") {
-		updateStatus("ONLINE");
-		if (g_game)
-			g_game = null;
-	}
-};
-
+window.addEventListener('load', handlePageChange);
 window.addEventListener('popstate', handlePageChange);
+window.addEventListener('unload', handlePageChange);
 
 /* -------------------------- Listener for the page ------------------------- */
 
@@ -355,7 +349,7 @@ function listenerTwoPlayers()
 	// Listen for a button from the menu bar being clicked
 	const navbarItems = document.querySelectorAll('.nav__item');
 	navbarItems.forEach(item => {
-		item.addEventListener('click', e => {
+		item.addEventListener('click', async e => {
 			e.preventDefault();
 
 			if (g_game) {
@@ -363,7 +357,7 @@ function listenerTwoPlayers()
 				g_game.start = false;
 				g_game = null;
 			}
-			updateStatus("ONLINE");
+			await updateStatus("ONLINE");
 		});
 	});
 };

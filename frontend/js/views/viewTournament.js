@@ -5,15 +5,17 @@ export function renderTournamentOnline() {
 				<div class="col text-center pt-3 h2">
 					<p class="mb-1">Créer un Tournoi</p>
 				</div>
-				<div id="create__tournament--errorMsg" class="text-center pt-1 h5 text-danger">
-				</div>
-				<div class="text-center pt-1">
-					<label for="name">Nom du tournoi:</label>
-					<input type="text" id="name" name="name" class="w-auto" required>
-				</div>
-				<div class="text-center pt-3">
-					<button id="create-tournament-button" class="btn btn-info" type="submit">Créer un tournoi en ligne</button>
-				</div>
+				<form id="create__tournament--form" class="text-center">
+					<div id="create__tournament--errorMsg" class="h5 text-danger">
+					</div>
+					<div class="py-3">
+						<label for="name">Nom du tournoi:</label>
+						<input type="text" id="create__tournament--name" name="name" class="w-auto" required>
+					</div>
+					<button class="btn btn-info" type="submit">
+						Créer un tournoi en ligne
+					</button>
+				</form>
 			</div>
 			<div class="col-6">
 				<div class="col text-center pt-3 h2">

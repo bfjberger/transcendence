@@ -179,8 +179,8 @@ SOCIALACCOUNT_PROVIDERS = {
         'AUTH_PARAMS': {'access_type': 'online'},
         'METHOD': 'oauth2',
         'VERIFIED_EMAIL': False,
-        'KEY': 'u-s4t2ud-491a5d4d14d35ef25080f2f05937152abcd6c6f65ab162196a8c5ea26e7e5f65',
-        'SECRET': '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',
+        'KEY': os.environ.get("KEY_API"),
+        'SECRET': os.environ.get("SECRET_API"),
     }
 }
 
