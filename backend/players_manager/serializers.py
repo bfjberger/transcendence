@@ -4,7 +4,9 @@ from rest_framework.validators import UniqueValidator
 
 from django.contrib.auth.models import User
 
-from players_manager.models import Player, Friend
+from players_manager.models import Player
+
+from friends_manager.models import Friend
 
 from django.contrib.auth import authenticate
 
@@ -41,7 +43,6 @@ class LoginSerializer(serializers.Serializer):
 	#     self.save()
 
 
-
 class UserSerializer(serializers.ModelSerializer):
 	password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
 	class Meta:
@@ -52,7 +53,6 @@ class UserSerializer(serializers.ModelSerializer):
 		instance.set_password(validated_data["password"])
 		instance.save()
 		return instance
-
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -74,7 +74,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 		fields = ('id', 'username', 'email', 'password')
 
 
-
 class AvatarSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Player
@@ -89,10 +88,10 @@ class AvatarSerializer(serializers.ModelSerializer):
 		return super().save(*args, **kwargs)
 
 
-class FriendSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Friend
-		fields = ['id', 'player_initiated', 'player_received', 'accept']
+# class FriendSerializer(serializers.ModelSerializer):
+# 	class Meta:
+# 		model = Friend
+# 		fields = ['id', 'player_initiated', 'player_received', 'accept']
 
 
 class DataSerializer(serializers.ModelSerializer):
@@ -111,17 +110,18 @@ class DataSerializer(serializers.ModelSerializer):
 		}
 		return player_data
 
+
 class StatsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Player
-        fields = [
-                    'nb_games_2p',
-                    'nb_games_2p_lost',
-                    'nb_games_2p_won',
-                    'nb_points_2p',
-                    'nb_games_4p',
-                    'nb_games_4p_won',
-                    'nb_games_4p_lost',
-                    'nb_points_4p',
-                    'nb_points_tournament'
-                ]
+	class Meta:
+		model = Player
+		fields = [
+					'nb_games_2p',
+					'nb_games_2p_lost',
+					'nb_games_2p_won',
+					'nb_points_2p',
+					'nb_games_4p',
+					'nb_games_4p_won',
+					'nb_games_4p_lost',
+					'nb_points_4p',
+					'nb_points_tournament'
+				]

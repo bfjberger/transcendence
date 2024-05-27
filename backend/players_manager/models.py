@@ -69,8 +69,3 @@ class Player(models.Model):
 		threshold = 60 * 5  # 5 minutes
 		for player in Player.objects.filter(status='ONLINE'):
 			player.set_offline_if_inactive(threshold)
-
-class Friend(models.Model):
-		player_initiated = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='player_initiate')
-		player_received = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='player_receive')
-		accept = models.BooleanField(default=False)

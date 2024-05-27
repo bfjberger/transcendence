@@ -11,12 +11,19 @@ class UserSerializerSpe(serializers.ModelSerializer):
 
 
 class TwoPlayersGameSerializer(serializers.ModelSerializer):
-	user1 = UserSerializerSpe(read_only=True)
-	user2 = UserSerializerSpe(read_only=True)
-	win_player = UserSerializerSpe(read_only=True)
+	players = serializers.SerializerMethodField()
+	scores = serializers.JSONField()
+	win_player = serializers.SerializerMethodField()
+
 	class Meta:
 		model = TwoPlayersGame
-		fields = ["user1", "user2", "score_user1", "score_user2", "score_max", "win_player", "id_tournament", "id_name", "level", "date"]
+		fields = ["players", "scores", "win_player", "id_tournament", "id_name", "level", "date"]
+
+	def get_players(self, obj):
+		return [player.owner.username for player in obj.players.all()]
+
+	def get_win_player(self, obj):
+		return obj.win_player.owner.username
 
 
 class FourPlayersGameSerializer(serializers.ModelSerializer):

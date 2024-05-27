@@ -9,13 +9,23 @@ from .serializers import TwoPlayersGameSerializer, FourPlayersGameSerializer
 
 from django.db.models import Q
 
+from players_manager.models import Player
+
 class ListTwoPlayersGamesAPIView (ListAPIView) :
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]
 	serializer_class = TwoPlayersGameSerializer
 
 	def get_queryset(self):
-		return TwoPlayersGame.objects.filter(Q(user1 = self.request.user) | Q(user2 = self.request.user))
+		try :
+			player = Player.objects.get(owner=self.request.user)
+		except :
+			return Response(None, status=status.HTTP_400_BAD_REQUEST)
+
+		games_serializer = TwoPlayersGameSerializer(TwoPlayersGame.objects.filter(players=player), many=True)
+		print(games_serializer.data)
+
+		return games_serializer.data
 
 class CreateTwoPlayersGamesAPIView (CreateAPIView) :
 	authentication_classes = [SessionAuthentication, BasicAuthentication]

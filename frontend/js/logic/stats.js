@@ -70,17 +70,21 @@ async function loadStats() {
 		}
 		const data = await response.json();
 
-		g_games_2p = data["stats"].nb_games_2p;
-		if (g_games_2p !== 0)
-			g_ratio_2p = Number(((data["stats"].nb_games_2p_won / g_games_2p) * 100).toFixed(2));
-		else
-			g_ratio_2p = "no data";
+		g_games_2p = data["twoplayers"].games_2p;
+		g_ratio_2p = data["twoplayers"].ratio_2p;
+		g_points_2p = data["twoplayers"].points_2p;
+
+		// g_games_2p = data["stats"].nb_games_2p;
+		// if (g_games_2p !== 0)
+		// 	g_ratio_2p = Number(((data["stats"].nb_games_2p_won / g_games_2p) * 100).toFixed(2));
+		// else
+		// 	g_ratio_2p = "no data";
 		g_games_4p = data["stats"].nb_games_4p;
 		if (g_games_4p !== 0)
 			g_ratio_4p = Number(((data["stats"].nb_games_4p_won / g_games_4p) * 100).toFixed(2));
 		else
 			g_ratio_4p = "no data";
-		g_points_2p = data["stats"].nb_points_2p;
+		// g_points_2p = data["stats"].nb_points_2p;
 		g_points_4p = data["stats"].nb_points_4p;
 		g_tournament_win = data["tournament"].nb_win;
 		g_tournament_matchs_win = data["tournament"].match_win;

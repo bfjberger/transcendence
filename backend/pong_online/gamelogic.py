@@ -147,8 +147,14 @@ class GameState:
 			await sync_to_async(loser.save)()
 		if winner_pos is not None and loser_pos is not None:
 			winner = self.players[winner_pos].player_model
-			await sync_to_async(self.game_history.result)(winner, self.players["player_left"].score,
-															self.players["player_right"].score)
+			scores = [self.players["player_left"].score, self.players["player_right"].score]
+			scores_dict = {
+				self.players["player_left"].player_model.id : self.players["player_left"].score,
+				self.players["player_right"].player_model.id : self.players["player_right"].score
+			}
+			await sync_to_async(self.game_history.result)(scores, scores_dict, winner)
+			# await sync_to_async(self.game_history.result)(winner, self.players["player_left"].score,
+			#												self.players["player_right"].score)
 
 	class Player:
 		"""
@@ -297,7 +303,7 @@ class GameState:
 					self.y >= player_right.y and self.x < player_right.x and
 					self.x + self.radius >= player_right.x):
 						if (abs(self.x_vel) >= 20):
-							self.x_vel *= -1 
+							self.x_vel *= -1
 						else:
 							self.x_vel *= -1 * self.speed_multiplier_x
 						middle_y = player_right.y + PADDLE_HEIGHT / 2

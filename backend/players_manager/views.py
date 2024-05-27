@@ -18,9 +18,7 @@ from django.contrib.auth import login, logout
 
 from django.contrib.auth.models import User
 
-from players_manager.serializers import (LoginSerializer, UserSerializer, PlayerSerializer,
-										RegisterSerializer, FriendSerializer, AvatarSerializer,
-										DataSerializer, StatsSerializer)
+from players_manager.serializers import *
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
@@ -246,17 +244,32 @@ class Statistiques(APIView):
 			return Response(None, status=status.HTTP_400_BAD_REQUEST)
 		serializer_stats = StatsSerializer(player)
 
+		two_players_stats = {}
+
+		nb_games_played = TwoPlayersGame.objects.filter(players=player).count()
+		two_players_stats.update({"games_2p": nb_games_played})
+
+		nb_win = TwoPlayersGame.objects.filter(win_player=player).count()
+		if nb_games_played == 0:
+			two_players_stats.update({"ratio_2p": "N/A"})
+		else:
+			two_players_stats.update({"ratio_2p": (nb_win / nb_games_played) * 100})
+
+		nb_points = 0
+		for game in TwoPlayersGame.objects.filter(players=player):
+			nb_points += game.scores_test[str(player.id)]
+		two_players_stats.update({"points_2p": nb_points})
+
 		tournament_stats = {}
 
 		nb_win = len(TournamentStat.objects.filter(winner=player))
 		tournament_stats.update({"nb_win": nb_win})
 
 		tournament_matchs = TwoPlayersGame.objects.exclude(level__isnull=True)
-		tournament_matchs_win = len(tournament_matchs.filter(win_player=self.request.user))
-
+		tournament_matchs_win = len(tournament_matchs.filter(win_player=player))
 		tournament_stats.update({"match_win": tournament_matchs_win})
 
-		return Response(data={"data": serializer_data.data, "stats": serializer_stats.data, "tournament": tournament_stats}, status=status.HTTP_200_OK)
+		return Response(data={"data": serializer_data.data, "stats": serializer_stats.data, "twoplayers": two_players_stats, "tournament": tournament_stats}, status=status.HTTP_200_OK)
 
 
 class UpdateStatus(APIView):
