@@ -7,7 +7,6 @@ from rest_framework import generics
 from django.conf import settings
 import datetime
 
-
 from rest_framework.reverse import reverse_lazy
 
 from rest_framework import serializers
@@ -17,6 +16,8 @@ from players_manager.models import Player
 from django.contrib.auth import login, logout
 
 from django.contrib.auth.models import User
+
+from django.db.models import Count
 
 from players_manager.serializers import *
 
@@ -244,32 +245,65 @@ class Statistiques(APIView):
 			return Response(None, status=status.HTTP_400_BAD_REQUEST)
 		serializer_stats = StatsSerializer(player)
 
+		# Get all games where 2 players were there
+		games_two = TwoPlayersGame.objects.annotate(num_players=Count('players')).filter(num_players=2)
+
+		# From the games with 2 players, get the games where the player was present
+		games_played_two = games_two.filter(players=player)
+
 		two_players_stats = {}
 
-		nb_games_played = TwoPlayersGame.objects.filter(players=player).count()
-		two_players_stats.update({"games_2p": nb_games_played})
+		two_players_stats.update({"games_2p": games_played_two.count()})
 
-		nb_win = TwoPlayersGame.objects.filter(win_player=player).count()
-		if nb_games_played == 0:
+		win_two = games_played_two.filter(win_player=player).count()
+		if games_played_two.count() == 0:
 			two_players_stats.update({"ratio_2p": "N/A"})
 		else:
-			two_players_stats.update({"ratio_2p": (nb_win / nb_games_played) * 100})
+			two_players_stats.update({"ratio_2p": round((win_two / games_played_two.count()) * 100, 2)})
 
-		nb_points = 0
-		for game in TwoPlayersGame.objects.filter(players=player):
-			nb_points += game.scores_test[str(player.id)]
-		two_players_stats.update({"points_2p": nb_points})
+		points_two = 0
+		for game in games_played_two:
+			points_two += game.scores_test[str(player.id)]
+		two_players_stats.update({"points_2p": points_two})
 
 		tournament_stats = {}
 
-		nb_win = len(TournamentStat.objects.filter(winner=player))
+		# From the games with 2 players and where the player was present, get the games where the field level is not null
+		games_played_tournament = games_played_two.exclude(level__isnull=True)
+
+		nb_win = TournamentStat.objects.filter(winner=player).count()
 		tournament_stats.update({"nb_win": nb_win})
 
-		tournament_matchs = TwoPlayersGame.objects.exclude(level__isnull=True)
-		tournament_matchs_win = len(tournament_matchs.filter(win_player=player))
-		tournament_stats.update({"match_win": tournament_matchs_win})
+		win_in_tournament = games_played_tournament.filter(win_player=player).count()
+		tournament_stats.update({"match_win": win_in_tournament})
 
-		return Response(data={"data": serializer_data.data, "stats": serializer_stats.data, "twoplayers": two_players_stats, "tournament": tournament_stats}, status=status.HTTP_200_OK)
+		points_tournament = 0
+		for game in games_played_tournament:
+			points_tournament += game.scores_test[str(player.id)]
+		tournament_stats.update({"points_tournament": points_tournament})
+
+		four_players_stats = {}
+
+		# Get all games where 4 players were there
+		games_four = TwoPlayersGame.objects.annotate(num_players=Count('players')).filter(num_players=4)
+
+		# From the games with 4 players, get the games where the player was present
+		games_played_four = games_four.filter(players=player)
+
+		four_players_stats.update({"games_4p": games_played_four.count()})
+
+		win_four = games_played_four.filter(win_player=player).count()
+		if games_played_four.count() == 0:
+			four_players_stats.update({"ratio_4p": "N/A"})
+		else:
+			four_players_stats.update({"ratio_4p": round((win_four / games_played_four.count()) * 100, 2)})
+
+		points_four = 0
+		for game in games_played_four:
+			points_four += game.scores_test[str(player.id)]
+		four_players_stats.update({"points_4p": points_four})
+
+		return Response(data={"data": serializer_data.data, "twoplayers": two_players_stats, "fourplayers": four_players_stats, "tournament": tournament_stats}, status=status.HTTP_200_OK)
 
 
 class UpdateStatus(APIView):

@@ -31,17 +31,17 @@ function fillHistoryTwo() {
 			gameHistoryEntry.innerHTML = `
 					<div class="col mt-2">
 						<div class="d-inline" id="game__historyTwo--${game_index}--left">
-							${game.user1.username}
+							${game.players[0]}
 							<br>
-							${game.score_user1}
+							${game.scores[0]}
 						</div>
 					</div>
 					<div class="col mt-2 align-self-center">VS</div>
 					<div class="col mt-2">
 						<div class="d-inline" id="game__historyTwo--${game_index}--right">
-							${game.user2.username}
+							${game.players[1]}
 							<br>
-							${game.score_user2}
+							${game.scores[1]}
 						</div>
 					</div>
 					<div class="mb-2" id="game__historyTwo--${game_index}--date">
@@ -56,17 +56,17 @@ function fillHistoryTwo() {
 					</div>
 					<div class="col mt-2">
 						<div class="d-inline" id="game__historyTwo--${game_index}--left">
-							${game.user1.username}
+							${game.players[0]}
 							<br>
-							${game.score_user1}
+							${game.scores[0]}
 						</div>
 					</div>
 					<div class="col mt-2 align-self-center">VS</div>
 					<div class="col mt-2">
 						<div class="d-inline" id="game__historyTwo--${game_index}--right">
-							${game.user2.username}
+							${game.players[1]}
 							<br>
-							${game.score_user2}
+							${game.scores[1]}
 						</div>
 					</div>
 					<div class="mb-2" id="game__historyTwo--${game_index}--date">
@@ -75,7 +75,7 @@ function fillHistoryTwo() {
 				`;
 		}
 		g_game_history_two.appendChild(gameHistoryEntry);
-		if (game.win_player.username == game.user1.username) {
+		if (game.win_player == game.players[0]) {
 			document.getElementById(`game__historyTwo--${game_index}--left`).classList.add("bg-success-subtle");
 			document.getElementById(`game__historyTwo--${game_index}--right`).classList.add("bg-danger-subtle");
 		}
@@ -83,7 +83,7 @@ function fillHistoryTwo() {
 			document.getElementById(`game__historyTwo--${game_index}--left`).classList.add("bg-danger-subtle");
 			document.getElementById(`game__historyTwo--${game_index}--right`).classList.add("bg-success-subtle");
 		}
-		if (game.user1.username == sessionStorage.getItem("username")) {
+		if (game.players[0] == sessionStorage.getItem("username")) {
 			document.getElementById(`game__historyTwo--${game_index}--left`).style.textDecoration = "underline";
 		}
 		else {

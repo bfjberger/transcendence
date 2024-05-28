@@ -70,16 +70,19 @@ def end_game_save_stats(game, players, win_player, tournament_id, room_state):
 	player2.save()
 
 	game = TwoPlayersGame.objects.create()
-	game.create(player1, player2)
+	game.add_player(player1)
+	game.add_player(player2)
 	game.id_tournament = tournamentStat_object
 	game.id_name = tournamentStat_object.tournament_name
 	game.level = room_state
-	game.result(winner, score_1, score_2)
+	scores2 = [score_1, score_2]
+	scores = {
+		player1.id : score_1,
+		player2.id : score_2
+	}
+	game.result(scores2, scores, winner)
 
 	sync_to_async(game.save)()
-
-
-
 
 
 async def end_tournament_save_stats(winner, losers, tournament_name, tournament_id):

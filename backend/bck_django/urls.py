@@ -22,23 +22,17 @@ from django.conf import settings
 
 from rest_framework import routers
 
-from players_manager.views import (LoginView, ProfileView, RegisterAction,
-								    IndexAction, TwoPlayers, FourPlayers,
-									Tournament, LogoutView, ProfileUpdateAvatarView,
-									UpdateStatus, Statistiques, ProfileUpdatePassword)
-from tournament.views import TournamentOnline
+from players_manager.views import *
+
+from tournament.views import TournamentOnline, TournamentViewSet, PlayerViewSet
 
 from login_api_42.views import Accounts_view, Callback
 
-from games_manager.views import ListTwoPlayersGamesAPIView, CreateTwoPlayersGamesAPIView, ListFourPlayersGamesAPIView
-
-from tournament.views import TournamentViewSet, PlayerViewSet
+from games_manager.views import ListTwoPlayersGamesAPIView, ListFourPlayersGamesAPIView
 
 from pong_online.views import TwoPlayersOnlineView, FourPlayersOnlineView
 
-
 from friends_manager.views import ListFriendAPIView, CreateFriendAPIView, AcceptFriendAPIView, RefuseFriendAPIView, DeleteFriendAPIView, GetUserNameAPI
-
 
 from pong_IA.views import Pong_IAView
 # from players_manager.views import PlayerViewSet
@@ -87,7 +81,7 @@ urlpatterns = [
     path('api/updateavatar/', ProfileUpdateAvatarView.as_view()),
 
     path('api/gamehistory/', ListTwoPlayersGamesAPIView.as_view()),
-    path('api/gametwoplayercreate/', CreateTwoPlayersGamesAPIView.as_view()),
+    # path('api/gametwoplayercreate/', CreateTwoPlayersGamesAPIView.as_view()),
     path('api/gamehistoryfour/', ListFourPlayersGamesAPIView.as_view()),
 
     path('api/call_back/', Callback.as_view(), name='callback'),
