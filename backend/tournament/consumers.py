@@ -11,6 +11,7 @@ from .gamelogic_tournament import GameState
 import random
 from django.contrib.auth.models import User
 from players_manager.models import Player
+from games_manager.models import Game
 
 TIMER = 60
 tick_rate = 60
@@ -69,18 +70,17 @@ def end_game_save_stats(game, players, win_player, tournament_id, room_state):
 	player1.save()
 	player2.save()
 
-	game = TwoPlayersGame.objects.create()
+	game = Game.objects.create()
 	game.add_player(player1)
 	game.add_player(player2)
-	game.id_tournament = tournamentStat_object
-	game.id_name = tournamentStat_object.tournament_name
-	game.level = room_state
-	scores2 = [score_1, score_2]
+	game.tournament_id = tournamentStat_object
+	game.tournament_name = tournamentStat_object.tournament_name
+	game.tournament_level = room_state
 	scores = {
-		player1.id : score_1,
-		player2.id : score_2
+		user1.username : score_1,
+		user2.username : score_2
 	}
-	game.result(scores2, scores, winner)
+	game.result(scores, winner)
 
 	sync_to_async(game.save)()
 

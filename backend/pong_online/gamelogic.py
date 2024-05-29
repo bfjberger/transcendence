@@ -2,7 +2,11 @@ import random, math
 
 from asgiref.sync import sync_to_async
 
+from django.contrib.auth.models import User
+
 from games_manager.models import TwoPlayersGame
+
+from games_manager.models import Game
 
 # Constants for the game area and paddles
 GAME_AREA_WIDTH = 650
@@ -42,7 +46,7 @@ class GameState:
 		self.players = {}
 		self.is_running = False
 		self.winning_score = 3
-		self.game_history = TwoPlayersGame()
+		self.game_history = Game()
 
 	def add_player_to_dict(self, player_pos, player_model):
 		"""
@@ -147,14 +151,13 @@ class GameState:
 			await sync_to_async(loser.save)()
 		if winner_pos is not None and loser_pos is not None:
 			winner = self.players[winner_pos].player_model
-			scores = [self.players["player_left"].score, self.players["player_right"].score]
-			scores_dict = {
-				self.players["player_left"].player_model.id : self.players["player_left"].score,
-				self.players["player_right"].player_model.id : self.players["player_right"].score
+			user_left = await sync_to_async(User.objects.get)(id=self.players["player_left"].player_model.id)
+			user_right = await sync_to_async(User.objects.get)(id=self.players["player_right"].player_model.id)
+			scores = {
+				user_left.username: self.players["player_left"].score,
+				user_right.username : self.players["player_right"].score
 			}
-			await sync_to_async(self.game_history.result)(scores, scores_dict, winner)
-			# await sync_to_async(self.game_history.result)(winner, self.players["player_left"].score,
-			#												self.players["player_right"].score)
+			await sync_to_async(self.game_history.result)(scores, winner)
 
 	class Player:
 		"""

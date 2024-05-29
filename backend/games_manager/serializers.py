@@ -4,6 +4,8 @@ from rest_framework import serializers
 
 from .models import TwoPlayersGame, FourPlayersGame
 
+from .models import Game
+
 class UserSerializerSpe(serializers.ModelSerializer):
 	class Meta :
 		model = User
@@ -35,3 +37,19 @@ class FourPlayersGameSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = FourPlayersGame
 		fields = ["user1", "user2", "user3", "user4", "score_user1", "score_user2", "score_user3", "score_user4", "score_max", "win_player", "date"]
+
+
+class GameSerializer(serializers.ModelSerializer):
+	players = serializers.SerializerMethodField()
+	scores = serializers.JSONField()
+	winner = serializers.SerializerMethodField()
+
+	class Meta:
+		model = Game
+		fields = ["players", "scores", "winner", "tournament_id", "tournament_name", "tournament_level", "date"]
+
+	def get_players(self, obj):
+		return [player.owner.username for player in obj.players.all()]
+
+	def get_winner(self, obj):
+		return obj.winner.owner.username

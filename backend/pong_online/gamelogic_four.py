@@ -2,7 +2,11 @@ import random, math
 
 from asgiref.sync import sync_to_async
 
+from django.contrib.auth.models import User
+
 from games_manager.models import FourPlayersGame, TwoPlayersGame
+
+from games_manager.models import Game
 
 # Constants for the game area and paddles
 GAME_AREA_WIDTH = 650
@@ -41,7 +45,7 @@ class GameStateFour:
 		self.players = {}
 		self.is_running = False
 		self.winning_score = 3
-		self.game_history = TwoPlayersGame()
+		self.game_history = Game()
 
 	def add_player_to_dict(self, player_pos, player_model):
 		"""
@@ -159,19 +163,17 @@ class GameStateFour:
 		if winner_pos is not None and loser_pos is not None:
 			winner = self.players[winner_pos].player_model
 			if winner != "Not enough players":
+				user_left = await sync_to_async(User.objects.get)(id=self.players["player_left"].player_model.id)
+				user_right = await sync_to_async(User.objects.get)(id=self.players["player_right"].player_model.id)
+				user_top = await sync_to_async(User.objects.get)(id=self.players["player_top"].player_model.id)
+				user_bottom = await sync_to_async(User.objects.get)(id=self.players["player_bottom"].player_model.id)
 				scores = {
-					self.players["player_left"].player_model.id: self.players["player_left"].score,
-					self.players["player_right"].player_model.id: self.players["player_right"].score,
-					self.players["player_top"].player_model.id: self.players["player_top"].score,
-					self.players["player_bottom"].player_model.id: self.players["player_bottom"].score
+					user_left.username: self.players["player_left"].score,
+					user_right.username: self.players["player_right"].score,
+					user_top.username: self.players["player_top"].score,
+					user_bottom.username: self.players["player_bottom"].score
 				}
-				scores_test = [self.players["player_left"].score, self.players["player_right"].score,
-								self.players["player_top"].score, self.players["player_bottom"].score]
-				await sync_to_async(self.game_history.result)(scores_test, scores, winner)
-				# await sync_to_async(self.game_history.result)(winner, self.players["player_left"],
-				# 											self.players["player_right"],
-				# 											self.players["player_top"],
-				# 											self.players["player_bottom"])
+				await sync_to_async(self.game_history.result)(scores, winner)
 
 	class Player:
 		"""

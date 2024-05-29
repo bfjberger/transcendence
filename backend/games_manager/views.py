@@ -11,6 +11,24 @@ from django.db.models import Q
 
 from players_manager.models import Player
 
+from .models import Game
+
+from .serializers import GameSerializer
+
+class GameView(ListAPIView):
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	permission_classes = [permissions.IsAuthenticated]
+
+	def get(self, request):
+		try:
+			player = Player.objects.get(owner=self.request.user)
+		except:
+			return Response(None, status=status.HTTP_400_BAD_REQUEST)
+
+		games_serializer = GameSerializer(Game.objects.filter(players=player), many=True)
+
+		return Response(games_serializer.data, status=status.HTTP_200_OK)
+
 
 class ListTwoPlayersGamesAPIView (ListAPIView) :
 	authentication_classes = [SessionAuthentication, BasicAuthentication]

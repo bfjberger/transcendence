@@ -13,7 +13,7 @@ from tournament.models import TournamentStat
 class TwoPlayersGame(models.Model):
 	# user1 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='user1')
 	# user2 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='user2')
-	players = models.ManyToManyField(Player, related_name='players')
+	players = models.ManyToManyField(Player, related_name='players_temp')
 	scores = ArrayField(models.IntegerField(default=0), null=True, blank=True)
 	scores_test = models.JSONField(null=True, blank=True)
 	# score_user1 = models.IntegerField(default=0)
@@ -79,5 +79,28 @@ class FourPlayersGame(models.Model):
 		self.score_user3 = player_3.score
 		self.score_user4 = player_4.score
 		self.win_player = winner.owner
+		self.date = timezone.now()
+		self.save()
+
+class Game(models.Model):
+	players = models.ManyToManyField(Player, related_name='players')
+	scores = models.JSONField(null=True, blank=True)
+	winner = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True, related_name='winner')
+	tournament_id = models.ForeignKey(TournamentStat, on_delete=models.SET_NULL, null=True, blank=True, related_name='tournament_id')
+	tournament_name = models.CharField(max_length=100, null=True, blank=True)
+	tournament_level = models.CharField(max_length=100, null=True, blank=True)
+	date = models.DateTimeField(default=timezone.now)
+
+	def __str__(self):
+		return " vs ".join([str(player.id) for player in self.players.all()])
+
+	def add_player(self, player):
+		self.date = timezone.now()
+		self.save()
+		self.players.add(player)
+
+	def result(self, scores, winner):
+		self.scores = scores
+		self.winner = winner
 		self.date = timezone.now()
 		self.save()

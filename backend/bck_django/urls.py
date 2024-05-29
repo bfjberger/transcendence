@@ -30,6 +30,8 @@ from login_api_42.views import Accounts_view, Callback
 
 from games_manager.views import ListTwoPlayersGamesAPIView, ListFourPlayersGamesAPIView
 
+from games_manager.views import GameView
+
 from pong_online.views import TwoPlayersOnlineView, FourPlayersOnlineView
 
 from friends_manager.views import ListFriendAPIView, CreateFriendAPIView, AcceptFriendAPIView, RefuseFriendAPIView, DeleteFriendAPIView, GetUserNameAPI
@@ -80,7 +82,9 @@ urlpatterns = [
     path('api/logout/', LogoutView.as_view()),
     path('api/updateavatar/', ProfileUpdateAvatarView.as_view()),
 
-    path('api/gamehistory/', ListTwoPlayersGamesAPIView.as_view()),
+    path('api/gamehistory/', GameView.as_view()),
+
+    path('api/gamehistory_temp/', ListTwoPlayersGamesAPIView.as_view()),
     # path('api/gametwoplayercreate/', CreateTwoPlayersGamesAPIView.as_view()),
     path('api/gamehistoryfour/', ListFourPlayersGamesAPIView.as_view()),
 
