@@ -194,11 +194,15 @@ function createHistoryFour(game, game_index) {
 		'game_index' will get the index of the current iteration
 		'game' will get the value of the current iteration
 
-	At each iteration it will create a new 'div' element and
+	For the game element,
+		if it has only 2 players and the tournament_level field is null -> 1 v 1
+		if it has only 2 players and the tournament_level field is not null -> tournoi
+		if it has only 4 players -> Multijoueurs
+
+	Each function will create a new 'div' element and
 	fill the template of a game entry with the information from the 'game' variable.
-
+	Add it to the appropriate element in the page (history for two and history for four
 	Change the background color of the user's placeholder depending on the winner of the game.
-
 	Add an underline to identify the current user.
 */
 function fillHistory() {
@@ -213,6 +217,11 @@ function fillHistory() {
 	}
 };
 
+/**
+ * For loop to get the number of games played at two and four players
+ * call the function that will use g_data to fill the HTML field
+ * depending on the number of games got earlier, add a specific message at the HTML field
+*/
 function listenerGameHistory() {
 
 	g_game_history_two = document.getElementById("game__historyTwo--main");
@@ -220,15 +229,30 @@ function listenerGameHistory() {
 
 	var gameHistoryEntry;
 
-	if (g_data == undefined || g_data == null || g_data.length == 0) {
+	var nb_game_2 = 0;
+	var nb_game_4 = 0;
+
+	g_data.forEach(game => {
+		if (game.players.length == 2)
+			nb_game_2++;
+		else if (game.players.length == 4)
+			nb_game_4++;
+	});
+
+	fillHistory();
+
+	if (nb_game_2 == 0) {
 		gameHistoryEntry = document.createElement("div");
-		gameHistoryEntry.innerHTML = `<div class="h3">Aucune partie jouée</div>`;
+		gameHistoryEntry.innerHTML = `<div class="h3">Aucune partie 1 v 1 en ligne jouée</div>`;
 
 		g_game_history_two.appendChild(gameHistoryEntry);
+	}
+	if (nb_game_4 == 0) {
+		gameHistoryEntry = document.createElement("div");
+		gameHistoryEntry.innerHTML = `<div class="h3">Aucune partie Multijoueurs en ligne jouée</div>`;
+
 		g_game_history_four.appendChild(gameHistoryEntry);
 	}
-	else
-		fillHistory();
 };
 
 async function loadGameHistory() {

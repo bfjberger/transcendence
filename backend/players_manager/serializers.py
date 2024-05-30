@@ -6,8 +6,6 @@ from django.contrib.auth.models import User
 
 from players_manager.models import Player
 
-from friends_manager.models import Friend
-
 from django.contrib.auth import authenticate
 
 from django.contrib.auth.password_validation import validate_password
@@ -88,12 +86,6 @@ class AvatarSerializer(serializers.ModelSerializer):
 		return super().save(*args, **kwargs)
 
 
-# class FriendSerializer(serializers.ModelSerializer):
-# 	class Meta:
-# 		model = Friend
-# 		fields = ['id', 'player_initiated', 'player_received', 'accept']
-
-
 class DataSerializer(serializers.ModelSerializer):
 	player = serializers.SerializerMethodField()
 
@@ -109,19 +101,3 @@ class DataSerializer(serializers.ModelSerializer):
 			'avatar': player.avatar.url,
 		}
 		return player_data
-
-
-class StatsSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Player
-		fields = [
-					'nb_games_2p',
-					'nb_games_2p_lost',
-					'nb_games_2p_won',
-					'nb_points_2p',
-					'nb_games_4p',
-					'nb_games_4p_won',
-					'nb_games_4p_lost',
-					'nb_points_4p',
-					'nb_points_tournament'
-				]

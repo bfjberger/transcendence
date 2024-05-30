@@ -6,7 +6,6 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async
 from .models import TournamentRoom, TournamentStat
-from games_manager.models import TwoPlayersGame
 from .gamelogic_tournament import GameState
 import random
 from django.contrib.auth.models import User
@@ -63,12 +62,9 @@ def end_game_save_stats(game, players, win_player, tournament_id, room_state):
 	winner = Player.objects.get(owner=win_user)
 
 	tournamentStat_object = TournamentStat.objects.get(id=tournament_id)
+
 	score_1 = game.players[0].score
 	score_2 = game.players[1].score
-	player1.nb_points_tournament += score_1
-	player2.nb_points_tournament += score_2
-	player1.save()
-	player2.save()
 
 	game = Game.objects.create()
 	game.add_player(player1)

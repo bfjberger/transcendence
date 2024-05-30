@@ -243,7 +243,6 @@ class Statistiques(APIView):
 			player = Player.objects.get(owner=self.request.user)
 		except :
 			return Response(None, status=status.HTTP_400_BAD_REQUEST)
-		# serializer_stats = StatsSerializer(player)
 
 		# Get all games where 2 players were there
 		games_two = Game.objects.annotate(num_players=Count('players')).filter(num_players=2)

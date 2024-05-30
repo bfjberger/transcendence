@@ -4,8 +4,6 @@ from asgiref.sync import sync_to_async
 
 from django.contrib.auth.models import User
 
-from games_manager.models import TwoPlayersGame
-
 from games_manager.models import Game
 
 # Constants for the game area and paddles
@@ -141,12 +139,10 @@ class GameState:
 		"""
 		if winner_pos is not None:
 			winner = self.players[winner_pos].player_model
-			# await sync_to_async(winner.record_win)('2p', self.players[winner_pos].score)
 			winner.status = "ONLINE"
 			await sync_to_async(winner.save)()
 		if loser_pos is not None:
 			loser = self.players[loser_pos].player_model
-			# await sync_to_async(loser.record_loss)('2p', self.players[loser_pos].score)
 			loser.status = "ONLINE"
 			await sync_to_async(loser.save)()
 		if winner_pos is not None and loser_pos is not None:

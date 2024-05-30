@@ -28,8 +28,6 @@ from tournament.views import TournamentOnline, TournamentViewSet, PlayerViewSet
 
 from login_api_42.views import Accounts_view, Callback
 
-from games_manager.views import ListTwoPlayersGamesAPIView, ListFourPlayersGamesAPIView
-
 from games_manager.views import GameView
 
 from pong_online.views import TwoPlayersOnlineView, FourPlayersOnlineView
@@ -83,10 +81,6 @@ urlpatterns = [
     path('api/updateavatar/', ProfileUpdateAvatarView.as_view()),
 
     path('api/gamehistory/', GameView.as_view()),
-
-    path('api/gamehistory_temp/', ListTwoPlayersGamesAPIView.as_view()),
-    # path('api/gametwoplayercreate/', CreateTwoPlayersGamesAPIView.as_view()),
-    path('api/gamehistoryfour/', ListFourPlayersGamesAPIView.as_view()),
 
     path('api/call_back/', Callback.as_view(), name='callback'),
     path('api/accounts/', Accounts_view.as_view(), name='accounts'),
