@@ -41,7 +41,6 @@ const create_player_div = (player, nickname, is_owner, actual_owner) => {
 		div.className = "owner row text-center justify-content-end py-3 border-info border-bottom";
 		div.innerHTML = `
 				<div class="col-4 h3">
-					${nickname}
 				</div>
 				<div class="col-2">
 					<button id="start-btn" class="btn btn-outline-success" type="button">COMMENCER</button>
@@ -54,9 +53,10 @@ const create_player_div = (player, nickname, is_owner, actual_owner) => {
 	else {
 		div.className = "row text-center py-3 border-info border-bottom";
 		div.innerHTML = `
-			<div class="h3">${nickname}</div>
+			<div class="h3"></div>
 		`;
 	}
+	div.getElementsByTagName('div')[0].textContent = nickname;
 	return div;
 }
 
