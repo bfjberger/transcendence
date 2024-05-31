@@ -388,21 +388,15 @@ function changePageContent(viewFunction, elementId) {
 
 /* --------------------- Listener for navigation event ---------------------- */
 
-async function handlePageReload() {
+async function handlePageChange() {
 	if (window.location.pathname == "/tournament/") {
 		await updateStatus("ONLINE");
 	}
 };
 
-window.addEventListener('load', handlePageReload);
-
-function handlePageChange() {
-	if (window.location.pathname == "/tournament/") {
-		updateStatus("ONLINE");
-	}
-};
-
+window.addEventListener('load', handlePageChange);
 window.addEventListener('popstate', handlePageChange);
+window.addEventListener('unload', handlePageChange);
 
 /* ---------------------------- Creation Handlers --------------------------- */
 
@@ -468,6 +462,16 @@ function listenerTournament() {
 
 	document.getElementById("tournament__four--create").addEventListener("click", createTournamentFour);
 	document.getElementById("tournament__eight--create").addEventListener("click", createTournamentEight);
+
+		// Listen for a button from the menu bar being clicked
+		const navbarItems = document.querySelectorAll('.nav__item');
+		navbarItems.forEach(item => {
+			item.addEventListener('click', async e => {
+				e.preventDefault();
+
+				await updateStatus("ONLINE");
+			});
+		});
 };
 
 /* --------------------------- Loader for the page -------------------------- */

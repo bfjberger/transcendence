@@ -27,7 +27,7 @@ export default function renderStats() {
 			</div>
 			<div id="stats__2player" class="row py-3">
 				<div class="bg-body-secondary fs-4 stats__color--title">
-					2 JOUEURS EN LIGNE
+					2 JOUEURS EN LIGNE (y compris parties en tournoi)
 				</div>
 				<div class="col bg-body-tertiary">
 					<div id="stats__2player--played" class="fs-4 stats__color--stats"></div>

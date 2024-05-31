@@ -47,7 +47,11 @@ let tournament_name = '';
 let g_data = {};
 
 function createTournament() {
-	const name = document.getElementById('name').value;
+
+	// reset error message field
+	document.getElementById("create__tournament--errorMsg").textContent = "";
+
+	var name = document.getElementById('create__tournament--name').value;
 	if (name === '') {
 		document.getElementById("create__tournament--errorMsg").textContent = "Le nom du tournoi ne peut pas être vide";
 		return;
@@ -66,12 +70,12 @@ function createTournament() {
 			console.log("data: ", data);
 			if (data.success) {
 				// Reload tournament list
+				document.getElementById("create__tournament--form").reset();
 				loadTournaments();
 			} else {
 				// Handle error response
 				const errorMsg = data.detail;
 				document.getElementById("create__tournament--errorMsg").textContent = errorMsg;
-
 			}
 		})
 		.catch(error => {
@@ -244,8 +248,8 @@ function getCookie(name) {
 
 function listenerTournamentOnline() {
 
-	const button_create_tournament = document.getElementById('create-tournament-button');
-	button_create_tournament.addEventListener('click', (event) => {
+	const form_create_tournament = document.getElementById('create__tournament--form');
+	form_create_tournament.addEventListener('submit', (event) => {
 		event.preventDefault();
 		createTournament();
 	})

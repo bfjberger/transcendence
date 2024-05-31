@@ -413,21 +413,17 @@ function start4PlayerGame(p1_name, p2_name, p3_name, p4_name) {
 
 /* --------------------- Listener for navigation event ---------------------- */
 
-async function handlePageReload() {
+async function handlePageChange() {
 	if (window.location.pathname == "/fourplayers/") {
 		await updateStatus("ONLINE");
+		if (g_game)
+			g_game = null;
 	}
 };
 
-window.addEventListener('load', handlePageReload);
-
-function handlePageChange() {
-	if (window.location.pathname == "/fourplayers/") {
-		updateStatus("ONLINE");
-	}
-};
-
+window.addEventListener('load', handlePageChange);
 window.addEventListener('popstate', handlePageChange);
+window.addEventListener('unload', handlePageChange);
 
 /* -------------------------- Listener for the page ------------------------- */
 
@@ -453,7 +449,7 @@ function listenerFourPlayers() {
 	// Listen for a button from the menu bar being clicked
 	const navbarItems = document.querySelectorAll('.nav__item');
 	navbarItems.forEach(item => {
-		item.addEventListener('click', e => {
+		item.addEventListener('click', async e => {
 			e.preventDefault();
 
 			if (g_game) {
@@ -461,7 +457,7 @@ function listenerFourPlayers() {
 				g_game.start = false;
 				g_game = null;
 			}
-			updateStatus("ONLINE");
+			await updateStatus("ONLINE");
 		});
 	});
 };

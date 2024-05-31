@@ -1,30 +1,18 @@
-from django.contrib.auth.models import User
-
 from rest_framework import serializers
 
-from .models import TwoPlayersGame, FourPlayersGame
+from .models import Game
 
-class UserSerializerSpe(serializers.ModelSerializer):
-	class Meta :
-		model = User
-		fields = ("username",)
+class GameSerializer(serializers.ModelSerializer):
+	players = serializers.SerializerMethodField()
+	scores = serializers.JSONField()
+	winner = serializers.SerializerMethodField()
 
-
-class TwoPlayersGameSerializer(serializers.ModelSerializer):
-	user1 = UserSerializerSpe(read_only=True)
-	user2 = UserSerializerSpe(read_only=True)
-	win_player = UserSerializerSpe(read_only=True)
 	class Meta:
-		model = TwoPlayersGame
-		fields = ["user1", "user2", "score_user1", "score_user2", "score_max", "win_player", "id_tournament", "id_name", "level", "date"]
+		model = Game
+		fields = ["players", "scores", "winner", "tournament_id", "tournament_name", "tournament_level", "date"]
 
+	def get_players(self, obj):
+		return [player.owner.username for player in obj.players.all()]
 
-class FourPlayersGameSerializer(serializers.ModelSerializer):
-	user1 = UserSerializerSpe(read_only=True)
-	user2 = UserSerializerSpe(read_only=True)
-	user3 = UserSerializerSpe(read_only=True)
-	user4 = UserSerializerSpe(read_only=True)
-	win_player = UserSerializerSpe(read_only=True)
-	class Meta:
-		model = FourPlayersGame
-		fields = ["user1", "user2", "user3", "user4", "score_user1", "score_user2", "score_user3", "score_user4", "score_max", "win_player", "date"]
+	def get_winner(self, obj):
+		return obj.winner.owner.username

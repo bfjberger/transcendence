@@ -6,11 +6,11 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async
 from .models import TournamentRoom, TournamentStat
-from games_manager.models import TwoPlayersGame
 from .gamelogic_tournament import GameState
 import random
 from django.contrib.auth.models import User
 from players_manager.models import Player
+from games_manager.models import Game
 
 TIMER = 60
 tick_rate = 60
@@ -62,24 +62,23 @@ def end_game_save_stats(game, players, win_player, tournament_id, room_state):
 	winner = Player.objects.get(owner=win_user)
 
 	tournamentStat_object = TournamentStat.objects.get(id=tournament_id)
+
 	score_1 = game.players[0].score
 	score_2 = game.players[1].score
-	player1.nb_points_tournament += score_1
-	player2.nb_points_tournament += score_2
-	player1.save()
-	player2.save()
 
-	game = TwoPlayersGame.objects.create()
-	game.create(player1, player2)
-	game.id_tournament = tournamentStat_object
-	game.id_name = tournamentStat_object.tournament_name
-	game.level = room_state
-	game.result(winner, score_1, score_2)
+	game = Game.objects.create()
+	game.add_player(player1)
+	game.add_player(player2)
+	game.tournament_id = tournamentStat_object
+	game.tournament_name = tournamentStat_object.tournament_name
+	game.tournament_level = room_state
+	scores = {
+		user1.username : score_1,
+		user2.username : score_2
+	}
+	game.result(scores, winner)
 
 	sync_to_async(game.save)()
-
-
-
 
 
 async def end_tournament_save_stats(winner, losers, tournament_name, tournament_id):

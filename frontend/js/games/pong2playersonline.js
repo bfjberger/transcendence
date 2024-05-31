@@ -268,7 +268,7 @@ class PongGame2PlayersOnline {
 			this.game_running = false;
 			this.ball.stop();
 			g_template_text.style.color = "black";
-			g_template_text.textContent = data.player_name + " a quitté la partie. Tu gagne cette partie.";
+			g_template_text.textContent = data.player_name + " a quitté la partie. Tu gagnes cette partie.";
 			g_startButton.classList.remove("d-none");
 			this.websocket.close();
 		}

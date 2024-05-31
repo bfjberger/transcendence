@@ -4,8 +4,6 @@ from django.contrib import admin
 
 from players_manager.models import Player
 
-from players_manager.models import Friend
-
 class PlayerAdmin(admin.ModelAdmin):
     list_display = ('id', 'owner')
     readonly_fields = ('last_activity',)

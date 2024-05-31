@@ -13,19 +13,19 @@ var csrftoken;
 function listenerStats() {
 
 	let ratioGlobal;
-	if (g_ratio_2p === "no data" && g_ratio_4p === "no data") {
-		ratioGlobal = "no data";
+	if (g_ratio_2p == "N/A" && g_ratio_4p == "N/A") {
+		ratioGlobal = "N/A";
 	}
-	else if (g_ratio_2p === "no data") {
-		ratioGlobal = Number(g_ratio_4p) + "%";
+	else if (g_ratio_2p == "N/A") {
+		ratioGlobal = g_ratio_4p.toFixed(2) + "%";
 		g_ratio_4p = g_ratio_4p.toFixed(2) + "%";
 	}
-	else if (g_ratio_4p === "no data") {
-		ratioGlobal = Number(g_ratio_2p) + "%";
+	else if (g_ratio_4p == "N/A") {
+		ratioGlobal = g_ratio_2p.toFixed(2) + "%";
 		g_ratio_2p = g_ratio_2p.toFixed(2) + "%";
 	}
 	else {
-		ratioGlobal = ((Number(g_ratio_2p) + Number(g_ratio_4p)) / 2).toFixed(2) + "%";
+		ratioGlobal = ((g_ratio_2p + g_ratio_4p) / 2).toFixed(2) + "%";
 		g_ratio_2p = g_ratio_2p + "%";
 		g_ratio_4p = g_ratio_4p + "%";
 	}
@@ -70,21 +70,17 @@ async function loadStats() {
 		}
 		const data = await response.json();
 
-		g_games_2p = data["stats"].nb_games_2p;
-		if (g_games_2p !== 0)
-			g_ratio_2p = Number(((data["stats"].nb_games_2p_won / g_games_2p) * 100).toFixed(2));
-		else
-			g_ratio_2p = "no data";
-		g_games_4p = data["stats"].nb_games_4p;
-		if (g_games_4p !== 0)
-			g_ratio_4p = Number(((data["stats"].nb_games_4p_won / g_games_4p) * 100).toFixed(2));
-		else
-			g_ratio_4p = "no data";
-		g_points_2p = data["stats"].nb_points_2p;
-		g_points_4p = data["stats"].nb_points_4p;
+		g_games_2p = data["twoplayers"].games_2p;
+		g_ratio_2p = data["twoplayers"].ratio_2p;
+		g_points_2p = data["twoplayers"].points_2p;
+
+		g_games_4p = data["fourplayers"].games_4p;
+		g_ratio_4p = data["fourplayers"].ratio_4p;
+		g_points_4p = data["fourplayers"].points_4p;
+
 		g_tournament_win = data["tournament"].nb_win;
 		g_tournament_matchs_win = data["tournament"].match_win;
-		g_tournament_points = data["stats"].nb_points_tournament;
+		g_tournament_points = data["tournament"].points_tournament;
 
 		return 1;
 	} catch (e) {

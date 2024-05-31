@@ -232,9 +232,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
 		"""
 		self.game_state_obj.is_running = True
 		await self.send_game_start()
-		await sync_to_async(self.game_state_obj.game_history.create)(
-			self.game_state_obj.players['player_left'].player_model,
-			self.game_state_obj.players['player_right'].player_model)
+		await sync_to_async(self.game_state_obj.game_history.add_player)(self.game_state_obj.players['player_left'].player_model)
+		await sync_to_async(self.game_state_obj.game_history.add_player)(self.game_state_obj.players['player_right'].player_model)
 		asyncio.create_task(self.game_loop())
 
 	async def end_game(self, winner):

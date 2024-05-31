@@ -2,7 +2,9 @@ import random, math
 
 from asgiref.sync import sync_to_async
 
-from games_manager.models import TwoPlayersGame
+from django.contrib.auth.models import User
+
+from games_manager.models import Game
 
 # Constants for the game area and paddles
 GAME_AREA_WIDTH = 650
@@ -42,7 +44,7 @@ class GameState:
 		self.players = {}
 		self.is_running = False
 		self.winning_score = 3
-		self.game_history = TwoPlayersGame()
+		self.game_history = Game()
 
 	def add_player_to_dict(self, player_pos, player_model):
 		"""
@@ -137,18 +139,21 @@ class GameState:
 		"""
 		if winner_pos is not None:
 			winner = self.players[winner_pos].player_model
-			await sync_to_async(winner.record_win)('2p', self.players[winner_pos].score)
 			winner.status = "ONLINE"
 			await sync_to_async(winner.save)()
 		if loser_pos is not None:
 			loser = self.players[loser_pos].player_model
-			await sync_to_async(loser.record_loss)('2p', self.players[loser_pos].score)
 			loser.status = "ONLINE"
 			await sync_to_async(loser.save)()
 		if winner_pos is not None and loser_pos is not None:
 			winner = self.players[winner_pos].player_model
-			await sync_to_async(self.game_history.result)(winner, self.players["player_left"].score,
-															self.players["player_right"].score)
+			user_left = await sync_to_async(User.objects.get)(id=self.players["player_left"].player_model.id)
+			user_right = await sync_to_async(User.objects.get)(id=self.players["player_right"].player_model.id)
+			scores = {
+				user_left.username: self.players["player_left"].score,
+				user_right.username : self.players["player_right"].score
+			}
+			await sync_to_async(self.game_history.result)(scores, winner)
 
 	class Player:
 		"""
@@ -297,7 +302,7 @@ class GameState:
 					self.y >= player_right.y and self.x < player_right.x and
 					self.x + self.radius >= player_right.x):
 						if (abs(self.x_vel) >= 20):
-							self.x_vel *= -1 
+							self.x_vel *= -1
 						else:
 							self.x_vel *= -1 * self.speed_multiplier_x
 						middle_y = player_right.y + PADDLE_HEIGHT / 2
