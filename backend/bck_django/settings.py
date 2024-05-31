@@ -58,15 +58,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-    'players_manager',
     'allauth',
     'allauth.account',
-    'pong_online',
-    'games_manager',
-	'tournament',
-    'friends_manager',
-	'pong_IA',
 
+    'django.contrib.sites',
+    'rest_framework.authtoken',
+
+	# 'players_manager',
+    # 'pong_online',
+    # 'games_manager',
+	# 'tournament',
+    # 'friends_manager',
+	# 'pong_IA',
 ]
 
 MIDDLEWARE = [
@@ -108,8 +111,6 @@ AUTHENTICATION_BACKENDS = [
 
 WSGI_APPLICATION = 'bck_django.wsgi.application'
 
-
-
 DATABASES = {
     "default": {
         "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
@@ -120,7 +121,6 @@ DATABASES = {
         "PORT": os.environ.get("SQL_PORT", "5432"),
     }
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -137,21 +137,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Zurich'
 USE_I18N = True
 USE_TZ = True
-
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-
 
 # REST_FRAMEWORK = {
 #     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -184,9 +178,4 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-LOGIN_REDIRECT_URL = 'https://localhost'
-LOGOUT_REDIRECT_URL = 'https://localhost'
-
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-
-TIME_ZONE = 'Europe/Zurich'
