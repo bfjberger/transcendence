@@ -1,0 +1,88 @@
+from django.contrib.auth import authenticate
+from django.contrib.auth.password_validation import validate_password
+
+from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+
+from .models import MyUser
+
+
+class MyUserSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = MyUser
+		fields = "__all__"
+
+	# def update(self, instance, validated_data):
+	#     instance.nickname = validated_data.get("nickname", instance.nickname)
+	#     instance.avatar = validated_data.get("avatar", instance.avatar)
+	#     instance.save()
+	#     return instance
+
+
+class LoginSerializer(serializers.Serializer):
+	username = serializers.CharField(label="username")
+	password = serializers.CharField(label="password")
+
+	def validate(self, attrs):
+		user = authenticate(request=self.context.get('request'),username=attrs['username'],password=attrs['password'])
+
+		if not user:
+			raise serializers.ValidationError("Incorrect Credentials")
+		else:
+			attrs['user'] = user
+			return attrs
+
+	# def update_status(self):
+	#     self.status = "ONLINE"
+	#     self.save()
+
+
+class UpdatePassword(serializers.ModelSerializer):
+	password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+	class Meta:
+		model = MyUser
+		fields = ("password",)
+
+	def update(self, instance, validated_data):
+		instance.set_password(validated_data["password"])
+		instance.save()
+		return instance
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+	username = serializers.CharField(required=True, validators=[UniqueValidator(queryset=MyUser.objects.all())])
+	email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=MyUser.objects.all())])
+	password = serializers.CharField(required=True, write_only=True, validators=[validate_password])
+
+	def create(self, validated_data):
+		user = MyUser.objects.create_user(
+			username=validated_data['username'],
+			email=validated_data['email'],
+			password=validated_data['password'],
+			nickname=validated_data['username']
+		)
+		return user
+
+	class Meta:
+		model = MyUser
+		fields = ('id', 'username', 'email', 'password')
+
+
+class AvatarSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = MyUser
+		fields = ['avatar']
+
+	def save(self, *args, **kwargs):
+		new_avatar = self.validated_data.get('avatar')
+		if new_avatar:
+			if self.instance.avatar.name != 'staticfiles/avatars/avatar.png':
+				# Delete the old avatar if it's not the default one
+				self.instance.avatar.delete()
+		return super().save(*args, **kwargs)
+
+
+class DataSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = MyUser
+		fields = ['username', 'status', 'nickname', 'avatar']
