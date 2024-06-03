@@ -67,7 +67,7 @@ class Callback(APIView):
 
 		if response.status_code == 200:
 			user_data = response.json()
-			username = user_data.get('login')
+			username = user_data.get('login') + "_42"
 			avatar = user_data.get('image')["link"]
 			email = user_data.get('email')
 

@@ -29,4 +29,5 @@ POSTGRES_DB=db_bck_django
 
 
 For those who used the precedent .env please check if the KEY_API and SECRET_API are correctly set to your api.
+Do not forget to channge the django_allowed_hosts to your ip or localhost if you wanna try locally.
 Also you can also redirect to your pc at 42 such as https://[position].42lausanne.ch (ex: https://c1r1s1.42lausanne.ch)
