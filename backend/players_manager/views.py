@@ -48,36 +48,19 @@ class RegisterAction(APIView):
 	serializer_class = RegisterSerializer
 
 	def post(self, request):
-		# Verifier si un user 42 existe
+		# check if the request.data["username"] contains a _42 in the username
+		if '_42' in request.data['username']:
+			return Response({"username": "Votre username ne peut pas contenir de '_42'."}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
-		authorization_url = "https://api.intra.42.fr/oauth/token" #by def, url where you can loggin ('https://api.intra.42.fr/oauth/authorize')
-		datas = {
-			"grant_type" : "client_credentials",
-			"client_id" : settings.SOCIALACCOUNT_PROVIDERS['42']['KEY'], #ATTENTION
-			"client_secret" : settings.SOCIALACCOUNT_PROVIDERS['42']['SECRET']
-		}
-
-		response_post = requests.post(authorization_url, datas)
-		token = response_post.json()["access_token"]
-
-
-		check_url = "https://api.intra.42.fr/v2/users" + "/" + request.data["username"]
-		header = {
-			"Authorization" : "Bearer" + " " + token
-		}
-
-		result = requests.get(check_url, headers=header)
-
-		check_url2 = "https://api.intra.42.fr/v2/users/?filter[email]=" + request.data["email"]
-
-		result2 = requests.get(check_url2, headers=header)
-
-		mail_chk = True if len(result2.json()) == 1 else False
+		mail_check = False
+		# check if the request.data["email"] contains a 42 in the mail
+		if '42' in request.data['email']:
+			mail_check = True
 
 		if '@' in request.data['username'] or '+' in request.data['username']:
 			return Response({"username": "Votre username ne peut pas contenir de '@' ou de '+'."}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
-		if result.status_code != 200 and mail_chk == False :
+		if mail_check == False :
 			serializer = RegisterSerializer(data=request.data)
 			if serializer.is_valid():
 				user = serializer.save()
@@ -85,8 +68,7 @@ class RegisterAction(APIView):
 					return Response(serializer.data, status=status.HTTP_201_CREATED)
 			return Response(serializer.errors, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
-		return Response({"42 API" : "Pseudo ou mail déjà utilisé par un étudiant de 42."}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
-
+		return Response({"42 API" : "Pseudo contient _42 ou mail contient 42."}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
 
 class LoginView(APIView):
