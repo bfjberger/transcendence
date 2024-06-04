@@ -2,7 +2,7 @@ import random, math
 
 from asgiref.sync import sync_to_async
 
-from games_manager.models import Game
+from games.models import Game
 
 
 # Constants for the game area and paddles

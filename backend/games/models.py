@@ -5,6 +5,7 @@ from users.models import MyUser
 
 from tournament.models import TournamentStat
 
+
 class Game(models.Model):
 	players = models.ManyToManyField(MyUser, related_name='players')
 	scores = models.JSONField(null=True, blank=True)

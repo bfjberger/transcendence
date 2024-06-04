@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.response import Response
 
-from players_manager.serializers import DataSerializer
+from users.serializers import DataSerializer
 
 
 class TwoPlayersOnlineView(APIView):

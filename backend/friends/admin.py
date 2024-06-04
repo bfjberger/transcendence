@@ -4,6 +4,7 @@ from django.contrib.auth.admin import UserAdmin
 from .models import Friend
 
 from users.models import MyUser
+from users.admin import MyUserAdmin
 
 
 class FriendAdmin(admin.ModelAdmin):
@@ -12,12 +13,12 @@ class FriendAdmin(admin.ModelAdmin):
 admin.site.register(Friend, FriendAdmin)
 
 
-class CustomUserAdmin(UserAdmin):
-    list_display = ('id', 'username', 'email')
-    readonly_fields = ('id',)
+# class CustomFriendAdmin(MyUserAdmin):
+#     list_display = ('id', 'username', 'email')
+#     readonly_fields = ('id',)
 
-# Unregister the original User admin
-admin.site.unregister(MyUser)
+# # Unregister the original User admin
+# admin.site.unregister(MyUser)
 
-# Register the User model with the new CustomUserAdmin
-admin.site.register(MyUser, CustomUserAdmin)
+# # Register the User model with the new CustomUserAdmin
+# admin.site.register(MyUser, CustomFriendAdmin)

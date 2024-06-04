@@ -8,6 +8,7 @@ from .serializers import GameSerializer
 
 from users.models import MyUser
 
+
 class GameView(ListAPIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]

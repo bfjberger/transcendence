@@ -16,6 +16,7 @@ from rest_framework import status
 from users.models import MyUser
 from users.serializers import DataSerializer
 
+
 class Accounts_view(APIView) :
 	permission_classes = (permissions.AllowAny,)
 

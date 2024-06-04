@@ -1,26 +1,18 @@
 from django.contrib.auth import login, logout
 from django.db.models import Count
 
-from rest_framework import permissions, status, serializers #, generics
+from rest_framework import permissions, status, serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
-# import datetime, requests
-
-# from django.conf import settings
-
-# from django.views.decorators.csrf import csrf_exempt
-
-# from django.utils.decorators import method_decorator
-
-# from rest_framework.reverse import reverse_lazy
-
 from .models import MyUser
 from .serializers import *
 
-#from tournament.models import TournamentStat
 from games.models import Game
+
+from tournament.models import TournamentStat
+
 
 class IndexAction(APIView):
 	permission_classes = (permissions.AllowAny,)
@@ -100,6 +92,7 @@ class LogoutView(APIView):
 
 			return Response("Logout success", status=status.HTTP_200_OK)
 
+
 class ProfileView(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]
@@ -147,6 +140,7 @@ class ProfileUpdatePassword(APIView) :
 
 		return Response("Nouveau mot de passe non valide.", status=status.HTTP_400_BAD_REQUEST)
 
+
 class ProfileUpdateAvatarView(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]
 	permission_classes = [permissions.IsAuthenticated]
@@ -164,6 +158,7 @@ class ProfileUpdateAvatarView(APIView):
 			return Response(serializer.data, status=status.HTTP_200_OK)
 		else:
 			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class TwoPlayers(APIView):
 	authentication_classes = [SessionAuthentication, BasicAuthentication]

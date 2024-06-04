@@ -14,6 +14,7 @@ from pathlib import Path
 
 import os
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -39,12 +40,12 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'api_42',
+    'users',
     'friends',
     'games',
     'pong_IA',
     'pong_online',
     'tournament',
-    'users',
 ]
 
 # A list of middleware to use

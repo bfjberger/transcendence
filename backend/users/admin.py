@@ -3,7 +3,8 @@ from django.contrib.auth.admin import UserAdmin
 
 from .models import MyUser
 
-class CustomUserAdmin(UserAdmin):
+
+class MyUserAdmin(UserAdmin):
 	fieldsets =(
 		*UserAdmin.fieldsets,
 		(
@@ -20,4 +21,4 @@ class CustomUserAdmin(UserAdmin):
 	)
 	readonly_fields = ('last_activity',)
 
-admin.site.register(MyUser, CustomUserAdmin)
+admin.site.register(MyUser, MyUserAdmin)

@@ -258,8 +258,8 @@ async function load42Profile(code)
 			const data = await response.json();
 
 			sessionStorage.setItem("username", data["username"]);
-			sessionStorage.setItem("avatar", data["player"].avatar);
-			sessionStorage.setItem("nickname", data["player"].nickname);
+			sessionStorage.setItem("avatar", data["avatar"]);
+			sessionStorage.setItem("nickname", data["nickname"]);
 
 			document.querySelectorAll(".dropdown-item").forEach(btn => {
 				btn.removeAttribute("disabled");
